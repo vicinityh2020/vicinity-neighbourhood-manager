@@ -9,13 +9,17 @@ angular.module('Authentication')
           var service = {};
           
           service.Login = function(username, password, callback) {
-            $timeout(function() {
-              var response = { success: username === 'viktor.oravec@bavenir.eu' && password === 'test'};
-              if (!response.success){
-                response.message="Username and password is incorrect";
-              }
-              callback(response);
-            }, 1000);
+            $http.post('http://localhost:3000/api/authenticate',{ username: username, password: password})
+              .success(function (response){
+                callback(response);
+              });
+//            $timeout(function() {
+//              var response = { success: username === 'viktor.oravec@bavenir.eu' && password === 'test'};
+//              if (!response.success){
+//                response.message="Username and password is incorrect";
+//              }
+//              callback(response);
+//            }, 1000);
           };
           
           service.SetCredentials = function(username, password){
