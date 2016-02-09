@@ -39,21 +39,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// CORS
-//app.use(function(req, res, next) {
-//
-//  if (req.method === 'OPTIONS') {
-//    res.setHeader("Access-Control-Allow-Origin", "http://localhost:8000");
-//    res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-//    res.setHheader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-//    res.send(200);
-//  } else {
-//    next();
-//  }
-//
-//});
-
-
 app.use('/', routes);
 app.use('/users', users);
 app.use('/api', api);

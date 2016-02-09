@@ -27,6 +27,23 @@ router
       password: req.body.authentication.password,
       principalRoles: req.body.authentication.principalRoles,
     }
+    
+    db.creatorOf = req.body.creatorOf;
+    db.follows = req.body.follows;
+    db.memberOf = req.body.memberOf;
+        
+    db.accountOf.name = req.body.accountOf.name;
+    db.accountOf.firstName = req.body.accountOf.firstName;
+    db.accountOf.surname = req.body.accountOf.surname;
+    db.accountOf.lastName = req.body.accountOf.lastName;
+    
+    db.knows = req.body.knows;
+  
+    db.modifierOf = req.body.modifierOf;
+  
+    db.administratorOf = req.body.administratorOf;
+  
+  
     db.save(function(err) {
       if (err) {
         response = {"error": true, "message": "Error adding data!"};

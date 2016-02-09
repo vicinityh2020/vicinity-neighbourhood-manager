@@ -8,7 +8,7 @@ var userAccount = {
   avatar: String,
   authentication: {
     password: String,
-    principalRoles: []},
+    principalRoles: [String]},
   creatorOf: [ObjectId], //Creator of UserAccounts
   follows: [ObjectId], //Follows UserAccounts
   memberOf: [ObjectId], //Member of UserGroups
@@ -46,4 +46,4 @@ var userAccount = {
 //});
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
-module.exports.agent = mongoose.model('Agent', userAccount);
+
