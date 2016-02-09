@@ -50,6 +50,7 @@ app.use('/useraccounts', [jwtauth, userAccounts]);
 app.use('/usergroups', [jwtauth, userGroups]);
 app.use('/organisationUnits', [jwtauth, organisationUnits]);
 app.use('/gateways', [jwtauth, gateways]);
+app.use('/items', [jwtauth, items]);
 
 
 
