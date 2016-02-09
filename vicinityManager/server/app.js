@@ -5,12 +5,14 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
-
-var mongoOp = require('./model/mongo');
+var userAccounts = require('./routes/userAccounts');
+var jwtauth = require('./middlewares/jwtauth');
 
 var app = express();
 
@@ -19,6 +21,14 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
+mongoose.connect('mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager', function(error){
+  if (error){
+    console.log("VMModel: Couldn't connect to data source!" + error);
+  } else {
+    console.log("VMModel: Datasource connection establised!");
+  }
+});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -47,6 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/api', api);
+app.use('/useraccounts', [jwtauth, userAccounts]);
 
 
 // catch 404 and forward to error handler
