@@ -22,12 +22,11 @@ var userAccount = {
   administratorOf: [ObjectId] //UserAccount is administrator of Item, Container or Space
 };
 
-//var userGroup = new Schema({
-//  name: String,
-//  avatar: String,
-//  hasAdministrator: [Schema.Types.ObjectId]
-//});
-//
+var userGroup = {
+  name: String,
+  avatar: String,
+  hasAdministrator: [ObjectId]
+};
 
 //
 //var organisationUnit = new Schema({
@@ -46,4 +45,5 @@ var userAccount = {
 //});
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
+module.exports.userGroup = mongoose.model('userGroup', userGroup);
 
