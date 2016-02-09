@@ -3,8 +3,8 @@
 angular.module('Authentication')
   
   .controller('LoginController',
-             ['$scope', '$rootScope', '$location', 'AuthenticationService',
-             function ($scope, $rootScope, $location, AuthenticationService){
+             ['$scope', '$rootScope', '$location', '$window', 'AuthenticationService',
+             function ($scope, $rootScope, $location, $window, AuthenticationService){
                //rest login status
                AuthenticationService.ClearCredentials();
                
@@ -14,7 +14,9 @@ angular.module('Authentication')
                  
                  AuthenticationService.Login($scope.username, $scope.password, function(response){
                    
+                  
                    if(response.success){
+                     $window.sessionStorage.token = response.message.token;
                      AuthenticationService.SetCredentials($scope.username, $scope.password);
                      $location.path("/home");
                    } else {
