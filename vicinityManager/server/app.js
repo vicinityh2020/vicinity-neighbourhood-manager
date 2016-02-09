@@ -13,6 +13,9 @@ var users = require('./routes/users');
 var api = require('./routes/api');
 var userAccounts = require('./routes/userAccounts');
 var userGroups = require('./routes/userGroups');
+var organisationUnits = require('./routes/organisationUnits');
+var gateways = require('./routes/gateways');
+var items = require('./routes/items');
 var jwtauth = require('./middlewares/jwtauth');
 
 var app = express();
@@ -45,6 +48,8 @@ app.use('/users', users);
 app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);
 app.use('/usergroups', [jwtauth, userGroups]);
+app.use('/organisationUnits', [jwtauth, organisationUnits]);
+
 
 
 // catch 404 and forward to error handler

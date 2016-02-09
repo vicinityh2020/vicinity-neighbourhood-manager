@@ -28,22 +28,23 @@ var userGroup = {
   hasAdministrator: [ObjectId]
 };
 
-//
-//var organisationUnit = new Schema({
-//  name: String,
-//  consistsOf: [Schema.Types.ObjectId] // OrganisationUnit consist of Gateways
-//});
-//
-//var gateway = new Schema({
-//  name: String,
-//  consistsOf: [Schema.Types.ObectId] // Gateway has Items.
-//});
-//
-//var item = new Schema({
-//  name: String,
-//  consistsOf: {type: String, id: [Schema.Types.ObjectId]} // Item has items.
-//});
+var organisationUnit = {
+  name: String,
+  consistsOf: [ObjectId] // OrganisationUnit consist of Gateways
+};
+
+var gateway = {
+  name: String,
+  consistsOf: [ObjectId] // Gateway has Items.
+};
+
+var item = {
+  name: String,
+  consistsOf: {type: String, id: [ObjectId]} // Item has items.
+};
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
 module.exports.userGroup = mongoose.model('userGroup', userGroup);
-
+module.exports.organisationUnit = mongoose.model('organisationUnit', organisationUnit);
+module.exports.gateway = mongoose.model('gateway', gateway);
+module.exports.item = mongoose.model('item', item);
