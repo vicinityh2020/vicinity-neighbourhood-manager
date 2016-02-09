@@ -49,6 +49,7 @@ app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);
 app.use('/usergroups', [jwtauth, userGroups]);
 app.use('/organisationUnits', [jwtauth, organisationUnits]);
+app.use('/gateways', [jwtauth, gateways]);
 
 
 
