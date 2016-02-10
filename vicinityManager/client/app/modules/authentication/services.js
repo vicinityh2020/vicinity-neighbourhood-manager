@@ -3,8 +3,8 @@
 angular.module('Authentication')
 
 .factory('AuthenticationService',
-        ['Base64', '$http', '$cookies', '$rootScope', '$timeout',
-        function(Base64, $http, $cookies, $rootScope, $timeout){
+        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window',
+        function(Base64, $http, $cookies, $rootScope, $timeout, $window){
 
           var service = {};
           
@@ -22,24 +22,37 @@ angular.module('Authentication')
 //            }, 1000);
           };
           
-          service.SetCredentials = function(username, password){
-            var authdata = Base64.encode(username + ':' + password);
-            
-            $rootScope.globals = {
-              currentUser: {
-                username: username,
-                authdata: authdata
-              }
+          service.SetCredentials = function(username, password, authResponse){
+//TODO: Store only token not username;
+//TODO: Implement service to get username from the token;
+            if (authResponse) {
+                $window.sessionStorage.token = (authResponse.token) || {};
+                $window.sessionStorage.username = (authResponse.username) || {};
             }
             
-            $http.defaults.headers.common['Authorization'] = 'Basic '+ authdata;
-            $cookies.put('globals', $rootScope.globals);
+            //$window.sessionStorage.token = token;
+            
+            
+//            var authdata = Base64.encode(username + ':' + password);
+//            
+//            $rootScope.globals = {
+//              currentUser: {
+//                username: username,
+//                authdata: authdata
+//              }
+//            }
+            
+            $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
+//            $cookies.put('globals', $rootScope.globals);
           };
           
           service.ClearCredentials = function(username, password){
-            $rootScope.globals = {};
-            $cookies.remove('globals');
-            $http.defaults.headers.common.Authorization = 'Basic ';
+//            $rootScope.globals = {};
+//            $cookies.remove('globals');
+
+            $window.sessionStorage.removeItem('token');
+            $window.sessionStorage.removeItem('username');
+            $http.defaults.headers.common['x-access-token'] = "";
           };
           
           return service;

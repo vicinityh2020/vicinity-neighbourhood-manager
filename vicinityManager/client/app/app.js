@@ -40,17 +40,23 @@ config(function($stateProvider, $urlRouterProvider){
 //    when("/parking_slots", {templateUrl: "partials/parking_slots.html", controller: "parkingSlotsController"}).
 //    otherwise({redirectTo: '/login'});
 //}]);
-.run(['$rootScope', '$location', '$cookies', '$http',
-      function($rootScope, $location, $cookies, $http){
+.run(['$rootScope', '$location', '$cookies', '$http', '$window',
+      function($rootScope, $location, $cookies, $http, $window){
         
-        $rootScope.globals = $cookies.get('globals') || {};
-        if ($rootScope.globals.currentUser) {
-          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
+      
+//        $rootScope.globals = $cookies.get('globals') || {};
+//        if ($rootScope.globals.currentUser) {
+//          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
+//        }
+
+        if ($window.sessionStorage.token) {
+          $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
         }
         
         $rootScope.$on('$locationChangeStart', function(evetn, next, current) {
           
-          if($location.path() !== '/login' && !$rootScope.globals.currentUser){
+        if($location.path() !== '/login' && !$window.sessionStorage.token){
+//TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
             $location.path('/login');
           }
         });

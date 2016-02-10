@@ -16,8 +16,7 @@ angular.module('Authentication')
                    
                   
                    if(response.success){
-                     $window.sessionStorage.token = response.message.token;
-                     AuthenticationService.SetCredentials($scope.username, $scope.password);
+                     AuthenticationService.SetCredentials($scope.username, $scope.password, response.message);
                      $location.path("/home");
                    } else {
                      $scope.error = response.message;
