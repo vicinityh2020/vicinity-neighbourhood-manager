@@ -16,10 +16,15 @@ var userAccount = {
     name: String,
     firstName: String,
     surname: String,
-    lastName: String}, //UserAccount is account of Agent
+    lastName: String,
+    occupation: String,
+    location: String,
+    organisation: String}, //UserAccount is account of Agent
   knows: [ObjectId],
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
-  administratorOf: [ObjectId] //UserAccount is administrator of Item, Container or Space
+  administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
+  badges:[String],
+  notes:String
 };
 
 var userGroup = {

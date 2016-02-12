@@ -4,7 +4,7 @@
   "private": true,
   "description": "Information service for VICITNITY neighbourhood manager",
   "scripts": {
-    "start": "node debug ./bin/www"
+    "start": "node ./bin/www"
   },
   "repository": {
     "type": "git",

@@ -3,8 +3,8 @@
 angular.module('Authentication')
 
 .factory('AuthenticationService',
-        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window',
-        function(Base64, $http, $cookies, $rootScope, $timeout, $window){
+        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window', '$location',
+        function(Base64, $http, $cookies, $rootScope, $timeout, $window, $location){
 
           var service = {};
           
@@ -13,51 +13,38 @@ angular.module('Authentication')
               .success(function (response){
                 callback(response);
               });
-//            $timeout(function() {
-//              var response = { success: username === 'viktor.oravec@bavenir.eu' && password === 'test'};
-//              if (!response.success){
-//                response.message="Username and password is incorrect";
-//              }
-//              callback(response);
-//            }, 1000);
           };
           
+          
+          service.signout = function(path){
+            service.ClearCredentialsAndInvalidateToken();
+            $location.path(path);
+          }
           service.SetCredentials = function(username, password, authResponse){
 //TODO: Store only token not username;
 //TODO: Implement service to get username from the token;
             if (authResponse) {
-                $window.sessionStorage.token = (authResponse.token) || {};
-                $window.sessionStorage.username = (authResponse.username) || {};
+              $window.sessionStorage.token = (authResponse.token) || {};
+              $window.sessionStorage.username = (authResponse.username) || {};
+              $window.sessionStorage.userAccountId = (authResponse.userAccountId) || {};
+              $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
             }
-            
-            //$window.sessionStorage.token = token;
-            
-            
-//            var authdata = Base64.encode(username + ':' + password);
-//            
-//            $rootScope.globals = {
-//              currentUser: {
-//                username: username,
-//                authdata: authdata
-//              }
-//            }
-            
-            $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
-//            $cookies.put('globals', $rootScope.globals);
           };
           
-          service.ClearCredentials = function(username, password){
-//            $rootScope.globals = {};
-//            $cookies.remove('globals');
-
+          service.ClearCredentials = function(){
             $window.sessionStorage.removeItem('token');
             $window.sessionStorage.removeItem('username');
             $http.defaults.headers.common['x-access-token'] = "";
           };
+
           
+          service.ClearCredentialsAndInvalidateToken = function(){
+            //TODO: Invalidate token
+//            $http.post("http://localhost:3000/api/authenticate/invalidate",{token: $window.sessionStorage.token});
+            service.ClearCredentials();
+          }
           return service;
 }])
-
 .factory('Base64', function () {
     /* jshint ignore:start */
   
@@ -142,5 +129,20 @@ angular.module('Authentication')
     };
   
     /* jshint ignore:end */
-});
+})
+.factory('jwtTokenHttpInterceptor', [function(){
+  console.log('Begin: Inicialized jwtTokenHttpInterceptor');
+  
+  var tokenInjector = {
+    request: function(config) {
+      console.log('Begin config', config);
+      config.headers['Authorization'] = 'Basic d2VudHdvcnRobWFuOkNoYW5nZV9tZQ==';
+      console.log('End config', config);
+      return config;
+    }
+  };
+  
+  console.log('End: Inicialized jwtTokenHttpInterceptor');
+  return tokenInjector;
+  }]);
 

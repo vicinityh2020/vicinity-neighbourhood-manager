@@ -2,7 +2,7 @@ var jwt = require('jwt-simple');
 var config = require('./configuration');
 var moment = require('moment');
 
-module.exports.jwtEncode = function(username, roles){
+module.exports.jwtEncode = function(username, roles, userAccountId){
   
     debugger;
     var key = config.jwtTokenSecrete;
@@ -11,7 +11,8 @@ module.exports.jwtEncode = function(username, roles){
     var response ={
       token: token,
       expires: expires,
-      username: username};
+      username: username,
+      userAccountId: userAccountId};
     return response;
   }
 

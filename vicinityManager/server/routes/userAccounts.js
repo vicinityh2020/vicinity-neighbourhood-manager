@@ -7,7 +7,7 @@ var userAccountOp = require('../models/vicinityManager').userAccount;
 router
   .get('/', function(req, res, next) {
     var response = {};
-  
+    debugger;
     userAccountOp.find({}, function(err, data) {    
       if (err) {
         response = {"error": true, "message": "Error fetching data"};
@@ -54,6 +54,7 @@ router
     });
   })
   .get('/:id', function(req, res, next) {
+    debugger;
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     userAccountOp.findById(o_id, function(err, data){
