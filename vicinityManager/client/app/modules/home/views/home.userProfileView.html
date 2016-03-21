@@ -27,11 +27,12 @@
                   <b>Following</b> <a class="pull-right">{{following.length}}</a>
                 </li>
                 <li class="list-group-item">
-                  <b>Friends</b> <a class="pull-right">{{friends.length</a>
+                  <b>Friends</b> <a class="pull-right">{{friends.length}}</a>
                 </li>
               </ul>
 
               <a href="#" class="btn btn-primary btn-block" ng-hide="isMyProfile"><b>Follow</b></a>
+              <!-- TODO: Issue #6 Add friend and unfriend button -->
             </div>
             <!-- /.box-body -->
           </div>
@@ -91,6 +92,7 @@
             <div class="tab-content">
               <div role="tabpanel" class="tab-pane active" id="gateways">gateways</div>
               <div role="tabpanel" class="tab-pane" id="profile">friends</div>
+              <!-- TODO: Issue #6 add list of friends -->
               <div role="tabpanel" class="tab-pane" id="messages">following</div>
               <div role="tabpanel" class="tab-pane" id="settings">follows</div>
             </div>

@@ -20,7 +20,10 @@ var userAccount = {
     occupation: String,
     location: String,
     organisation: String}, //UserAccount is account of Agent
-  knows: [ObjectId],
+  knows: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'userAccount'
+    }],
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   badges:[String],
