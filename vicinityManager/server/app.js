@@ -16,6 +16,7 @@ var userGroups = require('./routes/userGroups');
 var organisationUnits = require('./routes/organisationUnits');
 var gateways = require('./routes/gateways');
 var items = require('./routes/items');
+var search = require('./routes/search');
 var jwtauth = require('./middlewares/jwtauth');
 
 var app = express();

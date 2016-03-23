@@ -7,5 +7,9 @@ factory('userAccountAPIService', function($http){
     return $http.get('http://localhost:3000/useraccounts/' + id);
   }
   
+  userAccountAPI.getUserAccounts = function(){
+    return $http.get('http://localhost:3000/useraccounts');
+  }
+  
   return userAccountAPI;
 });

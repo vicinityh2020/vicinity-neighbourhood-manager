@@ -28,3 +28,17 @@
   content: "";
   padding: 0;
 }
+
+.border-bottom-rounded {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.widget-user-footer-moreinfo {
+  text-align: center;
+  padding-bottom: 3px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 3px;
+  display: block;
+}

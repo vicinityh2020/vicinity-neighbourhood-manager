@@ -12,7 +12,7 @@ var feederApp = angular.module('VicinityManagerApp', [
   'ngCookies',
   'Authentication'
 ]).
-config(function($stateProvider, $urlRouterProvider){
+  config(function($stateProvider, $urlRouterProvider) {
   //$urlRouterProvider.otherwise('/home');
   
 //  $stateProvider
@@ -93,6 +93,16 @@ config(function($stateProvider, $urlRouterProvider){
           //templateUrl: 'modules/home/views/home.userProfileView.html'
           template: '<h1>root.main.home</h1>'
         }
+      }
+    })
+    .state('root.main.searchresults', {
+      url: '/search/:searchTerm',
+      views: {
+        'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.searchView.html',
+              controller: 'searchController'
+            }
       }
     })
     .state('root.main.profile', {
