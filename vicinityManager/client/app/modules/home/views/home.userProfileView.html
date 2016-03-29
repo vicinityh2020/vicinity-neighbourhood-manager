@@ -13,7 +13,7 @@
           <!-- Profile Image -->
           <div class="box box-primary">
             <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive img-circle" src="{{avatar}}" alt="User profile picture">
+              <img class="profile-user-img img-responsive img-circle" ng-src="{{avatar}}" alt="User profile picture">
 
               <h3 class="profile-username text-center">{{name}}</h3>
 
@@ -82,10 +82,10 @@
           <div class="nav-tabs-custom">
                        <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-              <li role="presentation" class="active"><a href="{{locationPrefix}}#gateways" aria-controls="home" role="tab" data-toggle="tab">Gateways</a></li>
-              <li role="presentation"><a href="{{locationPrefix}}#friends" aria-controls="profile" role="tab" data-toggle="tab">Friends</a></li>
-              <li role="presentation"><a href="{{locationPrefix}}#following" aria-controls="messages" role="tab" data-toggle="tab">Following</a></li>
-              <li role="presentation"><a href="{{locationPrefix}}#follows" aria-controls="settings" role="tab" data-toggle="tab">Follows</a></li>
+              <li role="presentation" class="active"><a ng-href="{{locationPrefix}}#gateways" aria-controls="home" role="tab" data-toggle="tab">Gateways</a></li>
+              <li role="presentation"><a ng-href="{{locationPrefix}}#friends" aria-controls="profile" role="tab" data-toggle="tab">Friends</a></li>
+              <li role="presentation"><a ng-href="{{locationPrefix}}#following" aria-controls="messages" role="tab" data-toggle="tab">Following</a></li>
+              <li role="presentation"><a ng-href="{{locationPrefix}}#follows" aria-controls="settings" role="tab" data-toggle="tab">Follows</a></li>
             </ul>
 
             <!-- Tab panes -->

@@ -3,8 +3,8 @@
   <nav id="secondary" class="main-nav">
     <div class="driver-picture">
       <div class="avatar">
-        <img ng-show="driver" src="img/drivers/{{driver.Driver.driverId}}.png"/>
-        <img ng-show="driver" src="img/flags/{{driver.Driver.nationality}}.png"/>
+        <img ng-show="driver" ng-src="img/drivers/{{driver.Driver.driverId}}.png"/>
+        <img ng-show="driver" ng-src="img/flags/{{driver.Driver.nationality}}.png"/>
         {{driver.Driver.givenName}} {{driver.Driver.familyName}}
       </div>
     </div>
@@ -12,7 +12,7 @@
       Country: {{driver.Driver.nationality}}<br/>
       Team: {{driver.Contructors[0].name}}<br/>
       Birth: {{driver.Driver.dateOfBirth}}<br/>
-      <a href="{{driver.Driver.url}}" target="_blank">Biography</a>
+      <a ng-href="{{driver.Driver.url}}" target="_blank">Biography</a>
     </div>
   </nav>
 
@@ -33,7 +33,7 @@
         
         <tr ng-repeat="race in races">
           <td>{{race.round}}</td>
-          <td><img src="img/flags/{{race.Circuit.Location.country}}.png"/>{{race.raceName}}</td>
+          <td><img ng-src="img/flags/{{race.Circuit.Location.country}}.png"/>{{race.raceName}}</td>
           <td>{{race.Results[0].Countructor.name}}</td>
           <td>{{race.Results[0].grid}}</td>
           <td>{{race.Results[0].position}}</td>

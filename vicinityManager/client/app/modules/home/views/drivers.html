@@ -37,8 +37,8 @@
               <tr ng-repeat="driver in driversList | filter: searchFilter">
                 <td>{{$index + 1}}</td>
                 <td>
-                  <img src="img/flags/{{driver.Driver.nationality}}.png">
-                  <a href="#/drivers/{{driver.Driver.driverId}}">{{driver.Driver.givenName}}&nbsp;{{driver.Driver.familyName}}</a>
+                  <img ng-src="img/flags/{{driver.Driver.nationality}}.png">
+                  <a ng-href="#/drivers/{{driver.Driver.driverId}}">{{driver.Driver.givenName}}&nbsp;{{driver.Driver.familyName}}</a>
                 </td>
                 <td>{{driver.Constructors[0].name}}</td>
                 <td>{{driver.points}}</td>
