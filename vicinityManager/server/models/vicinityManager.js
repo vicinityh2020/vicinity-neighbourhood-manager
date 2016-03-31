@@ -1,6 +1,5 @@
 var mongoose = require('mongoose');
 
-var mongoSchema = mongoose.Schema();
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var userAccount = {
@@ -24,10 +23,37 @@ var userAccount = {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'userAccount'
     }],
+    knowsRequestsFrom: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userAccount'
+    }],
+    knowsRequestsTo: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userAccount'
+    }],
+    hasNotifications: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'notification'
+    }],
+    isNeighbour: Boolean, //Value is not stored in datasource, should be evaluated against credentials
+    isNeighbourRequestAllowed: Boolean,
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   badges:[String],
   notes:String
+};
+
+var notification = {
+    addressedTo: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userAccount'
+    }],
+    sentBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userAccount'
+    },
+    type: {type: String, enum: ['friendRequest']},
+    isUnread: Boolean
 };
 
 var userGroup = {
@@ -56,3 +82,4 @@ module.exports.userGroup = mongoose.model('userGroup', userGroup);
 module.exports.organisationUnit = mongoose.model('organisationUnit', organisationUnit);
 module.exports.gateway = mongoose.model('gateway', gateway);
 module.exports.item = mongoose.model('item', item);
+module.exports.notification = mongoose.model('notification', notification);

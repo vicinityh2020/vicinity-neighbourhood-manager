@@ -7,14 +7,20 @@ module.exports.jwtEncode = function(username, roles, userAccountId){
     debugger;
     var key = config.jwtTokenSecrete;
     var expires = moment().add(7, 'days').valueOf();
-    var token = jwt.encode({iss: username, exp: expires, roles: roles}, config.jwtTokenSecrete);
+    var token = jwt.encode({
+        iss: 'vicinityManager',
+        sub: username,
+        exp: expires,
+        roles: roles,
+        context: {name: username, id: userAccountId}
+    }, config.jwtTokenSecrete);
     var response ={
       token: token,
       expires: expires,
       username: username,
       userAccountId: userAccountId};
     return response;
-  }
+  };
 
 module.exports.jwtDecode = function(token) {
   try {
@@ -22,4 +28,4 @@ module.exports.jwtDecode = function(token) {
   } catch (err) {
     return "inValid";
   }
-}
+};

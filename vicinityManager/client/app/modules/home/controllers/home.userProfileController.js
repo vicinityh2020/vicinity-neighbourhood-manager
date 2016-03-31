@@ -1,5 +1,4 @@
-angular.module('VicinityManagerApp.controllers').
-controller('userProfileController', function($scope, $window, $stateParams, $location, userAccountAPIService, AuthenticationService) {
+angular.module('VicinityManagerApp.controllers').controller('userProfileController', function ($scope, $window, $stateParams, $location, userAccountAPIService, AuthenticationService, Notification) {
   
   $scope.locationPrefix = $location.path();
   console.log("location:" + $location.path());
@@ -9,6 +8,7 @@ controller('userProfileController', function($scope, $window, $stateParams, $loc
   $scope.organisation = {};
   $scope.userAccountId = {};
   $scope.isMyProfile = true;
+    $scope.isNeighbourRequestAllowed = true;
   
   $scope.location = {};
   $scope.badges = {};
@@ -17,9 +17,17 @@ controller('userProfileController', function($scope, $window, $stateParams, $loc
   $scope.following = [];
   $scope.followers = [];
   $scope.gateways = [];
-  
-  
-  
+
+
+    $scope.sendNeighbourRequest = function () {
+        var result = userAccountAPIService.sendNeighbourRequest($scope.userAccountId);
+        if (result.error == false) {
+            Notification.error("Sending neighbour request failed!");
+        } else {
+            Notification.success("Neighbour request sent!");
+            $scope.isNeighbourRequestAllowed = false;
+        }
+    }
   
   if ($window.sessionStorage.userAccountId === $stateParams.userAccountId){
     $scope.isMyProfile = true;
@@ -36,5 +44,6 @@ controller('userProfileController', function($scope, $window, $stateParams, $loc
     $scope.location = response.message.accountOf.location;
     $scope.badges = response.message.badges;
     $scope.notes = response.message.notes;
+      $scope.isNeighbourRequestAllowed = response.message.isNeighbourRequestAllowed;
   });
 });

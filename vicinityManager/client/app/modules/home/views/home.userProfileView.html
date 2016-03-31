@@ -30,8 +30,10 @@
                   <b>Friends</b> <a class="pull-right">{{friends.length}}</a>
                 </li>
               </ul>
-
-              <a href="#" class="btn btn-primary btn-block" ng-hide="isMyProfile"><b>Follow</b></a>
+              <a class="btn btn-primary btn-block" ng-show="isNeighbourRequestAllowed"
+                 ng-click="sendNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Send neighbour
+                request</b></a>
+              <a href="#" class="btn btn-primary btn-block" ng-hide="isMyProfile"><i class="fa fa-star-o"></i>&nbsp;<b>Follow</b></a>
               <!-- TODO: Issue #6 Add friend and unfriend button -->
             </div>
             <!-- /.box-body -->

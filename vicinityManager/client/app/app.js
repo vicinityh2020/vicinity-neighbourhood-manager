@@ -3,13 +3,14 @@
 angular.module('Authentication', ['ngCookies']);
 
 // Declare app level module which depends on views, and components
-var feederApp = angular.module('VicinityManagerApp', [
+angular.module('VicinityManagerApp', [
 //  'ngRoute',
   'ui.router',
   'VicinityManagerApp.controllers',
   'VicinityManagerApp.services',
   'VicinityManagerApp.version',
   'ngCookies',
+    'ui-notification',
   'Authentication'
 ]).
   config(function($stateProvider, $urlRouterProvider) {
@@ -56,11 +57,11 @@ var feederApp = angular.module('VicinityManagerApp', [
 //        }
 //      }
 //    })
-  
-  $stateProvider
-    .state('root', {
+
+
+        $stateProvider.state('root', {
       abstract: true,
-      templateUrl: 'modules/home/views/home.html',
+      templateUrl: 'modules/home/views/home.html'
     })
     .state('root.main', {
       url: '',
@@ -144,22 +145,22 @@ var feederApp = angular.module('VicinityManagerApp', [
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push('jwtTokenHttpInterceptor');
 }])
-//config(['$routeProvider', function($routeProvider) {
-//  $routeProvider.
-//    when("/", {templateUrl: "partials/drivers.html", controller: "driversController"}).
-//    when("/login", {templateUrl: "modules/authentication/views/login.html", controller: "LoginController"}).
-//    when("/drivers", {templateUrl: "partials/drivers.html", controller: "driversController"}).
-//    when("/drivers/:id", {templateUrl: "partials/driver.html", controller: "driverController"}).
-//    when("/sensors_electro", {templateUrl: "partials/sensors_electro.html", controller: "sensorsElectroController"}).
-//    when("/sensors_heating", {templateUrl: "partials/sensors_heating.html", controller: "sensorsHeatingController"}).
-//    when("/sensors_temperature", {templateUrl: "partials/sensors_temperature.html", controller: "sensorTemperatureController"}).
-//    when("/parking_slots", {templateUrl: "partials/parking_slots.html", controller: "parkingSlotsController"}).
-//    otherwise({redirectTo: '/login'});
-//}]);
+//Angular UI Notification configuration;
+    .config(function (NotificationProvider) {
+        NotificationProvider.setOptions({
+            delay: 10000,
+            startTop: 20,
+            startRight: 10,
+            verticalSpacing: 20,
+            horizontalSpacing: 20,
+            positionX: 'left',
+            positionY: 'bottom'
+        });
+    })
 .run(['$rootScope', '$location', '$cookies', '$http', '$window',
       function($rootScope, $location, $cookies, $http, $window){
-        
-      
+
+          FastClick.attach(document.body);
 //        $rootScope.globals = $cookies.get('globals') || {};
 //        if ($rootScope.globals.currentUser) {
 //          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
@@ -176,4 +177,6 @@ var feederApp = angular.module('VicinityManagerApp', [
             $location.path('/login');
           }
         });
+
+
       }]);

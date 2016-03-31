@@ -9,11 +9,13 @@ module.exports = function(req, res, next) {
   if (token) {
     try {
       var decoded = jwt.decode(token, config.jwtTokenSecrete);
-      
+      debugger;
       if (decoded.exp <= Date.now()) {
         res.end('access token has expired', 400);
       } else {
         req.body.token = token;
+        req.body.decoded_token = decoded;
+        
         return next();
       } 
     } catch (err) {
