@@ -9,6 +9,7 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
   $scope.userAccountId = {};
   $scope.isMyProfile = true;
     $scope.isNeighbourRequestAllowed = true;
+    $scope.isNeighbourRequestSent = true;
   
   $scope.location = {};
   $scope.badges = {};
@@ -17,6 +18,7 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
   $scope.following = [];
   $scope.followers = [];
   $scope.gateways = [];
+    
 
 
     $scope.sendNeighbourRequest = function () {
@@ -28,7 +30,17 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
             $scope.isNeighbourRequestAllowed = false;
         }
     }
-  
+
+    $scope.acceptNeighbourRequest = function () {
+        Notification.info("DEBUG: Notification accepted");
+        userAccountAPIService.acceptNeighbourRequest($scope.userAccountId);
+    }
+
+    $scope.rejectNeighbourRequest = function() {
+        Notification.info("DEBUG: Notification rejected");
+        userAccountAPIService.rejectNeighbourRequest($scope.userAccountId);
+    }
+    
   if ($window.sessionStorage.userAccountId === $stateParams.userAccountId){
     $scope.isMyProfile = true;
   } else {

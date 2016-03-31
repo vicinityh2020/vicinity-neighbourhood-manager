@@ -30,6 +30,20 @@
                   <b>Friends</b> <a class="pull-right">{{friends.length}}</a>
                 </li>
               </ul>
+
+              <!-- Align button correctly -->
+              <div class="btn-group btn-block" ng-show="isNeighbourRequestSent">
+                <button type="button" class="btn col-lg-10 btn-success " ng-click="acceptNeighbourRequest()">
+                  <i class="fa fa-check-circle-o"></i>&nbsp;<b>Accept neighbour request</b></button>
+                <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                  <span class="caret"></span>
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a ng-click="acceptNeighbourRequest()"><i class="fa fa-check-circle-o"></i>&nbsp;Accept</a></li>
+                  <li><a ng-click="rejectNeighbourRequest()"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                </ul>
+              </div>
               <a class="btn btn-primary btn-block" ng-show="isNeighbourRequestAllowed"
                  ng-click="sendNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Send neighbour
                 request</b></a>
