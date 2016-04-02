@@ -16,11 +16,11 @@ factory('userAccountAPIService', function($http){
   };
 
   userAccountAPI.acceptNeighbourRequest = function(id) {
-    return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship');
+    return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship/accept');
   };
 
   userAccountAPI.rejectNeighbourRequest = function(id) {
-    return $http.delete('http://localhost:3000/useraccounts/' + id + '/friendship');
+    return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship/reject');
   }
   return userAccountAPI;
 });

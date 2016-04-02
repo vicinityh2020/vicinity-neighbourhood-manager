@@ -85,13 +85,12 @@ router
 
   // Send friendship request to :id by autenticated user
   .post('/:id/friendship', friending.processFriendRequest)
-    
-    .delete('/:id/friendship', friending.rejectFriendRequest)
-  // Send friendship request approval to :id from authenticated user
-  .put('/:id/friendship', friending.acceptFriendRequest)
 
-  // Remove friendship with :id from authenticated user
-    .delete('/:id/friendship', friending.rejectFriendRequest)
+  // Send friendship request approval to :id from authenticated user
+  .put('/:id/friendship/accept', friending.acceptFriendRequest)
+
+  // Send friendship request approval to :id from authenticated user
+  .put('/:id/friendship/reject', friending.rejectFriendRequest)
     
   .get('/:id/friends', function(req, res, next) {
     console.log("GET /:id/friends");

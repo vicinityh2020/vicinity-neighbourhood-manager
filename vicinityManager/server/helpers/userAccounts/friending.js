@@ -118,6 +118,51 @@ function rejectFriendRequest(req, res, next) {
     //TODO: Issue #6 remove :autenticated user from :id's knows list
     //TODO: Issue #6 update friendship counts.
     console.log("Running reject friend request");
+    friend_id = mongoose.Types.ObjectId(req.params.id);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
+
+    userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
+        debugger;
+        if (err || data === null) {
+            response = {"error": true, "message": "Processing data failed!"};
+        } else {
+            if (data.length == 2) {
+                debugger;
+                var me = {};
+                var friend = {};
+                for (var index in data) {
+                    if (data[index]._id.toString() === friend_id.toString()) {
+                        friend = data[index];
+                    } else {
+                        me = data[index];
+                    }
+                }
+
+                for (var index = friend.knowsRequestsTo.length - 1; index >= 0; index --) {
+                    if (friend.knowsRequestsTo[index].toString() === my_id.toString()) {
+                        friend.knowsRequestsTo.splice(index, 1);
+                    }
+                }
+
+                for (var index = me.knowsRequestsFrom.length - 1; index >= 0; index --) {
+                    if (me.knowsRequestsFrom[index].toString() === friend_id.toString()) {
+                        me.knowsRequestsFrom.splice(index,1);
+                    }
+                }
+
+                notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
+
+                friend.save();
+                me.save();
+                response = {"error": false, "message": "Processing data success!"};
+            } else {
+                response = {"error": true, "message": "Processing data failed!"};
+            }
+        }
+        debugger;
+
+        res.json(response);
+    });
 }
 
 
