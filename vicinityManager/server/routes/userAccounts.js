@@ -91,8 +91,11 @@ router
 
   // Send friendship request approval to :id from authenticated user
   .put('/:id/friendship/reject', friending.rejectFriendRequest)
-    
-  .get('/:id/friends', function(req, res, next) {
+
+  // Send friendship request approval to :id from authenticated user
+  .put('/:id/friendship/cancel', friending.cancelFriendRequest)
+
+    .get('/:id/friends', function(req, res, next) {
     console.log("GET /:id/friends");
     console.log(":id " + req.params.id);
     var response = {};

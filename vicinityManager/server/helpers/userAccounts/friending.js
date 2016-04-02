@@ -165,7 +165,55 @@ function rejectFriendRequest(req, res, next) {
     });
 }
 
+function cancelFriendRequest(req, res, next){
+    console.log("Running cancelation of friend request!");
+    friend_id = mongoose.Types.ObjectId(req.params.id);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
 
+    userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
+        debugger;
+        if (err || data === null) {
+            response = {"error": true, "message": "Processing data failed!"};
+        } else {
+            if (data.length == 2) {
+                debugger;
+                var me = {};
+                var friend = {};
+                for (var index in data) {
+                    if (data[index]._id.toString() === friend_id.toString()) {
+                        friend = data[index];
+                    } else {
+                        me = data[index];
+                    }
+                }
+
+                for (var index = friend.knowsRequestsFrom.length - 1; index >= 0; index --) {
+                    if (friend.knowsRequestsFrom[index].toString() === my_id.toString()) {
+                        friend.knowsRequestsFrom.splice(index, 1);
+                    }
+                }
+
+                for (var index = me.knowsRequestsTo.length - 1; index >= 0; index --) {
+                    if (me.knowsRequestsTo[index].toString() === friend_id.toString()) {
+                        me.knowsRequestsTo.splice(index,1);
+                    }
+                }
+
+                notificationAPI.markAsRead(my_id, friend_id, "friendRequest");
+
+                friend.save();
+                me.save();
+                response = {"error": false, "message": "Processing data success!"};
+            } else {
+                response = {"error": true, "message": "Processing data failed!"};
+            }
+        }
+        debugger;
+
+        res.json(response);
+    });
+}
 module.exports.processFriendRequest = processFriendRequest;
 module.exports.acceptFriendRequest = acceptFriendRequest;
 module.exports.rejectFriendRequest = rejectFriendRequest;
+module.exports.cancelFriendRequest = cancelFriendRequest;

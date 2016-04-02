@@ -61,6 +61,19 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
                 userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
             });
     }
+
+    $scope.cancelNeighbourRequest = function() {
+        userAccountAPIService.cancelNeighbourRequest($scope.userAccountId)
+            .success(function(response){
+                if (response.error ==true) {
+                    Notification.error("Neighbour request cancelation failed :(");
+                } else {
+                    Notification.success("Neighbour request canceled!");
+                }
+
+                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+            });
+    }
     
   if ($window.sessionStorage.userAccountId === $stateParams.userAccountId){
     $scope.isMyProfile = true;
