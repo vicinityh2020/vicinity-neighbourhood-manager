@@ -61,7 +61,7 @@ router
     });
   })
   // Get the profile of the user account
-    .get('/:id', userProfile.get)
+  .get('/:id', userProfile.get)
 
   // update of the user account profile
   .put('/:id', function(req, res, next) {
@@ -84,21 +84,15 @@ router
   })
 
   // Send friendship request to :id by autenticated user
-    .post('/:id/friendship', friending.processFriendRequest)
+  .post('/:id/friendship', friending.processFriendRequest)
+    
+    .delete('/:id/friendship', friending.rejectFriendRequest)
   // Send friendship request approval to :id from authenticated user
-  .put('/:id/friendship', function(req, res, next){
-      //TODO: Issue #6 :id should have authenticated user as in request list.
-      //TODO: Issue #6 update knows list on :id and authenticated user side.
-      //TODO: Issue #6 create new friendship story.
-      //TODO: Issue #6 update friendship counts.
-  })
+  .put('/:id/friendship', friending.acceptFriendRequest)
 
   // Remove friendship with :id from authenticated user
-  .delete('/:id/friendship', function(req, res, next) {
-      //TODO: Issue #6 remove :id from authenitcated user knows list
-      //TODO: Issue #6 remove :autenticated user from :id's knows list
-      //TODO: Issue #6 update friendship counts.
-  })
+    .delete('/:id/friendship', friending.rejectFriendRequest)
+    
   .get('/:id/friends', function(req, res, next) {
     console.log("GET /:id/friends");
     console.log(":id " + req.params.id);

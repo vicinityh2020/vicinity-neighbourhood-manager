@@ -12,15 +12,15 @@ factory('userAccountAPIService', function($http){
   };
 
   userAccountAPI.sendNeighbourRequest = function (id) {
-    //return $http.post('http://localhost:3000/useraccounts/' + id + '/friendship');
+    return $http.post('http://localhost:3000/useraccounts/' + id + '/friendship');
   };
 
   userAccountAPI.acceptNeighbourRequest = function(id) {
-    //return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship');
+    return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship');
   };
 
   userAccountAPI.rejectNeighbourRequest = function(id) {
-    //return $http.delete('http://localhost:3000/useraccounts/' + id + '/friendship');
+    return $http.delete('http://localhost:3000/useraccounts/' + id + '/friendship');
   }
   return userAccountAPI;
 });

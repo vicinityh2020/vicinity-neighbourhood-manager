@@ -3,8 +3,7 @@ var config = require('./configuration');
 var moment = require('moment');
 
 module.exports.jwtEncode = function(username, roles, userAccountId){
-  
-    debugger;
+    
     var key = config.jwtTokenSecrete;
     var expires = moment().add(7, 'days').valueOf();
     var token = jwt.encode({

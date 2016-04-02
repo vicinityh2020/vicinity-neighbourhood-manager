@@ -35,8 +35,6 @@ var userAccount = {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'notification'
     }],
-    isNeighbour: Boolean, //Value is not stored in datasource, should be evaluated against credentials
-    isNeighbourRequestAllowed: Boolean,
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   badges:[String],
