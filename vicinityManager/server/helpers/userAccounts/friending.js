@@ -8,7 +8,6 @@ var notificationAPI = require('../../helpers/notifications/notifications');
 //TODO: Issue #6 check double requests;
 //TODO: Issue #6 check transactions;
 function processFriendRequest(req, res, next) {
-    debugger;
     console.log("POST /:id/friendship");
     console.log(":id " + req.params.id);
     friend_id = mongoose.Types.ObjectId(req.params.id);
@@ -17,7 +16,6 @@ function processFriendRequest(req, res, next) {
     var me = {};
     var response = {};
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-        debugger;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
@@ -67,12 +65,10 @@ function acceptFriendRequest(req, res, next) {
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-        debugger;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
-                debugger;
                 var me = {};
                 var friend = {};
                 for (var index in data) {
@@ -107,7 +103,6 @@ function acceptFriendRequest(req, res, next) {
                 response = {"error": true, "message": "Processing data failed!"};
             }
         }
-        debugger;
         
         res.json(response);
     });
@@ -122,12 +117,10 @@ function rejectFriendRequest(req, res, next) {
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-        debugger;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
-                debugger;
                 var me = {};
                 var friend = {};
                 for (var index in data) {
@@ -159,7 +152,6 @@ function rejectFriendRequest(req, res, next) {
                 response = {"error": true, "message": "Processing data failed!"};
             }
         }
-        debugger;
 
         res.json(response);
     });
@@ -171,12 +163,10 @@ function cancelFriendRequest(req, res, next){
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-        debugger;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
-                debugger;
                 var me = {};
                 var friend = {};
                 for (var index in data) {
@@ -208,12 +198,60 @@ function cancelFriendRequest(req, res, next){
                 response = {"error": true, "message": "Processing data failed!"};
             }
         }
-        debugger;
 
         res.json(response);
     });
 }
+
+
+function cancelFriendship(req, res, next){
+    console.log("Running cancelation of friendship!");
+    friend_id = mongoose.Types.ObjectId(req.params.id);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
+
+    userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
+        debugger;
+        if (err || data === null) {
+            response = {"error": true, "message": "Processing data failed!"};
+        } else {
+            if (data.length == 2) {
+                debugger;
+                var me = {};
+                var friend = {};
+                for (var index in data) {
+                    if (data[index]._id.toString() === friend_id.toString()) {
+                        friend = data[index];
+                    } else {
+                        me = data[index];
+                    }
+                }
+
+                for (var index = friend.knows.length - 1; index >= 0; index --) {
+                    if (friend.knows[index].toString() === my_id.toString()) {
+                        friend.knows.splice(index, 1);
+                    }
+                }
+
+                for (var index = me.knows.length - 1; index >= 0; index --) {
+                    if (me.knows[index].toString() === friend_id.toString()) {
+                        me.knows.splice(index,1);
+                    }
+                }
+
+                friend.save();
+                me.save();
+                response = {"error": false, "message": "Processing data success!"};
+            } else {
+                response = {"error": true, "message": "Processing data failed!"};
+            }
+        }
+
+        res.json(response);
+    });
+}
+
 module.exports.processFriendRequest = processFriendRequest;
 module.exports.acceptFriendRequest = acceptFriendRequest;
 module.exports.rejectFriendRequest = rejectFriendRequest;
 module.exports.cancelFriendRequest = cancelFriendRequest;
+module.exports.cancelFriendship = cancelFriendship;

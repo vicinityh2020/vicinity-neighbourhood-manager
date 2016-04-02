@@ -26,5 +26,9 @@ factory('userAccountAPIService', function($http){
   userAccountAPI.cancelNeighbourRequest = function(id) {
     return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship/cancel');
   }
+
+  userAccountAPI.cancelNeighbourship = function(id) {
+    return $http.delete('http://localhost:3000/useraccounts/' + id + '/friendship');
+  }
   return userAccountAPI;
 });
