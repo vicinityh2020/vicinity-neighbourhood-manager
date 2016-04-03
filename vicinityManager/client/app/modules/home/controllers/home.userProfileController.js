@@ -19,6 +19,7 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
   $scope.following = [];
   $scope.followers = [];
   $scope.gateways = [];
+
     
 
 
@@ -109,5 +110,6 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
       $scope.canCancelNeighbourRequest = response.message.canCancelNeighbourRequest;
       $scope.canAnswerNeighbourRequest = response.message.canAnswerNeighbourRequest;
       $scope.isNeighbour = response.message.isNeighbour;
+      $scope.friends = response.message.knows;
   };
 });

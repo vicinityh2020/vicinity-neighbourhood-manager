@@ -101,22 +101,13 @@
         <div class="col-md-9">
           <div class="nav-tabs-custom">
                        <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
-              <li role="presentation" class="active"><a ng-href="{{locationPrefix}}#gateways" aria-controls="home" role="tab" data-toggle="tab">Gateways</a></li>
-              <li role="presentation"><a ng-href="{{locationPrefix}}#friends" aria-controls="profile" role="tab" data-toggle="tab">Friends</a></li>
-              <li role="presentation"><a ng-href="{{locationPrefix}}#following" aria-controls="messages" role="tab" data-toggle="tab">Following</a></li>
-              <li role="presentation"><a ng-href="{{locationPrefix}}#follows" aria-controls="settings" role="tab" data-toggle="tab">Follows</a></li>
+            <ul class="nav nav-tabs">
+              <li ui-sref-active="active"><a ui-sref="root.main.profile.neigbourhood"><i class="fa fa-circle-o"></i>&nbsp;Neighbourhood</a></li>
+              <li ui-sref-active="active"><a ui-sref="root.main.profile.friends"><i class="fa fa-users"></i>&nbsp;Friends</a></li>
             </ul>
-
             <!-- Tab panes -->
-            <div class="tab-content">
-              <div role="tabpanel" class="tab-pane active" id="gateways">gateways</div>
-              <div role="tabpanel" class="tab-pane" id="profile">friends</div>
-              <!-- TODO: Issue #6 add list of friends -->
-              <div role="tabpanel" class="tab-pane" id="messages">following</div>
-              <div role="tabpanel" class="tab-pane" id="settings">follows</div>
+            <div class="tab-content" ui-view="tabPanel">
             </div>
-
           </div>
         </div>  
       </div>
