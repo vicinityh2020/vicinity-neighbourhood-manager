@@ -51,7 +51,9 @@ Note, bower packages are installed by npm install.
 * Update list of port in this readme.
 
 
-4. **Adding bootstrap framework.**
+### Adding Bootstrap framework
+
+1. **Adding bootstrap framework.**
 
 * Open ```bower.json``` file in ```stubs\facility```directory.
 * Add bootstrap dependency.
@@ -77,7 +79,7 @@ Note, bower packages are installed by npm install.
 
 * Run ```npm install``` in ```stubs\facility``` directory.
 
-5. ***Adding boostrap in template.***
+2. **Adding boostrap in template.**
 
 * Download bootstrap template such as (https://github.com/puikinsh/gentelella/releases)
 * Import index.html and necessary supporting files in ```stubs\facility\app.
