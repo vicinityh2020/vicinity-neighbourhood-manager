@@ -35,11 +35,13 @@ git clone --depth=1 https://github.com/angular/angular-seed.git facility
 remove ```.git``` directory in ```stubs\facility``` directory
 
 
-2. **Instal node and bower packages.**
+2. **Instal node and bower packages and put them under version control.**
 ```
 cd vicinity/stubs
 cd facility
 npm install
+git add .
+git status
 ```
 Note, bower packages are installed by npm install.
 
@@ -78,6 +80,7 @@ Note, bower packages are installed by npm install.
 ```
 
 * Run ```npm install``` in ```stubs\facility``` directory.
+* Put files under version control "git add ."
 
 2. **Adding boostrap in template.**
 
