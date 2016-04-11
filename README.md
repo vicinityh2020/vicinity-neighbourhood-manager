@@ -32,6 +32,9 @@ cd vicinity/stubs
 git clone --depth=1 https://github.com/angular/angular-seed.git facility
 ```
 
+remove ```.git``` directory in ```stubs\facility``` directory
+
+
 2. **Instal node and bower packages.**
 ```
 cd vicinity/stubs
@@ -46,3 +49,30 @@ Note, bower packages are installed by npm install.
 * Choose unoccupied port for your stub.
 * Edit ``'start'`` script value: ``"start": "http-server -a localhost -p 8030 -c-1",``
 * Update list of port in this readme.
+
+
+4. **Adding bootstrap framework.**
+
+* Open ```bower.json``` file in ```stubs\facility```directory.
+* Add bootstrap dependency.
+
+```
+{
+  "name": "angular-seed",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-seed",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.0",
+    "angular-route": "~1.4.0",
+    "angular-loader": "~1.4.0",
+    "angular-mocks": "~1.4.0",
+    "html5-boilerplate": "~5.2.0",
+    "bootstrap": "3.3.6"
+  }
+}
+```
+
+* Run ```npm install```
