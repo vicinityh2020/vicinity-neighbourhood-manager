@@ -75,4 +75,10 @@ Note, bower packages are installed by npm install.
 }
 ```
 
-* Run ```npm install```
+* Run ```npm install``` in ```stubs\facility``` directory.
+
+5. ***Adding boostrap in template.***
+
+* Download bootstrap template such as (https://github.com/puikinsh/gentelella/releases)
+* Import index.html and necessary supporting files in ```stubs\facility\app.
+* run application using ```npm start ```
