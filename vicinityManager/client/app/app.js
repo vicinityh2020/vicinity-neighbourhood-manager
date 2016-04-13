@@ -48,10 +48,10 @@ angular.module('VicinityManagerApp', [
           url: '/home',
           views: {
             'mainContentView@root':
-            {
-              //templateUrl: 'modules/home/views/home.userProfileView.html'
-              template: '<h1>root.main.home</h1>'
-            }
+              {
+                templateUrl: 'modules/home/views/home.neighbourhoodView.html',
+                controller: 'neighbourhoodController'
+              }
           }
         })
         .state('root.main.searchresults', {
@@ -100,7 +100,7 @@ angular.module('VicinityManagerApp', [
             console.log('Activating state home');
           }
         });
-  
+
 })
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push('jwtTokenHttpInterceptor');
@@ -129,9 +129,9 @@ angular.module('VicinityManagerApp', [
         if ($window.sessionStorage.token) {
           $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
         }
-        
+
         $rootScope.$on('$locationChangeStart', function(evetn, next, current) {
-          
+
         if($location.path() !== '/login' && !$window.sessionStorage.token){
 //TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
             $location.path('/login');
