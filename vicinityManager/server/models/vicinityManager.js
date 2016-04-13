@@ -66,13 +66,23 @@ var organisationUnit = {
 };
 
 var gateway = {
-  name: String,
-  consistsOf: [ObjectId] // Gateway has Items.
+  name: {type: String, required: true},
+  consistsOf: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'item'
+  }] // Gateway has Items.
 };
 
 var item = {
   name: String,
-  consistsOf: {type: String, id: [ObjectId]} // Item has items.
+  consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
+  electricity: [{
+    id: String,
+    location: String,
+    monthAvg: Number,
+    monthSum: Number,
+    yearSum: Number
+    }]
 };
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
