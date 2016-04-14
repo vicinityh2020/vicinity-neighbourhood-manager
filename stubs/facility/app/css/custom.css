@@ -876,7 +876,7 @@ legend {
   width: 100%;
 }
 .well.profile_view {
-  padding: 10px 0 0;
+  padding: 7px 0 0;
 }
 .well.profile_view .divider {
   border-top: 1px solid #e5e5e5;
@@ -900,7 +900,7 @@ legend {
   background: #fff;
 }
 .well.profile_view .bottom {
-  margin-top: -20px;
+  margin-top: -0px;
   background: #F2F5F7;
   padding: 9px 0;
   border-top: 1px solid #E6E9ED;
