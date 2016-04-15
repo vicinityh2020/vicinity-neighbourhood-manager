@@ -15,7 +15,16 @@
   <link href="css/animate.min.css" rel="stylesheet">
   <link href="css/custom.css" rel="stylesheet">
   <link href="css/icheck/flat/green.css" rel="stylesheet">
+    
+  <link href="js/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+  <link href="js/datatables/buttons.bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="js/datatables/fixedHeader.bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="js/datatables/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="js/datatables/scroller.bootstrap.min.css" rel="stylesheet" type="text/css" />
+    
   <script src="js/jquery.min.js"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="images/castle.ico" />
+
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
@@ -110,7 +119,7 @@ comparison();
                     </li>
                     <li><a href="inbox.html">Inbox</a>
                     </li>
-                    <li><a href="calender.html">Calender</a>
+                    <li><a href="calender2.html">Calender</a>
                     </li>
                   </ul>
                 </li>
@@ -149,7 +158,7 @@ comparison();
                     </li>
                     <li><a href="project_detail.html">Project Detail</a>
                     </li>
-                    <li><a href="contacts.html">Contacts</a>
+                    <li><a href="contacts1.html">Contacts</a>
                     </li>
                     <li><a href="profile.html">Profile</a>
                     </li>
@@ -160,7 +169,7 @@ comparison();
                 </li> -->
                 <li><a><i class="fa fa-windows"></i> Extras <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu" style="display: none">
-                    <li><a href="calender1.html">Calendar</a>
+                    <li><a href="calender2.html">Calendar</a>
                     </li>
                     <li><a href="contacts1.html">Contacts</a>
                     </li>
@@ -370,7 +379,7 @@ comparison();
                 </h3>
             </div>
 
-            <div class="title_right">
+         <!--  <div class="title_right">
               <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
                 <div class="input-group">
                   <input type="text" class="form-control" placeholder="Search for...">
@@ -379,7 +388,7 @@ comparison();
                         </span>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
           
           <div class="clearfix"></div>
@@ -683,6 +692,21 @@ comparison();
   <script src="js/icheck/icheck.min.js"></script>
   <script src="js/custom.js"></script>
   <script src="js/pace/pace.min.js"></script>
+    
+  <script src="js/datatables/jquery.dataTables.min.js"></script>
+        <script src="js/datatables/dataTables.bootstrap.js"></script>
+        <script src="js/datatables/dataTables.buttons.min.js"></script>
+        <script src="js/datatables/buttons.bootstrap.min.js"></script>
+        <script src="js/datatables/jszip.min.js"></script>
+        <script src="js/datatables/pdfmake.min.js"></script>
+        <script src="js/datatables/vfs_fonts.js"></script>
+        <script src="js/datatables/buttons.html5.min.js"></script>
+        <script src="js/datatables/buttons.print.min.js"></script>
+        <script src="js/datatables/dataTables.fixedHeader.min.js"></script>
+        <script src="js/datatables/dataTables.keyTable.min.js"></script>
+        <script src="js/datatables/dataTables.responsive.min.js"></script>
+        <script src="js/datatables/responsive.bootstrap.min.js"></script>
+        <script src="js/datatables/dataTables.scroller.min.js"></script>
 
   <script >
     Chart.defaults.global.legend = {
@@ -1098,6 +1122,60 @@ comparison();
       }
     });
   </script>
+    
+<script>
+          var handleDataTableButtons = function() {
+              "use strict";
+              0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
+                dom: "Bfrtip",
+                buttons: [{
+                  extend: "copy",
+                  className: "btn-sm"
+                }, {
+                  extend: "csv",
+                  className: "btn-sm"
+                }, {
+                  extend: "excel",
+                  className: "btn-sm"
+                }, {
+                  extend: "pdf",
+                  className: "btn-sm"
+                }, {
+                  extend: "print",
+                  className: "btn-sm"
+                }],
+                responsive: !0
+              })
+            },
+            TableManageButtons = function() {
+              "use strict";
+              return {
+                init: function() {
+                  handleDataTableButtons()
+                }
+              }
+            }();
+        </script>
+    <script type="text/javascript">
+          $(document).ready(function() {
+            $('#datatable').dataTable();
+            $('#datatable-keytable').DataTable({
+              keys: true
+            });
+            $('#datatable-responsive').DataTable();
+            $('#datatable-scroller').DataTable({
+              ajax: "js/datatables/json/scroller-demo.json",
+              deferRender: true,
+              scrollY: 380,
+              scrollCollapse: true,
+              scroller: true
+            });
+            var table = $('#datatable-fixed-header').DataTable({
+              fixedHeader: true
+            });
+          });
+          TableManageButtons.init();
+        </script>
 
 </body>
 
