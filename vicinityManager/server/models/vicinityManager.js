@@ -67,6 +67,8 @@ var organisationUnit = {
 
 var gateway = {
   name: {type: String, required: true},
+  hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
   consistsOf: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'item'
@@ -76,13 +78,15 @@ var gateway = {
 var item = {
   name: String,
   consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
-  electricity: [{
-    id: String,
+  hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  electricity: {
+    serial_number: String,
     location: String,
     monthAvg: Number,
     monthSum: Number,
     yearSum: Number
-    }]
+    }
 };
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);

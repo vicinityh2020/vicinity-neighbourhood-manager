@@ -42,3 +42,15 @@
   padding-top: 3px;
   display: block;
 }
+
+.box-bg-grey {
+    background: #f7f7f7 !important;
+}
+
+.info-box-description {
+  display: block;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

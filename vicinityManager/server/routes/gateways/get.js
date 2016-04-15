@@ -9,7 +9,7 @@ function getAll(req, res, next){
 //TODO: User authentic - Role check
     var response = {};
 
-    gatewayOp.find({}, function(err, data) {
+    gatewayOp.find({}).populate("consistsOf").exec(function(err, data) {
       if (err) {
         response = {"error": true, "message": "Error fetching data"};
       } else {
