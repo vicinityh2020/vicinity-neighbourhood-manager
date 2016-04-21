@@ -10,7 +10,7 @@ angular.module('VicinityManagerApp', [
   'VicinityManagerApp.services',
   'VicinityManagerApp.version',
   'ngCookies',
-    'ui-notification',
+  'ui-notification',
   'Authentication'
 ]).
   config(function($stateProvider, $urlRouterProvider) {
@@ -51,6 +51,25 @@ angular.module('VicinityManagerApp', [
               {
                 templateUrl: 'modules/home/views/home.neighbourhoodView.html',
                 controller: 'neighbourhoodController'
+              }
+          }
+        })
+        .state('root.main.neigbourhood', {
+          url: '/neighbourhood',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.neighbourhoodView.html',
+                controller: 'neighbourhoodController'
+              }
+          }
+        })
+        .state('root.main.mydevices', {
+          url: '/mydevices',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.mydevicesView.html'
               }
           }
         })
