@@ -284,6 +284,67 @@ ul.widget_profile_box li .profile_img {
   color: #FFF;
 }
 
+.bg-aqua img{
+  width: 60%;
+  height: 60%;
+}
+
+.bg-orange img{
+  width: 80%;
+  height: 80%;
+}
+
+/*.box-tools .dropdown-content {
+    right: 0;
+}*/
+
+/*.box-tools .dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.box-tools .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.box-tools .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+}
+
+.box-tools .dropdown-content a {
+    display: block;
+}
+*/
+
+
+
+/*.btn-group-sm > .btn:last-child:not(:first-child),
+.btn-group-sm > .dropdown-toggle:not(:first-child) {
+  .border-left-radius(0);
+}
+
+.btn-group-justified {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;}
+  > .btn,
+  > .btn-group-sm {
+    float: none;
+    display: table-cell;
+    width: 1%;
+  }
+  > .btn-group-sm .btn {
+    width: 100%;
+  }
+
+  > .btn-group-sm .dropdown-menu {
+    left: auto;
+  }*/
+
+
 /*.loc_a img{
   height: 18%;
   width: 18%;
