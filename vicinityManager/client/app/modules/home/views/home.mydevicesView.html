@@ -38,7 +38,7 @@
                            <span class="caret"></span>
                          </a>
 
-                         <ul class="dropdown-menu" role="menu">
+                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
                             <li><a href="#">Private (Only me)</a></li>
                             <li><a href="#">Metadata shared with friends</a></li>
                             <li><a href="#">Public (Everybody)</a></li>
@@ -164,18 +164,55 @@
                        </div>
 
                      </div>
-                     <div class="box-footer clear-fix">
-                       <h4 class="box-title">
+                     <div class="bottomLeft">
+                       <h5 class="box-title">
                          <a >
                            Make listed devices to be:
                          </a>
-                       </h4>
-                        <form action="">
+                       </h5>
+                     <form action="http://www.cs.tut.fi/cgi-bin/run/~jkorpela/checkcombo.pl" ><div>     <!--.asp?-->
+                       <select name="menu" class="box-title">
+                         <option value="1">Visible only for me (Private)</option>
+                         <option value="2">Seen their metadata by friends</option>
+                         <option value="3">Seen by everyone (Public)</option>
+                       </select>
+                       <div ><input type="submit" value="Ok" class="btn-xs btn-primary"></div>
+                     </form>
+                    </div>
+                    </div>
+                     <div class="box-footer clearfix pull-right">
+                       <!-- <h4 class="box-title">
+                         <a >
+                           Make listed devices to be:
+                         </a>
+                       </h4> -->
+                        <!-- <form action="">
                             <input type="radio" name="gender" > Visible only for me (Private) &nbsp;
                             <input type="radio" name="gender" > Seen their metadata by friends &nbsp;
                             <input type="radio" name="gender" > Seen by everyone (Public)
-                        </form>
-                       <ul class="pagination pagination-sm no-margin pull-right">
+                        </form> -->
+
+                        <!-- <input type="text" list="browsers" class="pull-right"></input>
+                        <datalist id="browsers">
+                          <option value="Internet Explorer">
+                          <option value="Firefox">
+                          <option value="Chrome">
+                          <option value="Opera">
+                          <option value="Safari">
+                        </datalist> -->
+
+                        <!-- <form action="http://www.cs.tut.fi/cgi-bin/run/~jkorpela/checkcombo.pl" class="pull-right"><div>
+                          <select name="menu">
+                            <option value="0" selected>(please select:)</option>
+                            <option value="1">one</option>
+                            <option value="2">two</option>
+                            <option value="3">three</option>
+                            <option value="other">other, please specify:</option>
+                          </select>
+                          <div><input type="submit" value="Ok"></div>
+                        </form> -->
+
+                       <ul class="pagination pagination-sm no-margin">
                          <li><a href="#">«</a></li>
                          <li><a href="#">1</a></li>
                          <li><a href="#">2</a></li>

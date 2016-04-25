@@ -294,6 +294,72 @@ ul.widget_profile_box li .profile_img {
   height: 80%;
 }
 
+.bottomLeft h5 {
+  display: inline-block;
+}
+
+.bottomLeft form div {
+  display: inline-block;
+  margin: 5px;
+}
+
+.bottomLeft form select {
+  display: inline-block;
+}
+/*
+.bottomRight {
+    margin-left: 707px;
+}*/
+
+/*.skin-blue .sidebar-menu > li:hover > a,
+.skin-blue .sidebar-menu > li:active > a {
+  color: #ffffff;
+  background: #1e282c;
+  border-left-color: #3c8dbc;
+}
+
+.sidebar-menu > li:hover > a,
+.sidebar-menu > li:active > a {
+  color: #ffffff;
+  background: #1e282c;
+  border-left-color: #3c8dbc;
+}
+
+.sidebar-menu > li:focus > a {
+  color: #ffffff;
+  background: #1e282c;
+  border-left-color: #3c8dbc;
+}*/
+
+/*#prva{
+    display: none;
+}
+
+#prva:checked + label span{
+  color: #ffffff;
+  background: #1e282c;
+  border-left-color: #3c8dbc;
+}*/
+
+/*.sidebar-menu li.active > .treeview-menu {
+  display: block;
+}*/
+
+/*.bottomRight > h5 {
+  display: inline-block;
+}
+
+.bottomRight form div {
+  display: inline-block;
+  margin: 5px;
+}
+
+.bottomRight form select {
+  display: inline-block;
+  margin-left: 707px;
+
+}*/
+
 /*.box-tools .dropdown-content {
     right: 0;
 }*/
@@ -323,6 +389,12 @@ ul.widget_profile_box li .profile_img {
 /*.btn-group-sm > .btn:last-child:not(:first-child),
 .btn-group-sm > .dropdown-toggle:not(:first-child) {
   .border-left-radius(0);
+}
+
+.btn-group-justified > .btn-group-sm {
+  display: table-cell;
+  float: none;
+  width: 1%;
 }
 
 .btn-group-justified {

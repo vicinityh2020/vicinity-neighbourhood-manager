@@ -63,7 +63,7 @@
 <section class="sidebar">
 
       <div class="sidebar-menu">
-      <div class="profile">
+       <div class="profile">
           <div class="profile_pic">
               <img src="img/entities/logo_facility.png" alt="..." class="img-circle profile_img">
           </div>
@@ -71,12 +71,10 @@
               <!-- <span>Welcome,</span> -->
               <h2>Facility Service4U</h2>
           </div>
+       </div>
       </div>
-    </div>
 
       <!-- sidebar: style can be found in sidebar.less -->
-
-
 
         <!-- search form (Optional) -->
     <!--    <form action="" method="get" class="sidebar-form">
@@ -92,11 +90,19 @@
 
         <!-- Sidebar Menu -->
 
+        <!-- <input type="checkbox" id="btnControl"/>
+        <label class="btn" for="btnControl"><img src=".jpg" id="btnLeft" /></label> -->
+
 
         <ul class="sidebar-menu">
           <li class="header">HEADER</li>
           <!-- Optionally, you can add icons to the links -->
-          <li class="active"><a ui-sref="root.main.neigbourhood" ><i class="fa fa-link"></i> <span>Neighbourhood</span></a></li>
+
+          <!-- tabindex="0" in li ?? -->
+          <!-- checkbox hack -->
+          <!-- JS -->
+
+          <li><a ui-sref="root.main.neigbourhood" ><i class="fa fa-link"></i> <span >Neighbourhood</span></a></li>
           <li><a ui-sref="root.main.mydevices"><i class="fa fa-link"></i> <span>My devices</span></a></li>
           <!-- <li class="treeview">
             <a href=""><i class="fa fa-link"></i> <span>Sensors</span> <i class="fa fa-angle-left pull-right"></i></a>
@@ -109,7 +115,7 @@
         </ul>
 
         <!-- /.sidebar-menu -->
-      </section>
+  </section>
       <!-- /.sidebar -->
     </aside>
     <div class="content-wrapper" ui-view="mainContentView">
