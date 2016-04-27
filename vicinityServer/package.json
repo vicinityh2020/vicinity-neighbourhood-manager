@@ -1,0 +1,23 @@
+{
+  "name": "vicinity_server",
+  "version": "0.0.1",
+  "description": "Vicinity server controll the command and user play between VICINITY gateways. ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gitlab.websupport.sk/voravec/vicinity"
+  },
+  "bugs": {
+    "url": "https://bitbucket.org/bvr_voravec/vicinity/issues"
+  },
+  "keywords": [
+    "vicinity",
+    "server"
+  ],
+  "author": "Viktor Oravec",
+  "license": "VICINITY License"
+}
