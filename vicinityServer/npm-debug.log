@@ -2,30 +2,41 @@
 1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
 2 info using npm@3.3.9
 3 info using node@v4.2.1
-4 verbose stack Error: Failed to parse json
-4 verbose stack Unexpected token 's' at 8:6
-4 verbose stack     "start": "node app.js"
-4 verbose stack      ^
-4 verbose stack     at parseError (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:379:11)
-4 verbose stack     at parseJson (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:68:23)
-4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:48:5
-4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:76:16
-4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:380:3)
-5 verbose cwd /Users/viktor/WebstormProjects/vicinity/vicinityServer
-6 error Darwin 15.4.0
-7 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
-8 error node v4.2.1
-9 error npm  v3.3.9
-10 error file /Users/viktor/WebstormProjects/vicinity/vicinityServer/package.json
-11 error code EJSONPARSE
-12 error Failed to parse json
-12 error Unexpected token 's' at 8:6
-12 error     "start": "node app.js"
-12 error      ^
-13 error File: /Users/viktor/WebstormProjects/vicinity/vicinityServer/package.json
-14 error Failed to parse package.json data.
-14 error package.json must be actual JSON, not just JavaScript.
-14 error
-14 error This is not a bug in npm.
-14 error Tell the package author to fix their package.json file. JSON.parse
-15 verbose exit [ 1, true ]
+4 verbose run-script [ 'prestart', 'start', 'poststart' ]
+5 info lifecycle vicinityServer@0.0.0~prestart: vicinityServer@0.0.0
+6 silly lifecycle vicinityServer@0.0.0~prestart: no script for prestart, continuing
+7 info lifecycle vicinityServer@0.0.0~start: vicinityServer@0.0.0
+8 verbose lifecycle vicinityServer@0.0.0~start: unsafe-perm in lifecycle true
+9 verbose lifecycle vicinityServer@0.0.0~start: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/viktor/WebstormProjects/vicinity/vicinityServer/node_modules/.bin:/usr/local/bin:/Users/viktor/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/git/bin
+10 verbose lifecycle vicinityServer@0.0.0~start: CWD: /Users/viktor/WebstormProjects/vicinity/vicinityServer
+11 silly lifecycle vicinityServer@0.0.0~start: Args: [ '-c', 'node ./bin/www' ]
+12 silly lifecycle vicinityServer@0.0.0~start: Returned: code: 1  signal: null
+13 info lifecycle vicinityServer@0.0.0~start: Failed to exec start script
+14 verbose stack Error: vicinityServer@0.0.0 start: `node ./bin/www`
+14 verbose stack Exit status 1
+14 verbose stack     at EventEmitter.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/lifecycle.js:233:16)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at EventEmitter.emit (events.js:172:7)
+14 verbose stack     at ChildProcess.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at ChildProcess.emit (events.js:172:7)
+14 verbose stack     at maybeClose (internal/child_process.js:818:16)
+14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+15 verbose pkgid vicinityServer@0.0.0
+16 verbose cwd /Users/viktor/WebstormProjects/vicinity/vicinityServer
+17 error Darwin 15.4.0
+18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
+19 error node v4.2.1
+20 error npm  v3.3.9
+21 error code ELIFECYCLE
+22 error vicinityServer@0.0.0 start: `node ./bin/www`
+22 error Exit status 1
+23 error Failed at the vicinityServer@0.0.0 start script 'node ./bin/www'.
+23 error This is most likely a problem with the vicinityServer package,
+23 error not with npm itself.
+23 error Tell the author that this fails on your system:
+23 error     node ./bin/www
+23 error You can get their info via:
+23 error     npm owner ls vicinityServer
+23 error There is likely additional logging output above.
+24 verbose exit [ 1, true ]
