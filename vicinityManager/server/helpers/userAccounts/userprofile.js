@@ -2,11 +2,76 @@
  * Created by viktor on 31.03.16.
  */
 var mongoose = require('mongoose');
+var ce = require('cloneextend');
 
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 
-function getProfileFacade(req, res, next) {
+function getAllUserAccountsFacade(req, res, next) {
+  debugger;
+  var response = {};
+  debugger;
+  userAccountOp.find({}, function(err, data) {
+    if (err) {
+      response = {"error": true, "message": "Error fetching data"};
+    } else {
+      response = {"error": false, "message": data};
+    }
+    res.json(response);
+  });
+}
 
+function createUserAccountFacade(req, res, next) {
+  debugger;
+  var db = new userAccountOp();
+  var response = {};
+  debugger;
+  db.organisation =  req.body.organisation;
+  db.avatar = req.body.avatar;
+  db.creatorOf = ce.clone(req.body.creatorOf);//Users that are creator UserAccount
+  db.follows = ce.clone(req.body.follows); //Follows UserAccounts
+  db.memberOf = ce.clone(req.body.memberOf); //Member of UserGroups
+  db.accountOf = ce.clone(req.body.accountOf);
+  db.knows = ce.clone(req.body.knows);
+  db.knowsRequestsFrom = ce.clone(req.body.knowsRequestsFrom);
+  db.knowsRequestsTo = ce.clone(req.body.knowsRequestsTo);
+  db.hasNotifications = ce.clone(req.body.hasNotifications);
+  db.modifierOf = ce.clone(req.body.modifierOf);
+  db.administratorOf = ce.clone(req.body.administratorOf);
+  db.badges = ce.clone(req.body.badges);
+  db.notes = req.body.notes;
+
+  db.save(function(err) {
+    if (err) {
+      response = {"error": true, "message": "Error adding data!"};
+    } else {
+      response = {"error": false, "message": "Data added!"};
+    }
+    res.json(response);
+  });
+}
+
+function deleteUserAccountFacade(req, res, next) {
+  debugger;
+  var response = {};
+  var o_id = mongoose.Types.ObjectId(req.params.id);
+  userAccountOp.remove({ "_id" : o_id}, function(err) {
+    res.json({"error" : err});
+  });
+}
+
+function updateUserAccountFacade(req, res, next){
+    debugger;
+    var response = {};
+    var o_id = mongoose.Types.ObjectId(req.params.id);
+    var updates = req.body;
+    userAccountOp.update({ "_id": o_id}, updates, function(err, raw){
+      response = {"error": err, "message": raw};
+      res.json(response);
+    })
+}
+
+function getUserAccountFacade(req, res, next) {
+    debugger;
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var isNeighbour = false;
@@ -25,7 +90,7 @@ function getProfileFacade(req, res, next) {
                 canSendNeighbourRequest = false;
                 canCancelNeighbourRequest = false;
                 canAnswerNeighbourRequest = false;
-                
+
             } else {
                 //Check wheather we are neihbours
                 for (index in data.knows) {
@@ -69,4 +134,9 @@ function getProfileFacade(req, res, next) {
     })
 }
 
-module.exports.get = getProfileFacade;
+
+module.exports.get = getUserAccountFacade;
+module.exports.getAll = getAllUserAccountsFacade;
+module.exports.update = updateUserAccountFacade;
+module.exports.delete = deleteUserAccountFacade;
+module.exports.create = createUserAccountFacade;

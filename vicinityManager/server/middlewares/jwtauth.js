@@ -5,7 +5,7 @@ module.exports = function(req, res, next) {
   console.log('JWTAuth middleware');
 
   var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
-  
+
   if (token) {
     try {
       var decoded = jwt.decode(token, config.jwtTokenSecrete);
@@ -14,14 +14,15 @@ module.exports = function(req, res, next) {
       } else {
         req.body.token = token;
         req.body.decoded_token = decoded;
-        
+
         return next();
-      } 
+      }
     } catch (err) {
       console.log("JWT Validation error: " + err.text);
       return res.send(401);
-    } 
+    }
   } else {
     return res.send(401);
   }
+  console.log('JWTAuth done');
 };

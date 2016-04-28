@@ -3,38 +3,41 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var userAccount = {
-  email: String,
+  organisation: String,
   avatar: String,
-  authentication: {
-    password: String,
-    principalRoles: [String]},
   creatorOf: [ObjectId], //Creator of UserAccounts
   follows: [ObjectId], //Follows UserAccounts
   memberOf: [ObjectId], //Member of UserGroups
-  accountOf: {
+  accountOf: [{
+    avatar: String,
     name: String,
     firstName: String,
     surname: String,
     lastName: String,
     occupation: String,
     location: String,
-    organisation: String}, //UserAccount is account of Agent
+    email: String,
+    organisation: String,
+    authentication: {
+      password: String,
+      principalRoles: [String]
+    }}], //UserAccount is account of Agent
   knows: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'userAccount'
-    }],
-    knowsRequestsFrom: [{
+  }],
+  knowsRequestsFrom: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userAccount'
-    }],
-    knowsRequestsTo: [{
+  }],
+  knowsRequestsTo: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userAccount'
-    }],
-    hasNotifications: [{
+  }],
+  hasNotifications: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'notification'
-    }],
+  }],
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   badges:[String],
