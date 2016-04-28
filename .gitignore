@@ -1,5 +1,7 @@
 .idea/
-.DS_Store
+
+### NodeJS excluded files
+
 # Logs
 logs
 *.log
@@ -37,3 +39,33 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+### Angular excluded files
+
+/build/
+/benchpress-build/
+.DS_Store
+gen_docs.disable
+test.disable
+regression/temp*.html
+performance/temp*.html
+.idea/workspace.xml
+*~
+*.swp
+angular.js.tmproj
+/node_modules/
+bower_components/
+angular.xcodeproj
+.idea
+*.iml
+.agignore
+.lvimrc
+libpeerconnection.log
+npm-debug.log
+/tmp/
+/scripts/bower/bower-*
+.vscode
+*.log
+*.stackdump
+
+
