@@ -7,6 +7,7 @@ var ce = require('cloneextend');
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 
 function getAllUserAccountsFacade(req, res, next) {
+  //TODO: Filter authentication info from user accounts;
   debugger;
   var response = {};
   debugger;
@@ -79,6 +80,7 @@ function getUserAccountFacade(req, res, next) {
     var canCancelNeighbourRequest = false;
     var canAnswerNeighbourRequest = false;
     //TODO: Issue #6 Update userAcount profile wheather the autenticated user is friend with :id
+    //TODO: Remove foreing users;
 
     userAccountOp.findById(o_id).populate('knows').exec(function (err, data) {
         if (err) {
