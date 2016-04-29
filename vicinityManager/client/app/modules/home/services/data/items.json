@@ -55,11 +55,6 @@
         {
             "_id": "570ce8a75a66682d91c6f912",
             "name": "ACME ElectroMeter #2",
-            "serial_number": "SN234856302980",
-            "location": "Room: 8.124",
-            "monthAvg": 879,
-            "monthSum": 309,
-            "yearSum": 2.75,
             "electricity": {
                 "serial_number": "SN234856302376",
                 "location": "Room: 12.137",

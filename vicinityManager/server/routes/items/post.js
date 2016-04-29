@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var ce = require('cloneextend');
 var itemOp = require('../../models/vicinityManager').item;
 
 function postOne(req, res, next) {
@@ -8,6 +9,11 @@ function postOne(req, res, next) {
 //TODO: ObjectId conversion;
   db.name = req.body.name;
   db.consistsOf = req.body.consistsOf;
+  db.hasAdministrator = ce.clone(req.body.hasAdministrator);
+  db.hasAccess = ce.clone(req.body.hasAccess);
+  db.color = req.body.color;
+  db.avatar = req.body.avatar;
+  db.electricity = ce.clone(req.body.electricity);
 
   db.save(function(err) {
     if (err) {
