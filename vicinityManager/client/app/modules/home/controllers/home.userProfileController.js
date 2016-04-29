@@ -1,5 +1,7 @@
-angular.module('VicinityManagerApp.controllers').controller('userProfileController', function ($scope, $window, $stateParams, $location, userAccountAPIService, AuthenticationService, Notification) {
-  
+angular.module('VicinityManagerApp.controllers')
+.controller('userProfileController',
+function ($scope, $window, $stateParams, $location, userAccountAPIService, AuthenticationService, Notification) {
+
   $scope.locationPrefix = $location.path();
   console.log("location:" + $location.path());
   $scope.name = {};
@@ -20,7 +22,7 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
   $scope.followers = [];
   $scope.gateways = [];
 
-    
+
 
 
     $scope.sendNeighbourRequest = function () {
@@ -88,13 +90,13 @@ angular.module('VicinityManagerApp.controllers').controller('userProfileControll
                 userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
             });
     }
-    
+
   if ($window.sessionStorage.userAccountId === $stateParams.userAccountId){
     $scope.isMyProfile = true;
   } else {
     $scope.isMyProfile = false;
   }
-  
+
   userAccountAPIService.getUserAccountProfile($stateParams.userAccountId).success(updateScopeAttributes);
 
   function updateScopeAttributes(response){

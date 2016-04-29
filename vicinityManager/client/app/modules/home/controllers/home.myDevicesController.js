@@ -1,6 +1,5 @@
 angular.module('VicinityManagerApp.controllers')
-  .controller('myDevicesController', ['$scope','$http',
-   function ($scope,
+  .controller('myDevicesController', function ($scope,
      $http,
      $window,
      $stateParams,
@@ -9,10 +8,15 @@ angular.module('VicinityManagerApp.controllers')
      AuthenticationService,
      Notification)
      {
-      $http.get('modules/home/services/data/items.json').success(function(data) {
-      $scope.devices = data.message;
-    });
+//id je $scope.id ??
 
-// data.message ??
+       userAccountAPIService.getMyDevices($window.sessionStorage.userAccountId).success(function (data) {
+         $scope.devices = data.message;
+       });
 
-     }]);
+    //   $http.get('modules/home/services/data/items.json').success(function(data) {
+    //   $scope.devices = data.message;
+    // });
+
+
+     });
