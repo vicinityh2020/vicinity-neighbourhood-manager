@@ -129,7 +129,7 @@
 
 .profile_info {
   padding: 25px 10px 10px;
-  width: 65%;
+  /*width: 10%;*/
   float: none;
 }
 
@@ -310,6 +310,10 @@ ul.widget_profile_box li .profile_img {
 
 .bottomLeft form select {
   display: inline-block;
+}
+
+.profile_header{
+ margin-left: 100px;
 }
 /*
 .bottomRight {
