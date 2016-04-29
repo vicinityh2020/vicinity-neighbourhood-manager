@@ -41,6 +41,11 @@ angular.module('VicinityManagerApp', [
               {
                 templateUrl: 'modules/home/views/home.userAccountView.html',
                 controller: 'userAccountController'
+              },
+            'companyAccountView':
+              {
+                templateUrl: 'modules/home/views/home.companyAccountView.html',
+                controller: 'companyAccountController'
               }
           }
         })
