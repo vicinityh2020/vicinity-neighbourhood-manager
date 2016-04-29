@@ -3,6 +3,8 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var friending = require('../helpers/userAccounts/friending');
 var userProfile = require('../helpers/userAccounts/userprofile');
+var postHelper = require('./items/post.js');
+var devices = require('./userAccounts/getMyDevices.js');
 var userAccountOp = require('../models/vicinityManager').userAccount;
 var ce = require('cloneextend');
 
@@ -28,6 +30,7 @@ router
   // Send friendship request approval to :id from authenticated user
   .put('/:id/friendship/cancel', friending.cancelFriendRequest)
   .delete('/:id/friendship', friending.cancelFriendship)
+  .get('/:id/devices', devices.getMyDevices)
   .get('/:id/friends', function(req, res, next) {
   console.log("GET /:id/friends");
   console.log(":id " + req.params.id);

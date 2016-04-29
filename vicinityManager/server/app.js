@@ -16,7 +16,7 @@ var userGroups = require('./routes/userGroups');
 var organisationUnits = require('./routes/organisationUnits');
 var gateways = require('./routes/gateways');
 var items = require('./routes/items');
-var search = require('./routes/search');
+//var search = require('./routes/search');
 var jwtauth = require('./middlewares/jwtauth');
 
 var app = express();
@@ -44,12 +44,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
+//app.use('/', routes);
+//app.use('/users', users);
 app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);
-app.use('/usergroups', [jwtauth, userGroups]);
-app.use('/organisationUnits', [jwtauth, organisationUnits]);
+//app.use('/usergroups', [jwtauth, userGroups]);
+//app.use('/organisationUnits', [jwtauth, organisationUnits]);
 app.use('/gateways', [jwtauth, gateways]);
 app.use('/items', [jwtauth, items]);
 
