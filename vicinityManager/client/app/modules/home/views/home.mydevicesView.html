@@ -49,12 +49,24 @@
                    <div id="collapseThree" class="panel-collapse collapse">
                      <div class="box-body box-bg-grey">
                        <div class="row">
-                         <div class="col-md-4">
+
+                         <!-- <ul class="phones">
+                                 <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
+                                   <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
+                                   <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+                                   <p>{{phone.snippet}}</p>
+                                 </li>
+                               </ul> -->
+
+                         <div ng-repeat="device in devices" class="col-md-4">
                            <div class="info-box">
-                             <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span>
+                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
                              <div class="info-box-content">
-                               <span class="info-box-text">UN46D6000SF</span>
-                               <span class="info-box-description">Appartment 1.1</span>
+                               <span class="info-box-text">{{device.name}}</span>
+                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
+                               <span class="info-box-description">{{device.electricity.location}}</span>
+
                                <!-- <p class="ratings">
                                  <a href="#"><span class="fa fa-square-o"></span></a>
                                  <a href="#"><span class="fa fa-square-o"></span></a>
@@ -65,7 +77,8 @@
                              </div>
                            </div>
                          </div>
-                         <div class="col-md-4">
+
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span>
                             <div class="info-box-content">
@@ -77,11 +90,11 @@
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-orange"><img src="/app/img/heat_sensor.png"></img></span>
                             <div class="info-box-content">
@@ -93,11 +106,11 @@
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-orange"><img src="/app/img/heat_sensor.png"></span>
                             <div class="info-box-content">
@@ -109,11 +122,11 @@
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-orange"><img src="/app/img/heat_sensor.png"></i></span>
                             <div class="info-box-content">
@@ -125,11 +138,11 @@
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-yellow"><i class="fa fa-calculator"></i></span>
                             <div class="info-box-content">
@@ -141,11 +154,11 @@
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-yellow"><i class="fa fa-calculator"></i></span>
                             <div class="info-box-content">
@@ -157,10 +170,10 @@
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
                                 <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
+                         </div> -->
                        </div>
 
                      </div>

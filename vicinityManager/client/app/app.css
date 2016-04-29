@@ -294,6 +294,11 @@ ul.widget_profile_box li .profile_img {
   height: 80%;
 }
 
+.bg-yellow img{
+  width: 70%;
+  height: 70%;
+}
+
 .bottomLeft h5 {
   display: inline-block;
 }
