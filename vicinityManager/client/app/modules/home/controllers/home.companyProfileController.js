@@ -1,5 +1,5 @@
 angular.module('VicinityManagerApp.controllers')
-.controller('userProfileController',
+.controller('companyProfileController',
 function ($scope, $window, $stateParams, $location, userAccountAPIService, AuthenticationService, Notification) {
 
   $scope.locationPrefix = $location.path();
@@ -100,27 +100,12 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
   userAccountAPIService.getUserAccountProfile("5722fd2216f9cc1446651945").success(updateScopeAttributes);
 
   function updateScopeAttributes(response){
-
-    i=0;
-    j=0;
-    while (i==0){
-      if (response.message.accountOf[j].email==$window.sessionStorage.username){
-        $scope.name =response.message.accountOf[j].name;
-        $scope.occupation=response.message.accountOf[j].occupation;
-        $scope.avatar =response.message.accountOf[j].avatar;
-        $scope.userAccountId = response.message.accountOf[j]._id;
-        $scope.location = response.message.accountOf[j].location;
-        i=1;
-      };
-      j++;
-    }
-
-
-      // $scope.name = response.message.accountOf.name;
-      // $scope.avatar = response.message.avatar;
-      // $scope.occupation = response.message.accountOf.occupation;
+      $scope.name = response.message.organisation;
+      $scope.avatar = response.message.avatar;
+      $scope.occupation = response.message.accountOf.occupation;
       $scope.organisation = response.message.organisation;
-      // $scope.userAccountId = response.message._id;
+      $scope.userAccountId = response.message._id;
+      $scope.location = response.message.accountOf.location;
       $scope.badges = response.message.badges;
       $scope.notes = response.message.notes;
       $scope.canSendNeighbourRequest = response.message.canSendNeighbourRequest;
@@ -128,5 +113,5 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
       $scope.canAnswerNeighbourRequest = response.message.canAnswerNeighbourRequest;
       $scope.isNeighbour = response.message.isNeighbour;
       $scope.friends = response.message.knows;
-  }
+  };
 });

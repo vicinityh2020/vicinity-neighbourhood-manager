@@ -89,17 +89,19 @@ angular.module('VicinityManagerApp', [
                 }
           }
         })
-        .state('root.main.profile', {
-          url: '/profile/:userAccountId',
+        .state('root.main.companyProfile', {
+          url: '/profile/company/:companyAccountId',
           views: {
             'mainContentView@root':
             {
-              templateUrl: 'modules/home/views/home.userProfileView.html',
-              controller:  'userProfileController'
+              templateUrl: 'modules/home/views/home.companyProfileView.html',
+              controller:  'companyProfileController'
             }
           }
         })
-        .state('root.main.profile.neigbourhood', {
+
+
+        .state('root.main.companyProfile.neigbourhood', {
             url: '/neighbourhood',
             views: {
                 'tabPanel@root.main.profile':
@@ -108,7 +110,7 @@ angular.module('VicinityManagerApp', [
                     }
             }
         })
-        .state('root.main.profile.friends', {
+        .state('root.main.companyProfile.friends', {
             url: '/friends',
             views: {
                 'tabPanel@root.main.profile':
@@ -117,6 +119,18 @@ angular.module('VicinityManagerApp', [
                     }
             }
         })
+
+        .state('root.main.userProfile', {
+          url: '/profile/user/:userAccountId',
+          views: {
+            'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.userProfileView.html',
+              controller:  'userProfileController'
+            }
+          }
+        })
+
         .state('login', {
           url: '/login',
           templateUrl: 'modules/authentication/views/login.html',

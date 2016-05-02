@@ -21,19 +21,21 @@ factory('userAccountAPIService', function($http){
 
   userAccountAPI.rejectNeighbourRequest = function(id) {
     return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship/reject');
-  }
+  };
 
   userAccountAPI.cancelNeighbourRequest = function(id) {
     return $http.put('http://localhost:3000/useraccounts/' + id + '/friendship/cancel');
-  }
+  };
 
   userAccountAPI.cancelNeighbourship = function(id) {
     return $http.delete('http://localhost:3000/useraccounts/' + id + '/friendship');
-  }
+  };
 
   userAccountAPI.getMyDevices = function(id) {
     return $http.get('http://localhost:3000/useraccounts/' + id + '/devices');
-  }
+  };
+
+
 
   return userAccountAPI;
 });
