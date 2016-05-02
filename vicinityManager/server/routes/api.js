@@ -27,10 +27,10 @@ router.post('/authenticate', function(req, res, next) {
         }
 
         if ((userName === result[0].accountOf[0].email) && (password === result[0].accountOf[0].authentication.password)) {
-          var token = jwt.jwtEncode(userName, result[0].accountOf[0].authentication.principalRoles, result[0].id);
+          var credentials = jwt.jwtEncode(userName, result[0].accountOf[0].authentication.principalRoles, result[0].accountOf[0].id, result[0].id);
           response = {
             success: true,
-            message: token}
+            message: credentials}
         } else {
           response = { success: false};
         }
