@@ -4,14 +4,14 @@
 var mongoose = require('mongoose');
 var ce = require('cloneextend');
 
-var userAccountOp = require('../../models/vicinityManager').userAccount;
+var companyAccountOp = require('../../models/vicinityManager').userAccount;
 
 function getAllUserAccountsFacade(req, res, next) {
   //TODO: Filter authentication info from user accounts;
   debugger;
   var response = {};
   debugger;
-  userAccountOp.find({}, function(err, data) {
+  companyAccountOp.find({}, function(err, data) {
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
     } else {
@@ -23,7 +23,7 @@ function getAllUserAccountsFacade(req, res, next) {
 
 function createUserAccountFacade(req, res, next) {
   debugger;
-  var db = new userAccountOp();
+  var db = new companyAccountOp();
   var response = {};
   debugger;
   db.organisation =  req.body.organisation;
@@ -55,7 +55,7 @@ function deleteUserAccountFacade(req, res, next) {
   debugger;
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  userAccountOp.remove({ "_id" : o_id}, function(err) {
+  companyAccountOp.remove({ "_id" : o_id}, function(err) {
     res.json({"error" : err});
   });
 }
@@ -65,7 +65,7 @@ function updateUserAccountFacade(req, res, next){
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var updates = req.body;
-    userAccountOp.update({ "_id": o_id}, updates, function(err, raw){
+    companyAccountOp.update({ "_id": o_id}, updates, function(err, raw){
       response = {"error": err, "message": raw};
       res.json(response);
     })
@@ -82,7 +82,7 @@ function getUserAccountFacade(req, res, next) {
     //TODO: Issue #6 Update userAcount profile wheather the autenticated user is friend with :id
     //TODO: Remove foreing users;
 
-    userAccountOp.findById(o_id).populate('knows').exec(function (err, data) {
+    companyAccountOp.findById(o_id).populate('knows').exec(function (err, data) {
       debugger;
         if (!data) {
           res.status(404).send('Not found');

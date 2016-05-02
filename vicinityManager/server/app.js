@@ -12,6 +12,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var userAccounts = require('./routes/userAccounts');
+var userAccounts = require('./routes/companyAccounts');
+
 var userGroups = require('./routes/userGroups');
 var organisationUnits = require('./routes/organisationUnits');
 var gateways = require('./routes/gateways');
@@ -48,6 +50,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/users', users);
 app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);
+app.use('/companyaccounts', [jwtauth, userAccounts]);
 //app.use('/usergroups', [jwtauth, userGroups]);
 //app.use('/organisationUnits', [jwtauth, organisationUnits]);
 app.use('/gateways', [jwtauth, gateways]);
