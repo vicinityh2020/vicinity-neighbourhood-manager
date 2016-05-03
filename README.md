@@ -103,8 +103,8 @@ Note, bower packages are installed by npm install.
 2. **Configure node-debugger package in ATOM editor**
   * Atom -> Preferences -> Community Packages -> node-debuger
   * Settings:
-    ** Set "Node Path" to local location of the node executable (e.g. ```which node```)
-    ** Path to ```vicinityManager/server/bin/www``` (e.g. Right click on file in left menu and 'Copy path')
+    * Set "Node Path" to local location of the node executable (e.g. ```which node```)
+    * Path to ```vicinityManager/server/bin/www``` (e.g. Right click on file in left menu and 'Copy path')
 
 3. **Usable commands**
 ```
