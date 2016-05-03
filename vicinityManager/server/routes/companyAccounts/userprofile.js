@@ -8,9 +8,9 @@ var companyAccountOp = require('../../models/vicinityManager').userAccount;
 
 function getAllUserAccountsFacade(req, res, next) {
   //TODO: Filter authentication info from user accounts;
-  debugger;
+
   var response = {};
-  debugger;
+
   companyAccountOp.find({}, function(err, data) {
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
@@ -22,10 +22,10 @@ function getAllUserAccountsFacade(req, res, next) {
 }
 
 function createUserAccountFacade(req, res, next) {
-  debugger;
+
   var db = new companyAccountOp();
   var response = {};
-  debugger;
+
   db.organisation =  req.body.organisation;
   db.avatar = req.body.avatar;
   db.creatorOf = ce.clone(req.body.creatorOf);//Users that are creator UserAccount
@@ -52,7 +52,7 @@ function createUserAccountFacade(req, res, next) {
 }
 
 function deleteUserAccountFacade(req, res, next) {
-  debugger;
+
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   companyAccountOp.remove({ "_id" : o_id}, function(err) {
@@ -61,7 +61,7 @@ function deleteUserAccountFacade(req, res, next) {
 }
 
 function updateUserAccountFacade(req, res, next){
-    debugger;
+
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var updates = req.body;
@@ -72,7 +72,7 @@ function updateUserAccountFacade(req, res, next){
 }
 
 function getUserAccountFacade(req, res, next) {
-    debugger;
+
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var isNeighbour = false;
@@ -83,7 +83,7 @@ function getUserAccountFacade(req, res, next) {
     //TODO: Remove foreing users;
 
     companyAccountOp.findById(o_id).populate('knows').exec(function (err, data) {
-      debugger;
+
         if (!data) {
           res.status(404).send('Not found');
         } else {

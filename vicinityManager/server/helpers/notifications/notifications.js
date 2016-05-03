@@ -12,7 +12,7 @@ function markAsRead(sender_id, recipient_id, type){
 }
 
 function processFoundUnreadNotifications(err, data){
-    debugger;
+     
     for (var index in data){
         var item = data[index];
         item.isUnread = false;

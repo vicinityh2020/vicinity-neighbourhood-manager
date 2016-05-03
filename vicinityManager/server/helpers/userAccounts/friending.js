@@ -210,12 +210,12 @@ function cancelFriendship(req, res, next){
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-        debugger;
+         
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
-                debugger;
+                 
                 var me = {};
                 var friend = {};
                 for (var index in data) {
