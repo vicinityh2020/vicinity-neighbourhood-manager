@@ -95,18 +95,18 @@ Note, bower packages are installed by npm install.
 
 ## NodeJS Debugger
 
-1. Install node-debugger package in ATOM editor
+1. **Install node-debugger package in ATOM editor**
 * Atom -> Preferences -> Install
 * Search "node-debugger"
 * Install
 
-2. Configure node-debugger package in ATOM editor
+2. **Configure node-debugger package in ATOM editor**
 * Atom -> Preferences -> Community Packages -> node-debuger
 * Settings:
 ** Set "Node Path" to local location of the node executable (e.g. ```which node```)
 ** Path to ```vicinityManager/server/bin/www``` (e.g. Right click on file in left menu and 'Copy path')
 
-3. Usable commands
+3. **Usable commands**
 'node-debugger:start-resume' (F5)
 'node-debugger:debug-active-file' (ctrl-F5)
 'node-debugger:stop' (shift-F5)
