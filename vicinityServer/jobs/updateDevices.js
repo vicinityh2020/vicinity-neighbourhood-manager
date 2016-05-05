@@ -3,7 +3,7 @@ var updateDevicesServices = require('../services/updateDevices/facade.js');
 module.exports.define = function(agenda) {
   agenda.define('update device', function(job){
     updateDevicesServices.performUpdate();
-    console.log("Job %s executed.", job.attrs.name);
+    //console.log("Job %s executed.", job.attrs.name);
   });
 }
 

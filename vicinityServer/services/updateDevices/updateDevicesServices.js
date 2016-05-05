@@ -13,6 +13,7 @@ function getOldDevices(cloudDevices, sharedDevices){
 
 function getNewDevices(cloudDevicesm, sharedDevices){
   winston.log('debug', 'updateDevicesServices.getNewDevices start');
+  return sharedDevices;
 }
 
 module.exports.sharedDevices = getSharedDevices;

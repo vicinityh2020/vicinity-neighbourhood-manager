@@ -4,6 +4,7 @@ winston.level = 'debug';
 
 function getDevices(){
   winston.log('debug', 'exositeServices.getDevices start');
+  return [];
 }
 
 function addDevices(devices){
