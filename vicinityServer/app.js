@@ -22,8 +22,8 @@ writeDataJob.define(agenda);
 agenda.on('ready', function(){
   console.log('Agenda connected to mongodb');
   updateDevicesJob.every(agenda);
-  readDataJob.every(agenda);
-  writeDataJob.every(agenda);
+  // readDataJob.every(agenda);
+  // writeDataJob.every(agenda);
   agenda.start();
 });
 

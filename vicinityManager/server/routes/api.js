@@ -14,7 +14,7 @@ router.post('/authenticate', function(req, res, next) {
 
   if (userName && password) {
     userAccountsOp.find({ 'accountOf.email': userName }, function(error, result) {
-       
+
       if (error || !result || result.length !== 1){
         response = { success: false };
       } else {

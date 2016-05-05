@@ -10,7 +10,6 @@ function getAllUserAccountsFacade(req, res, next) {
   //TODO: Filter authentication info from user accounts;
 
   var response = {};
-
   userAccountOp.find({}, function(err, data) {
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
@@ -52,7 +51,6 @@ function createUserAccountFacade(req, res, next) {
 }
 
 function deleteUserAccountFacade(req, res, next) {
-
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   userAccountOp.remove({ "_id" : o_id}, function(err) {
@@ -61,7 +59,6 @@ function deleteUserAccountFacade(req, res, next) {
 }
 
 function updateUserAccountFacade(req, res, next){
-
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var updates = req.body;
@@ -72,7 +69,6 @@ function updateUserAccountFacade(req, res, next){
 }
 
 function getUserAccountFacade(req, res, next) {
-
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var isNeighbour = false;
@@ -83,7 +79,6 @@ function getUserAccountFacade(req, res, next) {
     //TODO: Remove foreing users;
 
     userAccountOp.findById(o_id).populate('knows').exec(function (err, data) {
-
         if (!data) {
           res.status(404).send('Not found');
         } else {
