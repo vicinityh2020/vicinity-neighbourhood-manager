@@ -8,9 +8,8 @@ angular.module('VicinityManagerApp.controllers')
      AuthenticationService,
      Notification)
      {
-//id je $scope.id ??
 
-       userAccountAPIService.getMyDevices($window.sessionStorage.userAccountId).success(function (data) {
+       userAccountAPIService.getMyDevices($window.sessionStorage.companyAccountId).success(function (data) {
          $scope.devices = data.message;
        });
 
@@ -18,5 +17,18 @@ angular.module('VicinityManagerApp.controllers')
     //   $scope.devices = data.message;
     // });
 
+  // {$scope.devices.hasAdministrator: "$window.sessionStorage.companyAccountId"}
+
+    $scope.searchFilter = function (result) {
+      
+      var keyword=new RegExp($window.sessionStorage.companyAccountId);
+
+      return keyword.test(result.hasAdministrator) ;
+    };
+
+    userAccountAPIService.getMyDevices().success(function (response) {
+      var results = response.message;
+      $scope.devices = results;
+    });
 
      });

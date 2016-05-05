@@ -58,7 +58,7 @@
                                  </li>
                                </ul> -->
 
-                         <div ng-repeat="device in devices" class="col-md-4">
+                         <div ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
                            <div class="info-box">
                                <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->

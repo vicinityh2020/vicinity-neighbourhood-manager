@@ -8,8 +8,8 @@ controller('companyAccountController', function($scope, $window, userAccountAPIS
   n=0;
 
 
-  userAccountAPIService.getUserAccountProfile("5722fd2216f9cc1446651945").success(function (response) {
-    
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (response) {
+
     $scope.name = response.message.organisation;
     $scope.avatar = response.message.avatar;
     $scope.companyAccountId = response.message._id;

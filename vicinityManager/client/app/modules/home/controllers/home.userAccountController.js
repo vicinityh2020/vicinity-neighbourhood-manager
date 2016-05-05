@@ -13,7 +13,7 @@ controller('userAccountController', function($scope, $window, userAccountAPIServ
     console.log("End: Signout");
   }
 
-  userAccountAPIService.getUserAccountProfile("5722fd2216f9cc1446651945").success(function (response) {
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (response) {
 
     // for (i = 0; i < response.message.accountOf.length; i++) {
     //   if (response.message.accountOf[i].email==$window.sessionStorage.username){

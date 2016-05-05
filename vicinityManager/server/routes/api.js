@@ -7,14 +7,14 @@ var router = express.Router();
 
 /* GET users listing. */
 router.post('/authenticate', function(req, res, next) {
-  debugger;
+
   var response = {};
   var userName = req.body.username;
   var password = req.body.password;
 
   if (userName && password) {
     userAccountsOp.find({ 'accountOf.email': userName }, function(error, result) {
-      debugger;
+       
       if (error || !result || result.length !== 1){
         response = { success: false };
       } else {

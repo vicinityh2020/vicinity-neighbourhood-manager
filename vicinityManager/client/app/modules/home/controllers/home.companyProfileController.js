@@ -27,7 +27,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
 
     $scope.sendNeighbourRequest = function () {
         var result = userAccountAPIService
-            .sendNeighbourRequest($scope.userAccountId)
+            .sendNeighbourRequest($stateParams.companyAccountId)
                 .success(function(response) {
                     if (response.error == true) {
                         Notification.error("Sending neighbour request failed!");
@@ -35,12 +35,12 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
                         Notification.success("Neighbour request sent!");
                     }
 
-                    userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+                    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
                 });
     }
 
     $scope.acceptNeighbourRequest = function () {
-        userAccountAPIService.acceptNeighbourRequest($scope.userAccountId)
+        userAccountAPIService.acceptNeighbourRequest($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error == true) {
                     Notification.error("Neighbour request acceptation failed :(");
@@ -48,12 +48,12 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
                     Notification.success("Neighbour request accepted!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
             });
     }
 
     $scope.rejectNeighbourRequest = function() {
-        userAccountAPIService.rejectNeighbourRequest($scope.userAccountId)
+        userAccountAPIService.rejectNeighbourRequest($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error ==true) {
                     Notification.error("Neighbour request rejection failed :(");
@@ -61,12 +61,12 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
                     Notification.success("Neighbour request rejected!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
             });
     }
 
     $scope.cancelNeighbourRequest = function() {
-        userAccountAPIService.cancelNeighbourRequest($scope.userAccountId)
+        userAccountAPIService.cancelNeighbourRequest($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error ==true) {
                     Notification.error("Neighbour request cancelation failed :(");
@@ -74,12 +74,12 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
                     Notification.success("Neighbour request canceled!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
             });
     }
 
     $scope.cancelNeighbourship = function() {
-        userAccountAPIService.cancelNeighbourship($scope.userAccountId)
+        userAccountAPIService.cancelNeighbourship($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error ==true) {
                     Notification.error("Neighbourship cancelation failed :(");
@@ -87,17 +87,17 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
                     Notification.success("Neighbourship canceled!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
             });
     }
 
-  if ($window.sessionStorage.userAccountId === $stateParams.userAccountId){
+  if ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId){
     $scope.isMyProfile = true;
   } else {
     $scope.isMyProfile = false;
   }
 
-  userAccountAPIService.getUserAccountProfile("5722fd2216f9cc1446651945").success(updateScopeAttributes);
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
 
   function updateScopeAttributes(response){
       $scope.name = response.message.organisation;
