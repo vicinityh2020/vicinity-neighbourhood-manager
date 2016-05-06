@@ -9,6 +9,8 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
   $scope.occupation = {};
   $scope.organisation = {};
   $scope.userAccountId = {};
+  $scope.password = {};
+  $scope.email= {};
   $scope.isMyProfile = true;
   $scope.canSendNeighbourRequest = false;
   $scope.canCancelNeighbourRequest = false;
@@ -97,7 +99,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
     $scope.isMyProfile = false;
   }
 
-  userAccountAPIService.getUserAccountProfile("5722fd2216f9cc1446651945").success(updateScopeAttributes);
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(updateScopeAttributes);
 
   function updateScopeAttributes(response){
 
@@ -110,11 +112,19 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
         $scope.avatar =response.message.accountOf[j].avatar;
         $scope.userAccountId = response.message.accountOf[j]._id;
         $scope.location = response.message.accountOf[j].location;
+        $scope.password = response.message.accountOf[j].authentication.password;
+        $scope.email = response.message.accountOf[j].email;
         i=1;
       };
       j++;
-    }
+    };
 
+    $scope.text1="";
+    k=0;
+
+        for (k = 0; k < $scope.password.length; k++) {
+        $scope.text1 += "*";
+    };
 
       // $scope.name = response.message.accountOf.name;
       // $scope.avatar = response.message.avatar;
@@ -129,4 +139,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
       $scope.isNeighbour = response.message.isNeighbour;
       $scope.friends = response.message.knows;
   }
+
+
+
 });

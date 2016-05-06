@@ -8,9 +8,8 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
 
 function getAllUserAccountsFacade(req, res, next) {
   //TODO: Filter authentication info from user accounts;
-   
+
   var response = {};
-   
   userAccountOp.find({}, function(err, data) {
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
@@ -22,10 +21,10 @@ function getAllUserAccountsFacade(req, res, next) {
 }
 
 function createUserAccountFacade(req, res, next) {
-   
+
   var db = new userAccountOp();
   var response = {};
-   
+
   db.organisation =  req.body.organisation;
   db.avatar = req.body.avatar;
   db.creatorOf = ce.clone(req.body.creatorOf);//Users that are creator UserAccount
@@ -52,7 +51,6 @@ function createUserAccountFacade(req, res, next) {
 }
 
 function deleteUserAccountFacade(req, res, next) {
-   
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   userAccountOp.remove({ "_id" : o_id}, function(err) {
@@ -61,7 +59,6 @@ function deleteUserAccountFacade(req, res, next) {
 }
 
 function updateUserAccountFacade(req, res, next){
-     
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var updates = req.body;
@@ -72,7 +69,6 @@ function updateUserAccountFacade(req, res, next){
 }
 
 function getUserAccountFacade(req, res, next) {
-     
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var isNeighbour = false;
@@ -83,14 +79,13 @@ function getUserAccountFacade(req, res, next) {
     //TODO: Remove foreing users;
 
     userAccountOp.findById(o_id).populate('knows').exec(function (err, data) {
-       
         if (!data) {
           res.status(404).send('Not found');
         } else {
           if (err) {
               response = {"error": true, "message": "Error fetching data"};
           } else {
-              if (req.params.id === req.body.decoded_token.context.uid){
+              if (req.params.id === req.body.decoded_token.context.cid){
                   isNeighbour = false;
                   canSendNeighbourRequest = false;
                   canCancelNeighbourRequest = false;
@@ -99,7 +94,7 @@ function getUserAccountFacade(req, res, next) {
               } else {
                   //Check wheather we are neihbours
                   for (index in data.knows) {
-                      if (data.knows[index].email === req.body.decoded_token.sub) {
+                      if (data.knows[index]._id.toString() === req.body.decoded_token.context.cid) {
                           isNeighbour = true;
                           canSendNeighbourRequest = false;
                       }
@@ -109,7 +104,7 @@ function getUserAccountFacade(req, res, next) {
                   //Check whether authenticated user can be canceled sent neighbour request to requested profile
 
                   for (index in data.knowsRequestsFrom) {
-                      if (data.knowsRequestsFrom[index].toString() === req.body.decoded_token.context.id) {
+                      if (data.knowsRequestsFrom[index].toString() === req.body.decoded_token.context.cid) {
                           canSendNeighbourRequest = false;
                           canCancelNeighbourRequest = true;
                       }
@@ -118,7 +113,7 @@ function getUserAccountFacade(req, res, next) {
 
                   //Check whether authenticated user can cancel sent request
                   for (index  in data.knowsRequestsTo) {
-                      if (data.knowsRequestsTo[index].toString() === req.body.decoded_token.context.id) {
+                      if (data.knowsRequestsTo[index].toString() === req.body.decoded_token.context.cid) {
                           canSendNeighbourRequest = false;
                           canAnswerNeighbourRequest = true;
                       }

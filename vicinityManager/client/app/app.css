@@ -315,6 +315,36 @@ ul.widget_profile_box li .profile_img {
 .profile_header{
  margin-left: 100px;
 }
+
+/*.edit_profile{
+  visibility: hidden;
+}
+
+.edit_profile:hover,
+.edit_profile:focus{
+  visibility: visible;
+}*/
+
+.btn-primary-bvr {
+  /*background-color: #3c8dbc;
+  border-color: #367fa9;*/
+  background-color: #f4f4f4;
+  color: #444;
+  border-color: #ddd;
+
+}
+.btn-primary-bvr:hover,
+.btn-primary-bvr:active,
+.btn-primary-bvr.hover {
+  background-color: #367fa9;
+  color:#FFF;
+}
+
+.badge_in_profile{
+  margin:2px;
+}
+
+
 /*
 .bottomRight {
     margin-left: 707px;

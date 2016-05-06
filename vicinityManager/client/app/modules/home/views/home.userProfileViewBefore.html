@@ -7,8 +7,8 @@
 
 
 
-    <div class="row">
-        <div class="col-md-6">
+      <div class="row">
+        <div class="col-md-3">
 
           <!-- Profile Image -->
           <div class="box box-primary">
@@ -57,48 +57,18 @@
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
-</div>
+
 
       <!-- About me box -->
 
       <!-- About Me Box -->
-      <div class="col-md-6">
           <div class="box box-primary">
             <div class="box-header with-border">
               <h3 class="box-title">About Me</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-
-              <strong><i class="fa fa fa-male margin-r-5"></i> Name</strong>
-              <a href="#" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-
-              <p class="text-muted">
-                {{name}}
-              </p>
-
-              <hr>
-
-              <strong><i class="fa fa-at margin-r-5"></i> Email</strong>
-              <a href="#" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-
-              <p class="text-muted">
-                {{email}}
-              </p>
-
-              <hr>
-
-              <strong><i class="fa fa-unlock margin-r-5"></i> Password</strong>
-              <a href="#" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-
-              <p class="text-muted">
-                {{text1}}
-              </p>
-
-              <hr>
-
               <strong><i class="fa fa-university margin-r-5"></i> Organisation</strong>
-              <a href="#" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
 
               <p class="text-muted">
                 {{organisation}}
@@ -106,51 +76,39 @@
 
               <hr>
 
-              <strong><i class="fa fa-briefcase margin-r-5"></i> Occupation</strong>
-              <a href="#" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-
-              <p class="text-muted">
-                {{occupation}}
-              </p>
-
-              <hr>
-
               <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
-              <a href="#" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
 
               <p class="text-muted">{{location}}</p>
 
               <hr>
 
               <strong><i class="fa fa-pencil margin-r-5"></i> Badges</strong>
-              <a href="#" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
 
               <p>
-                <span ng-repeat="badge in badges" class="label label-success badge_in_profile">{{badge}}</span>
+                <div ng-repeat="badge in badges"><span class="label label-success">{{badge}}</span></div>
               </p>
 
               <hr>
 
-              <!-- <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
+              <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
 
-              <p>{{notes}}</p> -->
+              <p>{{notes}}</p>
             </div>
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
-
-        <!-- <div class="col-md-9">
+    </div>
+        <div class="col-md-9">
           <div class="nav-tabs-custom">
-                       <!-- Nav tabs
+                       <!-- Nav tabs -->
             <ul class="nav nav-tabs">
               <li ui-sref-active="active"><a ui-sref="root.main.profile.neigbourhood"><i class="fa fa-circle-o"></i>&nbsp;Neighbourhood</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.profile.friends"><i class="fa fa-users"></i>&nbsp;Friends</a></li>
             </ul>
-            <!-- Tab panes
+            <!-- Tab panes -->
             <div class="tab-content" ui-view="tabPanel">
             </div>
           </div>
-        </div> -->
         </div>
-       </div>
+      </div>
 </section>
