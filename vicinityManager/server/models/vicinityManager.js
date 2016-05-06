@@ -83,6 +83,8 @@ var item = {
   consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
   hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
   hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  accessRequestFrom: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  accessLevel: Number,
   color: String,
   avatar: String,
   electricity: {
