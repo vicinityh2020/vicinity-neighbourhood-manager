@@ -25,16 +25,18 @@ function getNeighbourhood(req, res, next) {
 
   userAccountOp.find({_id: o_id}, function(err, data){
     if (data && data.length == 1){
-      itemOp.find({hasAdministrator: { $in: data[0].knows }}, function(err, data) {
-        if (err) {
-          response = {"error": true, "message": "Error fetching data"};
-        } else {
-          response = {"error": false, "message": data};
-        }
-        res.json(response);
-      });
-    }
-  });
+      itemOp.find({hasAdministrator: { $in: data[0].knows }})
+        .populate('hasAdministrator','organisation')
+            .exec(function(err, data) {
+              if (err) {
+                response = {"error": true, "message": "Error fetching data"};
+              } else {
+                response = {"error": false, "message": data};
+              }
+              res.json(response);
+            });
+      }
+    });
 
 }
 
