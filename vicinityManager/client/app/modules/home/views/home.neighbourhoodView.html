@@ -42,10 +42,11 @@
                              <div class="info-box-content">
                                <span class="info-box-text">{{dev.name}}</span>
                                <span class="info-box-description">{{dev.electricity.location}}</span>
+                               <span ng-show="dev.accessLevel==3 && cancelAccess" class="info-box-description">{{note}}</span>
                               <!-- <div class="col-xs-12 bottom text-center"> -->
                       <!--    <div class="col-xs-12 col-sm-6 emphasis"> -->
 
-                                <div ng-show="" class="btn-group-justified">
+                                <!-- <div ng-show="" class="btn-group-justified">
                                 <div class="btn-group-sm btn-block loc_a ">
                                   <button type="button" class="btn col-lg-10 btn-default ">
 
@@ -55,31 +56,64 @@
                                     <span class="caret"></span>
                                     <span class="sr-only">Toggle Dropdown</span>
                                   </button>
-                                  <ul class="dropdown-menu dropdown-menu-right" role="menu">      <!--"right"pridane -->
-                                    <li><a ><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                                  <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+                            <!--         <li><a ><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
                                   </ul>
                                 </div>
-                                </div>
+                                </div> -->
 
-                                <a ng-show="dev.accessLevel==2 && !activeConnection && !cancelRequest" ng-click="getAccess()" href="#" class="btn-sm btn-success btn-block loc_a" >
+                                <a ng-show="dev.accessLevel==2 && !cancelRequest" ng-click="getAccess1()" class="btn-sm btn-success btn-block loc_a" >
                                    <i class="fa fa-bar-chart fa-lg"></i>
                                    <i class="fa fa-plus fa-lg"></i>
                                     &nbsp;<b>Get access!</b>
                                </a>
 
-                               <a ng-show="dev.accessLevel==2 && cancelRequest" ng-click="cancelRequest()" href="#" class="btn-sm btn-default btn-block loc_a " >
+                               <a ng-show="dev.accessLevel==2 && cancelRequest" ng-click="cancelRequest1()"  class="btn-sm btn-default btn-block loc_a " >
                                   <i class="fa fa-bar-chart fa-lg"></i>
                                   <i class="fa fa-times fa-lg"></i>
-                                   &nbsp;Cancel requested
+                                   &nbsp;Cancel request
                               </a>
 
-                             <p ng-show="dev.accessLevel==3"class="ratings">
-                              <span class="active_data"><a href="/#" class="fa fa-bar-chart fa-2x" > </a> Device has public access</span> <!-- title="connection established, see details" -->
+                              <!-- <a ng-show="dev.accessLevel==3 && cancelAccess" ng-click="cancelAccess1()"  class="btn-sm btn-default btn-block loc_a " >
+                                 <i class="fa fa-bar-chart fa-lg"></i>
+                                 <i class="fa fa-times fa-lg"></i>
+                                  &nbsp;Cancel access
+                             </a> -->
+
+                             <div ng-show="dev.accessLevel==3 && cancelAccess" class="btn-group-justified">
+                             <div class="btn-group-sm btn-block loc_a ">
+                               <button type="button" class="btn col-lg-10 btn-default ">
+
+                                  <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+                               <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+                                 <span class="caret"></span>
+                                 <span class="sr-only">Toggle Dropdown</span>
+                               </button>
+                               <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+                                  <li><a ng-click="cancelAccess1()"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                               </ul>
+                             </div>
+                             </div>
+
+                             <a ng-show="dev.accessLevel==3 && !cancelAccess" ng-click="getAccess2()"  class="btn-sm btn-success btn-block loc_a" >
+                                <i class="fa fa-bar-chart fa-lg"></i>
+                                <i class="fa fa-plus fa-lg"></i>
+                                 &nbsp;<b>Get access!</b>
+                            </a>
+
+                             <p ng-show="dev.accessLevel==4"class="ratings">
+                              <span class="active_data"><a href="/#" class="fa fa-bar-chart fa-2x" > </a> Device is public</span> <!-- title="connection established, see details" -->
                             </p>
+
+
                              </div>
 
                            </div>
                          </div>
+
+
+
                          <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
@@ -108,7 +142,7 @@
                             </div>
                           </div>
                          </div> -->
-                         <div class="col-md-4">
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
@@ -125,20 +159,23 @@
                                   <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">      <!--"right"pridane -->
-                                  <li><a ><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                                <!--  <li><a ><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
                                 </ul>
                               </div>
                             </div>
 
 
-                              <!-- <a href="#" class="btn-sm btn-primary btn-block loc_a greyc" >
+                              <a href="#" class="btn-sm btn-primary btn-block loc_a greyc" >
                                  <i class="fa fa-chain-broken fa-lg"></i>
                                   &nbsp;<b>Interrupt connection</b>
-                             </a> -->
+                             </a>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+
+
+
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
@@ -156,7 +193,7 @@
                                   <li><a ><i class="fa fa-bar-chart fa-lg"></i>
                                   <i class="fa fa-plus fa-lg"></i>&nbsp;Send data request</a></li>
                                 </ul>
-                              </div> -->
+                              </div>
 
                               <a href="#" class="btn-sm btn-success btn-block loc_a" >
                                  <i class="fa fa-bar-chart fa-lg"></i>
@@ -170,10 +207,10 @@
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
+                         </div> -->
 
                          <!-- <div class="col-md-4">
                           <div class="info-box">
@@ -220,7 +257,9 @@
                             </div>
                           </div>
                          </div> -->
-                         <div class="col-md-4">
+
+
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
@@ -237,7 +276,7 @@
                                 <ul class="dropdown-menu" role="menu">
                                   <li><a ><i class="fa fa-envelope fa-lg"></i><i class="fa fa-times fa-lg"></i>&nbsp;Cancel data request</a></li>
                                 </ul>
-                              </div> -->
+                              </div>
 
                               <a href="#" class="btn-sm btn-default btn-block loc_a " >
                                  <i class="fa fa-bar-chart fa-lg"></i>
@@ -250,10 +289,13 @@
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                              </p> -->
+                              </p>
                             </div>
                           </div>
-                         </div>
+                         </div> -->
+
+
+
                          <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>

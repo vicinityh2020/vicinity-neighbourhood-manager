@@ -12,8 +12,10 @@ angular.module('VicinityManagerApp.controllers')
 
        $scope.comps=[];
        $scope.devs=[];
-       $scope.activeConnection= false;
        $scope.cancelRequest= false;
+       $scope.cancelAccess= true;
+       $scope.note="You have acces to data";
+
       //  $scope.notPrivate= true;
 
       //  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (data) {
@@ -41,16 +43,26 @@ angular.module('VicinityManagerApp.controllers')
          });
        }
 
-       $scope.getAccess = function () {
+       $scope.getAccess1 = function () {
          $scope.cancelRequest= true;
+         Notification.success("Access request sent!");
          }
 
-       $scope.cancelRequest = function () {
+       $scope.cancelRequest1 = function () {
          $scope.cancelRequest= false;
+         Notification.success("Neighbour request canceled!");
          }
 
-       );
-       }
+       $scope.cancelAccess1 = function () {
+         $scope.cancelAccess= false;
+         $scope.note="";
+         Notification.success("Connection interrupted!");
+         }
 
+       $scope.getAccess2 = function () {
+         $scope.cancelAccess = true;
+         $scope.note="You have acces to data";
+         Notification.success("Connection was renewed!");
+         }
 
     });
