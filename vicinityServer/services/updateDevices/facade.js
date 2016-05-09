@@ -9,10 +9,12 @@ winston.level = 'debug';
 function updateListOfDevicesInCloud() {
   var sharedDevices = [];
   var cloudDevices = [];
+  var oldDevices = [];
+  var newDevices = [];
 
   winston.log('debug', 'Update list of devices in cloud started');
 
-  async.parallel([
+  async.series([
 
       function(callback){
         winston.log('debug', 'List of shared devices');
@@ -32,20 +34,30 @@ function updateListOfDevicesInCloud() {
           winston.log('debug', 'Call back');
           callback();
         });
-      }],
+      },
+
+      function(callback){
+        winston.log('debug', 'create list of shared devices which needs to be removed');
+        oldDevices = updateDevicesServices.getOldDevices(cloudDevices, sharedDevices);
+        winston.log('debug', 'devices should be removed: ' + oldDevices.length);
+        callback();
+      },
+
+      function(callback){
+        winston.log('debug', 'create list of shared devices which needs to be added');
+        newDevices = updateDevicesServices.getNewDevices(cloudDevices, sharedDevices);
+        callback();
+      },
+
+      function(callback){
+        winston.log('debug', 'remove devices');
+        exositeServices.removeDevices(oldDevices, callback);
+      }
+    ],
 
       function() {
-        winston.log('debug', 'create list of shared devices which needs to be removed');
-        var oldDevices = updateDevicesServices.getOldDevices(cloudDevices, sharedDevices);
-
-        winston.log('debug', 'create list of shared devices which needs to be added');
-        var newDevices = updateDevicesServices.getNewDevices(cloudDevices, sharedDevices);
-
         winston.log('debug', 'add devices');
         exositeServices.addDevices(newDevices);
-
-        winston.log('debug', 'remove devices');
-        exositeServices.removeDevices(oldDevices);
       });
 
   // //TODO: Get list of shared devices in VICINITY;
