@@ -10,6 +10,8 @@ function postOne(req, res, next) {
   db.name = req.body.name;
   db.consistsOf = req.body.consistsOf;
   db.hasAdministrator = ce.clone(req.body.hasAdministrator);
+  db.accessRequestFrom = ce.clone(req.body.accessRequestFrom);
+  db.accessLevel = req.body.accessLevel;
   db.hasAccess = ce.clone(req.body.hasAccess);
   db.color = req.body.color;
   db.avatar = req.body.avatar;
