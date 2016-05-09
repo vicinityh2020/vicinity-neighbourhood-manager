@@ -33,19 +33,51 @@ router
   .get('/:id/devices', devices.getMyDevices)
   .get('/:id/neighbourhood', devices.getNeighbourhood)
   .get('/:id/friends', function(req, res, next) {
-  console.log("GET /:id/friends");
-  console.log(":id " + req.params.id);
-  var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-  userAccountOp.findById(o_id).
-    populate('knows').exec(function(err, user){
-    if (err) {
-      response = {"error": true, "message": "Error fetching data"};
-    } else {
-      response = {"error": false, "message": user.knows};
-    }
-    res.json(response);
-  })
+    debugger;
+    console.log("GET /:id/friends");
+    console.log(":id " + req.params.id);
+    var response = {};
+    var o_id = mongoose.Types.ObjectId(req.params.id);
+    userAccountOp.findById(o_id).
+      populate('knows').exec(function(err, user){
+
+      if (req.query.sort){
+        if (req.query.sort == 'ASC') {
+            user.knows.sort(sortListOfFriendsASC);
+        } else if (req.query.sort == 'DESC') {
+            user.knows.sort(sortListOfFriendsDESC);
+        }
+      }
+
+      if (err) {
+        response = {"error": true, "message": "Error fetching data"};
+      } else {
+        response = {"error": false, "message": user.knows};
+      }
+
+      res.json(response);
+    })
   });
+
+  function sortListOfFriendsASC(a,b){
+    if (a.organisation < b.organisation) {
+      return -1;
+    } else if (a.organisation > b.organisation){
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  function sortListOfFriendsDESC(a,b){
+    if (a.organisation < b.organisation) {
+      return 1;
+    } else if (a.organisation > b.organisation){
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+
 
 module.exports = router;
