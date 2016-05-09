@@ -13,22 +13,16 @@ angular.module('VicinityManagerApp.controllers')
          $scope.devices = data.message;
        });
 
-    //   $http.get('modules/home/services/data/items.json').success(function(data) {
-    //   $scope.devices = data.message;
-    // });
-
-  // {$scope.devices.hasAdministrator: "$window.sessionStorage.companyAccountId"}
-
     $scope.searchFilter = function (result) {
-      
+
       var keyword=new RegExp($window.sessionStorage.companyAccountId);
 
       return keyword.test(result.hasAdministrator) ;
     };
 
-    userAccountAPIService.getMyDevices().success(function (response) {
-      var results = response.message;
-      $scope.devices = results;
-    });
+    // userAccountAPIService.getMyDevices().success(function (response) {
+    //   var results = response.message;
+    //   $scope.devices = results;
+    // });
 
      });

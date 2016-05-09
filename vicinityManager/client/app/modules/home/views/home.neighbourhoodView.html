@@ -22,38 +22,65 @@
                <h3 class="box-title">Entities</h3>
              </div>
              <!-- /.box-header -->
-             <div class="box-body">
+             <div  class="box-body">
                <div class="box-group" id="accordion">
                  <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
-                 <div class="panel box box-primary">
+                 <div ng-repeat="comp in comps" class="panel box box-primary">      <!-- ng-repeat="comp in comps" -->
                    <div class="box-header with-border">
                      <h4 class="box-title">
-                       <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                          Camera systems s.r.o.
+                       <a data-toggle="collapse" data-parent="#accordion" href="#{{comp._id}}" ng-click="getDevices(comp._id)">
+                          {{comp.organisation}}
                        </a>
                      </h4>
                    </div>
-                   <div id="collapseOne" class="panel-collapse collapse in">
+                   <div id="{{comp._id}}" class="panel-collapse collapse">
                      <div class="box-body box-bg-grey">
                        <div class="row">
-                         <div class="col-md-4">
+                         <div ng-show="dev.accessLevel>1" ng-repeat="dev in devs"  class="col-md-4">    <!-- ng-show="dev.accessLevel>1" -->
                            <div class="info-box">
-                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
+                             <span class="info-box-icon bg-{{dev.color}}"><img src={{dev.avatar}}></span>
                              <div class="info-box-content">
-                               <span class="info-box-text">Camera #1</span>
-                               <span class="info-box-description">Location 1.1</span>
+                               <span class="info-box-text">{{dev.name}}</span>
+                               <span class="info-box-description">{{dev.electricity.location}}</span>
                               <!-- <div class="col-xs-12 bottom text-center"> -->
                       <!--    <div class="col-xs-12 col-sm-6 emphasis"> -->
-                            <p class="ratings">
-                              <span class="active_data"><a href="/#" class="fa fa-bar-chart fa-2x" title="connection established, see details"> </a> </span>
+
+                                <div ng-show="" class="btn-group-justified">
+                                <div class="btn-group-sm btn-block loc_a ">
+                                  <button type="button" class="btn col-lg-10 btn-default ">
+
+                                     <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+                                  <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                  </button>
+                                  <ul class="dropdown-menu dropdown-menu-right" role="menu">      <!--"right"pridane -->
+                                    <li><a ><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                                  </ul>
+                                </div>
+                                </div>
+
+                                <a ng-show="dev.accessLevel==2 && !activeConnection && !cancelRequest" ng-click="getAccess()" href="#" class="btn-sm btn-success btn-block loc_a" >
+                                   <i class="fa fa-bar-chart fa-lg"></i>
+                                   <i class="fa fa-plus fa-lg"></i>
+                                    &nbsp;<b>Get access!</b>
+                               </a>
+
+                               <a ng-show="dev.accessLevel==2 && cancelRequest" ng-click="cancelRequest()" href="#" class="btn-sm btn-default btn-block loc_a " >
+                                  <i class="fa fa-bar-chart fa-lg"></i>
+                                  <i class="fa fa-times fa-lg"></i>
+                                   &nbsp;Cancel requested
+                              </a>
+
+                             <p ng-show="dev.accessLevel==3"class="ratings">
+                              <span class="active_data"><a href="/#" class="fa fa-bar-chart fa-2x" > </a> Device has public access</span> <!-- title="connection established, see details" -->
                             </p>
-                      <!--    </div> -->
-                    <!--    </div> -->
                              </div>
 
                            </div>
                          </div>
-                         <div class="col-md-4">
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
@@ -61,14 +88,14 @@
                               <span class="info-box-description">Location 1.2</span>
                               <p class="ratings">
                                 <span class="inactive_data"><i class="fa fa-bar-chart fa-2x"> </i></span>
-                                <!-- <span class="inactive_data_img"><img src="img/icons/data_request.png"></span> -->
+                                <span class="inactive_data_img"><img src="img/icons/data_request.png"></span>
                                 <span class="inactive_data_img"><a href="#"><img src="img/icons/data_request.png" title="send data request"></a></span>
-                                <!-- <span class="inactive_data_img"><input type="image" src="img/icons/data_request.png"/></span> -->
+                                <span class="inactive_data_img"><input type="image" src="img/icons/data_request.png"/></span>
                               </p>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
@@ -80,7 +107,7 @@
                               </p>
                             </div>
                           </div>
-                         </div>
+                         </div> -->
                          <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
@@ -148,7 +175,7 @@
                           </div>
                          </div>
 
-                         <div class="col-md-4">
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
@@ -163,15 +190,15 @@
                               </p>
                             </div>
                           </div>
-                         </div>
-                         <div class="col-md-4">
+                         </div> -->
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
                               <span class="info-box-text">Camera #4</span>
                               <span class="info-box-description">Location 2.2</span>
 
-                              <!-- <div class="btn-group btn-block">
+                              <div class="btn-group btn-block">
                                 <button type="button" class="btn col-lg-10 btn-unsuccess ">
                                   <i class="fa fa-chain-broken fa-lg"></i>&nbsp;<b>Connection interrupted</b></button>
                                 <button type="button" class="btn col-lg-2 btn-unsuccess dropdown-toggle" data-toggle="dropdown">
@@ -182,17 +209,17 @@
                                   <li><a ><i class="fa fa-bar-chart fa-lg"></i>
                                   <i class="fa fa-plus fa-lg"></i>&nbsp;Send data request</a></li>
                                 </ul>
-                              </div> -->
+                              </div>
 
-                              <!-- <a href="#" class="btn-sm btn-primary btn-block loc_a gree" >
+                              <a href="#" class="btn-sm btn-primary btn-block loc_a gree" >
                                  <i class="fa fa-bar-chart fa-lg"></i>
                                  <i class="fa fa-plus fa-lg"></i>
                                   &nbsp;<b>Send data
                                 request</b>
-                             </a> -->
+                             </a>
                             </div>
                           </div>
-                         </div>
+                         </div> -->
                          <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
@@ -227,7 +254,7 @@
                             </div>
                           </div>
                          </div>
-                         <div class="col-md-4">
+                         <!-- <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-video-camera"></i></span>
                             <div class="info-box-content">
@@ -242,7 +269,7 @@
                               </p>
                             </div>
                           </div>
-                         </div>
+                         </div> -->
                        </div>
                      </div>
                      <div class="box-footer clear-fix">
@@ -257,7 +284,7 @@
                    </div>
 
                  </div>
-                 <div class="panel box box-danger">
+                 <!-- <div class="panel box box-danger">
                    <div class="box-header with-border">
                      <h4 class="box-title">
                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
@@ -346,7 +373,7 @@
                             </div>
                           </div>
                          </div>
-                      <!--   <div class="col-md-4">
+                       <div class="col-md-4">
                           <div class="info-box">
                             <span class="info-box-icon bg-aqua"><i class="fa fa-cubes"></i></span>
                             <div class="info-box-content">
@@ -364,7 +391,7 @@
                             </div>
                           </div>
                          </div>  -->
-                       </div>
+                       <!-- </div>
 
                      </div>
                      <div class="box-footer clear-fix">
@@ -376,9 +403,9 @@
                        </ul>
                      </div>
                    </div>
-                 </div>
-                 <div class="panel box box-success">
-                   <div class="box-header with-border">
+                 </div> -->
+                 <!-- <div class="panel box box-success"> -->
+                   <!-- <div class="box-header with-border">
                      <h4 class="box-title">
                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
                          NETFLIX
@@ -525,12 +552,13 @@
                        </ul>
                      </div>
                    </div>
-                 </div>
-               </div>
+                 </div> -->
+               <!-- </div> -->
              </div>
              <!-- /.box-body -->
            </div>
            <!-- /.box -->
         </div>
+      </div>
       </div>
 </section>

@@ -35,6 +35,10 @@ factory('userAccountAPIService', function($http){
     return $http.get('http://localhost:3000/useraccounts/' + id + '/devices');
   };
 
+  userAccountAPI.getFriends = function(id) {
+    return $http.get('http://localhost:3000/useraccounts/' + id + '/friends');
+  };
+
 
 
   return userAccountAPI;
