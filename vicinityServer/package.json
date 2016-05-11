@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node debug ./bin/www"
   },
   "dependencies": {
     "agenda": "^0.8.0",
@@ -17,6 +17,7 @@
     "morgan": "~1.6.1",
     "request": "^2.72.0",
     "serve-favicon": "~2.3.0",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "mongoose": "^4.3.7"
   }
 }

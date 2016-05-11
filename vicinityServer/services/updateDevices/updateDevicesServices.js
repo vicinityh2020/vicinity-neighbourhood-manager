@@ -1,5 +1,6 @@
 var winston = require('winston');
 var ce = require('cloneextend');
+var async = require('async');
 
 winston.level = 'debug';
 
@@ -30,7 +31,6 @@ function getOldDevices(cloudDevices, sharedDevices){
 }
 
 function getNewDevices(cloudDevices, sharedDevices){
-  debugger;
   winston.log('debug', 'updateDevicesServices.getNewDevices start');
   var newDevices = ce.clone(sharedDevices);
 
@@ -50,6 +50,24 @@ function getNewDevices(cloudDevices, sharedDevices){
   return newDevices;
 }
 
+function storeGatewayObjects(gatewayObjects, callback){
+  winston.log('debug', 'Storing gateway objects started');
+
+  async.forEach(gatewayObjects, function(gatewayObject, gateway_callback){
+    gatewayObject.save(function(error, product, numAffected){
+      winston.log('debug', 'Stored gateway object ' + gatewayObject.device_id);
+      if (error) {
+        winston.log('debug', 'Error:' + error);
+      }
+      gateway_callback();
+    });
+  }, function(err){
+    winston.log('debug', 'Gatewayobjectd stored!');
+    callback();
+  });
+}
+
 module.exports.sharedDevices = getSharedDevices;
 module.exports.getNewDevices = getNewDevices;
 module.exports.getOldDevices = getOldDevices;
+module.exports.storeGatewayObjects = storeGatewayObjects;
