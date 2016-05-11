@@ -1,3 +1,9 @@
+module.exports.getDevices = getDevices;
+module.exports.addDevices = addDevices;
+module.exports.removeDevices = removeDevices;
+module.exports.writeData = writeData;
+
+
 var winston = require('winston');
 var request = require('request');
 var async = require('async');
@@ -72,8 +78,6 @@ function removeDevices(devices, callback){
   winston.log('debug', 'exositeServices.removeDevices start');
   winston.log('debug', 'Number services being removed: ' + devices.length);
 
-  //XXX: Remove device gateway object
-
   async.forEachSeries(devices, function(device, device_callback){
     var options = { method: 'DELETE',
     url: 'https://portals.exosite.com/api/portals/v1/devices/' + device.rid,
@@ -101,6 +105,7 @@ function removeDevices(devices, callback){
 
 function createDataSources(gatewayObject, device, device_callback){
   winston.log('debug', 'Start adding datasources');
+  gatewayObject.type == device.type;
   if (device.type == "TINYM"){
       datasources = [
         {name: "co2", format: "float", unit: "ppm"},
@@ -128,6 +133,7 @@ function createDataSources(gatewayObject, device, device_callback){
           winston.log('debug', 'datasource.name: ' + datasource.name);
           winston.log('debug', 'data.rid: ' + data.rid);
           gatewayObject.data_sources.push({name: datasource.name, rid: data.rid});
+
           callback();
         });
       }, function(err){
@@ -142,12 +148,8 @@ function createDataSources(gatewayObject, device, device_callback){
   }
 }
 
-
-
-function createGatewayObject(){
-
+function writeData(gatewayObjectsWithData, callback){
+  winston.log('debug', 'Start: Writing data to Exosite portal');
+  winston.log('debug', 'End: Writing data to Exosite portal');
+  callback();
 }
-
-module.exports.getDevices = getDevices;
-module.exports.addDevices = addDevices;
-module.exports.removeDevices = removeDevices;

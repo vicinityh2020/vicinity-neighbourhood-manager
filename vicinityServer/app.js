@@ -25,14 +25,14 @@ mongoose.connect('mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com
   }
 });
 
-updateDevicesJob.define(agenda);
+//updateDevicesJob.define(agenda);
 readDataJob.define(agenda);
-writeDataJob.define(agenda);
+//writeDataJob.define(agenda);
 
 agenda.on('ready', function(){
   console.log('Agenda connected to mongodb');
-  updateDevicesJob.every(agenda);
-  // readDataJob.every(agenda);
+  //updateDevicesJob.every(agenda);
+  readDataJob.every(agenda);
   // writeDataJob.every(agenda);
   agenda.start();
 });
