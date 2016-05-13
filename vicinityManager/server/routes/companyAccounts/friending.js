@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
-var notificationAPI = require('../../helpers/notifications/notifications');
+var notificationAPI = require('../../helpers/notifications/notifications');             //my_id should be .cid everywhere
 //TODO: Issue #6  check that only :id can make friends.
 //TODO: Issue #6 Send friendship notification to :id.
 //TODO: Issue #6 check double requests;
@@ -207,15 +207,15 @@ function cancelFriendRequest(req, res, next){
 function cancelFriendship(req, res, next){
     console.log("Running cancelation of friendship!");
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.id);             //wtf, not cid??
 
     companyAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-         
+
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
-                 
+
                 var me = {};
                 var friend = {};
                 for (var index in data) {

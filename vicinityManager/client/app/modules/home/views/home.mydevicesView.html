@@ -67,6 +67,38 @@
                                <span class="info-box-text">{{device.electricity.serial_number}}</span>
                                <span class="info-box-description">{{device.electricity.location}}</span>
 
+                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                               <!-- <div ng-show="interruptConnection" class="btn-group-justified">        //treba dokodit
+                               <div class="btn-group-sm btn-block loc_a ">
+                                 <button type="button" class="btn col-lg-10 btn-default ">
+
+                                    <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+                                 <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">     "right"pridane
+                                    <li><a ng-click="cancelAccess1()"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                                 </ul>
+                               </div>
+                               </div>  -->
+
+
+                               
+
                                <!-- <p class="ratings">
                                  <a href="#"><span class="fa fa-square-o"></span></a>
                                  <a href="#"><span class="fa fa-square-o"></span></a>

@@ -11,7 +11,7 @@ module.exports.jwtEncode = function(username, roles, userAccountId, companyAccou
         sub: username,
         exp: expires,
         roles: roles,
-        context: {name: username, uid: userAccountId, cid: companyAccountId}
+        context: {name: username, uid: userAccountId, cid: companyAccountId}       
     }, config.jwtTokenSecrete);
     var response ={
       token: token,

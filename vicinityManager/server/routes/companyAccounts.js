@@ -18,7 +18,7 @@ router
   .delete('/:id', userProfile.delete)
 
   // Send friendship request to :id by autenticated user
-  .post('/:id/friendship', friending.processFriendRequest)
+  .put('/:id/friendship', friending.processFriendRequest)
 
   // Send friendship request approval to :id from authenticated user
   .put('/:id/friendship/accept', friending.acceptFriendRequest)

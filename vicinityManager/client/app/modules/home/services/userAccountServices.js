@@ -36,7 +36,7 @@ factory('userAccountAPIService', function($http){
   };
 
   userAccountAPI.getFriends = function(id) {
-    return $http.get('http://localhost:3000/useraccounts/' + id + '/friends');
+    return $http.get('http://localhost:3000/useraccounts/' + id + '/friends?sort=ASC');
   };
 
 

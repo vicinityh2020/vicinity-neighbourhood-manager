@@ -36,13 +36,32 @@
                    <div id="{{comp._id}}" class="panel-collapse collapse">
                      <div class="box-body box-bg-grey">
                        <div class="row">
-                         <div ng-show="dev.accessLevel>1" ng-repeat="dev in devs"  class="col-md-4">    <!-- ng-show="dev.accessLevel>1" -->
+                         <div ng-repeat="dev in devs" ng-show="!dev.isPrivate" class="col-md-4">    <!-- ng-show="dev.accessLevel>1" -->
                            <div class="info-box">
                              <span class="info-box-icon bg-{{dev.color}}"><img src={{dev.avatar}}></span>
                              <div class="info-box-content">
                                <span class="info-box-text">{{dev.name}}</span>
                                <span class="info-box-description">{{dev.electricity.location}}</span>
-                               <span ng-show="dev.accessLevel==3 && cancelAccess" class="info-box-description">{{note}}</span>
+
+                               <span ng-show="dev.isFriendData" class="info-box-description">{{note}}</span>
+
+                               <!-- <div ng-show="dev.cancelAccess2" class="btn-group-justified">
+                               <div class="btn-group-sm btn-block loc_a ">
+                                 <button type="button" class="btn col-lg-10 btn-default ">
+
+                                    <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+                                 <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">     "right"pridane
+                                    <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                                 </ul>
+                               </div>
+                               </div> -->
+
+
                               <!-- <div class="col-xs-12 bottom text-center"> -->
                       <!--    <div class="col-xs-12 col-sm-6 emphasis"> -->
 
@@ -62,17 +81,33 @@
                                 </div>
                                 </div> -->
 
-                                <a ng-show="dev.accessLevel==2 && !cancelRequest" ng-click="getAccess1()" class="btn-sm btn-success btn-block loc_a" >
+                                <a ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class="btn-sm btn-success btn-block loc_a" >
                                    <i class="fa fa-bar-chart fa-lg"></i>
                                    <i class="fa fa-plus fa-lg"></i>
                                     &nbsp;<b>Get access!</b>
                                </a>
 
-                               <a ng-show="dev.accessLevel==2 && cancelRequest" ng-click="cancelRequest1()"  class="btn-sm btn-default btn-block loc_a " >
+                               <a ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a " >
                                   <i class="fa fa-bar-chart fa-lg"></i>
                                   <i class="fa fa-times fa-lg"></i>
                                    &nbsp;Cancel request
                               </a>
+
+                              <div ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified">
+                              <div class="btn-group-sm btn-block loc_a ">
+                                <button type="button" class="btn col-lg-10 btn-default ">
+
+                                   <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+                                <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+                                  <span class="caret"></span>
+                                  <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+                                   <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                                </ul>
+                              </div>
+                              </div>
 
                               <!-- <a ng-show="dev.accessLevel==3 && cancelAccess" ng-click="cancelAccess1()"  class="btn-sm btn-default btn-block loc_a " >
                                  <i class="fa fa-bar-chart fa-lg"></i>
@@ -80,29 +115,14 @@
                                   &nbsp;Cancel access
                              </a> -->
 
-                             <div ng-show="dev.accessLevel==3 && cancelAccess" class="btn-group-justified">
-                             <div class="btn-group-sm btn-block loc_a ">
-                               <button type="button" class="btn col-lg-10 btn-default ">
 
-                                  <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-                               <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-                                 <span class="caret"></span>
-                                 <span class="sr-only">Toggle Dropdown</span>
-                               </button>
-                               <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
-                                  <li><a ng-click="cancelAccess1()"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-                               </ul>
-                             </div>
-                             </div>
-
-                             <a ng-show="dev.accessLevel==3 && !cancelAccess" ng-click="getAccess2()"  class="btn-sm btn-success btn-block loc_a" >
+                             <!-- <a ng-show="dev.isFriendData && !dev.cancelAccess2" ng-click="getAccess2(dev._id)"  class="btn-sm btn-success btn-block loc_a" >
                                 <i class="fa fa-bar-chart fa-lg"></i>
                                 <i class="fa fa-plus fa-lg"></i>
                                  &nbsp;<b>Get access!</b>
-                            </a>
+                            </a> -->
 
-                             <p ng-show="dev.accessLevel==4"class="ratings">
+                             <p ng-show="dev.isPublic"class="ratings">
                               <span class="active_data"><a href="/#" class="fa fa-bar-chart fa-2x" > </a> Device is public</span> <!-- title="connection established, see details" -->
                             </p>
 

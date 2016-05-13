@@ -1,6 +1,12 @@
 /**
  * Created by viktor on 31.03.16.
  */
+ module.exports.get = getUserAccountFacade;
+ module.exports.getAll = getAllUserAccountsFacade;
+ module.exports.update = updateUserAccountFacade;
+ module.exports.delete = deleteUserAccountFacade;
+ module.exports.create = createUserAccountFacade;
+
 var mongoose = require('mongoose');
 var ce = require('cloneextend');
 
@@ -135,10 +141,3 @@ function getUserAccountFacade(req, res, next) {
             }
       })
 }
-
-
-module.exports.get = getUserAccountFacade;
-module.exports.getAll = getAllUserAccountsFacade;
-module.exports.update = updateUserAccountFacade;
-module.exports.delete = deleteUserAccountFacade;
-module.exports.create = createUserAccountFacade;

@@ -5,6 +5,7 @@ angular.module('VicinityManagerApp.controllers')
      $stateParams,
      $location,
      userAccountAPIService,
+     itemsAPIService,
      AuthenticationService,
      $http,
      Notification)
@@ -14,7 +15,7 @@ angular.module('VicinityManagerApp.controllers')
        $scope.devs=[];
        $scope.cancelRequest= false;
        $scope.cancelAccess= true;
-       $scope.note="You have acces to data";
+       $scope.note="Access approved for friends";
 
       //  $scope.notPrivate= true;
 
@@ -31,6 +32,7 @@ angular.module('VicinityManagerApp.controllers')
          $scope.comps = data.message;
        });
 
+
       //  for (i = 0; i < $scope.comps.length; i++) {
       //    userAccountAPIService.getMyDevices($scope.comps[i]._id).success(function (data) {
       //      $scope.comps[i].devs = data.message;
@@ -40,29 +42,75 @@ angular.module('VicinityManagerApp.controllers')
        $scope.getDevices = function (id) {
          userAccountAPIService.getMyDevices(id).success(function(response) {
             $scope.devs=response.message;
+            for (dev in $scope.devs){
+              itemsAPIService.getItemWithAdd($scope.devs[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
+            }
          });
        }
 
-       $scope.getAccess1 = function () {
+       $scope.getAccess1 = function (dev_id) {
          $scope.cancelRequest= true;
-         Notification.success("Access request sent!");
+        //  Notification.success("Access request sent!");
+         itemsAPIService.processDeviceAccess(dev_id).success(function (response) {
+           if (response.error ==true) {
+               Notification.error("Sending data access request failed!");
+           } else {
+               Notification.success("Access request sent!");
+           };
+          itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
+         });
          }
 
-       $scope.cancelRequest1 = function () {
+       $scope.cancelRequest1 = function (dev_id) {
          $scope.cancelRequest= false;
-         Notification.success("Neighbour request canceled!");
+        //  Notification.success("Data access request canceled!");
+         itemsAPIService.cancelDeviceRequest(dev_id).success(function (response) {
+           if (response.error ==true) {
+               Notification.error("Sending data access request failed!");
+           } else {
+               Notification.success("Data access request canceled!");
+           };
+           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
+         });
+
          }
 
-       $scope.cancelAccess1 = function () {
+       $scope.cancelAccess1 = function (dev_id) {
          $scope.cancelAccess= false;
          $scope.note="";
-         Notification.success("Connection interrupted!");
+
+         itemsAPIService.cancelAccess3(dev_id).success(function (response) {
+           if (response.error ==true) {
+               Notification.error("Try for interruption failed!");
+           } else {
+               Notification.success("Connection interrupted!");
+           };
+           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
+         });
+
          }
 
-       $scope.getAccess2 = function () {
+       $scope.getAccess2 = function (dev_id) {
          $scope.cancelAccess = true;
          $scope.note="You have acces to data";
-         Notification.success("Connection was renewed!");
+
+         itemsAPIService.getAccess3(dev_id).success(function (response) {
+           if (response.error ==true) {
+               Notification.error("Get back access failed!");
+           } else {
+               Notification.success("Connection was renewed!");
+           };
+           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
+         });
          }
+
+       function updateScopeAttributes2(response){          //response je formatu ako z funkcie getItemWithAdd
+        for (dev in $scope.devs){
+          if ($scope.devs[dev]._id.toString()===response.message._id.toString()){        //updatne len ten device, ktory potrebujeme
+              $scope.devs[dev]=response.message;
+
+          }
+        };
+       }
 
     });

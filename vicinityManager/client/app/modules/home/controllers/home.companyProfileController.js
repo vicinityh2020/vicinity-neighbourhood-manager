@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('companyProfileController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, AuthenticationService, Notification) {
+function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
 
   $scope.locationPrefix = $location.path();
   console.log("location:" + $location.path());
@@ -49,6 +49,8 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
                 }
 
                 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
+                // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);  
+
             });
     }
 
