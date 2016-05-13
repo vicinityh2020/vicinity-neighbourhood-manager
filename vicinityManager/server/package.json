@@ -4,7 +4,9 @@
   "private": true,
   "description": "Information service for VICITNITY neighbourhood manager",
   "scripts": {
+
     "start": "nodemon ./bin/www"
+
   },
   "repository": {
     "type": "git",

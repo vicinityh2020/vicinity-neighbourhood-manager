@@ -11,9 +11,19 @@ var writeDataJob = require('./jobs/writeData.js');
 var Agenda = require('agenda');
 var Agendash = require('agendash');
 
+var mongoose = require('mongoose');
+
 var app = express();
 
 var agenda = new Agenda({db: {address: "mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager"}});
+
+mongoose.connect('mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager', function(error){
+  if (error){
+    console.log("VMModel: Couldn't connect to data source!" + error);
+  } else {
+    console.log("VMModel: Datasource connection establised!");
+  }
+});
 
 updateDevicesJob.define(agenda);
 readDataJob.define(agenda);
