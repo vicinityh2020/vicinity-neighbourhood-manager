@@ -42,12 +42,12 @@ function readDataAndUpdateInCloud(){
       exosite.writeData(gatewayObjects, callback);
     }],
 
-    function(callback){
-      callback();
+    function(err,result){
+      winston.log('debug', 'End: Read data and update in cloud!');
     }
   );
 
-  winston.log('debug', 'End: Read data and update in cloud!');
+
 }
 
 function getGatewayObjects(gatewayObjects, callback){
@@ -56,14 +56,15 @@ function getGatewayObjects(gatewayObjects, callback){
   winston.log('debug', 'Start: Getting list of gateway objects!');
 
   gatewayobjectOp.find({}, function (error, data){
+    winston.log('debug', 'Got %d gateway objects', data.length);
     for(var i = 0; i < data.length; i++){
-      gatewayObjects.push(data[i]);
+      winston.log('debug', 'Adding %s device in list', data[i].device_rid);
+      gatewayObjects.push(data[i].toObject());
     }
     callback();
   });
 
   winston.log('debug', 'End: Getting list of gateway objects!');
-  callback();
 }
 
 
