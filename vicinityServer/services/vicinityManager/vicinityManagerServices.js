@@ -19,9 +19,7 @@ function getSharedDevices(callback){
       request(options, function (error, response, body) {
         var data = {};
         if (error) throw new Error(error);
-        console.log(body);
-        data = JSON.parse(body);
-        callback(data.message);
+        callback(JSON.parse(body).message);
       });
 
     }

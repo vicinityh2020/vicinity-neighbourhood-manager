@@ -6,6 +6,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var gatewayobject = {
     device_id: ObjectId,
     device_rid: String,
+    company_id: ObjectId,
     type: String,
     data_sources: [{
       name: String,

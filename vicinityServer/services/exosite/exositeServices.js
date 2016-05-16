@@ -150,6 +150,36 @@ function createDataSources(gatewayObject, device, device_callback){
 
 function writeData(gatewayObjectsWithData, callback){
   winston.log('debug', 'Start: Writing data to Exosite portal');
-  winston.log('debug', 'End: Writing data to Exosite portal');
-  callback();
+
+  var datasources = [];
+
+  for (i in gatewayObjectsWithData){
+    for (j in gatewayObjectsWithData[i].data_sources){
+      datasources.push({
+        rid: gatewayObjectsWithData[i].data_sources[j].rid,
+        data: gatewayObjectsWithData[i].data_sources[j].data
+      })
+    }
+  }
+
+  async.forEachSeries(datasources, function(datasource, datasource_callback){
+    winston.log('debug', 'Start: writing data in Exosite for datasource: ' + datasource.rid);
+
+    var options = { method: 'POST',
+      url: 'https://portals.exosite.com/api/portals/v1/data-sources/' + datasource.rid + '/data',
+      headers:
+       { 'postman-token': '8b688437-fffc-0aa7-842f-a920901d08fd',
+         'cache-control': 'no-cache',
+         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+      body: datasource.data };
+
+    request(options, function (error, response, body) {
+      winston.log('debug', 'End: writing data in Exosite for datasource: ' + datasource.rid);
+      datasource_callback();
+    });
+
+  }, function(err){
+    winston.log('debug', 'End: Writing data to Exosite portal');
+    callback();
+  });
 }

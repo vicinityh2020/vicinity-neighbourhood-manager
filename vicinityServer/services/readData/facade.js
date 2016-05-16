@@ -5,6 +5,8 @@ var certh = require('../certh/certhServices.js');
 var exosite = require('../exosite/exositeServices.js');
 var async = require('async');
 
+var gatewayobjectOp = require('../../data/model').gatewayobject;
+
 winston.level = 'debug';
 
 function readDataAndUpdateInCloud(){
@@ -51,6 +53,14 @@ function readDataAndUpdateInCloud(){
 function getGatewayObjects(gatewayObjects, callback){
   //XXX: Get list of devices in Exosite from gatewayObjects
   winston.log('debug', 'Start: Getting list of gateway objects!');
+
+  gatewayobjectOp.find({}, function (error, data){
+    for(var i = 0; i < data.length; i++){
+      gatewayObjects.push(data[i]);
+    }
+    callback();
+  });
+
   winston.log('debug', 'End: Getting list of gateway objects!');
   callback();
 }
