@@ -93,7 +93,12 @@ var item = {
     monthAvg: Number,
     monthSum: Number,
     yearSum: Number
-    }
+  },
+  info: {
+    id_tag: String,
+    id_value: String
+  },
+  type: String
 };
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);

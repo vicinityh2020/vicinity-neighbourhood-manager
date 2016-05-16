@@ -52,6 +52,7 @@ function readDataAndUpdateInCloud(){
 
 function getGatewayObjects(gatewayObjects, callback){
   //XXX: Get list of devices in Exosite from gatewayObjects
+
   winston.log('debug', 'Start: Getting list of gateway objects!');
 
   gatewayobjectOp.find({}, function (error, data){

@@ -8,6 +8,10 @@ var gatewayobject = {
     device_rid: String,
     company_id: ObjectId,
     type: String,
+    info: {
+      id_tag: String,
+      id_value: String
+    },
     data_sources: [{
       name: String,
       rid: String

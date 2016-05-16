@@ -8,6 +8,7 @@ var winston = require('winston');
 var request = require('request');
 var async = require('async');
 var mongoose = require('mongoose');
+var ce = require('cloneextend');
 
 var gatewayobjectOp = require('../../data/model').gatewayobject;
 
@@ -40,6 +41,7 @@ function addDevices(devices, gatewayObjects, callback){
     gatewayObject = new gatewayobjectOp();
 
     gatewayObject.device_id = device._id;
+    gatewayObject.info = ce.clone(device.info);
     var options = { method: 'POST',
       url: 'https://portals.exosite.com/api/portals/v1/portals/2982322286/devices',
       headers:
@@ -105,8 +107,11 @@ function removeDevices(devices, callback){
 
 function createDataSources(gatewayObject, device, device_callback){
   winston.log('debug', 'Start adding datasources');
-  gatewayObject.type == device.type;
-  if (device.type == "TINYM"){
+  gatewayObject.type = device.type;
+  if (!device.type){
+    winston.log('info','Device type could not be recognized!');
+    device_callback();
+  } else if (device.type == "TINYM"){
       datasources = [
         {name: "co2", format: "float", unit: "ppm"},
         {name: "temp", format: "float", unit: "C"},
@@ -145,6 +150,7 @@ function createDataSources(gatewayObject, device, device_callback){
     datasources = [
       {name: "energy", format: "float", unit: "ppm"},
       {name: "switch", format: "boolean", unit: "-"}];
+    device_callback();
   }
 }
 
