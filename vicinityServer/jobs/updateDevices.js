@@ -1,9 +1,10 @@
 var updateDevicesServices = require('../services/updateDevices/facade.js');
+var winston = require('winston');
 
 module.exports.define = function(agenda) {
   agenda.define('update device', function(job){
-    updateDevicesServices.performUpdate();
-    //console.log("Job %s executed.", job.attrs.name);
+      winston.log('debug', 'Job %s executed.', job.attrs.name);
+      updateDevicesServices.performUpdate();
   });
 }
 
