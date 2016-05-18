@@ -32,7 +32,7 @@ factory('userAccountAPIService', function($http){
   };
 
   userAccountAPI.getMyDevices = function(id) {
-    return $http.get('http://localhost:3000/useraccounts/' + id + '/devices');
+    return $http.get('http://localhost:3000/useraccounts/' + id + '/devices?sort=ASC');
   };
 
   userAccountAPI.getFriends = function(id) {

@@ -18,9 +18,11 @@
             </ul>
            </div> -->
            <div class="box box-solid">
-             <div class="box-header with-border">
+
+             <!-- <div class="box-header with-border">
                <h3 class="box-title">Entities</h3>
-             </div>
+             </div> -->
+
              <!-- /.box-header -->
              <div  class="box-body">
                <div class="box-group" id="accordion">
@@ -33,10 +35,34 @@
                        </a>
                      </h4>
                    </div>
+
                    <div id="{{comp._id}}" class="panel-collapse collapse">
                      <div class="box-body box-bg-grey">
                        <div class="row">
-                         <div ng-repeat="dev in devs" ng-show="!dev.isPrivate" class="col-md-4">    <!-- ng-show="dev.accessLevel>1" -->
+
+                         <div ng-show="onlyPrivateDevices" >
+                           <!-- <div class="info-box"> -->
+
+                             <!-- <div class="info-box-content"> -->
+                               <span style="margin-left:20px;" class="info-box-description">There is no shared device with you.</span>
+                             <!-- </div> -->
+
+                           <!-- </div> -->
+                        </div>
+
+                         <!-- <div ng-show="onlyPrivateDevices" class="col-md-4">
+                           <div class="info-box">
+                             <div class="info-box-content">
+                            <span class="info-box-text">lalala</span>
+                             <span >
+                                There is no shared device with you from {{comp.organisation}}.
+                             </span>
+                           </div>
+                           </div>
+                         </div> -->
+
+
+                         <div ng-repeat="dev in devs " ng-show="!dev.isPrivate" class="col-md-4">    <!-- ng-show="dev.accessLevel>1" -->
                            <div class="info-box">
                              <span class="info-box-icon bg-{{dev.color}}"><img src={{dev.avatar}}></span>
                              <div class="info-box-content">

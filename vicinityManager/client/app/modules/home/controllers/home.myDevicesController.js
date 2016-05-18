@@ -14,6 +14,12 @@ angular.module('VicinityManagerApp.controllers')
     $scope.interruptConnection = false;
     $scope.devices=[];
 
+    $scope.showAllDevices = true;
+    $scope.showPrivateDevices = false;
+    $scope.showMetaDevices = false;
+    $scope.showFriendDevices = false;
+    $scope.showPublicDevices = false;
+
     userAccountAPIService.getMyDevices($window.sessionStorage.companyAccountId).success(function (data) {
          $scope.devices = data.message;
          for (dev in $scope.devices){
@@ -21,6 +27,91 @@ angular.module('VicinityManagerApp.controllers')
          }
 
     });
+
+    $scope.allDevices = function (result) {
+
+      $scope.showPrivateDevices = false;
+      $scope.showMetaDevices = false;
+      $scope.showFriendDevices = false;
+      $scope.showPublicDevices = false;
+      $scope.showAllDevices = true;
+
+      $scope.searchFilter = function (result) {
+
+        var keyword=new RegExp($window.sessionStorage.companyAccountId);
+
+        return keyword.test(result.hasAdministrator) ;
+      }
+
+    }
+
+    $scope.privateDevices = function (result) {
+
+      $scope.showAllDevices = false;
+      $scope.showMetaDevices = false;
+      $scope.showFriendDevices = false;
+      $scope.showPublicDevices = false;
+      $scope.showPrivateDevices = true;
+
+      $scope.searchFilter = function (result) {
+
+        var keyword=new RegExp(1);
+
+        return keyword.test(result.accessLevel) ;
+      };
+
+    }
+
+    $scope.metaDevices = function (result) {
+
+      $scope.showAllDevices = false;
+      $scope.showPrivateDevices = false;
+      $scope.showFriendDevices = false;
+      $scope.showPublicDevices = false;
+      $scope.showMetaDevices = true;
+      $scope.searchFilter = function (result) {
+
+        var keyword=new RegExp(2);
+
+        return keyword.test(result.accessLevel) ;
+      };
+
+    }
+
+    $scope.friendDevices = function (result) {
+
+      $scope.showAllDevices = false;
+      $scope.showPrivateDevices = false;
+      $scope.showMetaDevices = false;
+      $scope.showPublicDevices = false;
+      $scope.showFriendDevices = true;
+
+      $scope.searchFilter = function (result) {
+
+        var keyword=new RegExp(3);
+
+        return keyword.test(result.accessLevel) ;
+      };
+
+    }
+
+    $scope.publicDevices = function (result) {
+
+      $scope.showAllDevices = false;
+      $scope.showPrivateDevices = false;
+      $scope.showMetaDevices = false;
+      $scope.showFriendDevices = false;
+      $scope.showPublicDevices = true;
+
+      $scope.searchFilter = function (result) {
+
+        var keyword=new RegExp(4);
+
+        return keyword.test(result.accessLevel) ;
+      };
+
+    }
+
 
     $scope.searchFilter = function (result) {
 

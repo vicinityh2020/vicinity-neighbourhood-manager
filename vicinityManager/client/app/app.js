@@ -101,21 +101,43 @@ angular.module('VicinityManagerApp', [
         })
 
 
-        .state('root.main.companyProfile.neigbourhood', {
-            url: '/neighbourhood',
+        .state('root.main.companyProfile.devices', {
+            url: '/devices',
             views: {
-                'tabPanel@root.main.profile':
+                'tabPanel@root.main.companyProfile':
                     {
-                        templateUrl: 'modules/home/views/home.userProfile.neighbourhoodView.html'
+                        templateUrl: 'modules/home/views/home.companyProfile.devicesView.html',
+                        controller: 'cPdevicesController'
                     }
             }
         })
         .state('root.main.companyProfile.friends', {
             url: '/friends',
             views: {
-                'tabPanel@root.main.profile':
+                'tabPanel@root.main.companyProfile':
                     {
-                        templateUrl: 'modules/home/views/home.userProfile.friendsView.html'
+                        templateUrl: 'modules/home/views/home.companyProfile.friendsView.html',
+                        controller: 'cPfriendsController'
+                    }
+            }
+        })
+        .state('root.main.companyProfile.history', {
+            url: '/history',
+            views: {
+                'tabPanel@root.main.companyProfile':
+                    {
+                        templateUrl: 'modules/home/views/home.companyProfile.historyView.html',
+                        controller: 'cPhistoryController'
+                    }
+            }
+        })
+        .state('root.main.companyProfile.userAccounts', {
+            url: '/userAccounts',
+            views: {
+                'tabPanel@root.main.companyProfile':
+                    {
+                        templateUrl: 'modules/home/views/home.companyProfile.userAccountsView.html',
+                        controller: 'cPuserAccountsController'
                     }
             }
         })

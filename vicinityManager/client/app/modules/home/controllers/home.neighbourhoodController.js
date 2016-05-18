@@ -15,6 +15,7 @@ angular.module('VicinityManagerApp.controllers')
        $scope.devs=[];
        $scope.cancelRequest= false;
        $scope.cancelAccess= true;
+       $scope.onlyPrivateDevices = false;
        $scope.note="Access approved for friends";
 
       //  $scope.notPrivate= true;
@@ -39,12 +40,22 @@ angular.module('VicinityManagerApp.controllers')
       //    });
       //  }
 
+
        $scope.getDevices = function (id) {
          userAccountAPIService.getMyDevices(id).success(function(response) {
             $scope.devs=response.message;
+            var i=0;
             for (dev in $scope.devs){
               itemsAPIService.getItemWithAdd($scope.devs[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
-            }
+              if ($scope.devs[dev].accessLevel > 1){
+                i++;
+              };
+            };
+            if (i == 0){
+              $scope.onlyPrivateDevices = true;
+            }else{
+              $scope.onlyPrivateDevices = false;
+            };
          });
        }
 

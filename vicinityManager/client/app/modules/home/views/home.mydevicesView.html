@@ -18,9 +18,11 @@
             </ul>
            </div> -->
            <div class="box box-solid">
-             <div class="box-header with-border">
+
+             <!-- <div class="box-header with-border">
                <h3 class="box-title">...</h3>
-             </div>
+             </div> -->
+
              <!-- /.box-header -->
              <div class="box-body">
                <div class="box-group" id="accordion">
@@ -28,7 +30,7 @@
                  <div class="panel box box-warning">
                    <div class="box-header with-border">
                      <h4 class="box-title">
-                       <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                       <a ng-click="allDevices()" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
                          My devices
                        </a>
                      </h4>
@@ -39,14 +41,15 @@
                          </a>
 
                          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                            <li><a href="#">Private (Only me)</a></li>
-                            <li><a href="#">Metadata shared with friends</a></li>
-                            <li><a href="#">Public (Everybody)</a></li>
+                            <li><a ng-click="privateDevices()" href="#">Private (Only me)</a></li>
+                            <li><a ng-click="metaDevices()" href="#">Metadata shared with friends</a></li>
+                            <li><a ng-click="friendDevices()" href="#">Shared with my friends</a></li>
+                            <li><a ng-click="publicDevices()" href="#">Public (Everybody)</a></li>
                          </ul>
                         </div>
                      </div>
                    </div>
-                   <div id="collapseThree" class="panel-collapse collapse">
+                   <div id="collapseThree" class="panel-collapse collapse in">
                      <div class="box-body box-bg-grey">
                        <div class="row">
 
@@ -58,7 +61,7 @@
                                  </li>
                                </ul> -->
 
-                         <div ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                         <div ng-show="showAllDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
                            <div class="info-box">
                                <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
@@ -97,7 +100,7 @@
                                </div>  -->
 
 
-                               
+
 
                                <!-- <p class="ratings">
                                  <a href="#"><span class="fa fa-square-o"></span></a>
@@ -106,6 +109,110 @@
                                  <a href="#"><span class="fa fa-square-o"></span></a>
                                  <a href="#"><span class="fa fa-square-o"></span></a>
                                </p> -->
+                             </div>
+                           </div>
+                         </div>
+
+                         <div ng-show="showPrivateDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                           <div class="info-box">
+                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <div class="info-box-content">
+                               <span class="info-box-text">{{device.name}}</span>
+                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
+                               <span class="info-box-description">{{device.electricity.location}}</span>
+
+                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                           </div>
+                         </div>
+
+                         <div ng-show="showMetaDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                           <div class="info-box">
+                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <div class="info-box-content">
+                               <span class="info-box-text">{{device.name}}</span>
+                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
+                               <span class="info-box-description">{{device.electricity.location}}</span>
+
+                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                           </div>
+                         </div>
+
+                         <div ng-show="showFriendDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                           <div class="info-box">
+                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <div class="info-box-content">
+                               <span class="info-box-text">{{device.name}}</span>
+                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
+                               <span class="info-box-description">{{device.electricity.location}}</span>
+
+                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                           </div>
+                         </div>
+
+                         <div ng-show="showPublicDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                           <div class="info-box">
+                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <div class="info-box-content">
+                               <span class="info-box-text">{{device.name}}</span>
+                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
+                               <span class="info-box-description">{{device.electricity.location}}</span>
+
+                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
                              </div>
                            </div>
                          </div>

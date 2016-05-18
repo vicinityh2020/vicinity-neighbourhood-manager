@@ -1,0 +1,13 @@
+<div class="active tab-pane" id="activity">
+  <div class="row">
+    <div ng-repeat="device in devices | filter: searchFilter1" class="col-md-4">
+      <div class="info-box">
+        <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
+        <div class="info-box-content">
+          <span class="info-box-text">{{device.name}}</span>
+          <span class="info-box-description">{{device.location}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

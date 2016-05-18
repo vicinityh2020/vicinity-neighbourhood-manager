@@ -16,4 +16,4 @@ function getMyDevices(req, res, next) {
 
 }
 
-module.exports.getMyDevices = getMyDevices;
+// module.exports.getMyDevices = getMyDevices;

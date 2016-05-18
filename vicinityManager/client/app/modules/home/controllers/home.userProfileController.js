@@ -24,7 +24,23 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
   $scope.followers = [];
   $scope.gateways = [];
 
+  $scope.userAccounts = [];
+  $scope.companyAccounts = [];
+  $scope.thisCompany = {};
+  $scope.friendsThisCom = [];
 
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (data) {
+    $scope.userAccounts = data.message.accountOf;
+    $scope.thisCompany = data.message;
+  });
+
+  userAccountAPIService.getUserAccounts().success(function (data) {
+    $scope.companyAccounts = data.message;
+  });
+
+  userAccountAPIService.getFriends($window.sessionStorage.companyAccountId).success(function (data) {
+    $scope.friendsThisCom = data.message;
+  });
 
 
     $scope.sendNeighbourRequest = function () {

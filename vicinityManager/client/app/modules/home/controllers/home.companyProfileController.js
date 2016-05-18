@@ -8,7 +8,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.avatar = {};
   $scope.occupation = {};
   $scope.organisation = {};
-  $scope.userAccountId = {};
+  $scope.companyAccountId = {};
   $scope.isMyProfile = true;
   $scope.canSendNeighbourRequest = false;
   $scope.canCancelNeighbourRequest = false;
@@ -21,6 +21,8 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.following = [];
   $scope.followers = [];
   $scope.gateways = [];
+  $scope.users = [];
+  $scope.devices = [];
 
 
 
@@ -49,7 +51,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
                 }
 
                 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
-                // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);  
+                // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);
 
             });
     }
@@ -101,12 +103,16 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
 
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
 
+  userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function(response){
+    $scope.devices=response.message;
+  });
+
   function updateScopeAttributes(response){
       $scope.name = response.message.organisation;
       $scope.avatar = response.message.avatar;
       $scope.occupation = response.message.accountOf.occupation;
       $scope.organisation = response.message.organisation;
-      $scope.userAccountId = response.message._id;
+      $scope.companyAccountId = response.message._id;
       $scope.location = response.message.accountOf.location;
       $scope.badges = response.message.badges;
       $scope.notes = response.message.notes;
@@ -115,5 +121,6 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
       $scope.canAnswerNeighbourRequest = response.message.canAnswerNeighbourRequest;
       $scope.isNeighbour = response.message.isNeighbour;
       $scope.friends = response.message.knows;
+      $scope.users = response.message.accountOf;
   };
 });
