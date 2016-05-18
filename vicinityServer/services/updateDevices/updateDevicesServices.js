@@ -52,8 +52,9 @@ function getNewDevices(cloudDevices, sharedDevices){
 
 function storeGatewayObjects(gatewayObjects, callback){
   winston.log('debug', 'Storing gateway objects started');
-
-  async.forEach(gatewayObjects, function(gatewayObject, gateway_callback){
+  winston.log('debug', 'GatewayObejcts will be stored: ' + gatewayObjects.leght);
+  
+  async.forEachSeries(gatewayObjects, function(gatewayObject, gateway_callback){
     gatewayObject.save(function(error, product, numAffected){
       winston.log('debug', 'Stored gateway object ' + gatewayObject.device_id);
       if (error) {

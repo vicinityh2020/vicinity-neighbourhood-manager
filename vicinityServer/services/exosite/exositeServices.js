@@ -1,7 +1,14 @@
+module.exports.getDevices = getDevices;
+module.exports.addDevices = addDevices;
+module.exports.removeDevices = removeDevices;
+module.exports.writeData = writeData;
+
+
 var winston = require('winston');
 var request = require('request');
 var async = require('async');
 var mongoose = require('mongoose');
+var ce = require('cloneextend');
 
 var gatewayobjectOp = require('../../data/model').gatewayobject;
 
@@ -34,6 +41,7 @@ function addDevices(devices, gatewayObjects, callback){
     gatewayObject = new gatewayobjectOp();
 
     gatewayObject.device_id = device._id;
+    gatewayObject.info = ce.clone(device.info);
     var options = { method: 'POST',
       url: 'https://portals.exosite.com/api/portals/v1/portals/2982322286/devices',
       headers:
@@ -72,8 +80,6 @@ function removeDevices(devices, callback){
   winston.log('debug', 'exositeServices.removeDevices start');
   winston.log('debug', 'Number services being removed: ' + devices.length);
 
-  //XXX: Remove device gateway object
-
   async.forEachSeries(devices, function(device, device_callback){
     var options = { method: 'DELETE',
     url: 'https://portals.exosite.com/api/portals/v1/devices/' + device.rid,
@@ -101,7 +107,11 @@ function removeDevices(devices, callback){
 
 function createDataSources(gatewayObject, device, device_callback){
   winston.log('debug', 'Start adding datasources');
-  if (device.type == "TINYM"){
+  gatewayObject.type = device.type;
+  if (!device.type){
+    winston.log('info','Device type could not be recognized!');
+    device_callback();
+  } else if (device.type == "TINYM"){
       datasources = [
         {name: "co2", format: "float", unit: "ppm"},
         {name: "temp", format: "float", unit: "C"},
@@ -128,6 +138,7 @@ function createDataSources(gatewayObject, device, device_callback){
           winston.log('debug', 'datasource.name: ' + datasource.name);
           winston.log('debug', 'data.rid: ' + data.rid);
           gatewayObject.data_sources.push({name: datasource.name, rid: data.rid});
+
           callback();
         });
       }, function(err){
@@ -139,15 +150,50 @@ function createDataSources(gatewayObject, device, device_callback){
     datasources = [
       {name: "energy", format: "float", unit: "ppm"},
       {name: "switch", format: "boolean", unit: "-"}];
+    device_callback();
   }
 }
 
+function writeData(gatewayObjectsWithData, callback){
+  winston.log('debug', 'Start: Writing data to Exosite portal');
 
+  var datasources = [];
+  for (i in gatewayObjectsWithData){
+    for (j in gatewayObjectsWithData[i].data_sources){
+      if (gatewayObjectsWithData[i].data_sources[j].rid != 'false'){
+        winston.log('debug', 'i = %d j= %d', i,j);
+        if (gatewayObjectsWithData[i].data_sources[j].data && gatewayObjectsWithData[i].data_sources[j].data.timestamp && gatewayObjectsWithData[i].data_sources[j].data.value){
+          datasources.push({
+            rid: gatewayObjectsWithData[i].data_sources[j].rid,
+            data: '[[ ' + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ',"'  + gatewayObjectsWithData[i].data_sources[j].data.value + '"]]'
+          });
 
-function createGatewayObject(){
+        }
+      }
+    }
+  }
 
+  async.forEachSeries(datasources, function(datasource, datasource_callback){
+    winston.log('debug', 'Start: writing data in Exosite for datasource: ' + datasource.rid);
+
+    var options = { method: 'POST',
+      url: 'https://portals.exosite.com/api/portals/v1/data-sources/' + datasource.rid + '/data',
+      headers:
+       { 'postman-token': '8b688437-fffc-0aa7-842f-a920901d08fd',
+         'cache-control': 'no-cache',
+         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+      body: datasource.data };
+
+    winston.log('debug','Writing data %s in datasource %s.', datasource.data, datasource.rid);
+
+    request(options, function (error, response, body) {
+      winston.log('debug', 'Response status: %s, body: %s',response.statusCode, body);
+      winston.log('debug', 'End: writing data in Exosite for datasource: ' + datasource.rid);
+      datasource_callback();
+    });
+
+  }, function(err){
+    winston.log('debug', 'End: Writing data to Exosite portal');
+    callback();
+  });
 }
-
-module.exports.getDevices = getDevices;
-module.exports.addDevices = addDevices;
-module.exports.removeDevices = removeDevices;

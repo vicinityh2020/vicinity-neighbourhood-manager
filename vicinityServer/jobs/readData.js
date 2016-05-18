@@ -1,9 +1,22 @@
-module.exports.define = function(agenda){
+var readService = require('../services/readData/facade.js');
+
+// module.exports.define = function(agenda){
+//   agenda.define('read data', function(job){
+//     readService.readDataAndUpdateInCloud();
+//   });
+// }
+//
+// module.exports.every = function(agenda) {
+//   agenda.every('60 seconds', 'read data');
+//   //agenda.now('read data');
+// }
+
+module.exports.define = function(agenda) {
   agenda.define('read data', function(job){
-    console.log('Job %s executed', job.attrs.name);
+    readService.readDataAndUpdateInCloud();
   });
 }
 
 module.exports.every = function(agenda) {
-  agenda.every('10 seconds', 'read data');
+  agenda.every('60 seconds', 'read data');
 }

@@ -13,6 +13,7 @@ function postOne(req, res, next) {
   db.accessRequestFrom = ce.clone(req.body.accessRequestFrom);
   db.accessLevel = req.body.accessLevel;
   db.hasAccess = ce.clone(req.body.hasAccess);
+  db.info = {id_tag: req.body.info.id_tag, id_value: req.body.info.id_value};
   db.color = req.body.color;
   db.avatar = req.body.avatar;
   db.electricity = ce.clone(req.body.electricity);
