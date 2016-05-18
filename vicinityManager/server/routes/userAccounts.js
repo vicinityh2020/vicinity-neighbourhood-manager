@@ -3,10 +3,9 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var friending = require('../helpers/userAccounts/friending');
 var userProfile = require('../helpers/userAccounts/userprofile');
-var postHelper = require('./items/post.js');
 var devices = require('./userAccounts/devices.js');
 var userAccountOp = require('../models/vicinityManager').userAccount;
-var ce = require('cloneextend');
+var winston = require('winston');
 
 router
   .get('/', userProfile.getAll)
@@ -32,10 +31,9 @@ router
   .delete('/:id/friendship', friending.cancelFriendship)
   .get('/:id/devices', devices.getMyDevices)
   .get('/:id/neighbourhood', devices.getNeighbourhood)
-  .get('/:id/friends', function(req, res, next) {
-    debugger;
-    console.log("GET /:id/friends");
-    console.log(":id " + req.params.id);
+  .get('/:id/friends', function(req, res) {
+    winston.log('debug',"GET /:id/friends");
+    winston.log('debug',":id " + req.params.id);
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     userAccountOp.findById(o_id).
