@@ -1,36 +1,33 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var updateDevicesJob = require('./jobs/updateDevices.js');
 var readDataJob = require('./jobs/readData.js');
 var writeDataJob = require('./jobs/writeData.js');
-
+var winston = require('winston');
 var Agenda = require('agenda');
 var Agendash = require('agendash');
-
 var mongoose = require('mongoose');
-
 var app = express();
 
 var agenda = new Agenda({db: {address: "mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager"}});
 
 mongoose.connect('mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager', function(error){
   if (error){
-    console.log("VMModel: Couldn't connect to data source!" + error);
+    winston.log('debug', "VMModel: Couldn't connect to data source!" + error);
   } else {
-    console.log("VMModel: Datasource connection establised!");
+    winston.log('debug', "VMModel: Datasource connection establised!");
   }
 });
 
-//updateDevicesJob.define(agenda);
+updateDevicesJob.define(agenda);
 readDataJob.define(agenda);
-//writeDataJob.define(agenda);
+writeDataJob.define(agenda);
 
 agenda.on('ready', function(){
-  console.log('Agenda connected to mongodb');
+  winston.log('debug', 'Agenda connected to mongodb');
   //updateDevicesJob.every(agenda);
   readDataJob.every(agenda);
   //writeDataJob.every(agenda);
@@ -63,7 +60,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function(err, req, res) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -74,7 +71,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
@@ -86,7 +83,7 @@ app.use(function(err, req, res, next) {
 module.exports = app;
 
 function graceful() {
-  console.log('Stoping agenda!');
+  winston.log('debug', 'Stoping agenda!');
   agenda.stop(function() {
     process.exit(0);
   });
