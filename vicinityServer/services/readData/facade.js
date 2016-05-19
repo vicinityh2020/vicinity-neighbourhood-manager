@@ -12,17 +12,14 @@ winston.level = 'debug';
 function readDataAndUpdateInCloud(){
   winston.log('debug','Start: Read data and update in cloud!');
   var gatewayObjects = [];
-  var tinymData = [];
-  var isData = [];
-  var certData = [];
-
+  
   async.series(
     [function(callback){
       winston.log('debug', 'Getting list of devices shared in Exosite');
       getGatewayObjects(gatewayObjects, callback);
     },
     function(callback){
-      //XXX: Read data from TINYM devices
+      //Read data from TINYM devices
       winston.log('debug', 'Reading data from TINYM devices');
       tinym.getData(gatewayObjects, callback);
     },
