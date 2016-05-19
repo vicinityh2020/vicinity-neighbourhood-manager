@@ -12,7 +12,9 @@ var Agendash = require('agendash');
 var mongoose = require('mongoose');
 var app = express();
 
-var agenda = new Agenda({db: {address: "mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager"}});
+var agenda = new Agenda({db: {address: "mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager"},
+                          maxConcurrency: 1,
+                          defaultConcurrency: 1});
 
 mongoose.connect('mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager', function(error){
   if (error){
@@ -28,8 +30,8 @@ writeDataJob.define(agenda);
 
 agenda.on('ready', function(){
   winston.log('debug', 'Agenda connected to mongodb');
-  //updateDevicesJob.every(agenda);
-  readDataJob.every(agenda);
+  updateDevicesJob.every(agenda);
+  //readDataJob.every(agenda);
   //writeDataJob.every(agenda);
   agenda.start();
 });

@@ -10,5 +10,6 @@ module.exports.define = function(agenda) {
 
 module.exports.every = function(agenda) {
   //agenda.every('10 seconds', 'update device');
-  agenda.now('update device');
+  //agenda.now('update device');
+  agenda.every('60 seconds', 'update device');
 }

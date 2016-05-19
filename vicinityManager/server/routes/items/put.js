@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 
 
-function putOne(req, res, next) {
+function putOne(req, res) {
 //TODO: User authentic - Role check
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);

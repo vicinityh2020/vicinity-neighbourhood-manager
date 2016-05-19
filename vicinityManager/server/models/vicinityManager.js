@@ -96,7 +96,13 @@ var item = {
   },
   info: {
     id_tag: String,
-    id_value: String
+    id_value: String,
+    datasources: [{
+      name: String,
+      typeOf: String,
+      format: String,
+      unitOfMeasurement: String
+    }]
   },
   type: String
 };

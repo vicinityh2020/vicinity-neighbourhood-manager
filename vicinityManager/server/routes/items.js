@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
 var deleteHelper = require('./items/delete.js');
 var putHelper = require('./items/put.js');
 var getHelper = require('./items/get.js');
@@ -12,8 +11,6 @@ var rejectRequest = require('./items/rejectDeviceRequest.js');
 var cancelAccess = require('./items/cancelAccess.js');
 var getAccess = require('./items/getAccess.js');
 // var addHasAccess = require('./items/addHasAccess.js');
-
-var itemOp = require('../models/vicinityManager').item;
 
 router
   .get('/', getHelper.getAll)

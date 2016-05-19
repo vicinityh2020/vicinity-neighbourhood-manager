@@ -52,18 +52,26 @@ function getNewDevices(cloudDevices, sharedDevices){
 
 function storeGatewayObjects(gatewayObjects, callback){
   winston.log('debug', 'Storing gateway objects started');
-  winston.log('debug', 'GatewayObejcts will be stored: ' + gatewayObjects.leght);
-  
+  winston.log('debug', 'GatewayObjects will be stored: ' + gatewayObjects.length);
+
   async.forEachSeries(gatewayObjects, function(gatewayObject, gateway_callback){
+    winston.log('debug', 'Storing gateway object ' + gatewayObject.device_id);
+
     gatewayObject.save(function(error, product, numAffected){
-      winston.log('debug', 'Stored gateway object ' + gatewayObject.device_id);
+
+      winston.log('debug', 'Stored gateway object ' + product._id);
+
       if (error) {
         winston.log('debug', 'Error:' + error);
       }
       gateway_callback();
     });
   }, function(err){
-    winston.log('debug', 'Gatewayobjectd stored!');
+    if (err){
+        winston.log('error', err.message);
+    } else {
+        winston.log('debug', 'Gatewayobjectd stored!');
+    }
     callback();
   });
 }

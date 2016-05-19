@@ -9,7 +9,7 @@ function getSharedDevices(callback){
       winston.log('debug', 'vicinityManagerService.getSharedDevices');
 
       var options = { method: 'GET',
-        url: 'http://localhost:3000/useraccounts/57270b9564114cf603755581/neighbourhood',
+        url: 'http://localhost:3000/useraccounts/573c3140b2d85fed305b9457/neighbourhood?hasAccess=1',
         headers:
          { 'postman-token': '50d8e149-d99b-2094-b376-69aa146b250c',
            'cache-control': 'no-cache',
@@ -17,7 +17,6 @@ function getSharedDevices(callback){
            'x-access-token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ2aWNpbml0eU1hbmFnZXIiLCJzdWIiOiJuZXcud2FkZS53aWxzb25AYmF2ZW5pci5ldSIsImV4cCI6MTQ2Mzk4ODMzNDk3MSwicm9sZXMiOlsidXNlciIsImFkbWluaXN0cmF0b3IiXSwiY29udGV4dCI6eyJuYW1lIjoibmV3LndhZGUud2lsc29uQGJhdmVuaXIuZXUiLCJ1aWQiOiI1NzIyZmQyMzE2ZjljYzE0NDY2NTE5NDgiLCJjaWQiOiI1NzIyZmQyMjE2ZjljYzE0NDY2NTE5NDUifX0.UrKrXLgyzIa10UHCkW7x7knDllNasTe1YPoIyBUWceg' } };
 
       request(options, function (error, response, body) {
-        var data = {};
         if (error) throw new Error(error);
         callback(JSON.parse(body).message);
       });

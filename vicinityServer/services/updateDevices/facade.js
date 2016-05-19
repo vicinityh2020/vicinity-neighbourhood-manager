@@ -1,7 +1,6 @@
 var vicinityManagerServices = require('../vicinityManager/vicinityManagerServices.js');
 var exositeServices = require('../exosite/exositeServices.js');
 var updateDevicesServices = require('./updateDevicesServices.js');
-var mongoose = require('mongoose');
 var winston = require('winston');
 var async = require('async');
 
@@ -67,6 +66,9 @@ function updateListOfDevicesInCloud() {
       }
     ],
       function(err){
+        if (err) {
+          winston.log('error', err.message);
+        }
         winston.log('debug', 'updating devices in exosite done!');
       });
 }

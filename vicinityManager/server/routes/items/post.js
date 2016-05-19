@@ -17,6 +17,7 @@ function postOne(req, res, next) {
   db.color = req.body.color;
   db.avatar = req.body.avatar;
   db.electricity = ce.clone(req.body.electricity);
+  db.info = ce.clone(req.body.info);
 
   db.save(function(err) {
     if (err) {

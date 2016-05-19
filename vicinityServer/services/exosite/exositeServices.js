@@ -7,7 +7,6 @@ module.exports.writeData = writeData;
 var winston = require('winston');
 var request = require('request');
 var async = require('async');
-var mongoose = require('mongoose');
 var ce = require('cloneextend');
 
 var gatewayobjectOp = require('../../data/model').gatewayobject;
@@ -16,7 +15,6 @@ winston.level = 'debug';
 
 function getDevices(callback){
   winston.log('debug', 'exositeServices.getDevices start');
-  var data = [{name: 'sdcdc'}, {name: 'adcscd'}];
 
   var options = { method: 'GET',
     url: 'https://portals.exosite.com/api/portals/v1/portals/2982322286/devices',
@@ -38,7 +36,7 @@ function addDevices(devices, gatewayObjects, callback){
   async.forEachSeries(devices, function(device, device_callback){
 
     winston.log('debug', 'Adding device into exosite: ' + device.name);
-    gatewayObject = new gatewayobjectOp();
+    var gatewayObject = new gatewayobjectOp();
 
     gatewayObject.device_id = device._id;
     gatewayObject.info = ce.clone(device.info);
@@ -66,12 +64,16 @@ function addDevices(devices, gatewayObjects, callback){
 
       request(options, function(error, response, body) {
           winston.log('debug', 'Adding data sources to device.');
+          winston.log('debug', JSON.stringify(body));
           createDataSources(gatewayObject, device, device_callback);
           gatewayObjects.push(gatewayObject);
       });
     });
 
   }, function(err){
+    if (err) {
+      winston.log('error', err.message);
+    }
     callback();
   });
 }
@@ -94,12 +96,19 @@ function removeDevices(devices, callback){
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
       winston.log('debug', 'status code: ' + response.statusCode);
+      winston.log('debug', body);
 
       gatewayobjectOp.remove({device_rid: device.rid}, function(err){
+        if (err){
+          winston.log('error', err.message);
+        }
           device_callback();
       });
     });
   }, function(err){
+    if (err) {
+      winston.log('error', err.message);
+    }
     winston.log('debug', 'All removed!');
     callback();
   });
@@ -111,46 +120,52 @@ function createDataSources(gatewayObject, device, device_callback){
   if (!device.type){
     winston.log('info','Device type could not be recognized!');
     device_callback();
-  } else if (device.type == "TINYM"){
-      datasources = [
-        {name: "co2", format: "float", unit: "ppm"},
-        {name: "temp", format: "float", unit: "C"},
-        {name: "light", format: "float", unit: ""},
-        {name: "moist", format: "float", unit: ""},
-        {name: "movement", format: "boolean", unit: ""},
-        {name: "noise", format: "float", unit: ""}];
+  } else
+  {
+    var datasources = [];
+      if (device.type == "TINYM"){
+        datasources = [
+          {name: "co2", format: "float", unitOfMeasurement: "ppm"},
+          {name: "temp", format: "float", unitOfMeasurement: "C"},
+          {name: "light", format: "float", unitOfMeasurement: ""},
+          {name: "moist", format: "float", unitOfMeasurement: ""},
+          {name: "movement", format: "string", unitOfMeasurement: ""},
+          {name: "noise", format: "float", unitOfMeasurement: ""}];
+      } else if (device.type == "IS") {
+        datasources = [
+          {name: "energy", format: "float", unitOfMeasurement: "ppm"},
+          {name: "switch", format: "boolean", unitOfMeasurement: "-"}];
+    } else if (device.type == "CERTH") {
+        datasources = ce.clone(device.info.datasources);
+    }
+    async.forEachSeries(datasources, function(datasource, callback){
+      winston.log('debug', 'Adding data source: ' + datasource.name);
+      var options = { method: 'POST',
+      url: 'https://portals.exosite.com/api/portals/v1/devices/' + gatewayObject.device_rid +'/data-sources',
+      headers:
+       { 'postman-token': 'fb754a74-fb06-950f-6b81-a070adb3c10d',
+         'cache-control': 'no-cache',
+         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+         body: '{"info":{"description":{"format":"' + datasource.format + '","name":"' + datasource.name + '"}},"unit":"' + datasource.unitOfMeasurement + '"}' };
 
-      async.forEachSeries(datasources, function(datasource, callback){
-        winston.log('debug', 'Adding data source: ' + datasource.name);
-        var options = { method: 'POST',
-        url: 'https://portals.exosite.com/api/portals/v1/devices/' + gatewayObject.device_rid +'/data-sources',
-        headers:
-         { 'postman-token': 'fb754a74-fb06-950f-6b81-a070adb3c10d',
-           'cache-control': 'no-cache',
-           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
-           body: '{"info":{"description":{"format":"' + datasource.format + '","name":"' + datasource.name + '"}},"unit":"' + datasource.unit + '"}' };
+      winston.log('debug', JSON.stringify(options));
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+        winston.log('debug', 'Adding data source done');
+        var data = JSON.parse(body);
+        winston.log('debug', 'datasource.name: ' + datasource.name);
+        winston.log('debug', 'data.rid: ' + data.rid);
+        gatewayObject.data_sources.push({name: datasource.name, rid: data.rid});
 
-        winston.log('debug', JSON.stringify(options));
-        request(options, function (error, response, body) {
-          if (error) throw new Error(error);
-          winston.log('debug', 'Adding data source done');
-          data = JSON.parse(body);
-          winston.log('debug', 'datasource.name: ' + datasource.name);
-          winston.log('debug', 'data.rid: ' + data.rid);
-          gatewayObject.data_sources.push({name: datasource.name, rid: data.rid});
-
-          callback();
-        });
-      }, function(err){
-        winston.log('debug', 'Adding all data sources done');
-        device_callback();
+        callback();
       });
-
-  } else if (device.type = "IS") {
-    datasources = [
-      {name: "energy", format: "float", unit: "ppm"},
-      {name: "switch", format: "boolean", unit: "-"}];
-    device_callback();
+    }, function(err){
+      if (err) {
+        winston.log('error', err.message);
+      }
+      winston.log('debug', 'Adding all data sources done');
+      device_callback();
+    });
   }
 }
 
@@ -158,8 +173,8 @@ function writeData(gatewayObjectsWithData, callback){
   winston.log('debug', 'Start: Writing data to Exosite portal');
 
   var datasources = [];
-  for (i in gatewayObjectsWithData){
-    for (j in gatewayObjectsWithData[i].data_sources){
+  for (var i in gatewayObjectsWithData){
+    for (var j in gatewayObjectsWithData[i].data_sources){
       if (gatewayObjectsWithData[i].data_sources[j].rid != 'false'){
         winston.log('debug', 'i = %d j= %d', i,j);
         if (gatewayObjectsWithData[i].data_sources[j].data && gatewayObjectsWithData[i].data_sources[j].data.timestamp && gatewayObjectsWithData[i].data_sources[j].data.value){
@@ -193,6 +208,9 @@ function writeData(gatewayObjectsWithData, callback){
     });
 
   }, function(err){
+    if (err) {
+      winston.log('error', err.message);
+    }
     winston.log('debug', 'End: Writing data to Exosite portal');
     callback();
   });
