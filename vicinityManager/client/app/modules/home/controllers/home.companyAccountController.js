@@ -14,6 +14,6 @@ controller('companyAccountController', function($scope, $window, userAccountAPIS
     $scope.name = response.message.organisation;
     $scope.avatar = response.message.avatar;
     $scope.companyAccountId = response.message._id;
-    $scope.loaded = false;
+    $scope.loaded = true;
   });
 });

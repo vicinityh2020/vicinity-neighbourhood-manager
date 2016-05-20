@@ -6,6 +6,7 @@ controller('userAccountController', function($scope, $window, userAccountAPIServ
   $scope.organisation = {};
   $scope.userAccountId = {};
   $scope.companyAccountId = {};
+  $scope.loaded = false;
 
   $scope.signout = function(){
     console.log("Begin: Signout");
@@ -14,15 +15,6 @@ controller('userAccountController', function($scope, $window, userAccountAPIServ
   }
 
   userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (response) {
-
-    // for (i = 0; i < response.message.accountOf.length; i++) {
-    //   if (response.message.accountOf[i].email==$window.sessionStorage.username){
-    //     $scope.name =response.message.accountOf[i].name;
-    //     $scope.occupation=response.message.accountOf[i].occupation;
-    //     $scope.avatar =response.message.accountOf[i].avatar;
-    //     $scope.userAccountId = response.message.accountOf[i]._id;
-    //   };
-    // };
 
     i=0;
     j=0;
@@ -37,11 +29,9 @@ controller('userAccountController', function($scope, $window, userAccountAPIServ
       j++;
     }
 
-    // $scope.name = response.message.organisation;
-    // $scope.avatar = response.message.avatar;
-    // $scope.occupation = response.message.accountOf.occupation;
     $scope.organisation = response.message.organisation;
     $scope.companyAccountId = response.message._id;
+    $scope.loaded = true;
   });
 
 
