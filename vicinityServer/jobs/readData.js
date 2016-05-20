@@ -18,6 +18,6 @@ module.exports.define = function(agenda) {
 }
 
 module.exports.every = function(agenda) {
-  agenda.now('read data');
-  //agenda.every('60 seconds', 'read data');
+  //agenda.now('read data');
+  agenda.every('60 seconds', 'read data');
 }

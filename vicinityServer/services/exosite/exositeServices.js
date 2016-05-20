@@ -180,7 +180,7 @@ function writeData(gatewayObjectsWithData, callback){
         if (gatewayObjectsWithData[i].data_sources[j].data && gatewayObjectsWithData[i].data_sources[j].data.timestamp && gatewayObjectsWithData[i].data_sources[j].data.value){
           datasources.push({
             rid: gatewayObjectsWithData[i].data_sources[j].rid,
-            data: '[[ ' + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ',"'  + gatewayObjectsWithData[i].data_sources[j].data.value + '"]]'
+            data: "[[ " + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ",'"  + gatewayObjectsWithData[i].data_sources[j].data.value + "']]"
           });
 
         }
@@ -199,8 +199,9 @@ function writeData(gatewayObjectsWithData, callback){
          authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
       body: datasource.data };
 
-    winston.log('debug','Writing data %s in datasource %s.', datasource.data, datasource.rid);
 
+    winston.log('debug','Writing data %s in datasource %s.', datasource.data, datasource.rid);
+    winston.log('debug',JSON.stringify(options));
     request(options, function (error, response, body) {
       winston.log('debug', 'Response status: %s, body: %s',response.statusCode, body);
       winston.log('debug', 'End: writing data in Exosite for datasource: ' + datasource.rid);
