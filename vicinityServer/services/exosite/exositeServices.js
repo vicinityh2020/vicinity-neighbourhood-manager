@@ -180,7 +180,7 @@ function writeData(gatewayObjectsWithData, callback){
         if (gatewayObjectsWithData[i].data_sources[j].data && gatewayObjectsWithData[i].data_sources[j].data.timestamp && gatewayObjectsWithData[i].data_sources[j].data.value){
           datasources.push({
             rid: gatewayObjectsWithData[i].data_sources[j].rid,
-            data: "[[ " + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ",'"  + gatewayObjectsWithData[i].data_sources[j].data.value + "']]"
+            data: '[[ ' + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ',"'  + gatewayObjectsWithData[i].data_sources[j].data.value + '"]]'
           });
 
         }
