@@ -1,4 +1,9 @@
- <div class="profile">
+<div ng-hide="loaded">
+  <div style="margin: auto; width:60%">
+    <i class="fa fa-refresh fa-spin fa-5x" style="color: #ECF0F1"></i>
+  </div>
+</div>
+<div class="profile" ng-show="loaded">
     <div class="profile_pic">
         <a ng-href="#/profile/company/{{companyAccountId}}/friends"> <img src={{avatar}} alt="..." class="img-circle profile_img"></a>
     </div>
@@ -6,4 +11,4 @@
         <!-- <span>Welcome,</span> -->
         <a ng-href="#/profile/company/{{companyAccountId}}/friends"><h2 class="profile_header">{{name}}</h2></a>
     </div>
- </div>
+</div>
