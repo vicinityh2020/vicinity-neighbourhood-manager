@@ -12,7 +12,7 @@ winston.level = 'debug';
 function readDataAndUpdateInCloud(){
   winston.log('debug','Start: Read data and update in cloud!');
   var gatewayObjects = [];
-  
+
   async.series(
     [function(callback){
       winston.log('debug', 'Getting list of devices shared in Exosite');
@@ -29,12 +29,10 @@ function readDataAndUpdateInCloud(){
       is.getData(gatewayObjects, callback);
     },
     function(callback){
-      //XXX: Read data form CERT
       winston.log('debug', 'Reading data from CERT devices');
       certh.getData(gatewayObjects, callback);
     },
     function(callback){
-      //XXX: Writing data to exosite datasources
       winston.log('debug', 'Writing data to exosite');
       exosite.writeData(gatewayObjects, callback);
     }],
@@ -48,7 +46,6 @@ function readDataAndUpdateInCloud(){
 }
 
 function getGatewayObjects(gatewayObjects, callback){
-  //XXX: Get list of devices in Exosite from gatewayObjects
 
   winston.log('debug', 'Start: Getting list of gateway objects!');
 
