@@ -1,0 +1,151 @@
+<section class="content">
+      <div class="row">
+        <!-- <div class="col-md-12"> -->
+
+          <!-- <div class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Share with
+              <span class="caret"></span>
+            </a>
+
+            <ul class="dropdown-menu" role="menu">
+               <li><a href="#">Only me (Private)</a></li>
+               <li><a href="#">Neighbourhood</a></li>
+               <li><a href="#">Everybody (Public)</a></li>
+            </ul>
+           </div> -->
+
+           <!-- <div class="box box-solid"> -->
+
+             <!-- <div class="box-header with-border">
+               <h3 class="box-title">Entities</h3>
+             </div> -->
+
+             <!-- /.box-header -->
+             <!-- <div  class="box-body"> -->
+               <!-- <div class="box-group" id="accordion"> -->
+
+                 <!-- <div class="box-header with-border"> -->
+
+                   <!-- <h4 class="box-title">
+                     <a ng-click="allDevices()" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                       Neigbourhood
+                     </a>
+                   </h4> -->
+                   <!-- <div class="box-tools2"> -->
+
+                     <div id="ramik"class="input-group bvr2-navbar-form navbar-right col-md-2 ">
+                       <input id="bvr-search-input" type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm">
+                       <span class="input-group-btn">
+                         <button  type="submit" name="search" id="search-btn" class="btn btn-flat" ><i class="fa fa-search"></i>      <!-- ui-sref="root.main.neighbourhood({searchTerm: searchTerm})" -->
+                         </button>
+                       </span>
+                     </div>
+
+                   <!-- </div> -->
+
+                 <!-- </div> -->
+
+                       <!-- <div class="row"> -->
+
+                         <!-- action="" method="get" class="navbar-form navbar-right bvr-navbar-form"> -->
+
+
+
+
+                         <div ng-show="onlyPrivateDevices" >
+
+                            <span style="margin-left:20px;" class="info-box-description">There is no shared device with you.</span>
+
+                        </div>
+
+                         <div ng-repeat="dev in devs | filter: searchFilter" ng-show="!dev.isPrivate" class="col-md-3">    <!-- ng-show="dev.accessLevel>1" -->
+
+                           <div class="box box-widget widget-user-2">
+                             <div class="widget-user-header bg-yellow">
+                               <div class="widget-user-image">
+                                 <img class="img-circle" ng-src="{{dev.avatar}}" alt="Device Avatar">
+                               </div>
+                               <!-- <span class="info-box-icon bg-{{dev.color}}"><img src={{dev.avatar}}></span> -->
+                               <h3 class="widget-user-username2">{{dev.name}}</h3>
+                               <h5 class="widget-user-desc2">{{dev.electricity.location}}</h5>
+                               <h5 class="widget-user-desc2">{{dev.hasAdministrator[0].organisation}}</h5>
+                               <h5 class="widget-user-desc2">{{dev.electricity.serial_number}}</h5>
+                               <!-- <span class="info-box-text">{{dev.name}}</span>
+                               <span class="info-box-description">{{dev.electricity.location}}</span>
+                               <span class="info-box-description">{{dev.hasAdministrator[0].organisation}}</span>
+                               <span class="info-box-description">{{dev.electricity.serial_number}}</span> -->
+
+                               <span ng-show="dev.isFriendData" class="widget-user-desc2">{{note}}</span>
+
+                                <a ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class="btn-sm btn-success btn-block loc_a" >
+                                   <i class="fa fa-bar-chart fa-lg"></i>
+                                   <i class="fa fa-plus fa-lg"></i>
+                                    &nbsp;<b>Get access!</b>
+                               </a>
+
+                               <a ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a " >
+                                  <i class="fa fa-bar-chart fa-lg"></i>
+                                  <i class="fa fa-times fa-lg"></i>
+                                   &nbsp;Cancel request
+                              </a>
+
+                              <div ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified">
+                              <div class="btn-group-sm btn-block loc_a ">
+                                <button type="button" class="btn col-lg-10 btn-default ">
+
+                                   <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+                                <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+                                  <span class="caret"></span>
+                                  <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+                                   <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+                                </ul>
+                              </div>
+                              </div>
+
+                              <!-- <a ng-show="dev.accessLevel==3 && cancelAccess" ng-click="cancelAccess1()"  class="btn-sm btn-default btn-block loc_a " >
+                                 <i class="fa fa-bar-chart fa-lg"></i>
+                                 <i class="fa fa-times fa-lg"></i>
+                                  &nbsp;Cancel access
+                             </a> -->
+
+
+                             <!-- <a ng-show="dev.isFriendData && !dev.cancelAccess2" ng-click="getAccess2(dev._id)"  class="btn-sm btn-success btn-block loc_a" >
+                                <i class="fa fa-bar-chart fa-lg"></i>
+                                <i class="fa fa-plus fa-lg"></i>
+                                 &nbsp;<b>Get access!</b>
+                            </a> -->
+
+                             <p ng-show="dev.isPublic"class="ratings">
+                              <span class="active_data widget-user-desc2"><a href="/#" class="fa fa-bar-chart fa-2x" > </a> Device is public</span> <!-- title="connection established, see details" -->
+                            </p>
+
+
+                             </div>
+                             <!-- <a href="" class="widget-user-footer-moreinfo">More info <i class="fa fa-arrow-circle-right"></i></a> -->
+                           </div>
+                         </div>
+
+
+                       <!-- </div> -->
+                     <!-- </div> -->
+                     <div class="box-footer clear-fix">
+                       <ul class="pagination pagination-sm no-margin pull-right">
+                         <li><a href="#">«</a></li>
+                         <li><a href="#">1</a></li>
+                         <li><a href="#">2</a></li>
+                         <li><a href="#">»</a></li>
+                       </ul>
+                     </div>
+
+                   <!-- </div> -->
+
+
+             <!-- </div> -->
+
+           <!-- </div> -->
+
+        </div>
+</section>
