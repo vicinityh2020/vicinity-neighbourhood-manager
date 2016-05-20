@@ -210,6 +210,16 @@ ul.widget_profile_box li .profile_img {
   color: #222d32;
 }
 
+/*.widget-user-header .active_data {
+  color #FFF;
+  border: 5px;
+  border-color: #222d32;
+  border-width: thick;
+  border-radius: 0%;
+}*/
+
+
+
 .ratings .active_data .fa-bar-chart:hover {
   color: #00a65a;
 }
@@ -333,6 +343,54 @@ ul.widget_profile_box li .profile_img {
 .edit_profile:focus{
   visibility: visible;
 }*/
+
+.skin-blue .bvr2-navbar-form {
+  border-radius: 3px;
+  border: 0px solid #374850;
+  margin: 8px 10px;
+}
+.skin-blue .bvr2-navbar-form input[type="text"],
+.skin-blue .bvr2-navbar-form .btn {
+  box-shadow: none;
+  background-color: #FFF;
+  border: 1px solid transparent;
+  height: 35px;
+  -webkit-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+.skin-blue .bvr2-navbar-form input[type="text"] {
+  color: #3c8dbc;
+  border-color: #3c8dbc;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 3px;
+}
+.skin-blue .bvr2-navbar-form input[type="text"]:focus,
+.skin-blue .bvr2-navbar-form input[type="text"]:focus + .input-group-btn .btn {
+  background-color: #FFF;
+  color: #3c8dbc;
+}
+.skin-blue .bvr2-navbar-form input[type="text"]:focus + .input-group-btn .btn {
+  /*border-left-color: #3c8dbc;*/
+  border-left: : 0px solid transparent;
+}
+
+.skin-blue .bvr2-navbar-form input[type="text"]:focus {
+  border-right: 0px solid transparent;
+}
+
+.skin-blue .bvr2-navbar-form .btn {
+  color: #3c8dbc;
+  border-top-left-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 0;
+  border-left: 0px;
+  border-color: #3c8dbc;
+}
+
 
 .btn-primary-bvr {
   /*background-color: #3c8dbc;

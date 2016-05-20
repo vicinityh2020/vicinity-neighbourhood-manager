@@ -1728,6 +1728,15 @@ a:focus {
   margin: 0;
   line-height: 1;
 }
+
+.box-header .box-title2 {
+  display: inline-block;
+  font-size: 18px;
+  margin: 0;
+  line-height: 2;
+  color: #FFF;
+}
+
 .box-header > .fa,
 .box-header > .glyphicon,
 .box-header > .ion {
@@ -1738,6 +1747,13 @@ a:focus {
   right: 10px;
   top: 5px;
 }
+
+.box-header > .box-tools2 {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
+
 .box-header > .box-tools [data-toggle="tooltip"] {
   position: relative;
 }
@@ -3031,6 +3047,24 @@ table.text-center th {
   height: auto;
   float: left;
 }
+
+.widget-user-2 .widget-user-username2, {
+  margin-left: 75px;
+}
+
+.widget-user-2 .widget-user-username2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.widget-user-2 .widget-user-desc2 {
+  margin-top: 0;
+  margin-left: 75px;
+}
+
+
 /*
  * Page: Mailbox
  * -------------

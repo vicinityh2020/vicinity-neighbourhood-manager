@@ -59,8 +59,8 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
-        .state('root.main.neigbourhood', {
-          url: '/neighbourhood',
+        .state('root.main.neighbourhood', {
+          url: '/neighbourhood/:searchTerm',
           views: {
             'mainContentView@root':
               {
@@ -69,6 +69,16 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+        // .state('root.main.neighbourhoodSearch', {
+        //   url: '/neighbourhoodSearch',
+        //   views: {
+        //     'mainContentView@root':
+        //       {
+        //         templateUrl: 'modules/home/views/home.neighbourhoodSearchView.html',
+        //         controller: 'neighbourhoodSearchController'
+        //       }
+        //   }
+        // })
         .state('root.main.mydevices', {
           url: '/mydevices',
           views: {
