@@ -70,6 +70,9 @@ function getNeighbourhood(req, res) {
                 var cancelAccess2 = false;
                 var cancelRequest2 = false;
                 var interruptConnection2 = false;
+                var isMetaCanReq = -5;
+                var isMetaNotReq = -5;
+                var isMetaInter = -5;
                 device = data[index];
 
                 if (activeCompany_id.toString() === device.hasAdministrator[0]._id.toString()){
@@ -137,6 +140,24 @@ function getNeighbourhood(req, res) {
                   isPublic = true;
                 };
 
+                if (isMeta && cancelRequest2){
+                  isMetaCanReq = 100;
+                  isMetaNotReq = -5;
+                  isMetaInter = -5;
+                };
+
+                if (isMeta && !cancelRequest2 && !interruptConnection2){
+                  isMetaCanReq = -5;
+                  isMetaInter = -5;
+                  isMetaNotReq = 100;
+                };
+
+                if (isMeta && interruptConnection2){
+                  isMetaCanReq = -5;
+                  isMetaInter = 100;
+                  isMetaNotReq = -5;
+                };
+
                 deviceWithAdd = device.toObject();
                 deviceWithAdd.isOwner = isOwner;
                 deviceWithAdd.canAnswer = canAnswer;
@@ -147,6 +168,10 @@ function getNeighbourhood(req, res) {
                 deviceWithAdd.cancelAccess2 = cancelAccess2;
                 deviceWithAdd.cancelRequest2 = cancelRequest2;
                 deviceWithAdd.interruptConnection2 = interruptConnection2;
+
+                deviceWithAdd.isMetaCanReq = isMetaCanReq;
+                deviceWithAdd.isMetaInter = isMetaInter;
+                deviceWithAdd.isMetaNotReq = isMetaNotReq;
 
                 plain_data.push(deviceWithAdd);
 

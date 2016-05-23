@@ -16,7 +16,10 @@ angular.module('VicinityManagerApp.controllers')
        $scope.cancelRequest= false;
        $scope.cancelAccess= true;
        $scope.onlyPrivateDevices = false;
-       $scope.note="Access approved for friends";
+       $scope.note="Access for friends";
+       $scope.isF = 0;
+      //  $scope.getNeigh = true;
+      //  $scope.getAdd = false;
 
       //  $scope.notPrivate= true;
 
@@ -42,6 +45,9 @@ angular.module('VicinityManagerApp.controllers')
 
       userAccountAPIService.getNeighbourhood($window.sessionStorage.companyAccountId).success(function (data) {
         $scope.devs = data.message;
+
+        // $scope.getNeigh = true;
+        // $scope.getAdd = false;
         var i=0;
         for (dev in $scope.devs){
           // updateDev($scope.devs[dev]);
@@ -153,7 +159,8 @@ angular.module('VicinityManagerApp.controllers')
         for (dev in $scope.devs){
           if ($scope.devs[dev]._id.toString()===response.message._id.toString()){        //updatne len ten device, ktory potrebujeme
               $scope.devs[dev]=response.message;
-
+              // $scope.getNeigh = false;
+              // $scope.getAdd = true;
           }
         };
        }

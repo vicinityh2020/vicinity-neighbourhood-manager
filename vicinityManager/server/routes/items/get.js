@@ -4,6 +4,7 @@ module.exports.getItemWithAdd = getItemWithAdd;
 
 var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
+var userAccountOp = require('../../models/vicinityManager').userAccount;
 var winston = require('winston');
 
 winston.level='debug';
@@ -63,8 +64,12 @@ function getItemWithAdd(req, res, next) {
     var cancelAccess2 = false;
     var cancelRequest2 = false;
     var interruptConnection2 = false;
+    var isMetaCanReq = -5;
+    var isMetaNotReq = -5;
+    var isMetaInter = -5;
 
-    itemOp.find({_id: dev_id}, function (err, data) {
+    itemOp.find({_id: dev_id}).populate('hasAdministrator','organisation')
+        .exec(function(err, data){
       if (err || data === null) {
           response = {"error": true, "message": "Processing data failed!"};
       } else {
@@ -72,7 +77,7 @@ function getItemWithAdd(req, res, next) {
 
               var device = data[0];
 
-              if (activeCompany_id.toString() === device.hasAdministrator.toString()){
+              if (activeCompany_id.toString() === device.hasAdministrator[0]._id.toString()){
                 isOwner = true;
               } else {
                 isOwner = false;
@@ -137,8 +142,40 @@ function getItemWithAdd(req, res, next) {
                 isPublic = true;
               };
 
+              if (isMeta && cancelRequest2){
+                isMetaCanReq = 100;
+                isMetaNotReq = -5;
+                isMetaInter = -5;
+              };
+
+              if (isMeta && !cancelRequest2 && !interruptConnection2){
+                isMetaCanReq = -5;
+                isMetaInter = -5;
+                isMetaNotReq = 100;
+              };
+
+              if (isMeta && interruptConnection2){
+                isMetaCanReq = -5;
+                isMetaInter = 100;
+                isMetaNotReq = -5;
+              };
+
+
+              // var company = {};
+              var plain_data = {};
+              // var comp_id = device.hasAdministrator[0];
+
+              // if (device.hasAdministrator.length >=1){
+              //   userAccountOp.find({_id: comp_id}, function (err, data2) {
+              //       company = data2;
+              //   });
+              // };
+
               plain_data = device.toObject();
               plain_data.isOwner = isOwner;
+
+              // plain_data.organisation = company.organisation;
+
               plain_data.canAnswer = canAnswer;
               plain_data.isPrivate = isPrivate;
               plain_data.isMeta = isMeta;
@@ -148,9 +185,13 @@ function getItemWithAdd(req, res, next) {
               plain_data.cancelRequest2 = cancelRequest2;
               plain_data.interruptConnection2 = interruptConnection2;
 
+              plain_data.isMetaCanReq = isMetaCanReq;
+              plain_data.isMetaNotReq = isMetaNotReq;
+              plain_data.isMetaInter = isMetaInter;
+
+
               response = {"error": false, "message": plain_data};
 
-              // device.save();
 
         } else {
               response = {"error": true, "message": "Processing data failed!"};
