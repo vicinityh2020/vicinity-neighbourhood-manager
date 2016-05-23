@@ -23,6 +23,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.gateways = [];
   $scope.users = [];
   $scope.devices = [];
+  $scope.loaded = false;
 
 
 
@@ -101,7 +102,11 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
     $scope.isMyProfile = false;
   }
 
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(
+    function(response){
+      updateScopeAttributes(response);
+      $scope.loaded = true;
+    });
 
   userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function(response){
     $scope.devices=response.message;

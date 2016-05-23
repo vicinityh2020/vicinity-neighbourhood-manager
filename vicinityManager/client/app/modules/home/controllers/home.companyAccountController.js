@@ -5,6 +5,7 @@ controller('companyAccountController', function($scope, $window, userAccountAPIS
   // $scope.occupation = {};
   // $scope.organisation = {};
   $scope.companyAccountId = {};
+  $scope.loaded = false;
   n=0;
 
 
@@ -13,8 +14,6 @@ controller('companyAccountController', function($scope, $window, userAccountAPIS
     $scope.name = response.message.organisation;
     $scope.avatar = response.message.avatar;
     $scope.companyAccountId = response.message._id;
-    // $scope.occupation = response.message.accountOf.occupation;
-    // $scope.organisation = response.message.accountOf.organisation;
-    // $scope.userAccountId = response.message._id;
+    $scope.loaded = true;
   });
 });

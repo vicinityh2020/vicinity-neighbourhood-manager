@@ -19,13 +19,14 @@ angular.module('VicinityManagerApp.controllers')
     $scope.showMetaDevices = false;
     $scope.showFriendDevices = false;
     $scope.showPublicDevices = false;
+    $scope.loaded = false;
 
     userAccountAPIService.getMyDevices($window.sessionStorage.companyAccountId).success(function (data) {
          $scope.devices = data.message;
          for (dev in $scope.devices){
            itemsAPIService.getItemWithAdd($scope.devices[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
          }
-
+         $scope.loaded = true;
     });
 
     $scope.allDevices = function (result) {
@@ -42,7 +43,6 @@ angular.module('VicinityManagerApp.controllers')
 
         return keyword.test(result.hasAdministrator) ;
       }
-
     }
 
     $scope.privateDevices = function (result) {

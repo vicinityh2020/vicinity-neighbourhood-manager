@@ -15,7 +15,6 @@ function getData(gatewayObjects, callback){
   async.waterfall([
       function(device_callback){
           winston.debug('debug', 'Getting list of messages');
-          //XXX: List of last messages
           var tinymMessages = [];
 
           var options = { method: 'GET',
@@ -36,7 +35,6 @@ function getData(gatewayObjects, callback){
       },
       function(tinymMessages, device_callback){
           var filteredTinymMessages =  [];
-          //XXX: Sort and filter (latest and only for devices) messages
           if (tinymMessages.length > 0){
             for (i in gatewayObjects){
               var j = 0;
@@ -62,7 +60,6 @@ function getData(gatewayObjects, callback){
           return device_callback(null, filteredTinymMessages);
       },
       function(filteredTinymMessages, device_callback){
-          //XXX: For each TINYM gateway object read last data, extract datasource values and update gatewayObject with timestamp and value of data_source
 
           for (var i in filteredTinymMessages){
               for (var j in gatewayObjects){

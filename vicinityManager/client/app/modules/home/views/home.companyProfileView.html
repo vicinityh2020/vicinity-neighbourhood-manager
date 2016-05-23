@@ -4,11 +4,12 @@
 
 
 <section class="content">
+      <div class="row" >
+        <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+          <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+        </div>
 
-
-
-      <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-3" ng-show="loaded">
 
           <!-- Profile Image -->
           <div class="box box-primary">
@@ -106,8 +107,8 @@
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
-    </div>
-        <div class="col-md-9">
+        </div>
+        <div class="col-md-9" ng-show="loaded">
           <div class="nav-tabs-custom">
                        <!-- Nav tabs -->
             <ul class="nav nav-tabs">

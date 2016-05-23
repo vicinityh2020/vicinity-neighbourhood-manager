@@ -1,6 +1,7 @@
 angular.module('VicinityManagerApp.controllers').
   controller('searchController', function ($scope, searchAPIService, userAccountAPIService, $stateParams) {
     $scope.resultsList = [];
+    $scope.loaded = false;
 
 
     $scope.searchFilter = function (result) {
@@ -12,5 +13,6 @@ angular.module('VicinityManagerApp.controllers').
     userAccountAPIService.getUserAccounts().success(function (response) {
       var results = response.message;
       $scope.resultsList = results;
+      $scope.loaded = true;
     });
   });

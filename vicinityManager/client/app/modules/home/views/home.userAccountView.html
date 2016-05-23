@@ -1,11 +1,12 @@
+<a class="fa fa-refresh fa-spin fa-2x" style="color: #ECF0F1" ng-hide="loaded"></i>
 <!-- Menu Toggle Button -->
-<a href="" class="dropdown-toggle" data-toggle="dropdown">
+<a href="" class="dropdown-toggle" data-toggle="dropdown" ng-show="loaded">
   <!-- The user image in the navbar-->
   <img ng-src="{{avatar}}" class="user-image" alt="User Image">
   <!-- hidden-xs hides the username on small devices so only the image appears. -->
   <span class="hidden-xs">{{name}}</span>
 </a>
-<ul class="dropdown-menu">
+<ul class="dropdown-menu" ng-show="loaded">
   <!-- The user image in the menu -->
   <li class="user-header">
     <img ng-src="{{avatar}}" class="img-circle" alt="User Image">
