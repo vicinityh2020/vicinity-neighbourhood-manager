@@ -41,7 +41,7 @@ angular.module('VicinityManagerApp.controllers')
 
         var keyword=new RegExp($window.sessionStorage.companyAccountId);
 
-        return keyword.test(result.hasAdministrator) ;
+        return keyword.test(result.hasAdministrator[0]._id) ;
       }
     }
 
@@ -117,7 +117,7 @@ angular.module('VicinityManagerApp.controllers')
 
       var keyword=new RegExp($window.sessionStorage.companyAccountId);
 
-      return keyword.test(result.hasAdministrator) ;
+      return keyword.test(result.hasAdministrator[0]._id) ;
     }
 
     $scope.acceptDataRequest = function (dev_id) {

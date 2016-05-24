@@ -47,6 +47,10 @@
     background: #f7f7f7 !important;
 }
 
+.box-bg-dark-grey {
+    background: #ecf0f5 !important;
+}
+
 .info-box-description {
   display: block;
   font-size: 12px;
@@ -314,6 +318,22 @@ ul.widget_profile_box li .profile_img {
 }
 
 .bg-yellow img{
+  width: 70%;
+  height: 70%;
+}
+
+.bg-gold img{
+  width: 70%;
+  height: 70%;
+}
+
+
+.bg-olive img{
+  width: 70%;
+  height: 70%;
+}
+
+.bg-green-active img{
   width: 70%;
   height: 70%;
 }

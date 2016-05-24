@@ -4,8 +4,12 @@
 
 
 <section class="content">
-      <div class="row">
-        <div class="col-md-12">
+      <div class="row" style="width: 100%">
+        <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+          <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+        </div>
+
+        <div class="col-md-12" ng-show="loaded">
           <!-- <div class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Share with
               <span class="caret"></span>
@@ -17,7 +21,12 @@
                <li><a href="#">Everybody (Public)</a></li>
             </ul>
            </div> -->
-           <div class="box box-solid">
+
+
+
+           <!-- <div class="box box-solid">                             toto bolo povodne-->
+
+
 
              <!-- <div class="box-header with-border">
                <h3 class="box-title">...</h3>
@@ -27,7 +36,7 @@
              <div class="box-body">
                <div class="box-group" id="accordion">
                  <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
-                 <div class="panel box box-warning">
+                 <div class="panel box-bg-dark-grey box-warning">
                    <div class="box-header with-border">
                      <h4 class="box-title">
                        <a ng-click="allDevices()" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
@@ -50,7 +59,9 @@
                      </div>
                    </div>
                    <div id="collapseThree" class="panel-collapse collapse in">
-                     <div class="box-body box-bg-grey">
+
+                     <!-- <div class="box-body box-bg-grey">                        toto bolo povodne-->
+
                        <div class="row">
 
                          <!-- <ul class="phones">
@@ -62,17 +73,28 @@
                                </ul> -->
 
                          <div ng-show="showAllDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
-                           <div class="info-box">
-                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
-                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
-                             <div class="info-box-content">
-                               <span class="info-box-text">{{device.name}}</span>
-                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
-                               <span class="info-box-description">{{device.electricity.location}}</span>
+                           <!-- <div class="info-box"> -->
 
-                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                           <div class="box box-widget widget-user-2">
+
+                           <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+
+                           <!-- <div class="info-box-content"> -->
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                               </div>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+
+                               <h3 class="widget-user-username2">{{device.name}}</h3>
+                               <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
+                               <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+
+                               <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
-                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
                                    <span class="sr-only">Toggle Dropdown</span>
@@ -110,21 +132,32 @@
                                  <a href="#"><span class="fa fa-square-o"></span></a>
                                </p> -->
                              </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
 
                          <div ng-show="showPrivateDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
-                           <div class="info-box">
-                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
-                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
-                             <div class="info-box-content">
-                               <span class="info-box-text">{{device.name}}</span>
-                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
-                               <span class="info-box-description">{{device.electricity.location}}</span>
+                           <!-- <div class="info-box"> -->
+                           <div class="box box-widget widget-user-2">
 
-                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                               </div>
+
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+
+                             <!-- <div class="info-box-content"> -->
+
+                             <h3 class="widget-user-username2">{{device.name}}</h3>
+                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
-                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
                                    <span class="sr-only">Toggle Dropdown</span>
@@ -134,23 +167,37 @@
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
                                </div>
-
-                             </div>
+                              </div>
+                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
+
+
+
                          </div>
 
                          <div ng-show="showMetaDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
-                           <div class="info-box">
-                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
-                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
-                             <div class="info-box-content">
-                               <span class="info-box-text">{{device.name}}</span>
-                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
-                               <span class="info-box-description">{{device.electricity.location}}</span>
+                           <!-- <div class="info-box"> -->
 
-                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                               </div>
+
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+
+                             <h3 class="widget-user-username2">{{device.name}}</h3>
+                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+
+                               <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
-                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
                                    <span class="sr-only">Toggle Dropdown</span>
@@ -162,21 +209,31 @@
                                </div>
 
                              </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
 
                          <div ng-show="showFriendDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
-                           <div class="info-box">
-                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
-                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
-                             <div class="info-box-content">
-                               <span class="info-box-text">{{device.name}}</span>
-                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
-                               <span class="info-box-description">{{device.electricity.location}}</span>
+                           <div class="box box-widget widget-user-2">
 
-                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                               </div>
+                           <!-- <div class="info-box"> -->
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+
+                             <h3 class="widget-user-username2">{{device.name}}</h3>
+                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
-                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
                                    <span class="sr-only">Toggle Dropdown</span>
@@ -188,21 +245,29 @@
                                </div>
 
                              </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
 
                          <div ng-show="showPublicDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
-                           <div class="info-box">
-                               <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
-                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
-                             <div class="info-box-content">
-                               <span class="info-box-text">{{device.name}}</span>
-                               <span class="info-box-text">{{device.electricity.serial_number}}</span>
-                               <span class="info-box-description">{{device.electricity.location}}</span>
+                           <div class="box box-widget widget-user-2">
 
-                               <div class="btn-group btn-block" ng-show="device.canAnswer">
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                               </div>
+                           <!-- <div class="info-box"> -->
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+                             <h3 class="widget-user-username2">{{device.name}}</h3>
+                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
-                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>You have data access request from {{device.accessRequestFrom}}</b></button>
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
                                    <span class="sr-only">Toggle Dropdown</span>
@@ -214,108 +279,15 @@
                                </div>
 
                              </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
 
-                         <!-- <div class="col-md-4">
-                          <div class="info-box">
-                            <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span>
-                            <div class="info-box-content">
-                              <span class="info-box-text">AD48D6010ZA</span>
-                              <span class="info-box-description">Appartment 1.3</span>
-                              <!-- <p class="ratings">
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p>
-                            </div>
-                          </div>
-                         </div> -->
-                         <!-- <div class="col-md-4">
-                          <div class="info-box">
-                            <span class="info-box-icon bg-orange"><img src="/app/img/heat_sensor.png"></img></span>
-                            <div class="info-box-content">
-                              <span class="info-box-text">WQ51E6001AG</span>
-                              <span class="info-box-description">Appartment 2.2</span>
-                              <!-- <p class="ratings">
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p>
-                            </div>
-                          </div>
-                         </div> -->
-                         <!-- <div class="col-md-4">
-                          <div class="info-box">
-                            <span class="info-box-icon bg-orange"><img src="/app/img/heat_sensor.png"></span>
-                            <div class="info-box-content">
-                              <span class="info-box-text">MN236W8100PL</span>
-                              <span class="info-box-description">Appartment 2.4</span>
-                              <!-- <p class="ratings">
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                              </p>
-                            </div>
-                          </div>
-                         </div> -->
-                         <!-- <div class="col-md-4">
-                          <div class="info-box">
-                            <span class="info-box-icon bg-orange"><img src="/app/img/heat_sensor.png"></i></span>
-                            <div class="info-box-content">
-                              <span class="info-box-text">TR22U7001SA</span>
-                              <span class="info-box-description">Appartment 3.11</span>
-                              <!-- <p class="ratings">
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                                <a href="#"><span class="fa fa-square-o"></span></a>
-                              </p>
-                            </div>
-                          </div>
-                         </div> -->
-                         <!-- <div class="col-md-4">
-                          <div class="info-box">
-                            <span class="info-box-icon bg-yellow"><i class="fa fa-calculator"></i></span>
-                            <div class="info-box-content">
-                              <span class="info-box-text">RT64G1001GF</span>
-                              <span class="info-box-description">Appartmnet 3.13</span>
-                              <!-- <p class="ratings">
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p>
-                            </div>
-                          </div>
-                         </div> -->
-                         <!-- <div class="col-md-4">
-                          <div class="info-box">
-                            <span class="info-box-icon bg-yellow"><i class="fa fa-calculator"></i></span>
-                            <div class="info-box-content">
-                              <span class="info-box-text">MA91W7800PP</span>
-                              <span class="info-box-description">Appartment 4.4</span>
-                              <!-- <p class="ratings">
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                                <a href="#"><span class="fa fa-check-square-o"></span></a>
-                              </p>
-                            </div>
-                          </div>
-                         </div> -->
                        </div>
 
-                     </div>
+                     <!-- </div>                            toto bolo povodne-->
+
+
                      <div class="bottomLeft">
                        <h5 class="box-title">
                          <a >
@@ -332,6 +304,8 @@
                      </form>
                     </div>
                     </div>
+
+
                      <div class="box-footer clearfix pull-right">
                        <!-- <h4 class="box-title">
                          <a >
@@ -372,11 +346,15 @@
                        </ul>
                      </div>
                    </div>
+
                  </div>
+
                </div>
              </div>
              <!-- /.box-body -->
-           </div>
+
+           <!-- </div>                                                toto bolo povodne-->
+
            <!-- /.box -->
         </div>
       </div>

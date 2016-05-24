@@ -96,17 +96,23 @@ function getItemWithAdd(req, res, next) {
               };
 
               a=0;
+
               for (index1 in device.accessRequestFrom){
-                if (device.accessRequestFrom[index1].toString()===activeCompany_id.toString()){
+                if (device.accessRequestFrom[index1].toString() === activeCompany_id.toString()){
                   a++;
                 }
               };
+
+
               c=0;
+
               for (index2 in device.hasAccess){
-                if (device.hasAccess[index2].toString()===activeCompany_id.toString()){
+                if (device.hasAccess[index2].toString() === activeCompany_id.toString()){
                   c++;
                 }
               };
+
+
 
                if (isMeta==true && (a+c)==0){
                 cancelRequest2=false;
@@ -126,11 +132,14 @@ function getItemWithAdd(req, res, next) {
               };
 
               b=0;
+
               for (index in device.hasAccess){
-                if (device.hasAccess[index].toString()===activeCompany_id.toString()){
+                if (device.hasAccess[index].toString() === activeCompany_id.toString()){
                   b++;
                 }
               };
+
+
                if (isFriendData==true && b>0){
                 cancelAccess2=true;
               };

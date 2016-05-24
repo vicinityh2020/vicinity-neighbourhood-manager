@@ -4251,6 +4251,8 @@ table.text-center th {
 .bg-purple,
 .bg-maroon,
 .bg-black,
+.bg-gold,
+.bg-user,
 .bg-red-active,
 .bg-yellow-active,
 .bg-aqua-active,
@@ -4301,6 +4303,12 @@ table.text-center th {
   color: #000;
   background-color: #d2d6de !important;
 }
+.bg-user {
+  color: green;
+  background-color: #C88141 !important;
+  /*#6531CC    #C88141*/
+}
+
 .bg-gray-light {
   background-color: #f7f7f7;
 }
@@ -4322,6 +4330,11 @@ table.text-center th {
 .modal-warning .modal-body {
   background-color: #f39c12 !important;
 }
+
+.bg-gold{
+  background-color: #9ACD32 !important;
+}
+
 .bg-aqua,
 .callout.callout-info,
 .alert-info,

@@ -22,14 +22,14 @@ function rejectDeviceRequest(req, res, next) {
                      if (device.hasAccess[index].toString() === device.accessRequestFrom[0].toString()) {    //predpokladam, ze v accessRequestFrom moze byt len 1 request, nezmenit z pola na number?
                         device.hasAccess.splice(index, 1);
                      }
-                }
+                };
 
                 for (var index = device.accessRequestFrom.length - 1; index >= 0; index --) {
                     // if (device.accessRequestFrom[index].toString() === activeCompany_id.toString()) {    neviem identifikovat od koho dosiel reques, pre demo je postacujuce ak vymazem cele pole
                         device.accessRequestFrom.splice(index, 1);
                     // }
-                }
-                
+                };
+
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 
                 device.save();

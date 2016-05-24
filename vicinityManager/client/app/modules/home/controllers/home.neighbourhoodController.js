@@ -18,6 +18,7 @@ angular.module('VicinityManagerApp.controllers')
        $scope.onlyPrivateDevices = false;
        $scope.note="Access for friends";
        $scope.isF = 0;
+       $scope.loaded = false;
       //  $scope.getNeigh = true;
       //  $scope.getAdd = false;
 
@@ -61,6 +62,7 @@ angular.module('VicinityManagerApp.controllers')
         }else{
           $scope.onlyPrivateDevices = false;
         };
+        $scope.loaded = true;
       });
 
 

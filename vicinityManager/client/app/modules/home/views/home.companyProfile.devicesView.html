@@ -1,11 +1,13 @@
 <div class="active tab-pane" id="activity">
   <div class="row">
     <div ng-repeat="device in devices | filter: searchFilter1" class="col-md-4">
-      <div class="info-box">
-        <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span>
-        <div class="info-box-content">
-          <span class="info-box-text">{{device.name}}</span>
-          <span class="info-box-description">{{device.location}}</span>
+      <div class="box box-widget widget-user-2">
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+          <div class="round">
+            <img ng-src="{{device.avatar}}" alt="Company Avatar">
+          </div>
+          <h3 class="widget-user-username2">{{device.name}}</h3>
+          <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
         </div>
       </div>
     </div>
