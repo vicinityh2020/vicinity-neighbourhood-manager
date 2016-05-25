@@ -20,17 +20,25 @@ angular.module('VicinityManagerApp.controllers')
     $scope.showFriendDevices = false;
     $scope.showPublicDevices = false;
     $scope.loaded = false;
+    $scope.noDevices = true;
 
     userAccountAPIService.getMyDevices($window.sessionStorage.companyAccountId).success(function (data) {
          $scope.devices = data.message;
-         for (dev in $scope.devices){
-           itemsAPIService.getItemWithAdd($scope.devices[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
-         }
+        //  for (dev in $scope.devices){
+        //    itemsAPIService.getItemWithAdd($scope.devices[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
+        //  }
+         if ($scope.devices.length == 0){
+           $scope.noDevices = true;
+         }else{
+           $scope.noDevices = false;
+         };
+
          $scope.loaded = true;
     });
 
     $scope.allDevices = function (result) {
 
+      $scope.noDevices = true;
       $scope.showPrivateDevices = false;
       $scope.showMetaDevices = false;
       $scope.showFriendDevices = false;
@@ -40,6 +48,9 @@ angular.module('VicinityManagerApp.controllers')
       $scope.searchFilter = function (result) {
 
         var keyword=new RegExp($window.sessionStorage.companyAccountId);
+        if (keyword.test(result.hasAdministrator[0]._id)){
+          $scope.noDevices = false;
+        };
 
         return keyword.test(result.hasAdministrator[0]._id) ;
       }
@@ -47,6 +58,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.privateDevices = function (result) {
 
+      $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showMetaDevices = false;
       $scope.showFriendDevices = false;
@@ -56,6 +68,9 @@ angular.module('VicinityManagerApp.controllers')
       $scope.searchFilter = function (result) {
 
         var keyword=new RegExp(1);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
 
         return keyword.test(result.accessLevel) ;
       };
@@ -64,6 +79,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.metaDevices = function (result) {
 
+      $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showPrivateDevices = false;
       $scope.showFriendDevices = false;
@@ -72,6 +88,9 @@ angular.module('VicinityManagerApp.controllers')
       $scope.searchFilter = function (result) {
 
         var keyword=new RegExp(2);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
 
         return keyword.test(result.accessLevel) ;
       };
@@ -80,6 +99,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.friendDevices = function (result) {
 
+      $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showPrivateDevices = false;
       $scope.showMetaDevices = false;
@@ -89,6 +109,9 @@ angular.module('VicinityManagerApp.controllers')
       $scope.searchFilter = function (result) {
 
         var keyword=new RegExp(3);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
 
         return keyword.test(result.accessLevel) ;
       };
@@ -97,6 +120,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.publicDevices = function (result) {
 
+      $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showPrivateDevices = false;
       $scope.showMetaDevices = false;
@@ -106,6 +130,9 @@ angular.module('VicinityManagerApp.controllers')
       $scope.searchFilter = function (result) {
 
         var keyword=new RegExp(4);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
 
         return keyword.test(result.accessLevel) ;
       };
@@ -115,7 +142,11 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.searchFilter = function (result) {
 
+      $scope.noDevices = true;
       var keyword=new RegExp($window.sessionStorage.companyAccountId);
+      if (keyword.test(result.hasAdministrator[0]._id)){
+        $scope.noDevices = false;
+      };
 
       return keyword.test(result.hasAdministrator[0]._id) ;
     }

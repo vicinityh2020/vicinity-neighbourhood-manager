@@ -63,18 +63,18 @@ angular.module('VicinityManagerApp.controllers')
           $scope.onlyPrivateDevices = false;
         };
         $scope.loaded = true;
+
+
       });
 
 
-        $scope.searchFilter = function (result) {
+      $scope.searchFilter = function (result) {
 
-          var keyword = new RegExp($scope.searchTerm, 'i');
+        var keyword = new RegExp($scope.searchTerm, 'i');
 
-          return  !$scope.searchTerm || keyword.test(result.hasAdministrator[0].organisation) || keyword.test(result.electricity.location) || keyword.test(result.electricity.serial_number) || keyword.test(result.name);
-        }
-
-
-
+        return (keyword.test(result.hasAdministrator[0].organisation) || !$scope.searchTerm || keyword.test(result.name));
+      }
+// keyword.test(result.electricity.location) || keyword.test(result.electricity.serial_number)
 
 
       // $scope.searchFilter = function (result) {

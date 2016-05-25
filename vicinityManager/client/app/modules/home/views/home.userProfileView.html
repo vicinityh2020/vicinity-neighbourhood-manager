@@ -7,8 +7,12 @@
 
 
 
-    <div class="row">
-        <div class="col-md-6">
+    <div class="row" style="width: 100%">
+      <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+        <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+      </div>
+
+        <div class="col-md-6" ng-show="loaded">
 
           <!-- Profile Image -->
 
@@ -139,7 +143,7 @@
       <!-- About me box -->
 
       <!-- About Me Box -->
-      <div class="col-md-6">
+      <div class="col-md-6" ng-show="loaded">
           <div class="box box-primary">
             <div class="box-header with-border">
               <h3 class="box-title">History</h3>

@@ -33,30 +33,7 @@ router
   .put('/:id/friendship/cancel', friending.cancelFriendRequest)
   .delete('/:id/friendship', friending.cancelFriendship)
 
-  .get('/:id/devices', function (req, res, next) {
-  //TODO: User authentic - Role check
-    var response = {};
-    var o_id = mongoose.Types.ObjectId(req.params.id);
-
-    itemOp.find({hasAdministrator: { $in: [o_id]}}, function(err, data) {
-
-      if (req.query.sort){
-        if (req.query.sort == 'ASC') {
-            data.sort(sortListOfDevicesASC);
-        } else if (req.query.sort == 'DESC') {
-            data.sort(sortListOfDevicesDESC);
-        };
-      };
-
-      if (err) {
-        response = {"error": true, "message": "Error fetching data"};
-      } else {
-        response = {"error": false, "message": data};
-      };
-      res.json(response);
-    });
-
-  })
+  .get('/:id/devices', devices.getMyDevices)
 
   .get('/:id/neighbourhood', devices.getNeighbourhood)
 
@@ -101,26 +78,6 @@ router
     if (a.organisation < b.organisation) {
       return 1;
     } else if (a.organisation > b.organisation){
-      return -1;
-    } else {
-      return 0;
-    }
-  }
-
-  function sortListOfDevicesASC(a,b){
-    if (a.accessLevel == 3) {
-      return -1;
-    } else if (a.accessLevel == 4){
-      return 1;
-  } else {
-      return 0;
-    }
-  }
-
-  function sortListOfDevicesDESC(a,b){
-    if (a.accessLevel < b.accessLevel) {
-      return 1;
-    } else if (a.accessLevel > b.accessLevel){
       return -1;
     } else {
       return 0;

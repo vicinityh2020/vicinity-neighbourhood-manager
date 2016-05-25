@@ -72,6 +72,10 @@
                                  </li>
                                </ul> -->
 
+                         <div ng-show="noDevices" >
+                            <h2 style="margin-left:20px;" >No devices to show.</h2>
+                         </div>
+
                          <div ng-show="showAllDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
                            <!-- <div class="info-box"> -->
 
@@ -306,7 +310,8 @@
                     </div>
 
 
-                     <div class="box-footer clearfix pull-right">
+                     <!-- <div class="box-footer clearfix pull-right"> -->
+
                        <!-- <h4 class="box-title">
                          <a >
                            Make listed devices to be:
@@ -338,13 +343,14 @@
                           <div><input type="submit" value="Ok"></div>
                         </form> -->
 
-                       <ul class="pagination pagination-sm no-margin">
+                       <!-- <ul class="pagination pagination-sm no-margin">
                          <li><a href="#">«</a></li>
                          <li><a href="#">1</a></li>
                          <li><a href="#">2</a></li>
                          <li><a href="#">»</a></li>
-                       </ul>
-                     </div>
+                       </ul> -->
+
+                     <!-- </div>  -->
                    </div>
 
                  </div>

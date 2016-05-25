@@ -40,7 +40,7 @@ factory('userAccountAPIService', function($http){
   };
 
   userAccountAPI.getNeighbourhood = function(id) {
-    return $http.get('http://localhost:3000/useraccounts/' + id + '/neighbourhood');
+    return $http.get('http://localhost:3000/useraccounts/' + id + '/neighbourhood?sort=ASC');
   };
 
 

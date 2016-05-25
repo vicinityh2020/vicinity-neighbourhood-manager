@@ -29,6 +29,8 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
   $scope.thisCompany = {};
   $scope.friendsThisCom = [];
 
+  $scope.loaded = false;
+
   userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (data) {
     $scope.userAccounts = data.message.accountOf;
     $scope.thisCompany = data.message;
@@ -154,6 +156,8 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
       $scope.canAnswerNeighbourRequest = response.message.canAnswerNeighbourRequest;
       $scope.isNeighbour = response.message.isNeighbour;
       $scope.friends = response.message.knows;
+
+      $scope.loaded = true;
   }
 
 

@@ -490,6 +490,127 @@ ul.messages li .message_wrapper blockquote {
   border-left: 5px solid #eee;
 }
 
+.widget-user-2 .widget-user-header {
+  padding: 20px;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+.widget-user-2 .widget-user-header2 {
+  padding: 20px;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  /*height: 169px;*/
+  height: auto;
+  position: static;
+}
+
+.widget-user-2 .widget-user-username {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 25px;
+  font-weight: 300;
+}
+.widget-user-2 .widget-user-desc {
+  margin-top: 0;
+}
+.widget-user-2 .widget-user-username,
+.widget-user-2 .widget-user-desc {
+  margin-left: 75px;
+}
+.widget-user-2 .widget-user-image > img {
+  width: 65px;
+  height: auto;
+  float: left;
+}
+
+.widget-user2 .widget-user-image {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  margin-left: -45px;
+}
+
+.statusDev {
+  /*float: right;*/
+  width:35%;
+  color: #222d32;
+  height: 35%;
+  margin-left: 56%;
+  margin-top: -5%;
+  position: absolute;
+
+  /*margin-top: 0%;*/
+
+  /*margin-bottom: 45%;*/
+
+  /*position: relative;
+  right: auto;*/
+
+  z-index:-1;
+}
+
+.statusDev2 {
+  /*float: right;*/
+  width:45%;
+  color: #222d32;
+  /*height: 10%;*/
+  margin-left: 55%;     /*55% */
+  /*margin-right: 10%;*/
+  /*padding-bottom: 1%;*/
+  /*margin-top: -15%;*/
+}
+
+.round {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 65px;
+  height: 65px;
+
+  position: absolute;
+  /*top: 65px;*/
+  left: 18%;
+  margin-left: -45px;
+}
+.round img {
+  /*display: block;*/
+  /*position: absolute;*/
+  /*width: 65px;
+  height: auto;*/
+  float: left;
+            /* Stretch
+                  height: 100%;
+                  width: 100%; */
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.widget-user-2 .widget-user-username2 {
+  margin-left: 30%;
+}
+
+.widget-user-2 .widget-user-username2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.widget-user-2 .widget-user-desc2 {
+  margin-top: 0;
+  margin-left: 30%;
+}
+
+.bg-user {
+  color: green;
+  background-color: #C88141 !important;
+  /*#6531CC    #C88141*/
+}
+
+.bg-gold{
+  background-color: #9ACD32 !important;
+}
+
 
 /*
 .bottomRight {
