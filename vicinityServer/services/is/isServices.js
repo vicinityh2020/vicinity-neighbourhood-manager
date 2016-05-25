@@ -69,5 +69,34 @@ function getData(gatewayObjects, callback){
 
 function writeCommand(device){
   winston.log('debug', 'Start: Write command in device' + device.info.id_value);
+
+  debugger;
+
+  async.forEachSeries(device.data_sources, function(dataSource, callback){
+    if (dataSource.controllable == 'true') {
+      debugger;
+      var options = { method: 'POST',
+      url: 'http://localhost:9002/service/devices',
+      headers:
+       { 'content-type': 'application/x-www-form-urlencoded',
+         'postman-token': '05d20659-11d8-bc8f-245a-6e8cd2285b99',
+         'cache-control': 'no-cache' },
+      form: { mac: device.info.id_value, command: dataSource.value } };
+
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+        winston.log('debug', body);
+        callback();
+      });
+    } else {
+      callback();
+    }
+
+
+  }, function(err){
+
+  });
+
+
   winston.log('debug', 'End: Write command in device');
 }

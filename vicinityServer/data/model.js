@@ -14,7 +14,10 @@ var gatewayobject = {
     },
     data_sources: [{
       name: String,
-      rid: String
+      rid: String,
+      controllable: String,
+      value: String,
+      timestamp: Number
     }]
 };
 

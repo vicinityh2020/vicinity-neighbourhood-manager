@@ -13,6 +13,6 @@ module.exports.define = function(agenda) {
 }
 
 module.exports.every = function(agenda) {
-  //agenda.every('10 seconds', 'write data');
-  agenda.now('write data');
+  agenda.every('10 seconds', 'write data');
+  //agenda.now('write data');
 }

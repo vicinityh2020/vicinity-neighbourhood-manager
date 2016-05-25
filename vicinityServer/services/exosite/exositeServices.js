@@ -134,6 +134,14 @@ function createDataSources(gatewayObject, device, device_callback){
           {name: "noise", format: "float", unitOfMeasurement: ""}];
       } else if (device.type == "IS") {
         datasources = ce.clone(device.info.datasources);
+        for (var i in datasources){
+          winston.log("datasource.typeOf =  %s", datasources[i].typeOf);
+          if (datasources[i].typeOf == "ON_OFF_Switch") {
+            datasources[i].controllable = true;
+          } else {
+            datasources[i].controllable = false;
+          }
+        }
     } else if (device.type == "CERTH") {
         datasources = ce.clone(device.info.datasources);
     }
@@ -154,7 +162,10 @@ function createDataSources(gatewayObject, device, device_callback){
         var data = JSON.parse(body);
         winston.log('debug', 'datasource.name: ' + datasource.name);
         winston.log('debug', 'data.rid: ' + data.rid);
-        gatewayObject.data_sources.push({name: datasource.name, rid: data.rid});
+        gatewayObject.data_sources.push({
+          name: datasource.name,
+          rid: data.rid,
+          controllable: datasource.controllable});
 
         callback();
       });
@@ -217,7 +228,43 @@ function writeData(gatewayObjectsWithData, callback){
 }
 
 
-function readDataFromCommandedDevices(cloudDevices) {
+function readDataFromCommandedDevices(cloudDevices, callback) {
    winston.log('debug', 'Start: reading data from %d commanded devices', cloudDevices.length);
-   winston.log('debug', 'End: reading data from commanded devices');
+
+   var dataSources = [];
+
+   for (var i in cloudDevices){
+     dataSources = dataSources.concat(cloudDevices[i].data_sources.toObject());
+   }
+
+   async.forEachSeries(dataSources, function(dataSource, device_callback){
+      winston.log('debug', 'dataSource %s', dataSource.rid);
+      var options = { method: 'GET',
+        url: 'https://portals.exosite.com/api/portals/v1/data-sources/' + dataSource.rid + '/data',
+        headers:
+         { 'postman-token': 'fb44a86e-b864-c14e-963e-b7d2919164e0',
+           'cache-control': 'no-cache',
+           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' }};
+
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+        winston.log('debug',body);
+        var data = body.replace('[[','').replace(']]','').replace('"','').replace('"','').split(',');
+        for (var i in cloudDevices){
+          for (var j in cloudDevices[i].data_sources){
+              if (dataSource.rid == cloudDevices[i].data_sources[j].rid){
+
+                cloudDevices[i].data_sources[j].value = data[1];
+                cloudDevices[i].data_sources[j].timestamp = data[0];
+              }
+          }
+        }
+        device_callback();
+      });
+
+   },
+    function(err){
+      winston.log('debug', 'End: reading data from commanded devices');
+      callback(null, cloudDevices);
+    });
 }
