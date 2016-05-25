@@ -40,7 +40,7 @@
 
           <!-- /.widget-user-image -->
           <h3 class="widget-user-username2">{{dev.name}}</h3>
-          <h5 class="widget-user-desc2">{{dev.hasAdministrator[0].organisation}}</h5>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.friends({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.electricity.location}}</h5>
           <h5 class="widget-user-desc2">{{dev.electricity.serial_number}}</h5>
 
@@ -96,7 +96,7 @@
         </div>
 
         </div>
-        <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <a href="" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
 
