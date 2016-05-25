@@ -1,4 +1,5 @@
 module.exports.getData = getData;
+module.exports.writeCommand = writeCommand;
 
 var winston = require('winston');
 var async = require('async');
@@ -36,7 +37,7 @@ function getData(gatewayObjects, callback){
       function(tinymMessages, device_callback){
           var filteredTinymMessages =  [];
           if (tinymMessages.length > 0){
-            for (i in gatewayObjects){
+            for (var i in gatewayObjects){
               var j = 0;
               winston.log('debug', "Message %d: %s", j, JSON.stringify(tinymMessages[j]));
               while(j < tinymMessages.length && tinymMessages[j]["proto/tm"].uid != gatewayObjects[i].info.id_value){
@@ -84,7 +85,7 @@ function getData(gatewayObjects, callback){
 }
 
 function extractDataFromMessage(message, gatewayObject){
-  for(i in gatewayObject.data_sources){
+  for(var i in gatewayObject.data_sources){
     if (gatewayObject.data_sources[i].name == 'co2'){
       extractCO2(message, gatewayObject.data_sources[i]);
     } else if (gatewayObject.data_sources[i].name == 'light'){
@@ -138,4 +139,9 @@ function messageSorterDesc(a, b){
   } else {
     return 0;
   }
+}
+
+function writeCommand(device){
+  winston.log('debug', 'Start: Write command in device' + device.info.id_value);
+  winston.log('debug', 'End: Write command in device');
 }

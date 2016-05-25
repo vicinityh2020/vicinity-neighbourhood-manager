@@ -2,6 +2,7 @@ module.exports.getDevices = getDevices;
 module.exports.addDevices = addDevices;
 module.exports.removeDevices = removeDevices;
 module.exports.writeData = writeData;
+module.exports.readDataFromCommandedDevices = readDataFromCommandedDevices;
 
 
 var winston = require('winston');
@@ -213,4 +214,10 @@ function writeData(gatewayObjectsWithData, callback){
     winston.log('debug', 'End: Writing data to Exosite portal');
     callback();
   });
+}
+
+
+function readDataFromCommandedDevices(cloudDevices) {
+   winston.log('debug', 'Start: reading data from %d commanded devices', cloudDevices.length);
+   winston.log('debug', 'End: reading data from commanded devices');
 }

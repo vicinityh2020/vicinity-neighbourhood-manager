@@ -1,9 +1,18 @@
+
+var winston  = require('winston');
+
+var writeData = require('../services/writeData/writeDataService');
+
+winston.level = 'debug';
+
+
 module.exports.define = function(agenda) {
   agenda.define('write data', function(job){
-    console.log("Job %s executed.", job.attrs.name);
+    writeData.readDataFromCloudAndWriteInIoTs();
   });
 }
 
 module.exports.every = function(agenda) {
-  agenda.every('10 seconds', 'write data');
+  //agenda.every('10 seconds', 'write data');
+  agenda.now('write data');
 }

@@ -30,9 +30,9 @@ writeDataJob.define(agenda);
 
 agenda.on('ready', function(){
   winston.log('debug', 'Agenda connected to mongodb');
-  updateDevicesJob.every(agenda);
-  readDataJob.every(agenda);
-  //writeDataJob.every(agenda);
+  //updateDevicesJob.every(agenda);
+  //readDataJob.every(agenda);
+  writeDataJob.every(agenda);
   agenda.start();
 });
 

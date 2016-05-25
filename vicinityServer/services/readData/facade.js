@@ -24,7 +24,7 @@ function readDataAndUpdateInCloud(){
       tinym.getData(gatewayObjects, callback);
     },
     function(callback){
-      //XXX: Read data from IS IoT
+      //Read data from IS IoT
       winston.log('debug', 'Reading data from IS devices');
       is.getData(gatewayObjects, callback);
     },

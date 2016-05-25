@@ -1,9 +1,12 @@
 module.exports.getData = getData;
+module.exports.writeCommand = writeCommand;
+
 
 var winston = require('winston');
 var async = require('async');
 var request = require("request");
 var parseString = require('xml2js').parseString;
+
 
 winston.level = 'debug';
 
@@ -59,4 +62,9 @@ function getData(gatewayObjects, callback){
   });
 
   winston.log('debug', 'End: Reading data from CERTH infrastructure');
+}
+
+function writeCommand(device){
+  winston.log('debug', 'Start: Write command in device' + device.info.id_value);
+  winston.log('debug', 'End: Write command in device');
 }
