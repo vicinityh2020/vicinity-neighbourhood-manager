@@ -13,7 +13,7 @@ function getMyDevices(req, res) {
 
   query = {hasAdministrator: o_id};
 
-  itemOp.find(query).populate('hasAdministrator','organisation').exec(function(err, data){
+  itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').exec(function(err, data){
     sortResult(data,s);
     var dataWithAdditional = getAdditional(data,o_id);
 

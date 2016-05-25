@@ -98,7 +98,7 @@
 
                                <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
-                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
                                    <span class="sr-only">Toggle Dropdown</span>
