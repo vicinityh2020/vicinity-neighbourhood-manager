@@ -132,9 +132,7 @@ function createDataSources(gatewayObject, device, device_callback){
           {name: "movement", format: "string", unitOfMeasurement: ""},
           {name: "noise", format: "float", unitOfMeasurement: ""}];
       } else if (device.type == "IS") {
-        datasources = [
-          {name: "energy", format: "float", unitOfMeasurement: "ppm"},
-          {name: "switch", format: "boolean", unitOfMeasurement: "-"}];
+        datasources = ce.clone(device.info.datasources);
     } else if (device.type == "CERTH") {
         datasources = ce.clone(device.info.datasources);
     }

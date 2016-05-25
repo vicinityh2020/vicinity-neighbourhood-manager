@@ -14,7 +14,7 @@ function getSharedDevices(callback){
          { 'postman-token': '50d8e149-d99b-2094-b376-69aa146b250c',
            'cache-control': 'no-cache',
            'content-type': 'application/json',
-           'x-access-token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ2aWNpbml0eU1hbmFnZXIiLCJzdWIiOiJuZXcud2FkZS53aWxzb25AYmF2ZW5pci5ldSIsImV4cCI6MTQ2Mzk4ODMzNDk3MSwicm9sZXMiOlsidXNlciIsImFkbWluaXN0cmF0b3IiXSwiY29udGV4dCI6eyJuYW1lIjoibmV3LndhZGUud2lsc29uQGJhdmVuaXIuZXUiLCJ1aWQiOiI1NzIyZmQyMzE2ZjljYzE0NDY2NTE5NDgiLCJjaWQiOiI1NzIyZmQyMjE2ZjljYzE0NDY2NTE5NDUifX0.UrKrXLgyzIa10UHCkW7x7knDllNasTe1YPoIyBUWceg' } };
+           'x-access-token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ2aWNpbml0eU1hbmFnZXIiLCJzdWIiOiJvcm9yby5tdW5yb2VAYmF2ZW5pci5ldSIsImV4cCI6MTQ2NDcwMTIyNTgyNiwicm9sZXMiOlsidXNlciIsImFkbWluaXN0cmF0b3IiXSwiY29udGV4dCI6eyJuYW1lIjoib3Jvcm8ubXVucm9lQGJhdmVuaXIuZXUiLCJ1aWQiOiI1NzI3MGI5NTY0MTE0Y2Y2MDM3NTU1ODMiLCJjaWQiOiI1NzNjMzE0MGIyZDg1ZmVkMzA1Yjk0NTcifX0.wPTQzosVRc0u-mayK2-4ScFYbVH7uMAIsvB_7Jz7ftc' } };
 
       request(options, function (error, response, body) {
         if (error) throw new Error(error);
