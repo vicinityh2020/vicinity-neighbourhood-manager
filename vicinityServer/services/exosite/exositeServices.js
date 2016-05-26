@@ -22,7 +22,7 @@ function getDevices(callback){
     headers:
      { 'postman-token': 'f3f78cbe-b0c2-2614-0539-def89fffb6e9',
        'cache-control': 'no-cache',
-       authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+       authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
     body: '{"type":"generic"}' };
 
   request(options, function (error, response, body) {
@@ -46,7 +46,7 @@ function addDevices(devices, gatewayObjects, callback){
       headers:
        { 'postman-token': '6aea03c9-b3c8-f0fa-18e1-78fa5e443a80',
          'cache-control': 'no-cache',
-         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
       body: '{"type":"generic"}' };
 
     request(options, function (error, response, body) {
@@ -60,7 +60,7 @@ function addDevices(devices, gatewayObjects, callback){
         headers:
          { 'postman-token': '6aea03c9-b3c8-f0fa-18e1-78fa5e443a80',
            'cache-control': 'no-cache',
-           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
         body: '{"info": {"description": {"name": "' + device.name + '"}}}' };
 
       request(options, function(error, response, body) {
@@ -89,7 +89,7 @@ function removeDevices(devices, callback){
     headers:
      { 'postman-token': '58ccf684-1d25-e7b8-e914-de579381e499',
        'cache-control': 'no-cache',
-       authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+       authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
     body: '{"type":"generic"}' };
 
     winston.log('debug', 'request: ' + options);
@@ -152,7 +152,7 @@ function createDataSources(gatewayObject, device, device_callback){
       headers:
        { 'postman-token': 'fb754a74-fb06-950f-6b81-a070adb3c10d',
          'cache-control': 'no-cache',
-         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
          body: '{"info":{"description":{"format":"' + datasource.format + '","name":"' + datasource.name + '"}},"unit":"' + datasource.unitOfMeasurement + '"}' };
 
       winston.log('debug', JSON.stringify(options));
@@ -206,7 +206,7 @@ function writeData(gatewayObjectsWithData, callback){
       headers:
        { 'postman-token': '8b688437-fffc-0aa7-842f-a920901d08fd',
          'cache-control': 'no-cache',
-         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' },
+         authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
       body: datasource.data };
 
 
@@ -244,7 +244,7 @@ function readDataFromCommandedDevices(cloudDevices, callback) {
         headers:
          { 'postman-token': 'fb44a86e-b864-c14e-963e-b7d2919164e0',
            'cache-control': 'no-cache',
-           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1OkRyb3BkZWFkNTIx' }};
+           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' }};
 
       request(options, function (error, response, body) {
         if (error) throw new Error(error);

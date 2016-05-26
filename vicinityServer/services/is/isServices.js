@@ -41,14 +41,15 @@ function getData(gatewayObjects, callback){
                   { timestamp : data['last-seen'].timestamp,
                     value: data['last-seen'].value};
 
-            } else if (gatewayObject.data_sources[j].name === "Switch status") {
+                winston.log('debug','Timestamp: %s Value: %s',
+                  gatewayObject.data_sources[j].data.timestamp,
+                  gatewayObject.data_sources[j].data.value);
+            } /* else if (gatewayObject.data_sources[j].name === "Switch status") {
               gatewayObject.data_sources[j].data =
                 { timestamp : data['last-seen'].timestamp,
                   value: (data['last-seen'].value == "0") ? "Off" : "On"};
-            }
-            winston.log('debug','Timestamp: %s Value: %s',
-              gatewayObject.data_sources[j].data.timestamp,
-              gatewayObject.data_sources[j].data.value);
+            } */
+
           }
             device_callback();
         }
