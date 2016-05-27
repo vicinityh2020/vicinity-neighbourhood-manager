@@ -1,7 +1,8 @@
 angular.module('VicinityManagerApp.controllers').
-  controller('searchController', function ($scope, searchAPIService, userAccountAPIService, $stateParams) {
+  controller('searchController', function ($scope, searchAPIService, userAccountAPIService, $stateParams, $window) {
     $scope.resultsList = [];
     $scope.loaded = false;
+    $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
 
 
     $scope.searchFilter = function (result) {
@@ -15,4 +16,6 @@ angular.module('VicinityManagerApp.controllers').
       $scope.resultsList = results;
       $scope.loaded = true;
     });
+
+
   });

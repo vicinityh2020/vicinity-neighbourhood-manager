@@ -4,10 +4,12 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
 
 $scope.devices = [];
 $scope.friends = [];
-var isFriend= false;
+var isFriend = false;
+$scope.loaded = false;
 
   userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function (data) {
        $scope.devices = data.message;
+       $scope.loaded = true;
   });
 
   userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {

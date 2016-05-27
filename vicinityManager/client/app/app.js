@@ -89,6 +89,16 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+        .state('root.main.partneredEntities', {
+          url: '/partneredEntities',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.partneredEntities.html',
+                controller: 'partneredEntities'
+              }
+          }
+        })
         .state('root.main.searchresults', {
           url: '/search/:searchTerm',
           views: {
