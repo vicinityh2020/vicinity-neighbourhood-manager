@@ -28,7 +28,7 @@
                   <b>Following</b> <a class="pull-right">{{following.length}}</a>
                 </li> -->
                 <li class="list-group-item">
-                  <a ng-href="#/profile/company/{{companyAccountId}}/friends"> <b>Friends</b> <span class="pull-right">{{friends.length}}</span></a>
+                  <a ng-href="#/profile/company/{{companyAccountId}}/friends"> <b>Partners</b> <span class="pull-right">{{friends.length}}</span></a>
                 </li>
                 <li class="list-group-item">
                   <a ng-href="#/profile/company/{{companyAccountId}}/userAccounts"> <b>User accounts</b> <span class="pull-right">{{users.length}}</span></a>
@@ -44,7 +44,7 @@
               <!-- Align button correctly -->
               <div class="btn-group btn-block" ng-show="canAnswerNeighbourRequest">
                 <button type="button" class="btn col-lg-10 btn-success " ng-click="acceptNeighbourRequest()">
-                  <i class="fa fa-check-circle-o"></i>&nbsp;<b>Accept neighbour request</b></button>
+                  <i class="fa fa-check-circle-o"></i>&nbsp;<b>Accept partnership request</b></button>
                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                   <span class="caret"></span>
                   <span class="sr-only">Toggle Dropdown</span>
@@ -55,14 +55,13 @@
                 </ul>
               </div>
               <a class="btn btn-primary btn-block" ng-show="canSendNeighbourRequest"
-                 ng-click="sendNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Send neighbour
+                 ng-click="sendNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Send partnership
                 request</b></a>
               <a class="btn btn-default btn-block" ng-show="canCancelNeighbourRequest"
-                 ng-click="cancelNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Cancel neighbour request</b></a>
+                 ng-click="cancelNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Cancel partnership request</b></a>
               <a class="btn btn-default btn-block" ng-show="isNeighbour"
-                ng-click="cancelNeighbourship()"><i class="fa fa-user-times"></i>&nbsp;<b>Cancel neighbourship</b></a>
+                ng-click="cancelNeighbourship()"><i class="fa fa-user-times"></i>&nbsp;<b>Cancel partnership</b></a>
               <!-- <a href="#" class="btn btn-primary btn-block" ng-hide="isMyProfile"><i class="fa fa-star-o"></i>&nbsp;<b>Follow</b></a> -->
-              <!-- TODO: Issue #6 Add friend and unfriend button -->
             </div>
             <!-- /.box-body -->
           </div>
@@ -112,7 +111,7 @@
           <div class="nav-tabs-custom">
                        <!-- Nav tabs -->
             <ul class="nav nav-tabs">
-              <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.friends"><i class="fa fa-users"></i>&nbsp;Friends</a></li>
+              <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.friends"><i class="fa fa-users"></i>&nbsp;Partners</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.history"><i class="fa fa-clock-o"></i>&nbsp;History</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.userAccounts"><i class="fa fa-user"></i>&nbsp;User accounts</a></li>
               <li ng-show="!isMyProfile" ui-sref-active="active"><a ui-sref="root.main.companyProfile.devices"><i class="fa fa-clone"></i>&nbsp;Devices</a></li>
