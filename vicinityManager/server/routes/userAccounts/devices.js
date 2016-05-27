@@ -91,6 +91,71 @@ function getNeighbourhood(req, res) {
 
 }
 
+function getAllDevices(req, res) {
+  var response = {};
+  var o_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+  var query = {};
+
+  userAccountOp.find({_id: o_id}, function(err, data){
+    if (err){
+      winston.log('error','UserAccount Items Error: ' + err.message);
+    }
+    // var hasAdmin = [];
+    // hasAdmin = data[0].knows;
+    // hasAdmin[hasAdmin.length] = o_id;
+
+    if (data && data.length == 1){
+
+      if (req.query.hasAccess){
+        if (req.query.hasAccess == '1') {
+            winston.log('debug', 'hasAccess filter applied');
+            query = {
+              $or :[
+              {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2, hasAccess: {$in: [data[0]._id]}}] } ] },
+              {hasAdministrator: o_id}
+            ]
+            }
+        } else if (req.query.hasAccess == '0') {
+          winston.log('debug', 'hasAccess filter not applied');
+          query = {
+            $or :[
+            {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}] } ] },
+            {hasAdministrator: o_id}
+          ]
+          }
+        }
+      } else {
+        winston.log('debug', 'hasAccess filter not applied');
+        query = {
+          $or :[
+          {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}] } ] },
+          {hasAdministrator: o_id}
+        ]
+        }
+      }
+      winston.log('debug', 'my friends are: ' + data[0].knows);
+
+      }
+
+      itemOp.find(query).populate('hasAdministrator','organisation').exec(function(err, data){
+        // sortResult(data,s);
+        var dataWithAdditional = getAdditional(data,o_id);
+
+        if (err) {
+          winston.log('error','Find Items Error: ' + err.message);
+          response =  {"error": true, "message": "Error fetching data"};
+        } else {
+          response = {"error": false, "message": dataWithAdditional};
+        };
+
+        res.json(response);
+      });
+    });
+
+
+
+}
+
 function getAdditional(data,activeCompany_id){
 
     winston.log('debug','enter function getAdditional');
@@ -246,5 +311,6 @@ function sortListOfDevicesDESC(a,b){
   }
 }
 
+module.exports.getAllDevices = getAllDevices;
 module.exports.getMyDevices = getMyDevices;
 module.exports.getNeighbourhood = getNeighbourhood;

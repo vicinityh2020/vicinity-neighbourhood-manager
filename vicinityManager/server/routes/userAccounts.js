@@ -37,6 +37,8 @@ router
 
   .get('/:id/neighbourhood', devices.getNeighbourhood)
 
+  .get('/:id/allDevices', devices.getAllDevices)
+
   .get('/:id/friends', function(req, res) {
     winston.log('debug',"GET /:id/friends");
     winston.log('debug',":id " + req.params.id);

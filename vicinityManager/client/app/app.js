@@ -69,6 +69,16 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+        .state('root.main.allDevices', {
+          url: '/allDevices/:searchTerm',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.allDevicesView.html',
+                controller: 'allDevicesController'
+              }
+          }
+        })
         // .state('root.main.neighbourhoodSearch', {
         //   url: '/neighbourhoodSearch',
         //   views: {
