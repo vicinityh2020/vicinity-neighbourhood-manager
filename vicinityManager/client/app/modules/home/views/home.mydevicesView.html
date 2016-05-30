@@ -88,13 +88,13 @@
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
 
                                <div class="round">
-                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
                                </div>
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
 
-                               <h3 class="widget-user-username2">{{device.name}}</h3>
-                               <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
-                               <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+                               <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                               <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                               <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
                                <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
@@ -147,17 +147,17 @@
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
 
                                <div class="round">
-                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
-                               </div>
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                              </div>
 
                                <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
 
                              <!-- <div class="info-box-content"> -->
 
-                             <h3 class="widget-user-username2">{{device.name}}</h3>
-                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
-                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
                                <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
@@ -187,7 +187,7 @@
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
 
                                <div class="round">
-                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
                                </div>
 
                                <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
@@ -195,9 +195,9 @@
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
                              <!-- <div class="info-box-content"> -->
 
-                             <h3 class="widget-user-username2">{{device.name}}</h3>
-                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
-                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
                                <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
@@ -223,7 +223,7 @@
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
 
                                <div class="round">
-                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
                                </div>
                            <!-- <div class="info-box"> -->
                                <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
@@ -231,9 +231,9 @@
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
                              <!-- <div class="info-box-content"> -->
 
-                             <h3 class="widget-user-username2">{{device.name}}</h3>
-                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
-                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
                                <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
@@ -259,15 +259,15 @@
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
 
                                <div class="round">
-                                 <img ng-src="{{device.avatar}}" alt="Company Avatar">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
                                </div>
                            <!-- <div class="info-box"> -->
                                <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
                              <!-- <div class="info-box-content"> -->
-                             <h3 class="widget-user-username2">{{device.name}}</h3>
-                             <h5 class="widget-user-desc2">{{device.electricity.serial_number}}</h5>
-                             <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
                                <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
                                  <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->

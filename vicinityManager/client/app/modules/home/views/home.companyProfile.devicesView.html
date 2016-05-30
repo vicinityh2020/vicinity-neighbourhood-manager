@@ -9,10 +9,10 @@
       <div class="box box-widget widget-user-2">
         <div style="z-index: -2" class="widget-user-header2 bg-yellow">
           <div class="round">
-            <img ng-src="{{device.avatar}}" alt="Company Avatar">
+            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Company Avatar">
           </div>
-          <h3 class="widget-user-username2">{{device.name}}</h3>
-          <h5 class="widget-user-desc2">{{device.electricity.location}}</h5>
+          <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile({deviceId: device._id})">{{device.name}}</a></h3>
+          <h5 class="widget-user-desc2">{{device.info.location}}</h5>
         </div>
       </div>
     </div>

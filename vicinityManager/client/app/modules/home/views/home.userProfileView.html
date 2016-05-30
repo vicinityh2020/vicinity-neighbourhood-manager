@@ -172,11 +172,11 @@
 
                         <div class="timeline-item">
 
-                          <img src="{{friendsThisCom[0].avatar}}" class="avatar" alt="Avatar">
+                          <img style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: friendsThisCom[0]._id})" src="{{friendsThisCom[0].avatar}}" class="avatar" alt="Avatar">
 
                           <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
 
-                          <h3 class="timeline-header"><a href="#">&nbsp; {{friendsThisCom[0].organisation}}</a> accepted your neighrbour request. You are neighbours now!</h3>
+                          <h3 class="timeline-header"><a ui-sref="root.main.companyProfile.devices({companyAccountId: friendsThisCom[0]._id})">&nbsp; {{friendsThisCom[0].organisation}}</a> accepted your neighrbour request. You are neighbours now!</h3>
 
                           <!-- <div class="timeline-body">
                             Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
@@ -197,11 +197,11 @@
                         <i class="fa fa-envelope bg-yellow"></i>
 
                         <div class="timeline-item">
-                          <img src="{{userAccounts[0].avatar}}" class="avatar" alt="Avatar">
+                          <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: userAccounts[0]._id, companyAccountId: thisCompany._id})" src="{{userAccounts[0].avatar}}" class="avatar" alt="Avatar">
 
                           <span class="time"><i class="fa fa-clock-o"></i> 49 mins ago</span>
 
-                          <h3 class="timeline-header no-border"><a href="#">&nbsp; {{userAccounts[0].name}}</a> sent neighbourhood request to {{friendsThisCom[0].organisation}}</h3>
+                          <h3 class="timeline-header no-border"><a ui-sref="root.main.userProfile({userAccountId: userAccounts[0]._id, companyAccountId: thisCompany._id})">&nbsp; {{userAccounts[0].name}}</a> sent neighbourhood request to {{friendsThisCom[0].organisation}}</h3>
                         </div>
                       </li>
                       <!-- END timeline item -->
@@ -240,10 +240,10 @@
                         <i class="fa fa-camera bg-purple"></i>
 
                         <div class="timeline-item">
-                          <img src="{{userAccounts[0].avatar}}" class="avatar" alt="Avatar">
+                          <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: userAccounts[1]._id, companyAccountId: thisCompany._id})" src="{{userAccounts[1].avatar}}" class="avatar" alt="Avatar">
                           <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
 
-                          <h3 class="timeline-header"><a href="#">&nbsp; {{userAccounts[1].name}}</a> uploaded logo of the company</h3>
+                          <h3 class="timeline-header"><a ui-sref="root.main.userProfile({userAccountId: userAccounts[1]._id, companyAccountId: thisCompany._id})">&nbsp; {{userAccounts[1].name}}</a> uploaded logo of the company</h3>
 
                           <div class="timeline-body">
                             <img src="{{thisCompany.avatar}}" alt="..." class="margin">
