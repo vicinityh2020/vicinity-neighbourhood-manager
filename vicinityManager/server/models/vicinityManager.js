@@ -87,14 +87,9 @@ var item = {
   accessLevel: Number,
   color: String,
   avatar: String,
-  electricity: {
+  info: {
     serial_number: String,
     location: String,
-    monthAvg: Number,
-    monthSum: Number,
-    yearSum: Number
-  },
-  info: {
     id_tag: String,
     id_value: String,
     datasources: [{

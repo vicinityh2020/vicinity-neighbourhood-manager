@@ -8,7 +8,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
   $scope.avatar = {};
   $scope.occupation = {};
   $scope.organisation = {};
-  $scope.userAccountId = {};
+  // $scope.userAccountId = {};
   $scope.password = {};
   $scope.email= {};
   $scope.isMyProfile = true;
@@ -31,7 +31,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
 
   $scope.loaded = false;
 
-  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (data) {
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
     $scope.userAccounts = data.message.accountOf;
     $scope.thisCompany = data.message;
   });
@@ -40,91 +40,91 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
     $scope.companyAccounts = data.message;
   });
 
-  userAccountAPIService.getFriends($window.sessionStorage.companyAccountId).success(function (data) {
+  userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
     $scope.friendsThisCom = data.message;
   });
 
 
-    $scope.sendNeighbourRequest = function () {
-        var result = userAccountAPIService
-            .sendNeighbourRequest($scope.userAccountId)
-                .success(function(response) {
-                    if (response.error == true) {
-                        Notification.error("Sending neighbour request failed!");
-                    } else {
-                        Notification.success("Neighbour request sent!");
-                    }
+    // $scope.sendNeighbourRequest = function () {
+    //     var result = userAccountAPIService
+    //         .sendNeighbourRequest($scope.userAccountId)
+    //             .success(function(response) {
+    //                 if (response.error == true) {
+    //                     Notification.error("Sending neighbour request failed!");
+    //                 } else {
+    //                     Notification.success("Neighbour request sent!");
+    //                 }
+    //
+    //                 userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+    //             });
+    // }
+    //
+    // $scope.acceptNeighbourRequest = function () {
+    //     userAccountAPIService.acceptNeighbourRequest($scope.userAccountId)
+    //         .success(function(response){
+    //             if (response.error == true) {
+    //                 Notification.error("Neighbour request acceptation failed :(");
+    //             } else {
+    //                 Notification.success("Neighbour request accepted!");
+    //             }
+    //
+    //             userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+    //         });
+    // }
+    //
+    // $scope.rejectNeighbourRequest = function() {
+    //     userAccountAPIService.rejectNeighbourRequest($scope.userAccountId)
+    //         .success(function(response){
+    //             if (response.error ==true) {
+    //                 Notification.error("Neighbour request rejection failed :(");
+    //             } else {
+    //                 Notification.success("Neighbour request rejected!");
+    //             }
+    //
+    //             userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+    //         });
+    // }
+    //
+    // $scope.cancelNeighbourRequest = function() {
+    //     userAccountAPIService.cancelNeighbourRequest($scope.userAccountId)
+    //         .success(function(response){
+    //             if (response.error ==true) {
+    //                 Notification.error("Neighbour request cancelation failed :(");
+    //             } else {
+    //                 Notification.success("Neighbour request canceled!");
+    //             }
+    //
+    //             userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+    //         });
+    // }
+    //
+    // $scope.cancelNeighbourship = function() {
+    //     userAccountAPIService.cancelNeighbourship($scope.userAccountId)
+    //         .success(function(response){
+    //             if (response.error ==true) {
+    //                 Notification.error("Neighbourship cancelation failed :(");
+    //             } else {
+    //                 Notification.success("Neighbourship canceled!");
+    //             }
+    //
+    //             userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
+    //         });
+    // }
 
-                    userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
-                });
-    }
-
-    $scope.acceptNeighbourRequest = function () {
-        userAccountAPIService.acceptNeighbourRequest($scope.userAccountId)
-            .success(function(response){
-                if (response.error == true) {
-                    Notification.error("Neighbour request acceptation failed :(");
-                } else {
-                    Notification.success("Neighbour request accepted!");
-                }
-
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
-            });
-    }
-
-    $scope.rejectNeighbourRequest = function() {
-        userAccountAPIService.rejectNeighbourRequest($scope.userAccountId)
-            .success(function(response){
-                if (response.error ==true) {
-                    Notification.error("Neighbour request rejection failed :(");
-                } else {
-                    Notification.success("Neighbour request rejected!");
-                }
-
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
-            });
-    }
-
-    $scope.cancelNeighbourRequest = function() {
-        userAccountAPIService.cancelNeighbourRequest($scope.userAccountId)
-            .success(function(response){
-                if (response.error ==true) {
-                    Notification.error("Neighbour request cancelation failed :(");
-                } else {
-                    Notification.success("Neighbour request canceled!");
-                }
-
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
-            });
-    }
-
-    $scope.cancelNeighbourship = function() {
-        userAccountAPIService.cancelNeighbourship($scope.userAccountId)
-            .success(function(response){
-                if (response.error ==true) {
-                    Notification.error("Neighbourship cancelation failed :(");
-                } else {
-                    Notification.success("Neighbourship canceled!");
-                }
-
-                userAccountAPIService.getUserAccountProfile($scope.userAccountId).success(updateScopeAttributes);
-            });
-    }
-
-  if ($window.sessionStorage.userAccountId === $stateParams.userAccountId){
+  if ($window.sessionStorage.userAccountId.toString() === $stateParams.userAccountId.toString()){
     $scope.isMyProfile = true;
   } else {
     $scope.isMyProfile = false;
   }
 
-  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(updateScopeAttributes);
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
 
   function updateScopeAttributes(response){
 
     i=0;
     j=0;
     while (i==0){
-      if (response.message.accountOf[j].email==$window.sessionStorage.username){
+      if (response.message.accountOf[j]._id.toString() === $stateParams.userAccountId.toString()){
         $scope.name =response.message.accountOf[j].name;
         $scope.occupation=response.message.accountOf[j].occupation;
         $scope.avatar =response.message.accountOf[j].avatar;
