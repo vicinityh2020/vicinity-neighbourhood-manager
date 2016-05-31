@@ -47,7 +47,7 @@
           <!-- meta device get access-->
           <!-- <div class="statusDev"> -->
           <div style="z-index: {{dev.isMetaNotReq}}" class="statusDev">
-            <a  ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >     <!-- class="statusDev" -->
+            <a href="" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >     <!-- class="statusDev" -->
                <i class="fa fa-bar-chart fa-lg"></i>
                <i class="fa fa-plus fa-lg"></i>
                 &nbsp;<b>Get access!</b>
@@ -57,14 +57,14 @@
 
          <!-- friend device cancel "get access"-->
          <div style="z-index: {{dev.isMetaCanReq}}" class="statusDev">
-           <a  ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >       <!-- class="statusDev" -->
+           <a href="" ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >       <!-- class="statusDev" -->
               <i class="fa fa-bar-chart fa-lg"></i>
               <i class="fa fa-times fa-lg"></i>
                &nbsp;Cancel request
           </a>
           </div>
 
-          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="statusDev btn-group-justified statusDev">
+          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 statusDev">
           <div  class="btn-group-sm btn-block loc_a " >             <!--style="z-index: 3" toto bolo povodne -->
             <button  type="button" class="btn col-lg-10 btn-default ">
 
