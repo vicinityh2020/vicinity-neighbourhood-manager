@@ -259,7 +259,7 @@ a:focus {
   font-family: fontAwesome;
 }
 .main-header .sidebar-toggle:before {
-  content: "\f0c9";
+  content: "\f0c9";                               /*  \f0c9 is equivalent to fa-bars icon in font-awesome   */   
 }
 .main-header .sidebar-toggle:hover {
   color: #fff;

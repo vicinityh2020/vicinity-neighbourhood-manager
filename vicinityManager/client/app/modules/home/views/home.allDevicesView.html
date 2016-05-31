@@ -16,7 +16,7 @@
       </span>
     </div>
   </div>
-  <div class="row" ng-show="loaded">
+  <div class="row" >
 
     <!-- onlyPrivateDevices -->
     <div ng-show="onlyPrivateDevices" >
@@ -24,7 +24,7 @@
    </div>
 
    <!-- vypis devices -->
-    <div class="col-md-4" ng-repeat="dev in devs | filter: searchFilter">
+    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilter">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
