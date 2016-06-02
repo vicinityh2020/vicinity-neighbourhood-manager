@@ -1,0 +1,44 @@
+<div class="active tab-pane" id="activity">
+  <div class="row">
+
+        <h4 style="margin-left: 15px" ng-show = "giveNote">{{note}} </h4>
+
+        <div ng-show = "!giveNote" class="col-md-6" ng-repeat="friend in friends">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user-2">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-gold">
+                    <div class="widget-user-image">
+                        <img style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: friend._id})" class="img-circle" ng-src="{{friend.avatar}}" alt="User Avatar">
+                    </div>
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username"><a style="color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: friend._id})">{{friend.organisation}}</a></h3>       <!-- {{friend.accountOf.name}}-->
+                    <h5 class="widget-user-desc"><i class="fa fa-map-marker margin-r-5"></i> location</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
+                </div>
+                <!-- <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.profile.neigbourhood({userAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a> -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--
+<section class="content">
+  <div class="row">
+    <div class="col-md-4" ng-repeat="result in resultsList | filter: searchFilter">
+       Widget: user widget style 1
+      <div class="box box-widget widget-user-2">
+        Add the bg color to the header using any of the bg-* classes
+        <div class="widget-user-header bg-yellow">
+          <div class="widget-user-image">
+            <img class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
+          </div>
+           /.widget-user-image
+          <h3 class="widget-user-username">{{result.organisation}}</h3>
+          <h5 class="widget-user-desc">{{result._id}}</h5>
+        </div>
+        <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.neigbourhood({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section> -->

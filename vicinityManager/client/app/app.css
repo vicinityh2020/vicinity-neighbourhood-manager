@@ -550,6 +550,25 @@ ul.messages li .message_wrapper blockquote {
   z-index:-1;
 }
 
+.btn-group-justified2 {
+  display: table;
+  width: 35%;
+  table-layout: fixed;
+  border-collapse: separate;
+}
+.btn-group-justified2 > .btn,
+.btn-group-justified2 > .btn-group {
+  display: table-cell;
+  float: none;
+  width: 1%;
+}
+.btn-group-justified2 > .btn-group .btn {
+  width: 100%;
+}
+.btn-group-justified2 > .btn-group .dropdown-menu {
+  left: auto;
+}
+
 .statusDev2 {
   /*float: right;*/
   width:45%;
@@ -585,6 +604,38 @@ ul.messages li .message_wrapper blockquote {
   min-height: 100%;
 }
 
+.round_profile {
+  border-radius: 50%;
+  overflow: hidden;
+  /*width: 65px;
+  height: 65px;*/
+  /*width: 100px;
+  height: 100px;*/
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  padding: 3px;
+  border: 3px solid #d2d6de;
+
+  /*position: absolute;*/
+  /*top: 65px;*/
+  /*left: 18%;*/
+  /*margin-left: -45px;*/
+}
+.round_profile img {
+  /*display: block;*/
+  /*position: absolute;*/
+  /*width: 65px;
+  height: auto;*/
+  /*float: left;*/
+            /* Stretch
+                  height: 100%;
+                  width: 100%; */
+  min-width: 100%;
+  min-height: 100%;
+}
+
+
 .widget-user-2 .widget-user-username2 {
   margin-left: 30%;
 }
@@ -611,7 +662,28 @@ ul.messages li .message_wrapper blockquote {
   background-color: #9ACD32 !important;
 }
 
-
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+}
+.has-feedback label.sr-only ~ .form-control-feedback {
+  top: 0;
+}
 /*
 .bottomRight {
     margin-left: 707px;

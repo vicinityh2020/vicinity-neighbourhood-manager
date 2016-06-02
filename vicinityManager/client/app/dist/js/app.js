@@ -8,7 +8,7 @@
  * @Support <http://www.almsaeedstudio.com>
  * @Email   <support@almsaeedstudio.com>
  * @version 2.3.0
- * @license MIT <http://opensource.org/licenses/MIT>
+ * @license MIT <http://openso§urce.org/licenses/MIT>
  */
 
 //Make sure jQuery has been loaded before app.js
@@ -310,6 +310,7 @@ function _init() {
    */
   $.AdminLTE.pushMenu = {
     activate: function (toggleBtn) {
+      console.log("$.AdminLTE.pushMenu");
       //Get the screen sizes
       var screenSizes = $.AdminLTE.options.screenSizes;
 
@@ -352,6 +353,7 @@ function _init() {
     expandOnHover: function () {
       var _this = this;
       var screenWidth = $.AdminLTE.options.screenSizes.sm - 1;
+      console.log("Expand on hover");
       //Expand sidebar on hover
       $('.main-sidebar').hover(function () {
         if ($('body').hasClass('sidebar-mini')
@@ -368,9 +370,11 @@ function _init() {
       });
     },
     expand: function () {
+      console.log("Expand");
       $("body").removeClass('sidebar-collapse').addClass('sidebar-expanded-on-hover');
     },
     collapse: function () {
+      console.log("Collapse");
       if ($('body').hasClass('sidebar-expanded-on-hover')) {
         $('body').removeClass('sidebar-expanded-on-hover').addClass('sidebar-collapse');
       }
@@ -687,6 +691,16 @@ function _init() {
 
   $.fn.activateBox = function () {
     $.AdminLTE.boxWidget.activate(this);
+  };
+
+  $.fn.toggleBox = function(){
+    var button = $($.AdminLTE.boxWidget.selectors.collapse, this);
+    $.AdminLTE.boxWidget.collapse(button);
+  };
+
+  $.fn.removeBox = function(){
+    var button = $($.AdminLTE.boxWidget.selectors.remove, this);
+    $.AdminLTE.boxWidget.remove(button);
   };
 
 })(jQuery);

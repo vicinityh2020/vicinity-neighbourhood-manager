@@ -29,7 +29,7 @@ body {
 /* Layout */
 .wrapper {
   min-height: 100%;
-  position: static;
+  position: absolute;;
   overflow: hidden;
 }
 .wrapper:before,
@@ -45,7 +45,7 @@ body {
   margin: 0 auto;
   min-height: 100%;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-  position: relative;
+  /*position: relative;*/
 }
 .layout-boxed {
   background: url('../img/boxed-bg.jpg') repeat fixed;
@@ -259,8 +259,9 @@ a:focus {
   font-family: fontAwesome;
 }
 .main-header .sidebar-toggle:before {
-  content: "\f0c9";
+  content: "\f0c9";                               /*  \f0c9 is equivalent to fa-bars icon in font-awesome   */
 }
+
 .main-header .sidebar-toggle:hover {
   color: #fff;
 }

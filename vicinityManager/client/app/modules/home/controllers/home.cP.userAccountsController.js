@@ -23,6 +23,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   // $scope.gateways = [];
 
   $scope.userAccounts=[];
+  $scope.companyId = $stateParams.companyAccountId;
 
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
     $scope.userAccounts = data.message.accountOf;

@@ -43,6 +43,11 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/neighbourhood?sort=ASC');
   };
 
+  userAccountAPI.getAllDevices = function(id) {
+    return $http.get('http://localhost:3000/useraccounts/' + id + '/allDevices');
+  };
+
+
 
   return userAccountAPI;
 }]);

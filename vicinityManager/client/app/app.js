@@ -60,8 +60,8 @@ angular.module('VicinityManagerApp', [
           views: {
             'mainContentView@root':
               {
-                templateUrl: 'modules/home/views/home.neighbourhoodView.html',
-                controller: 'neighbourhoodController'
+                templateUrl: 'modules/home/views/home.allDevicesView.html',
+                controller: 'allDevicesController'
               }
           }
         })
@@ -72,6 +72,16 @@ angular.module('VicinityManagerApp', [
               {
                 templateUrl: 'modules/home/views/home.neighbourhoodView.html',
                 controller: 'neighbourhoodController'
+              }
+          }
+        })
+        .state('root.main.allDevices', {
+          url: '/allDevices/:searchTerm',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.allDevicesView.html',
+                controller: 'allDevicesController'
               }
           }
         })
@@ -92,6 +102,16 @@ angular.module('VicinityManagerApp', [
               {
                 templateUrl: 'modules/home/views/home.mydevicesView.html',
                 controller: 'myDevicesController'
+              }
+          }
+        })
+        .state('root.main.partneredEntities', {
+          url: '/partneredEntities',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.partneredEntities.html',
+                controller: 'partneredEntities'
               }
           }
         })
@@ -147,6 +167,73 @@ angular.module('VicinityManagerApp', [
                     }
             }
         })
+
+        .state('root.main.deviceProfile', {
+          url: '/profile/device/:deviceId',
+          views: {
+            'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.deviceProfileView.html',
+              controller:  'deviceProfileController'
+            }
+          }
+        })
+
+        .state('root.main.deviceProfile.history', {
+          url: '/history',
+          views: {
+            'tabPanel@root.main.deviceProfile':
+            {
+              templateUrl: 'modules/home/views/home.deviceProfile.historyView.html',
+              controller:  'dPhistoryController'
+            }
+          }
+        })
+
+        .state('root.main.deviceProfile.whoSee', {
+          url: '/whoSee',
+          views: {
+            'tabPanel@root.main.deviceProfile':
+            {
+              templateUrl: 'modules/home/views/home.deviceProfile.whoSeeView.html',
+              controller:  'dPwhoSeeController'
+            }
+          }
+        })
+
+
+        // .state('root.main.deviceProfile.devices', {
+        //     url: '/devices',
+        //     views: {
+        //         'tabPanel@root.main.deviceProfile':
+        //             {
+        //                 templateUrl: 'modules/home/views/home.deviceProfile.devicesView.html',
+        //                 controller: 'cPdevicesController'
+        //             }
+        //     }
+        // })
+        // .state('root.main.deviceProfile.friends', {
+        //     url: '/friends',
+        //     views: {
+        //         'tabPanel@root.main.deviceProfile':
+        //             {
+        //                 templateUrl: 'modules/home/views/home.deviceProfile.friendsView.html',
+        //                 controller: 'cPfriendsController'
+        //             }
+        //     }
+        // })
+        // .state('root.main.deviceProfile.history', {
+        //     url: '/history',
+        //     views: {
+        //         'tabPanel@root.main.deviceProfile':
+        //             {
+        //                 templateUrl: 'modules/home/views/home.deviceProfile.historyView.html',
+        //                 controller: 'cPhistoryController'
+        //             }
+        //     }
+        // })
+
+
         .state('root.main.companyProfile.userAccounts', {
             url: '/userAccounts',
             views: {
@@ -159,7 +246,7 @@ angular.module('VicinityManagerApp', [
         })
 
         .state('root.main.userProfile', {
-          url: '/profile/user/:userAccountId',
+          url: '/profile/user/:companyAccountId/:userAccountId',
           views: {
             'mainContentView@root':
             {
