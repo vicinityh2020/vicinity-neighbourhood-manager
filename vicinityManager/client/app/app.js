@@ -1,6 +1,11 @@
 'use strict';
 
-angular.module('Authentication', ['ngCookies']);
+angular.module('constants',[]).constant('configuration', this._env);
+
+
+angular.module('Authentication', ['ngCookies', 'constants']);
+
+
 
 // Declare app level module which depends on views, and components
 angular.module('VicinityManagerApp', [
@@ -11,7 +16,8 @@ angular.module('VicinityManagerApp', [
   'VicinityManagerApp.version',
   'ngCookies',
   'ui-notification',
-  'Authentication'
+  'Authentication',
+  'constants'
 ]).
   config(function($stateProvider, $urlRouterProvider) {
 

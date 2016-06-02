@@ -3,13 +3,13 @@
 angular.module('Authentication')
 
 .factory('AuthenticationService',
-        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window', '$location',
-        function(Base64, $http, $cookies, $rootScope, $timeout, $window, $location){
+        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window', '$location', 'configuration',
+        function(Base64, $http, $cookies, $rootScope, $timeout, $window, $location, configuration){
 
           var service = {};
 
           service.Login = function(username, password, callback) {
-            $http.post('http://localhost:3000/api/authenticate',{ username: username, password: password})
+            $http.post(configuration.apiUrl + '/api/authenticate',{ username: username, password: password})
               .success(function (response){
                 callback(response);
               });
