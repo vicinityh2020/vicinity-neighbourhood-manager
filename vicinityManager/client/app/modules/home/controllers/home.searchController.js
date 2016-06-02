@@ -3,12 +3,13 @@ angular.module('VicinityManagerApp.controllers').
     $scope.resultsList = [];
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
+    $scope.search = $stateParams.searchTerm;
 
 
     $scope.searchFilter = function (result) {
       var keyword = new RegExp($stateParams.searchTerm, 'i');
 
-      return !$stateParams.searchTerm || keyword.test(result.organisation) ;   // || keyword.test(result.accountOf.occupation)
+      return $stateParams.searchTerm && keyword.test(result.organisation) ;   // || keyword.test(result.accountOf.occupation)
     };
 
     userAccountAPIService.getUserAccounts().success(function (response) {
