@@ -1,5 +1,5 @@
 <section class="content-header">
-  <h1>Search results</h1>
+  <h1>All entities</h1>
 </section>
 
 
@@ -8,7 +8,7 @@
     <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
       <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
     </div>
-    <div class="col-md-4" ng-repeat="result in resultsList | filter: searchFilter" ng-show="loaded && search">
+    <div class="col-md-4" ng-repeat="result in resultsList" ng-show="loaded">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -24,7 +24,7 @@
         </div>
         <a ng-show="activeCompanyID.toString() === result._id.toString()" href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
         <a ng-show="!(activeCompanyID.toString() === result._id.toString())" href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
-    </div>
+      </div>
     </div>
   </div>
 </section>

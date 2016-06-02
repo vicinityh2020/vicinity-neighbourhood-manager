@@ -96,9 +96,9 @@ angular.module('VicinityManagerApp.controllers')
 
       $scope.searchFilter = function (result) {
 
-        var keyword = new RegExp($scope.searchTerm, 'i');
+        var keyword = new RegExp($scope.searchTerm2, 'i');
 
-        return (keyword.test(result.hasAdministrator[0].organisation) || !$scope.searchTerm || keyword.test(result.name));
+        return (keyword.test(result.hasAdministrator[0].organisation) || !$scope.searchTerm2 || keyword.test(result.name));
       }
 // keyword.test(result.electricity.location) || keyword.test(result.electricity.serial_number)
 

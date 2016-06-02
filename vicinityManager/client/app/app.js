@@ -109,6 +109,16 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+        .state('root.main.allEntities', {
+          url: '/allEntities',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.allEntities.html',
+                controller: 'allEntities'
+              }
+          }
+        })
         .state('root.main.searchresults', {
           url: '/search/:searchTerm',
           views: {
