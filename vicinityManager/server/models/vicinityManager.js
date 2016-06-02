@@ -92,6 +92,7 @@ var item = {
     location: String,
     id_tag: String,
     id_value: String,
+    status: String,
     datasources: [{
       name: String,
       typeOf: String,
