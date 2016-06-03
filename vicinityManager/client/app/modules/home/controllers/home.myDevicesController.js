@@ -36,6 +36,39 @@ angular.module('VicinityManagerApp.controllers')
          $scope.loaded = true;
     });
 
+    $scope.searchFilterOnline = function (result) {
+
+      $scope.noDevices = true;
+      var keyword=new RegExp($window.sessionStorage.companyAccountId);
+      if (keyword.test(result.hasAdministrator[0]._id)){
+        $scope.noDevices = false;
+      };
+
+      return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "On")) ;
+    }
+
+    $scope.searchFilterOffline = function (result) {
+
+      $scope.noDevices = true;
+      var keyword=new RegExp($window.sessionStorage.companyAccountId);
+      if (keyword.test(result.hasAdministrator[0]._id)){
+        $scope.noDevices = false;
+      };
+
+      return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "Off")) ;
+    }
+
+    $scope.searchFilterUnknown = function (result) {
+
+      $scope.noDevices = true;
+      var keyword=new RegExp($window.sessionStorage.companyAccountId);
+      if (keyword.test(result.hasAdministrator[0]._id)){
+        $scope.noDevices = false;
+      };
+
+      return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "Unknown")) ;
+    }
+
     $scope.allDevices = function (result) {
 
       $scope.noDevices = true;
@@ -45,15 +78,38 @@ angular.module('VicinityManagerApp.controllers')
       $scope.showPublicDevices = false;
       $scope.showAllDevices = true;
 
-      $scope.searchFilter = function (result) {
+      $scope.searchFilterOnline = function (result) {
 
+        $scope.noDevices = true;
         var keyword=new RegExp($window.sessionStorage.companyAccountId);
         if (keyword.test(result.hasAdministrator[0]._id)){
           $scope.noDevices = false;
         };
 
-        return keyword.test(result.hasAdministrator[0]._id) ;
-      }
+        return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "On")) ;
+      };
+
+      $scope.searchFilterOffline = function (result) {
+
+        $scope.noDevices = true;
+        var keyword=new RegExp($window.sessionStorage.companyAccountId);
+        if (keyword.test(result.hasAdministrator[0]._id)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "Off")) ;
+      };
+
+      $scope.searchFilterUnknown = function (result) {
+
+        $scope.noDevices = true;
+        var keyword=new RegExp($window.sessionStorage.companyAccountId);
+        if (keyword.test(result.hasAdministrator[0]._id)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "Unknown")) ;
+      };
     }
 
     $scope.privateDevices = function (result) {
@@ -65,14 +121,34 @@ angular.module('VicinityManagerApp.controllers')
       $scope.showPublicDevices = false;
       $scope.showPrivateDevices = true;
 
-      $scope.searchFilter = function (result) {
+      $scope.searchFilterOnline1 = function (result) {
 
         var keyword=new RegExp(1);
         if (keyword.test(result.accessLevel)){
           $scope.noDevices = false;
         };
 
-        return keyword.test(result.accessLevel) ;
+        return (keyword.test(result.accessLevel) && (result.info.status === "On")) ;
+      };
+
+      $scope.searchFilterOffline1 = function (result) {
+
+        var keyword=new RegExp(1);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Off")) ;
+      };
+
+      $scope.searchFilterUnknown1 = function (result) {
+
+        var keyword=new RegExp(1);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
       };
 
     }
@@ -85,14 +161,35 @@ angular.module('VicinityManagerApp.controllers')
       $scope.showFriendDevices = false;
       $scope.showPublicDevices = false;
       $scope.showMetaDevices = true;
-      $scope.searchFilter = function (result) {
+
+      $scope.searchFilterOnline2 = function (result) {
 
         var keyword=new RegExp(2);
         if (keyword.test(result.accessLevel)){
           $scope.noDevices = false;
         };
 
-        return keyword.test(result.accessLevel) ;
+        return (keyword.test(result.accessLevel) && (result.info.status === "On")) ;
+      };
+
+      $scope.searchFilterOffline2 = function (result) {
+
+        var keyword=new RegExp(2);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Off")) ;
+      };
+
+      $scope.searchFilterUnknown2 = function (result) {
+
+        var keyword=new RegExp(2);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
       };
 
     }
@@ -106,14 +203,34 @@ angular.module('VicinityManagerApp.controllers')
       $scope.showPublicDevices = false;
       $scope.showFriendDevices = true;
 
-      $scope.searchFilter = function (result) {
+      $scope.searchFilterOnline3 = function (result) {
 
         var keyword=new RegExp(3);
         if (keyword.test(result.accessLevel)){
           $scope.noDevices = false;
         };
 
-        return keyword.test(result.accessLevel) ;
+        return (keyword.test(result.accessLevel) && (result.info.status === "On")) ;
+      };
+
+      $scope.searchFilterOffline3 = function (result) {
+
+        var keyword=new RegExp(3);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Off")) ;
+      };
+
+      $scope.searchFilterUnknown3 = function (result) {
+
+        var keyword=new RegExp(3);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
       };
 
     }
@@ -127,29 +244,38 @@ angular.module('VicinityManagerApp.controllers')
       $scope.showFriendDevices = false;
       $scope.showPublicDevices = true;
 
-      $scope.searchFilter = function (result) {
+      $scope.searchFilterOnline4 = function (result) {
 
         var keyword=new RegExp(4);
         if (keyword.test(result.accessLevel)){
           $scope.noDevices = false;
         };
 
-        return keyword.test(result.accessLevel) ;
+        return (keyword.test(result.accessLevel) && (result.info.status === "On")) ;
+      };
+
+      $scope.searchFilterOffline4 = function (result) {
+
+        var keyword=new RegExp(4);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Off")) ;
+      };
+
+      $scope.searchFilterUnknown4 = function (result) {
+
+        var keyword=new RegExp(4);
+        if (keyword.test(result.accessLevel)){
+          $scope.noDevices = false;
+        };
+
+        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
       };
 
     }
 
-
-    $scope.searchFilter = function (result) {
-
-      $scope.noDevices = true;
-      var keyword=new RegExp($window.sessionStorage.companyAccountId);
-      if (keyword.test(result.hasAdministrator[0]._id)){
-        $scope.noDevices = false;
-      };
-
-      return keyword.test(result.hasAdministrator[0]._id) ;
-    }
 
     $scope.acceptDataRequest = function (dev_id) {
       $scope.interruptConnection= true;

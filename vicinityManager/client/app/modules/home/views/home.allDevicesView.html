@@ -23,8 +23,75 @@
        <span style="margin-left:20px;" class="info-box-description">There is no shared device with you.</span>
    </div>
 
-   <!-- vypis devices -->
-    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilter">
+   <!-- vypis devices, ked aplikovany searchFilter-->
+    <!-- <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilter">
+
+      <div class="box box-widget widget-user-2">
+
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+
+          <div class="round">
+            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+          </div>
+
+          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
+          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
+
+
+          <div style="z-index: {{dev.isMetaNotReq}}" class="statusDev">
+            <a href="" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >
+               <i class="fa fa-bar-chart fa-lg"></i>
+               <i class="fa fa-plus fa-lg"></i>
+                &nbsp;<b>Get access!</b>
+           </a>
+           </div>
+
+
+         <div style="z-index: {{dev.isMetaCanReq}}" class="statusDev">
+           <a href="" ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >
+              <i class="fa fa-bar-chart fa-lg"></i>
+              <i class="fa fa-times fa-lg"></i>
+               &nbsp;Cancel request
+          </a>
+          </div>
+
+          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 statusDev">
+          <div  class="btn-group-sm btn-block loc_a " >
+            <button  type="button" class="btn col-lg-10 btn-default ">
+
+               <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+            <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+               <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+            </ul>
+            </div>
+          </div>
+
+
+
+        <div style="z-index: 1" class="statusDev">
+         <span  ng-show="dev.isPublic"><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+        </div>
+
+        <div style="z-index: 1" class="statusDev">
+
+        <span  ng-show="dev.isFriendData" ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+
+        </div>
+
+        </div>
+        <a href="" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div> -->
+
+    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilterOnline">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -33,13 +100,389 @@
           <!-- <div class="widget-user-image">
             <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
           </div> -->
-
           <div class="round">
             <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
           </div>
 
           <!-- /.widget-user-image -->
-          <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+          <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
+          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
+          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
+
+          <!-- meta device get access-->
+          <!-- <div class="statusDev"> -->
+          <div style="z-index: {{dev.isMetaNotReq}}" class="statusDev">
+            <a href="" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >     <!-- class="statusDev" -->
+               <i class="fa fa-bar-chart fa-lg"></i>
+               <i class="fa fa-plus fa-lg"></i>
+                &nbsp;<b>Get access!</b>
+           </a>
+           </div>
+           <!-- </div> -->
+
+         <!-- friend device cancel "get access"-->
+         <div style="z-index: {{dev.isMetaCanReq}}" class="statusDev">
+           <a href="" ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >       <!-- class="statusDev" -->
+              <i class="fa fa-bar-chart fa-lg"></i>
+              <i class="fa fa-times fa-lg"></i>
+               &nbsp;Cancel request
+          </a>
+          </div>
+
+          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 statusDev">
+          <div  class="btn-group-sm btn-block loc_a " >             <!--style="z-index: 3" toto bolo povodne -->
+            <button  type="button" class="btn col-lg-10 btn-default ">
+
+               <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+            <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+               <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+            </ul>
+            </div>
+          </div>
+
+
+
+        <div style="z-index: 1" class="statusDev">
+        <!-- <p ng-show="dev.isPublic"class="ratings">            statusDev  -->
+         <span  ng-show="dev.isPublic"><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span> <!--class="statusDev" title="connection established, see details" -->
+        <!-- </p> -->
+        </div>
+
+        <!-- friend device -->
+        <div style="z-index: 1" class="statusDev">
+
+        <span  ng-show="dev.isFriendData" ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>      <!-- class="statusDev" {{note}} -->
+
+        </div>
+
+        </div>
+        <a href="" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilterOffline">
+      <!-- Widget: user widget style 1 -->
+      <div class="box box-widget widget-user-2">
+        <!-- Add the bg color to the header using any of the bg-* classes -->
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+          <!-- <div class="widget-user-image">
+            <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
+          </div> -->
+          <div class="round">
+            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+          </div>
+
+          <!-- /.widget-user-image -->
+          <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
+          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
+
+          <!-- meta device get access-->
+          <!-- <div class="statusDev"> -->
+          <div style="z-index: {{dev.isMetaNotReq}}" class="statusDev">
+            <a href="" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >     <!-- class="statusDev" -->
+               <i class="fa fa-bar-chart fa-lg"></i>
+               <i class="fa fa-plus fa-lg"></i>
+                &nbsp;<b>Get access!</b>
+           </a>
+           </div>
+           <!-- </div> -->
+
+         <!-- friend device cancel "get access"-->
+         <div style="z-index: {{dev.isMetaCanReq}}" class="statusDev">
+           <a href="" ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >       <!-- class="statusDev" -->
+              <i class="fa fa-bar-chart fa-lg"></i>
+              <i class="fa fa-times fa-lg"></i>
+               &nbsp;Cancel request
+          </a>
+          </div>
+
+          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 statusDev">
+          <div  class="btn-group-sm btn-block loc_a " >             <!--style="z-index: 3" toto bolo povodne -->
+            <button  type="button" class="btn col-lg-10 btn-default ">
+
+               <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+            <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+               <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+            </ul>
+            </div>
+          </div>
+
+
+
+        <div style="z-index: 1" class="statusDev">
+        <!-- <p ng-show="dev.isPublic"class="ratings">            statusDev  -->
+         <span  ng-show="dev.isPublic"><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span> <!--class="statusDev" title="connection established, see details" -->
+        <!-- </p> -->
+        </div>
+
+        <!-- friend device -->
+        <div style="z-index: 1" class="statusDev">
+
+        <span  ng-show="dev.isFriendData" ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>      <!-- class="statusDev" {{note}} -->
+
+        </div>
+
+        </div>
+        <a href="" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilterUnknown">
+      <!-- Widget: user widget style 1 -->
+      <div class="box box-widget widget-user-2">
+        <!-- Add the bg color to the header using any of the bg-* classes -->
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+          <!-- <div class="widget-user-image">
+            <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
+          </div> -->
+          <div class="round">
+            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+          </div>
+
+          <!-- /.widget-user-image -->
+          <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
+          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
+
+          <!-- meta device get access-->
+          <!-- <div class="statusDev"> -->
+          <div style="z-index: {{dev.isMetaNotReq}}" class="statusDev">
+            <a href="" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >     <!-- class="statusDev" -->
+               <i class="fa fa-bar-chart fa-lg"></i>
+               <i class="fa fa-plus fa-lg"></i>
+                &nbsp;<b>Get access!</b>
+           </a>
+           </div>
+           <!-- </div> -->
+
+         <!-- friend device cancel "get access"-->
+         <div style="z-index: {{dev.isMetaCanReq}}" class="statusDev">
+           <a href="" ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >       <!-- class="statusDev" -->
+              <i class="fa fa-bar-chart fa-lg"></i>
+              <i class="fa fa-times fa-lg"></i>
+               &nbsp;Cancel request
+          </a>
+          </div>
+
+          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 statusDev">
+          <div  class="btn-group-sm btn-block loc_a " >             <!--style="z-index: 3" toto bolo povodne -->
+            <button  type="button" class="btn col-lg-10 btn-default ">
+
+               <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+            <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+               <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+            </ul>
+            </div>
+          </div>
+
+
+
+        <div style="z-index: 1" class="statusDev">
+        <!-- <p ng-show="dev.isPublic"class="ratings">            statusDev  -->
+         <span  ng-show="dev.isPublic"><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span> <!--class="statusDev" title="connection established, see details" -->
+        <!-- </p> -->
+        </div>
+
+        <!-- friend device -->
+        <div style="z-index: 1" class="statusDev">
+
+        <span  ng-show="dev.isFriendData" ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>      <!-- class="statusDev" {{note}} -->
+
+        </div>
+
+        </div>
+        <a href="" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+
+    <!-- online devices, neaplikovany searchFilter-->
+
+    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: online2">
+
+      <div class="box box-widget widget-user-2">
+
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+
+          <div class="round">
+            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+          </div>
+
+          <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
+          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
+          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
+
+          <div style="z-index: {{dev.isMetaNotReq}}" class="statusDev">
+            <a href="" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >
+               <i class="fa fa-bar-chart fa-lg"></i>
+               <i class="fa fa-plus fa-lg"></i>
+                &nbsp;<b>Get access!</b>
+           </a>
+           </div>
+
+         <div style="z-index: {{dev.isMetaCanReq}}" class="statusDev">
+           <a href="" ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >
+              <i class="fa fa-bar-chart fa-lg"></i>
+              <i class="fa fa-times fa-lg"></i>
+               &nbsp;Cancel request
+          </a>
+          </div>
+
+          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 statusDev">
+          <div  class="btn-group-sm btn-block loc_a " >
+            <button  type="button" class="btn col-lg-10 btn-default ">
+
+               <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+            <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+               <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+            </ul>
+            </div>
+          </div>
+
+
+
+        <div style="z-index: 1" class="statusDev">
+
+         <span  ng-show="dev.isPublic"><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+        </div>
+
+
+        <div style="z-index: 1" class="statusDev">
+
+        <span  ng-show="dev.isFriendData" ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+        </div>
+
+        </div>
+        <a href="" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <!-- offline devices, neaplikovany searchFilter-->
+    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: offline2">
+      <!-- Widget: user widget style 1 -->
+      <div class="box box-widget widget-user-2">
+        <!-- Add the bg color to the header using any of the bg-* classes -->
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+          <!-- <div class="widget-user-image">
+            <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
+          </div> -->
+          <div class="round">
+            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+          </div>
+
+          <!-- /.widget-user-image -->
+          <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
+          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
+
+          <!-- meta device get access-->
+          <!-- <div class="statusDev"> -->
+          <div style="z-index: {{dev.isMetaNotReq}}" class="statusDev">
+            <a href="" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2" ng-click="getAccess1(dev._id)" class=" btn-sm btn-success btn-block loc_a " >     <!-- class="statusDev" -->
+               <i class="fa fa-bar-chart fa-lg"></i>
+               <i class="fa fa-plus fa-lg"></i>
+                &nbsp;<b>Get access!</b>
+           </a>
+           </div>
+           <!-- </div> -->
+
+         <!-- friend device cancel "get access"-->
+         <div style="z-index: {{dev.isMetaCanReq}}" class="statusDev">
+           <a href="" ng-show="dev.isMeta && dev.cancelRequest2" ng-click="cancelRequest1(dev._id)"  class="btn-sm btn-default btn-block loc_a" >       <!-- class="statusDev" -->
+              <i class="fa fa-bar-chart fa-lg"></i>
+              <i class="fa fa-times fa-lg"></i>
+               &nbsp;Cancel request
+          </a>
+          </div>
+
+          <div  style="z-index: {{dev.isMetaInter}}" ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 statusDev">
+          <div  class="btn-group-sm btn-block loc_a " >             <!--style="z-index: 3" toto bolo povodne -->
+            <button  type="button" class="btn col-lg-10 btn-default ">
+
+               <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
+
+            <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu">    <!-- "right"pridane -->
+               <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
+            </ul>
+            </div>
+          </div>
+
+
+
+        <div style="z-index: 1" class="statusDev">
+        <!-- <p ng-show="dev.isPublic"class="ratings">            statusDev  -->
+         <span  ng-show="dev.isPublic"><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span> <!--class="statusDev" title="connection established, see details" -->
+        <!-- </p> -->
+        </div>
+
+        <!-- friend device -->
+        <div style="z-index: 1" class="statusDev">
+
+        <span  ng-show="dev.isFriendData" ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>      <!-- class="statusDev" {{note}} -->
+
+        </div>
+
+        </div>
+        <a href="" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+
+    <!-- unknown devices, neaplikovany searchFilter-->
+    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: unknown2">
+      <!-- Widget: user widget style 1 -->
+      <div class="box box-widget widget-user-2">
+        <!-- Add the bg color to the header using any of the bg-* classes -->
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+          <!-- <div class="widget-user-image">
+            <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
+          </div> -->
+          <div class="round">
+            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+          </div>
+
+          <!-- /.widget-user-image -->
+          <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
           <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>

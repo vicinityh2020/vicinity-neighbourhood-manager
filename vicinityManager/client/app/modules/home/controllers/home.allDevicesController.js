@@ -93,13 +93,56 @@ angular.module('VicinityManagerApp.controllers')
 
       });
 
+      // $scope.searchFilter = function (result) {
+      //
+      //   var keyword = new RegExp($scope.searchTerm2, 'i');
+      //
+      //   return (!$scope.searchTerm2);      //|| !$scope.searchTerm2
+      // }
 
-      $scope.searchFilter = function (result) {
+
+      $scope.searchFilterOnline = function (result) {
 
         var keyword = new RegExp($scope.searchTerm2, 'i');
 
-        return (keyword.test(result.hasAdministrator[0].organisation) || !$scope.searchTerm2 || keyword.test(result.name));
+        return ((keyword.test(result.hasAdministrator[0].organisation) || keyword.test(result.name)) && $scope.searchTerm2 && result.info.status === "On");      //|| !$scope.searchTerm2
       }
+
+      $scope.searchFilterOffline = function (result) {
+
+        var keyword = new RegExp($scope.searchTerm2, 'i');
+
+        return ((keyword.test(result.hasAdministrator[0].organisation) || keyword.test(result.name)) && $scope.searchTerm2 && result.info.status === "Off");      //|| !$scope.searchTerm2
+      }
+
+      $scope.searchFilterUnknown = function (result) {
+
+        var keyword = new RegExp($scope.searchTerm2, 'i');
+
+        return ((keyword.test(result.hasAdministrator[0].organisation) || keyword.test(result.name)) && $scope.searchTerm2 && result.info.status === "Unknown");      //|| !$scope.searchTerm2
+      }
+
+      $scope.offline2 = function (result) {
+
+        // var keyword = new RegExp($scope.searchTerm2, 'i');
+
+        return (result.info.status === "Off" && !$scope.searchTerm2);
+      }
+
+      $scope.online2 = function (result) {
+
+        // var keyword = new RegExp($scope.searchTerm2, 'i');
+
+        return (result.info.status === "On" && !$scope.searchTerm2);
+      }
+
+      $scope.unknown2 = function (result) {
+
+        // var keyword = new RegExp($scope.searchTerm2, 'i');
+
+        return (result.info.status === "Unknown" && !$scope.searchTerm2);
+      }
+
 // keyword.test(result.electricity.location) || keyword.test(result.electricity.serial_number)
 
 

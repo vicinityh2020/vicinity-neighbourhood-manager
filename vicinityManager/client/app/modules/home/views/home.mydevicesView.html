@@ -76,7 +76,7 @@
                             <h2 style="margin-left:20px;" >No devices to show.</h2>
                          </div>
 
-                         <div ng-show="showAllDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                         <div ng-show="showAllDevices" ng-repeat="device in devices | filter: searchFilterOnline" class="col-md-4">
                            <!-- <div class="info-box"> -->
 
                            <div class="box box-widget widget-user-2">
@@ -91,7 +91,7 @@
                                  <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
                                </div>
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
-
+                               <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
                                <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
                                <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                                <h5 class="widget-user-desc2">{{device.info.location}}</h5>
@@ -136,11 +136,78 @@
                                  <a href="#"><span class="fa fa-square-o"></span></a>
                                </p> -->
                              </div>
-                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
 
-                         <div ng-show="showPrivateDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                         <div ng-show="showAllDevices" ng-repeat="device in devices | filter: searchFilterOffline" class="col-md-4">
+
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                               <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+                               <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                               <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                               <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
+                         <div ng-show="showAllDevices" ng-repeat="device in devices | filter: searchFilterUnknown" class="col-md-4">
+
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                               <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+                               <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                               <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                               <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
+
+                         <div ng-show="showPrivateDevices" ng-repeat="device in devices | filter: searchFilterOnline1" class="col-md-4">
                            <!-- <div class="info-box"> -->
                            <div class="box box-widget widget-user-2">
 
@@ -154,7 +221,7 @@
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
 
                              <!-- <div class="info-box-content"> -->
-
+                             <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
                              <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
@@ -172,14 +239,93 @@
                                  </ul>
                                </div>
                               </div>
-                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
 
 
 
                          </div>
 
-                         <div ng-show="showMetaDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                         <div ng-show="showPrivateDevices" ng-repeat="device in devices | filter: searchFilterOffline1" class="col-md-4">
+                           <!-- <div class="info-box"> -->
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                              </div>
+
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+                              </div>
+                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+
+
+
+                         </div>
+
+                         <div ng-show="showPrivateDevices" ng-repeat="device in devices | filter: searchFilterUnknown1" class="col-md-4">
+                           <!-- <div class="info-box"> -->
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                              </div>
+
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+                              </div>
+                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+
+
+
+                         </div>
+
+
+                         <div ng-show="showMetaDevices" ng-repeat="device in devices | filter: searchFilterOnline2" class="col-md-4">
                            <!-- <div class="info-box"> -->
 
                            <div class="box box-widget widget-user-2">
@@ -194,7 +340,7 @@
 
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
                              <!-- <div class="info-box-content"> -->
-
+                             <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
                              <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
@@ -213,11 +359,88 @@
                                </div>
 
                              </div>
-                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
 
-                         <div ng-show="showFriendDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                         <div ng-show="showMetaDevices" ng-repeat="device in devices | filter: searchFilterOffline2" class="col-md-4">
+                           <!-- <div class="info-box"> -->
+
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
+                         <div ng-show="showMetaDevices" ng-repeat="device in devices | filter: searchFilterUnknown2" class="col-md-4">
+                           <!-- <div class="info-box"> -->
+
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
+
+                         <div ng-show="showFriendDevices" ng-repeat="device in devices | filter: searchFilterOnline3" class="col-md-4">
                            <div class="box box-widget widget-user-2">
 
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
@@ -230,7 +453,7 @@
 
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
                              <!-- <div class="info-box-content"> -->
-
+                             <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
                              <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
@@ -249,11 +472,11 @@
                                </div>
 
                              </div>
-                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
 
-                         <div ng-show="showPublicDevices" ng-repeat="device in devices | filter: searchFilter" class="col-md-4">
+                         <div ng-show="showFriendDevices" ng-repeat="device in devices | filter: searchFilterOffline3" class="col-md-4">
                            <div class="box box-widget widget-user-2">
 
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
@@ -263,8 +486,10 @@
                                </div>
                            <!-- <div class="info-box"> -->
                                <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+
                              <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
                              <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
                              <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
@@ -283,9 +508,152 @@
                                </div>
 
                              </div>
-                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
+
+                         <div ng-show="showFriendDevices" ng-repeat="device in devices | filter: searchFilterUnknown3" class="col-md-4">
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+                           <!-- <div class="info-box"> -->
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
+
+                         <div ng-show="showPublicDevices" ng-repeat="device in devices | filter: searchFilterOnline4" class="col-md-4">
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+                           <!-- <div class="info-box"> -->
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
+                         <div ng-show="showPublicDevices" ng-repeat="device in devices | filter: searchFilterOffline4" class="col-md-4">
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+                           <!-- <div class="info-box"> -->
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
+                         <div ng-show="showPublicDevices" ng-repeat="device in devices | filter: searchFilterUnknown4" class="col-md-4">
+                           <div class="box box-widget widget-user-2">
+
+                             <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
+                               </div>
+                           <!-- <div class="info-box"> -->
+                               <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
+                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+                             <!-- <div class="info-box-content"> -->
+                             <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+                             <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
+                             <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+                             <h5 class="widget-user-desc2">{{device.info.location}}</h5>
+
+                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                                   <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom}}</b></button>
+                                 <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
+                                   <span class="caret"></span>
+                                   <span class="sr-only">Toggle Dropdown</span>
+                                 </button>
+                                 <ul class="dropdown-menu" role="menu">
+                                   <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
+                                   <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
+                                 </ul>
+                               </div>
+
+                             </div>
+                             <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                           </div>
+                         </div>
+
 
                        </div>
 

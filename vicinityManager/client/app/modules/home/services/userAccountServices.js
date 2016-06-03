@@ -44,7 +44,7 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
   };
 
   userAccountAPI.getAllDevices = function(id) {
-    return $http.get('http://localhost:3000/useraccounts/' + id + '/allDevices');
+    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/allDevices');
   };
 
 
