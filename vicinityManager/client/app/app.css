@@ -762,6 +762,51 @@ ul.messages li .message_wrapper blockquote {
   top: 0;
 }
 
+/** Notifications menu classes **/
+
+li.notifications-menu ul.menu > li:hover {
+  background-color: green
+}
+
+li.notifications-menu ul.menu > li > div {
+  padding: 5px;
+}
+
+li.notifications-menu ul.menu > li div.notification-avatar {
+  float: left;
+  width:30%
+}
+
+li.notifications-menu ul.menu > li div.notification-avatar img {
+  border-radius: 50%;
+  width: 75%;
+  height: 75%;
+  display: block;
+  margin: auto
+}
+
+li.notifications-menu ul.menu > li div.notification-description {
+  display: block;
+  margin-left: 30%;
+  white-space: pre-line;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  padding-top: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  flow: left;
+}
+
+li.notifications-menu ul.menu > li div.notification-actions {
+  margin-left:30%;
+  clear: left;
+}
+
+li.notifications-menu ul.menu > li div.notification-actions button {
+  width: 45%;
+}
 /*.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > div {
   background: #f4f4f4;
   text-decoration: none;
