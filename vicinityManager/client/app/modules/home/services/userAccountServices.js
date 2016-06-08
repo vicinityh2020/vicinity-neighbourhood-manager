@@ -47,7 +47,13 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/allDevices');
   };
 
+  userAccountAPI.getNotificationsOfUser = function(id) {
+    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/notifications');
+  };
 
+  userAccountAPI.getNotificationsOfUserRead = function(id) {
+    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/readNotifications');
+  };
 
   return userAccountAPI;
 }]);

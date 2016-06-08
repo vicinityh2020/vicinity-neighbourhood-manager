@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 
 var itemOp = require('../../models/vicinityManager').item;
+var notificationAPI = require('../notifications/notifications');
+var notificationOp = require('../../models/vicinityManager').notification;
 
 function rejectDeviceRequest(req, res, next) {
 
@@ -17,6 +19,7 @@ function rejectDeviceRequest(req, res, next) {
             if (data.length == 1) {
 
                 var device = data[0];
+                var friend_id = device.accessRequestFrom[device.accessRequestFrom.length-1];
 
                 for (var index = device.hasAccess.length - 1; index >= 0; index --) {
                      if (device.hasAccess[index].toString() === device.accessRequestFrom[0].toString()) {    //predpokladam, ze v accessRequestFrom moze byt len 1 request, nezmenit z pola na number?
@@ -29,6 +32,18 @@ function rejectDeviceRequest(req, res, next) {
                         device.accessRequestFrom.splice(index, 1);
                     // }
                 };
+
+                notificationAPI.changeStatusToResponded(friend_id,activeCompany_id,'deviceRequest','waiting');
+
+                // var notification = new notificationOp();
+                //
+                // notification.addressedTo.push(friend_id);
+                // notification.sentBy = activeCompany_id;
+                // notification.type = 'deviceRequest';
+                // notification.status = 'accepted';
+                // notification.data.deviceId = device._id;
+                // notification.isUnread = true;
+                // notification.save();
 
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 

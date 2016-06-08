@@ -1,17 +1,71 @@
 <!-- Menu toggle button -->
 <a href="" class="dropdown-toggle" data-toggle="dropdown">
   <i class="fa fa-bell-o"></i>
-  <span class="label label-warning">10</span>
+  <span class="label label-warning">{{notifs.length}}</span>
 </a>
 <ul class="dropdown-menu">
-  <li class="header">You have 10 notifications</li>
+  <li ng-show="!oneNotif" class="header">You have {{notifs.length}} new notifications</li>
+  <li ng-show="oneNotif" class="header">You have 1 new notification</li>
   <li>
     <!-- Inner Menu: contains the notifications -->
     <ul class="menu">
-      <li><!-- start notification -->
-        <a href="">
-          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+
+ <!-- Unread device notifications -->
+      <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'waiting') ">    <!-- | filter: searchfilter1-->
+        <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId})">
+        <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Company Avatar">
+           You have device data request from {{notif.sentBy.organisation}}.
         </a>
+      </li>
+ <!-- Unread friend notifications -->
+      <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'waiting') " >  <!-- | filter: searchfilter2 -->
+        <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
+        <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
+           You have partnership request from {{notif.sentBy.organisation}}.
+        </a>
+      </li>
+<!-- Unread device notifications -->
+      <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'accepted') ">  <!-- | filter: searchfilter3 -->
+        <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId})">
+        <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Company Avatar">
+           You got access to device {{notif.sentBy.organisation}}.
+        </a>
+      </li>
+ <!-- Unread friend notifications -->
+      <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'accepted')">     <!-- | filter: searchfilter4"-->
+        <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
+        <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
+           You are now partner with {{notif.sentBy.organisation}}.
+        </a>
+      </li>
+
+<!-- Read device notifications -->
+      <li ng-repeat="notif in notifs2 "  ng-show="(notif.type=='deviceRequest') && (notif.status== 'waiting') " >        <!-- | filter: searchfilter1 -->
+        <p >
+        <img class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Company Avatar">
+           You have device data request from {{notif.sentBy.organisation}}.
+        </p>
+      </li>
+<!-- Read friend notifications -->
+     <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='friendRequest') && (notif.status== 'waiting') " >    <!-- | filter: searchfilter2 -->
+        <p >
+        <img class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
+           You have partnership request from {{notif2.sentBy.organisation}}.
+        </p>
+      </li>
+<!-- Unread device notifications -->
+      <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='deviceRequest') && (notif.status== 'accepted') " >  <!-- | filter: searchfilter3 -->
+        <p>
+        <img class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Company Avatar">
+           You got access to device {{notif.sentBy.organisation}}.
+        </p>
+      </li>
+<!-- Unread friend notifications -->
+      <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='friendRequest') && (notif.status== 'accepted') ">        <!-- | filter: searchfilter4 -->
+        <p >
+        <img class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
+           You are now partner with {{notif.sentBy.organisation}}.
+        </p>
       </li>
       <!-- end notification -->
     </ul>

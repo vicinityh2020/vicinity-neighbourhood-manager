@@ -20,6 +20,7 @@ var userGroups = require('./routes/userGroups');
 var organisationUnits = require('./routes/organisationUnits');
 var gateways = require('./routes/gateways');
 var items = require('./routes/items');
+var notifications = require('./routes/notifications');
 //var search = require('./routes/search');
 var jwtauth = require('./middlewares/jwtauth');
 
@@ -58,6 +59,7 @@ app.use('/useraccounts', [jwtauth, userAccounts]);
 //app.use('/organisationUnits', [jwtauth, organisationUnits]);
 app.use('/gateways', [jwtauth, gateways]);
 app.use('/items', [jwtauth, items]);
+app.use('/notifications', [jwtauth, notifications]);
 
 
 

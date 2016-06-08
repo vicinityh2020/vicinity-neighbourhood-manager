@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 
 var itemOp = require('../../models/vicinityManager').item;
+var notificationAPI = require('../notifications/notifications');
+var notificationOp = require('../../models/vicinityManager').notification;
 
 function acceptDeviceRequest(req, res, next) {
 
@@ -17,16 +19,29 @@ function acceptDeviceRequest(req, res, next) {
             if (data.length == 1) {
 
                 var device = data[0];
+                var friend_id = device.accessRequestFrom[(device.accessRequestFrom.length)-1];
 
                 device.hasAccess.push(device.accessRequestFrom[0]);
 
 
                 for (var index = device.accessRequestFrom.length - 1; index >= 0; index --) {
                     // if (device.accessRequestFrom[index].toString() === activeCompany_id.toString()) {
-                    
+
                     device.accessRequestFrom.splice(index, 1);
                     // }
                 }
+
+                notificationAPI.changeStatusToResponded(friend_id,activeCompany_id,'deviceRequest','waiting');
+
+                var notification = new notificationOp();
+
+                notification.addressedTo.push(friend_id);
+                notification.sentBy = activeCompany_id;
+                notification.type = 'deviceRequest';
+                notification.status = 'accepted';
+                notification.deviceId = device._id;
+                notification.isUnread = true;
+                notification.save();
 
 
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");

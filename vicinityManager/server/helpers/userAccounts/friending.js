@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
-var notificationAPI = require('../../helpers/notifications/notifications');
+var notificationAPI = require('../../routes/notifications/notifications');
 //TODO: Issue #6  check that only :id can make friends.
 //TODO: Issue #6 Send friendship notification to :id.
 //TODO: Issue #6 check double requests;

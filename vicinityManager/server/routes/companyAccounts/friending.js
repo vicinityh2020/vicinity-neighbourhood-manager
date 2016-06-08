@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
-var notificationAPI = require('../../helpers/notifications/notifications');             //my_id should be .cid everywhere
+var notificationAPI = require('../../routes/notifications/notifications');             //my_id should be .cid everywhere
 //TODO: Issue #6  check that only :id can make friends.
 //TODO: Issue #6 Send friendship notification to :id.
 //TODO: Issue #6 check double requests;
@@ -39,6 +39,7 @@ function processFriendRequest(req, res, next) {
                 notification.addressedTo.push(friend._id);
                 notification.sentBy = me._id;
                 notification.type = 'friendRequest';
+                notification.status = 'waiting';
                 notification.isUnread = true;
                 notification.save();
 
@@ -94,7 +95,19 @@ function acceptFriendRequest(req, res, next) {
                     }
                 }
 
-                notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
+                // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
+
+                notificationAPI.changeStatusToResponded(friend_id, my_id, 'friendRequest','waiting');
+
+                var notification = new notificationOp();
+
+                notification.addressedTo.push(friend_id);
+                notification.sentBy = my_id;
+                notification.type = 'friendRequest';
+                notification.status = 'accepted';
+                // notification.data.deviceId = device._id;
+                notification.isUnread = true;
+                notification.save();
 
                 friend.save();
                 me.save();
@@ -143,7 +156,9 @@ function rejectFriendRequest(req, res, next) {
                     }
                 }
 
-                notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
+                // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
+
+                notificationAPI.changeStatusToResponded(friend_id,my_id,'friendRequest','waiting');
 
                 friend.save();
                 me.save();
@@ -189,7 +204,8 @@ function cancelFriendRequest(req, res, next){
                     }
                 }
 
-                notificationAPI.markAsRead(my_id, friend_id, "friendRequest");
+                // notificationAPI.markAsRead(my_id, friend_id, "friendRequest");
+                notificationAPI.deleteNot(my_id, friend_id, 'friendRequest', 'waiting');
 
                 friend.save();
                 me.save();

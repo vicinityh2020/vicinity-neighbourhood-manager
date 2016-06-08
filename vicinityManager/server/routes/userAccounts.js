@@ -1,12 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var friending = require('../helpers/userAccounts/friending');
+var friending = require('./companyAccounts/friending');
 var userProfile = require('../helpers/userAccounts/userprofile');
 var devices = require('./userAccounts/devices.js');
-var userAccountOp = require('../models/vicinityManager').userAccount;
 
+var notifications = require('./notifications/notifications');
+
+var userAccountOp = require('../models/vicinityManager').userAccount;
 var itemOp = require('../models/vicinityManager').item;
+var notificationOp = require('../models/vicinityManager').notification;
+
 var ce = require('cloneextend');
 var winston = require('winston');
 
@@ -32,6 +36,10 @@ router
   // Send friendship request approval to :id from authenticated user
   .put('/:id/friendship/cancel', friending.cancelFriendRequest)
   .delete('/:id/friendship', friending.cancelFriendship)
+
+  .get('/:id/notifications', notifications.getNotificationsOfUser)
+
+  .get('/:id/readNotifications', notifications.getNotificationsOfUserRead)
 
   .get('/:id/devices', devices.getMyDevices)
 

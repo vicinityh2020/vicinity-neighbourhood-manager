@@ -37,7 +37,8 @@ angular.module('VicinityManagerApp', [
               },
             'notificationsMenuView':
               {
-                templateUrl: 'modules/home/views/home.notificationsMenuView.html'
+                templateUrl: 'modules/home/views/home.notificationsMenuView.html',
+                controller: 'notifications'
               },
             'taskMenuView':
               {
