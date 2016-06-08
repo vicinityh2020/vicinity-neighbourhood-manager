@@ -112,6 +112,7 @@ function getAllDevices(req, res) {
             query = {
               $or :[
               {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2, hasAccess: {$in: [data[0]._id]}}] } ] },
+              {$and: [ {hasAdministrator: {'$ne':o_id}}, {accessLevel: 4}] },
               {hasAdministrator: o_id}
             ]
             }
@@ -120,6 +121,7 @@ function getAllDevices(req, res) {
           query = {
             $or :[
             {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}] } ] },
+            {$and: [ {hasAdministrator: {'$ne':o_id}}, {accessLevel: 4} ] },
             {hasAdministrator: o_id}
           ]
           }
@@ -129,6 +131,7 @@ function getAllDevices(req, res) {
         query = {
           $or :[
           {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}] } ] },
+          {$and: [ {hasAdministrator: {'$ne':o_id}}, {accessLevel: 4}] },
           {hasAdministrator: o_id}
         ]
         }

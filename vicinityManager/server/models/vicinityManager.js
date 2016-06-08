@@ -56,7 +56,7 @@ var notification = {
     type: {type: String, enum: ['friendRequest','deviceRequest']},
     deviceId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'items'
+          ref: 'item'
     },
     status: {type: String, enum: ['waiting','responded','accepted']},
     isUnread: Boolean

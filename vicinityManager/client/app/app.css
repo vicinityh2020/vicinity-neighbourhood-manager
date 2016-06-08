@@ -173,6 +173,8 @@
   padding: 2px;
 }
 
+
+
 .profile.img_2 .profile_pic .img-circle.profile_img {
   width: 50%;
   margin: 10px 0 0;
@@ -607,6 +609,41 @@ ul.messages li .message_wrapper blockquote {
   /*position: absolute;*/
   /*width: 65px;
   height: auto;*/
+  float: left;
+            /* Stretch
+                  height: 100%;
+                  width: 100%; */
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.round2 {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 65px;
+  height: 65px;
+  position: relative;
+
+  /*top: 65px;*/
+  left: 18%;
+  margin-left: -45px;
+}
+
+.round2 .span {
+  /*padding-left: 105px;*/
+  /*text-align: right;*/
+  /*width: 5px;*/
+  float: left;
+
+
+}
+
+.round2 img {
+  /*display: block;*/
+  /*position: absolute;*/
+  /*width: 65px;
+  height: auto;*/
+
   float: left;
             /* Stretch
                   height: 100%;
