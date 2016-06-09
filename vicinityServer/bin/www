@@ -3,6 +3,10 @@
 /**
  * Module dependencies.
  */
+ process.env.VCNT_MNGR_API = normalizePort(process.env.VCNT_MNGR_API || 'http://api.vicinity.bavenir.eu');
+ process.env.VCNT_MNGR_USR = normalizePort(process.env.VCNT_MNGR_USR || "peter.parker@bavenir.eu");
+ process.env.VCNT_MNGR_PWD = normalizePort(process.env.VCNT_MNGR_PWD || 'test');
+ process.env.VCNT_MNGR_DB = normalizePort(process.env.VCNT_MNGR_DB || 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager');
 
 var app = require('../app');
 var debug = require('debug')('vicinityServer:server');
@@ -15,10 +19,6 @@ var winston = require('winston');
 
 var port = normalizePort(process.env.PORT || '4000');
 //var global.VCNT_MNGR_API  = normalizePort(process.env.VCNT_MNGR_API || 'http://api.vicinity.bavenir.eu');
-process.env.VCNT_MNGR_API = normalizePort(process.env.VCNT_MNGR_API || 'http://api.vicinity.bavenir.eu');
-process.env.VCNT_MNGR_USR = normalizePort(process.env.VCNT_MNGR_USR || "peter.parker@bavenir.eu");
-process.env.VCNT_MNGR_PWD = normalizePort(process.env.VCNT_MNGR_PWD || 'test');
-process.env.VCNT_MNGR_DB = normalizePort(process.env.VCNT_MNGR_DB || 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager');
 
 winston.log('debug', 'Port: ' + port);
 winston.log('debug', 'VicinityManagerAPI: ' + process.env.VCNT_MNGR_API);
