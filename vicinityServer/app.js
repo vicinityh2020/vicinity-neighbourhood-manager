@@ -12,11 +12,11 @@ var Agendash = require('agendash');
 var mongoose = require('mongoose');
 var app = express();
 
-var agenda = new Agenda({db: {address: "mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager"},
+var agenda = new Agenda({db: {address: process.env.VCNT_MNGR_DB},
                           maxConcurrency: 1,
                           defaultConcurrency: 1});
 
-mongoose.connect('mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager', function(error){
+mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
   if (error){
     winston.log('debug', "VMModel: Couldn't connect to data source!" + error);
   } else {

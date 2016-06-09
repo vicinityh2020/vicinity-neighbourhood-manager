@@ -50,25 +50,38 @@ function addDevices(devices, gatewayObjects, callback){
       body: '{"type":"generic"}' };
 
     request(options, function (error, response, body) {
-      var data = JSON.parse(body);
+      debugger;
 
-      winston.log('debug', 'Device has rid: ' + data.rid);
+      var keyword = new RegExp("Insufficient devices available", 'i');
 
-      gatewayObject.device_rid = data.rid;
-      var options = { method: 'PUT',
-        url: 'https://portals.exosite.com/api/portals/v1/devices/' + data.rid,
-        headers:
-         { 'postman-token': '6aea03c9-b3c8-f0fa-18e1-78fa5e443a80',
-           'cache-control': 'no-cache',
-           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
-        body: '{"info": {"description": {"name": "' + device.name + '"}}}' };
+      if (keyword.test(body)){
+        winston.log('error', "Cannot add device in ");
+        device_callback();
+      } else {
 
-      request(options, function(error, response, body) {
-          winston.log('debug', 'Adding data sources to device.');
-          winston.log('debug', JSON.stringify(body));
-          createDataSources(gatewayObject, device, device_callback);
-          gatewayObjects.push(gatewayObject);
-      });
+        var data = JSON.parse(body);
+
+        winston.log('debug', 'Device has rid: ' + data.rid);
+
+        gatewayObject.device_rid = data.rid;
+        var options = { method: 'PUT',
+          url: 'https://portals.exosite.com/api/portals/v1/devices/' + data.rid,
+          headers:
+           { 'postman-token': '6aea03c9-b3c8-f0fa-18e1-78fa5e443a80',
+             'cache-control': 'no-cache',
+             authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
+          body: '{"info": {"description": {"name": "' + device.name + '"}}}' };
+
+        request(options, function(error, response, body) {
+            winston.log('debug', 'Adding data sources to device.');
+            winston.log('debug', JSON.stringify(body));
+            createDataSources(gatewayObject, device, device_callback);
+            gatewayObjects.push(gatewayObject);
+        });
+
+      }
+
+
     });
 
   }, function(err){
