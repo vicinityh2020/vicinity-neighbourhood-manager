@@ -763,18 +763,46 @@ ul.messages li .message_wrapper blockquote {
 }
 
 /** Notifications menu classes **/
-
+/*
 li.notifications-menu ul.menu > li:hover {
   background-color: green
-}
+}*/
 
 li.notifications-menu ul.menu > li > div {
   padding: 5px;
+
 }
+
+/*li.notifications-menu ul.menu li.hr {
+  border-bottom: 1px solid black;
+}*/
+
+
+li.notifications-menu ul.menu > li.readNot{
+  background-color: red;
+}
+
+/*#readNotImg{
+  padding-left: : 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  background-color: #eee;
+  /*padding-bottom: 13px;
+}*/
+
+li.notifications-menu ul.menu > li:after {
+    content: "";
+    display: block;
+    height: 1px;
+    width: 94%;
+    margin: 10px;
+    background: #d2d6de;
+}
+
 
 li.notifications-menu ul.menu > li div.notification-avatar {
   float: left;
-  width:30%
+  width:30%;
 }
 
 li.notifications-menu ul.menu > li div.notification-avatar img {
@@ -782,7 +810,7 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
   width: 75%;
   height: 75%;
   display: block;
-  margin: auto
+  margin: auto;
 }
 
 li.notifications-menu ul.menu > li div.notification-description {
@@ -790,8 +818,8 @@ li.notifications-menu ul.menu > li div.notification-description {
   margin-left: 30%;
   white-space: pre-line;
   word-wrap: break-word;
-  -ms-word-break: break-all;
-  word-break: break-all;
+  /*-ms-word-break: break-all;*/
+  /*word-break: break-all;*/
   padding-top: 10px;
   padding-left: 5px;
   padding-right: 5px;

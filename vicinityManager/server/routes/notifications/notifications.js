@@ -10,8 +10,8 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
 var userAccountOp2 = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
 
-function markAsRead(sender_id, recipient_id, type){
-    notificationOp.find({sentBy: sender_id, addressedTo: {$in :[recipient_id]}, type: type, isUnread: true},
+function markAsRead(sender_id, recipient_id, type, status){
+    notificationOp.find({sentBy: sender_id, addressedTo: {$in :[recipient_id]}, type: type, isUnread: true, status: status},
         processFoundUnreadNotifications);
 }
 

@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('companyProfileController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
+function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
 
   $scope.locationPrefix = $location.path();
   console.log("location:" + $location.path());
@@ -95,6 +95,45 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
                 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
             });
     }
+
+    var promise = {};
+
+    $scope.$on('$destroy', function(){
+        $timeout.cancel(promise);
+    });
+
+    // $scope.$on('$locationChangeStart', function(){
+    //     $timeout.cancel(promise);
+    // });
+
+      $scope.intervalFunction = function(){
+        promise = $timeout(function() {
+          $scope.getUserProf();
+          $scope.intervalFunction();
+        }, 5000)
+      }
+
+      $scope.intervalFunction();
+
+  $scope.getUserProf = function () {
+
+    if ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId){
+      $scope.isMyProfile = true;
+    } else {
+      $scope.isMyProfile = false;
+    }
+
+    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(
+      function(response){
+        updateScopeAttributes(response);
+        $scope.loaded = true;
+      });
+
+    userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function(response){
+      $scope.devices=response.message;
+    });
+
+  }
 
   if ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId){
     $scope.isMyProfile = true;

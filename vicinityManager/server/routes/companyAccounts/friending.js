@@ -2,6 +2,9 @@ var mongoose = require('mongoose');
 
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
+var itemOp = require('../../models/vicinityManager').item;
+
+var itemAPI = require('../items/put');
 var notificationAPI = require('../../routes/notifications/notifications');             //my_id should be .cid everywhere
 //TODO: Issue #6  check that only :id can make friends.
 //TODO: Issue #6 Send friendship notification to :id.
@@ -98,6 +101,7 @@ function acceptFriendRequest(req, res, next) {
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 
                 notificationAPI.changeStatusToResponded(friend_id, my_id, 'friendRequest','waiting');
+                notificationAPI.markAsRead(friend_id, my_id, 'friendRequest','waiting');
 
                 var notification = new notificationOp();
 
@@ -159,6 +163,7 @@ function rejectFriendRequest(req, res, next) {
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 
                 notificationAPI.changeStatusToResponded(friend_id,my_id,'friendRequest','waiting');
+                notificationAPI.markAsRead(friend_id, my_id, 'friendRequest','waiting');
 
                 friend.save();
                 me.save();
@@ -253,6 +258,18 @@ function cancelFriendship(req, res, next){
                         me.knows.splice(index,1);
                     }
                 }
+
+                notificationAPI.deleteNot(my_id, friend_id, 'friendRequest', 'accepted');
+                notificationAPI.deleteNot(friend_id, my_id, 'friendRequest', 'accepted');
+
+                notificationAPI.deleteNot(my_id, friend_id, 'deviceRequest', 'waiting');
+                notificationAPI.deleteNot(friend_id, my_id, 'deviceRequest', 'waiting');
+
+                notificationAPI.markAsRead(my_id, friend_id, 'deviceRequest', 'accepted');
+                notificationAPI.markAsRead(friend_id, my_id, 'deviceRequest', 'accepted');
+
+                itemAPI.delIdFromHasAccessAndAccessRequestFrom(my_id, friend_id);           //test needed!
+                itemAPI.delIdFromHasAccessAndAccessRequestFrom(friend_id, my_id);
 
                 friend.save();
                 me.save();

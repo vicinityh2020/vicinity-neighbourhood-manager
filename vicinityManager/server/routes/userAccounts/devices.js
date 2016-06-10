@@ -105,7 +105,7 @@ function getAllDevices(req, res) {
     // hasAdmin[hasAdmin.length] = o_id;
 
     if (data && data.length == 1){
-
+      // var nameComp = data.organisation;
       if (req.query.hasAccess){
         if (req.query.hasAccess == '1') {
             winston.log('debug', 'hasAccess filter applied');
@@ -141,7 +141,9 @@ function getAllDevices(req, res) {
       }
 
       itemOp.find(query).populate('hasAdministrator','organisation').exec(function(err, data){
-        // sortResult(data,s);
+        var s = req.query.sort;
+        sortResult2(data,s);
+
         var dataWithAdditional = getAdditional(data,o_id);
 
         if (err) {
@@ -155,8 +157,24 @@ function getAllDevices(req, res) {
       });
     });
 
+}
 
+function sortResult2(data,s) {
+  if (s === "ASC") {
+      data.sort(sortListOfAllDevices);
+  } else if (s === "DESC") {
+      data.sort(sortListOfAllDevices);
+  };
+}
 
+function sortListOfAllDevices(a,b){
+  if (a.hasAdministrator[0].organisation < b.hasAdministrator[0].organisation) {
+    return -1;
+  } else if (a.hasAdministrator[0].organisation > b.hasAdministrator[0].organisation){
+    return 1;
+} else {
+    return 0;
+  }
 }
 
 function getAdditional(data,activeCompany_id){
