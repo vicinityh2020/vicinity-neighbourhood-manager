@@ -122,9 +122,9 @@ $scope.acceptNeighbourRequest = function (notifId, friendId) {
     userAccountAPIService.acceptNeighbourRequest(friendId)
         .success(function(response){
             if (response.error == true) {
-                Notification.error("Neighbour request acceptation failed :(");
+                Notification.error("Partnership request acceptation failed :(");
             } else {
-                Notification.success("Neighbour request accepted!");
+                Notification.success("Partnership request accepted!");
             }
 
             changeIsUnread2(notifId);
@@ -139,9 +139,9 @@ $scope.rejectNeighbourRequest = function(notifId, friendId) {
     userAccountAPIService.rejectNeighbourRequest(friendId)
         .success(function(response){
             if (response.error ==true) {
-                Notification.error("Neighbour request rejection failed :(");
+                Notification.error("Partnership request rejection failed :(");
             } else {
-                Notification.success("Neighbour request rejected!");
+                Notification.success("Partnership request rejected!");
             }
 
             changeIsUnread2(notifId);

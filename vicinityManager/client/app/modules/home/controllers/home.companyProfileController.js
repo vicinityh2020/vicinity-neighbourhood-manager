@@ -33,9 +33,9 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
             .sendNeighbourRequest($stateParams.companyAccountId)
                 .success(function(response) {
                     if (response.error == true) {
-                        Notification.error("Sending neighbour request failed!");
+                        Notification.error("Sending partnership request failed!");
                     } else {
-                        Notification.success("Neighbour request sent!");
+                        Notification.success("Partnership request sent!");
                     }
 
                     userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
@@ -46,9 +46,9 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
         userAccountAPIService.acceptNeighbourRequest($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error == true) {
-                    Notification.error("Neighbour request acceptation failed :(");
+                    Notification.error("Partnership request acceptation failed :(");
                 } else {
-                    Notification.success("Neighbour request accepted!");
+                    Notification.success("Partnership request accepted!");
                 }
 
                 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
@@ -61,9 +61,9 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
         userAccountAPIService.rejectNeighbourRequest($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error ==true) {
-                    Notification.error("Neighbour request rejection failed :(");
+                    Notification.error("Partnership request rejection failed :(");
                 } else {
-                    Notification.success("Neighbour request rejected!");
+                    Notification.success("Partnership request rejected!");
                 }
 
                 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
@@ -74,9 +74,9 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
         userAccountAPIService.cancelNeighbourRequest($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error ==true) {
-                    Notification.error("Neighbour request cancelation failed :(");
+                    Notification.error("Partnership request cancelation failed :(");
                 } else {
-                    Notification.success("Neighbour request canceled!");
+                    Notification.success("Partnership request canceled!");
                 }
 
                 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
@@ -87,9 +87,9 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
         userAccountAPIService.cancelNeighbourship($stateParams.companyAccountId)
             .success(function(response){
                 if (response.error ==true) {
-                    Notification.error("Neighbourship cancelation failed :(");
+                    Notification.error("Partnership cancelation failed :(");
                 } else {
-                    Notification.success("Neighbourship canceled!");
+                    Notification.success("Partnership canceled!");
                 }
 
                 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
