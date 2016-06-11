@@ -194,18 +194,22 @@ function createDataSources(gatewayObject, device, device_callback){
 
 function writeData(gatewayObjectsWithData, callback){
   winston.log('debug', 'Start: Writing data to Exosite portal');
-
   var datasources = [];
   for (var i in gatewayObjectsWithData){
     for (var j in gatewayObjectsWithData[i].data_sources){
       if (gatewayObjectsWithData[i].data_sources[j].rid != 'false'){
         winston.log('debug', 'i = %d j= %d', i,j);
-        if (gatewayObjectsWithData[i].data_sources[j].data && gatewayObjectsWithData[i].data_sources[j].data.timestamp && gatewayObjectsWithData[i].data_sources[j].data.value){
-          datasources.push({
-            rid: gatewayObjectsWithData[i].data_sources[j].rid,
-            data: '[[ ' + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ',"'  + gatewayObjectsWithData[i].data_sources[j].data.value + '"]]'
-          });
+        if (typeof gatewayObjectsWithData[i].data_sources[j].data !== 'undefined') {
+          if (typeof gatewayObjectsWithData[i].data_sources[j].data.timestamp !== 'undefined') {
+            if (typeof gatewayObjectsWithData[i].data_sources[j].data.value !== 'undefined'){
+              winston.log('debug', 'Adding data for datasource %s', gatewayObjectsWithData[i].data_sources[j].name);
+              datasources.push({
+                rid: gatewayObjectsWithData[i].data_sources[j].rid,
+                data: '[[ ' + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ',"'  + gatewayObjectsWithData[i].data_sources[j].data.value + '"]]'
+              });
 
+            }
+          }
         }
       }
     }
