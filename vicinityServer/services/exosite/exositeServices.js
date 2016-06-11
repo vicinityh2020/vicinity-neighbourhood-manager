@@ -50,25 +50,38 @@ function addDevices(devices, gatewayObjects, callback){
       body: '{"type":"generic"}' };
 
     request(options, function (error, response, body) {
-      var data = JSON.parse(body);
+      debugger;
 
-      winston.log('debug', 'Device has rid: ' + data.rid);
+      var keyword = new RegExp("Insufficient devices available", 'i');
 
-      gatewayObject.device_rid = data.rid;
-      var options = { method: 'PUT',
-        url: 'https://portals.exosite.com/api/portals/v1/devices/' + data.rid,
-        headers:
-         { 'postman-token': '6aea03c9-b3c8-f0fa-18e1-78fa5e443a80',
-           'cache-control': 'no-cache',
-           authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
-        body: '{"info": {"description": {"name": "' + device.name + '"}}}' };
+      if (keyword.test(body)){
+        winston.log('error', "Cannot add device in ");
+        device_callback();
+      } else {
 
-      request(options, function(error, response, body) {
-          winston.log('debug', 'Adding data sources to device.');
-          winston.log('debug', JSON.stringify(body));
-          createDataSources(gatewayObject, device, device_callback);
-          gatewayObjects.push(gatewayObject);
-      });
+        var data = JSON.parse(body);
+
+        winston.log('debug', 'Device has rid: ' + data.rid);
+
+        gatewayObject.device_rid = data.rid;
+        var options = { method: 'PUT',
+          url: 'https://portals.exosite.com/api/portals/v1/devices/' + data.rid,
+          headers:
+           { 'postman-token': '6aea03c9-b3c8-f0fa-18e1-78fa5e443a80',
+             'cache-control': 'no-cache',
+             authorization: 'Basic dmlrdG9yLm9yYXZlY0BiYXZlbmlyLmV1Okhlc2xvMTkwMg==' },
+          body: '{"info": {"description": {"name": "' + device.name + '"}}}' };
+
+        request(options, function(error, response, body) {
+            winston.log('debug', 'Adding data sources to device.');
+            winston.log('debug', JSON.stringify(body));
+            createDataSources(gatewayObject, device, device_callback);
+            gatewayObjects.push(gatewayObject);
+        });
+
+      }
+
+
     });
 
   }, function(err){
@@ -181,18 +194,22 @@ function createDataSources(gatewayObject, device, device_callback){
 
 function writeData(gatewayObjectsWithData, callback){
   winston.log('debug', 'Start: Writing data to Exosite portal');
-
   var datasources = [];
   for (var i in gatewayObjectsWithData){
     for (var j in gatewayObjectsWithData[i].data_sources){
       if (gatewayObjectsWithData[i].data_sources[j].rid != 'false'){
         winston.log('debug', 'i = %d j= %d', i,j);
-        if (gatewayObjectsWithData[i].data_sources[j].data && gatewayObjectsWithData[i].data_sources[j].data.timestamp && gatewayObjectsWithData[i].data_sources[j].data.value){
-          datasources.push({
-            rid: gatewayObjectsWithData[i].data_sources[j].rid,
-            data: '[[ ' + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ',"'  + gatewayObjectsWithData[i].data_sources[j].data.value + '"]]'
-          });
+        if (typeof gatewayObjectsWithData[i].data_sources[j].data !== 'undefined') {
+          if (typeof gatewayObjectsWithData[i].data_sources[j].data.timestamp !== 'undefined') {
+            if (typeof gatewayObjectsWithData[i].data_sources[j].data.value !== 'undefined'){
+              winston.log('debug', 'Adding data for datasource %s', gatewayObjectsWithData[i].data_sources[j].name);
+              datasources.push({
+                rid: gatewayObjectsWithData[i].data_sources[j].rid,
+                data: '[[ ' + Math.floor(gatewayObjectsWithData[i].data_sources[j].data.timestamp / 1000) + ',"'  + gatewayObjectsWithData[i].data_sources[j].data.value + '"]]'
+              });
 
+            }
+          }
         }
       }
     }

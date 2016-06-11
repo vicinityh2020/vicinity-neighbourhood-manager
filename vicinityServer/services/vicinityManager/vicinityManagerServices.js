@@ -8,17 +8,36 @@ function getSharedDevices(callback){
       //TODO: Get shared devices;
       winston.log('debug', 'vicinityManagerService.getSharedDevices');
 
-      var options = { method: 'GET',
-        url: 'http://localhost:3000/useraccounts/573c3140b2d85fed305b9457/neighbourhood?hasAccess=1',
+      winston.log('debug', 'Get authentication token');
+
+      var options = { method: 'POST',
+        url: process.env.VCNT_MNGR_API + '/api/authenticate',
         headers:
-         { 'postman-token': '50d8e149-d99b-2094-b376-69aa146b250c',
+         { 'postman-token': 'b458c901-d60b-3206-5d77-c0e59a1c1519',
            'cache-control': 'no-cache',
-           'content-type': 'application/json',
-           'x-access-token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ2aWNpbml0eU1hbmFnZXIiLCJzdWIiOiJvcm9yby5tdW5yb2VAYmF2ZW5pci5ldSIsImV4cCI6MTQ2NDcwMTIyNTgyNiwicm9sZXMiOlsidXNlciIsImFkbWluaXN0cmF0b3IiXSwiY29udGV4dCI6eyJuYW1lIjoib3Jvcm8ubXVucm9lQGJhdmVuaXIuZXUiLCJ1aWQiOiI1NzI3MGI5NTY0MTE0Y2Y2MDM3NTU1ODMiLCJjaWQiOiI1NzNjMzE0MGIyZDg1ZmVkMzA1Yjk0NTcifX0.wPTQzosVRc0u-mayK2-4ScFYbVH7uMAIsvB_7Jz7ftc' } };
+           'content-type': 'application/json' },
+        body: { username: process.env.VCNT_MNGR_USR, password: process.env.VCNT_MNGR_PWD}, json: true};
 
       request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-        callback(JSON.parse(body).message);
+        if (error) {
+          debugger;
+          throw new Error(error);
+        }
+
+          winston.log('debug', body);
+
+          var token = body.message.token;
+          options = { method: 'GET',
+            url: process.env.VCNT_MNGR_API + '/useraccounts/573c3140b2d85fed305b9457/neighbourhood?hasAccess=1',
+            headers:
+             { 'postman-token': '50d8e149-d99b-2094-b376-69aa146b250c',
+               'cache-control': 'no-cache',
+               'content-type': 'application/json',
+               'x-access-token': token } };
+         request(options, function (error, response, body) {
+           if (error) throw new Error(error);
+           callback(JSON.parse(body).message);
+         });
       });
 
     }
