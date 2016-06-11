@@ -19,7 +19,10 @@ function getSharedDevices(callback){
         body: { username: process.env.VCNT_MNGR_USR, password: process.env.VCNT_MNGR_PWD}, json: true};
 
       request(options, function (error, response, body) {
-        if (error) throw new Error(error);
+        if (error) {
+          debugger;
+          throw new Error(error);
+        }
 
           winston.log('debug', body);
 

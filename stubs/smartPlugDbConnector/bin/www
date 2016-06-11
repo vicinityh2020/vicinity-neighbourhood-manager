@@ -8,13 +8,6 @@
  process.env.VCNT_MNGR_PWD = normalizePort(process.env.VCNT_MNGR_PWD || 'test');
  process.env.VCNT_MNGR_DB = normalizePort(process.env.VCNT_MNGR_DB || 'mongodb://vicinityManager:abc123@api.vicinity.bavenir.eu/vicinity_neighbourhood_manager?authSource=admin');
  process.env.IS_RUN_REMOTE = normalizePort(process.env.IS_RUN_REMOTE || 'true');
- process.env.VCNT_SRVR_MYSQL_HOST = 'mysql57.websupport.sk';
- process.env.VCNT_SRVR_MYSQL_PORT = '3311';
- process.env.VCNT_SRVR_MYSQL_USER = 'qgxu775m';
- process.env.VCNT_SRVR_MYSQL_PWD = 'ueio2PQSRE';
- process.env.VCNT_SRVR_MYSQL_DB = 'qgxu775m';
- process.env.VCNT_SRVR_MYSQL_CONL = 100;
- process.env.VCNT_SRVR_MYSQL_DBG = false;
 var app = require('../app');
 var debug = require('debug')('vicinityServer:server');
 var http = require('http');
@@ -24,7 +17,7 @@ var winston = require('winston');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '4000');
+var port = normalizePort(process.env.PORT || '5000');
 //var global.VCNT_MNGR_API  = normalizePort(process.env.VCNT_MNGR_API || 'http://api.vicinity.bavenir.eu');
 
 winston.log('debug', 'Port: ' + port);
