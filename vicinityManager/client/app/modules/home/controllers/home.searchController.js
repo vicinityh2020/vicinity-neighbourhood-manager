@@ -12,6 +12,16 @@ angular.module('VicinityManagerApp.controllers').
       return $stateParams.searchTerm && keyword.test(result.organisation) ;   // || keyword.test(result.accountOf.occupation)
     };
 
+    // var promise = $timeout(emptySearch, 1000);
+    //
+    // $scope.$on('$locationChangeStart', function(){
+    //     $timeout.cancel(promise);
+    // });
+    //
+    // function emptySearch(){
+    //   $stateParams.searchTerm = "";
+    // }
+
     userAccountAPIService.getUserAccounts().success(function (response) {
       var results = response.message;
       $scope.resultsList = results;

@@ -40,6 +40,11 @@ angular.module('VicinityManagerApp', [
                 templateUrl: 'modules/home/views/home.notificationsMenuView.html',
                 controller: 'notifications'
               },
+              'searchUp':
+                {
+                  templateUrl: 'modules/home/views/home.searchUpView.html',
+                  controller: 'searchUpController'
+                },
             'taskMenuView':
               {
                 templateUrl: 'modules/home/views/home.taskMenuView.html'

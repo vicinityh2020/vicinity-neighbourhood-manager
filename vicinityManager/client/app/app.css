@@ -515,6 +515,7 @@ ul.messages li .message_wrapper blockquote {
 }
 .widget-user-2 .widget-user-desc {
   margin-top: 0;
+  color: black;
 }
 .widget-user-2 .widget-user-username,
 .widget-user-2 .widget-user-desc {
@@ -834,6 +835,11 @@ li.notifications-menu ul.menu > li div.notification-actions {
 
 li.notifications-menu ul.menu > li div.notification-actions button {
   width: 45%;
+}
+
+.content-header > a > h1 {
+  margin: 0;
+  font-size: 24px;
 }
 /*.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > div {
   background: #f4f4f4;

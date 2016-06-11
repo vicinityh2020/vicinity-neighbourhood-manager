@@ -1,5 +1,5 @@
 <section class="content-header">
-  <h1>My devices</h1>
+  <a ui-sref="root.main.mydevices" ng-click="allDevices()"><h1>My devices</h1><a/>
 </section>
 
 
@@ -39,21 +39,22 @@
                  <div class="panel box-bg-dark-grey box-warning">
                    <div class="box-header with-border">
                      <h4 class="box-title">
-                       <a ng-click="allDevices()" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                         My devices
-                       </a>
+                       <!-- <a ng-click="allDevices()" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"> -->
+                         {{note}}
+                       <!-- </a> -->
                      </h4>
                      <div class="box-tools">
                        <div class="dropdown">
-                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">See only
+                         <a ui-sref="root.main.mydevices" class="dropdown-toggle" data-toggle="dropdown">See only
                            <span class="caret"></span>
                          </a>
 
                          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                            <li><a ng-click="privateDevices()" href="#">Private (Only me)</a></li>
-                            <li><a ng-click="metaDevices()" href="#">Metadata shared with friends</a></li>
-                            <li><a ng-click="friendDevices()" href="#">Shared with my friends</a></li>
-                            <li><a ng-click="publicDevices()" href="#">Public (Everybody)</a></li>
+                            <li><a ng-click="privateDevices()" ui-sref="root.main.mydevices">Private (Only me)</a></li>
+                            <li><a ng-click="metaDevices()" ui-sref="root.main.mydevices">Metadata shared with my partners</a></li>
+                            <li><a ng-click="friendDevices()" ui-sref="root.main.mydevices">Shared with my partners</a></li>
+                            <li><a ng-click="publicDevices()" ui-sref="root.main.mydevices">Public (Everybody)</a></li>
+                            <li><a ng-click="allDevices()" ui-sref="root.main.mydevices">All my devices</a></li>
                          </ul>
                         </div>
                      </div>
@@ -669,8 +670,9 @@
                      <form action="http://www.cs.tut.fi/cgi-bin/run/~jkorpela/checkcombo.pl" ><div>     <!--.asp?-->
                        <select name="menu" class="box-title">
                          <option value="1">Visible only for me (Private)</option>
-                         <option value="2">Seen their metadata by friends</option>
-                         <option value="3">Seen by everyone (Public)</option>
+                         <option value="2">Seen their metadata by my partners</option>
+                         <option value="3">Shared with my partners</option>
+                         <option value="4">Seen by everyone (Public)</option>
                        </select>
                        <div ><input type="submit" value="Ok" class="btn-xs btn-primary"></div>
                      </form>

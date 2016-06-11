@@ -13,6 +13,7 @@ angular.module('VicinityManagerApp.controllers')
     $scope.canAnswerNeighbourRequest = false;
     $scope.interruptConnection = false;
     $scope.devices=[];
+    $scope.note = "My devices";
 
     $scope.showAllDevices = true;
     $scope.showPrivateDevices = false;
@@ -114,6 +115,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.privateDevices = function (result) {
 
+      $scope.note = "My private devices";
       $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showMetaDevices = false;
@@ -155,6 +157,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.metaDevices = function (result) {
 
+      $scope.note = "Metada of listed devices are shared with my partners";
       $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showPrivateDevices = false;
@@ -196,6 +199,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.friendDevices = function (result) {
 
+      $scope.note = "Listed devices are shared with my partners";
       $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showPrivateDevices = false;
@@ -237,6 +241,7 @@ angular.module('VicinityManagerApp.controllers')
 
     $scope.publicDevices = function (result) {
 
+      $scope.note = "My public devices";
       $scope.noDevices = true;
       $scope.showAllDevices = false;
       $scope.showPrivateDevices = false;

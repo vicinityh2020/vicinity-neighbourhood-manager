@@ -24,18 +24,8 @@
 
         <div class="navbar-custom-menu">
 
-
-          <form action="" method="get" class="navbar-form navbar-left bvr-navbar-form">
-            <div id="ramik"class="input-group">
-              <input id="bvr-search-input" type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat" ui-sref="root.main.searchresults({searchTerm: searchTerm})" ><i class="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-
+          <form ui-view="searchUp" action="" method="get" class="navbar-form navbar-left bvr-navbar-form">
           </form>
-
 
           <ul class="nav navbar-nav">
             <!-- <li class="dropdown messages-menu" ui-view="messagesMenuView"/> -->
