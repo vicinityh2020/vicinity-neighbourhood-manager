@@ -3,11 +3,11 @@
 /**
  * Module dependencies.
  */
- process.env.VCNT_MNGR_API = normalizePort(process.env.VCNT_MNGR_API || 'http://api.vicinity.bavenir.eu');
- process.env.VCNT_MNGR_USR = normalizePort(process.env.VCNT_MNGR_USR || "ororo.munroe@bavenir.eu");
- process.env.VCNT_MNGR_PWD = normalizePort(process.env.VCNT_MNGR_PWD || 'test');
- process.env.VCNT_MNGR_DB = normalizePort(process.env.VCNT_MNGR_DB || 'mongodb://vicinityManager:abc123@api.vicinity.bavenir.eu/vicinity_neighbourhood_manager?authSource=admin');
- process.env.IS_RUN_REMOTE = normalizePort(process.env.IS_RUN_REMOTE || 'true');
+ process.env.VCNT_MNGR_API = process.env.VCNT_MNGR_API ? process.env.VCNT_MNGR_API : 'http://api.vicinity.bavenir.eu';
+ process.env.VCNT_MNGR_USR = process.env.VCNT_MNGR_USR ? process.env.VCNT_MNGR_USR : "ororo.munroe@bavenir.eu";
+ process.env.VCNT_MNGR_PWD = process.env.VCNT_MNGR_PWD ? process.env.VCNT_MNGR_PWD : 'test';
+ process.env.VCNT_MNGR_DB = process.env.VCNT_MNGR_DB ? process.env.VCNT_MNGR_DB : 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager';
+ process.env.IS_RUN_REMOTE = process.env.IS_RUN_REMOTE ? process.env.IS_RUN_REMOTE :  'true';
  process.env.VCNT_SRVR_MYSQL_HOST = 'mysql57.websupport.sk';
  process.env.VCNT_SRVR_MYSQL_PORT = '3311';
  process.env.VCNT_SRVR_MYSQL_USER = 'qgxu775m';

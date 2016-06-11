@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+process.env.VCNT_MNGR_DB = process.env.VCNT_MNGR_DB ? process.env.VCNT_MNGR_DB : 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager';
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
