@@ -91,7 +91,7 @@
       </div>
     </div> -->
 
-    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilterOnline">
+    <div ng-show="loaded" class="col-md-6" ng-repeat="dev in devs | filter: searchFilterOnline">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -105,7 +105,7 @@
           </div>
 
           <!-- /.widget-user-image -->
-          <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span class="pull-right" id="circle_green" ><a style="cursor:default"> &nbsp; &nbsp; &nbsp;</a></span>   <!--  title="Online" -->
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
@@ -167,7 +167,7 @@
       </div>
     </div>
 
-    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilterOffline">
+    <div ng-show="loaded" class="col-md-6" ng-repeat="dev in devs | filter: searchFilterOffline">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -181,7 +181,7 @@
           </div>
 
           <!-- /.widget-user-image -->
-          <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span class="pull-right" id="circle_red" ><a style="cursor:default" > &nbsp; &nbsp; &nbsp;</a></span>      <!-- title="Offline" -->
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
@@ -243,7 +243,7 @@
       </div>
     </div>
 
-    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: searchFilterUnknown">
+    <div ng-show="loaded" class="col-md-6" ng-repeat="dev in devs | filter: searchFilterUnknown">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -257,7 +257,7 @@
           </div>
 
           <!-- /.widget-user-image -->
-          <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span class="pull-right" id="circle_gray" ><a style="cursor:default" > &nbsp; &nbsp; &nbsp;</a></span>          <!-- title="Unknown" -->
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
@@ -322,7 +322,7 @@
 
     <!-- online devices, neaplikovany searchFilter-->
 
-    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: online2">
+    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: online2">
 
       <div class="box box-widget widget-user-2">
 
@@ -333,7 +333,7 @@
             <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
           </div>
 
-          <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span class="pull-right" id="circle_green" ><p style="cursor:default"> &nbsp; &nbsp; &nbsp;</p></span>             <!--  title="Online"   -->
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
@@ -390,7 +390,7 @@
     </div>
 
     <!-- offline devices, neaplikovany searchFilter-->
-    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: offline2">
+    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: offline2">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -404,7 +404,7 @@
           </div>
 
           <!-- /.widget-user-image -->
-          <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span class="pull-right" id="circle_red" ><a style="cursor:default"> &nbsp; &nbsp; &nbsp;</a></span>    <!-- title="Offline" -->
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
@@ -467,7 +467,7 @@
     </div>
 
     <!-- unknown devices, neaplikovany searchFilter-->
-    <div ng-show="loaded" class="col-md-4" ng-repeat="dev in devs | filter: unknown2">
+    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: unknown2">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -481,7 +481,7 @@
           </div>
 
           <!-- /.widget-user-image -->
-          <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span class="pull-right" id="circle_gray" ><a style="cursor:default" > &nbsp; &nbsp; &nbsp;</a></span>        <!-- title="Unknown" -->
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
