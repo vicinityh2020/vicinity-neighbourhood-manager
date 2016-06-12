@@ -594,29 +594,57 @@ ul.messages li .message_wrapper blockquote {
   /*margin-top: -15%;*/
 }
 
+li.notifications-menu ul.menu > li div.notification-avatar {
+  float: left;
+  width:30%;
+}
+
+li.notifications-menu ul.menu > li div.notification-avatar img {
+  border-radius: 50%;
+  width: 75%;
+  height: 75%;
+  display: block;
+  margin: auto;
+}
+
 .round {
+
+  float: left;
+  width:30%;
+
   border-radius: 50%;
   overflow: hidden;
   width: 65px;
   height: 65px;
-
-  position: absolute;
-  /*top: 65px;*/
-  left: 18%;
-  margin-left: -45px;
+  /*position: absolute;
+  left: 18%;*/
 }
 .round img {
-  /*display: block;*/
-  /*position: absolute;*/
-  /*width: 65px;
-  height: auto;*/
-  float: left;
-            /* Stretch
-                  height: 100%;
-                  width: 100%; */
+
+  /*border-radius: 50%;*/
+  width: 75%;
+  height: 75%;
+  display: block;
+  margin: auto;
+
+  /*float: left;*/
   min-width: 100%;
   min-height: 100%;
 }
+
+/*.round {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 65px;
+  height: 65px;
+  position: absolute;
+  left: 18%;
+}
+.round img {
+  float: left;
+  min-width: 100%;
+  min-height: 100%;
+}*/
 
 .round2 {
   border-radius: 50%;
@@ -715,7 +743,7 @@ ul.messages li .message_wrapper blockquote {
     }
 
 .widget-user-2 .widget-user-username2 {
-  margin-left: 30%;
+  margin-left: 37%;
 }
 
 .widget-user-2 .widget-user-username2 {
@@ -727,7 +755,7 @@ ul.messages li .message_wrapper blockquote {
 
 .widget-user-2 .widget-user-desc2 {
   margin-top: 0;
-  margin-left: 30%;
+  margin-left: 37%;
 }
 
 .bg-user {
