@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var winston = require('winston');
 
 
 var routes = require('./routes/index');
@@ -32,7 +33,9 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-mongoose.connect('mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager', function(error){
+winston.level = 'debug';
+winston.log('info', "Connecting to database:  %s", process.env.VCNT_MNGR_DB);
+mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
   if (error){
     console.log("VMModel: Couldn't connect to data source!" + error);
   } else {

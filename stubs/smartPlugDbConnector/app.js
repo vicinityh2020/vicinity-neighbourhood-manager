@@ -3,16 +3,14 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var updateDevicesJob = require('./jobs/updateDevices.js');
-var readDataJob = require('./jobs/readData.js');
-var writeDataJob = require('./jobs/writeData.js');
+var processCommandJob = require('./jobs/processCommand.js');
 var winston = require('winston');
 var Agenda = require('agenda');
 var Agendash = require('agendash');
 var mongoose = require('mongoose');
 var app = express();
 
-var agenda = new Agenda({db: {address: process.env.VCNT_MNGR_DB},
+var agenda = new Agenda({db: {address: process.env.VCNT_MNGR_DB, collection: "smartPlugDbConnectorJobs"},
                           maxConcurrency: 1,
                           defaultConcurrency: 1});
 
@@ -24,15 +22,11 @@ mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
   }
 });
 
-updateDevicesJob.define(agenda);
-readDataJob.define(agenda);
-writeDataJob.define(agenda);
+processCommandJob.define(agenda);
 
 agenda.on('ready', function(){
   winston.log('debug', 'Agenda connected to mongodb');
-  updateDevicesJob.every(agenda);
-  readDataJob.every(agenda);
-  writeDataJob.every(agenda);
+  processCommandJob.every(agenda);
   agenda.start();
 });
 

@@ -3,18 +3,29 @@
 /**
  * Module dependencies.
  */
-
-process.env.VCNT_MNGR_DB = process.env.VCNT_MNGR_DB ? process.env.VCNT_MNGR_DB : 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager';
+ process.env.VCNT_MNGR_API = normalizePort(process.env.VCNT_MNGR_API || 'http://api.vicinity.bavenir.eu');
+ process.env.VCNT_MNGR_USR = normalizePort(process.env.VCNT_MNGR_USR || "ororo.munroe@bavenir.eu");
+ process.env.VCNT_MNGR_PWD = normalizePort(process.env.VCNT_MNGR_PWD || 'test');
+ process.env.VCNT_MNGR_DB = normalizePort(process.env.VCNT_MNGR_DB || 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager');
+ process.env.IS_RUN_REMOTE = normalizePort(process.env.IS_RUN_REMOTE || 'true');
 var app = require('../app');
-var debug = require('debug')('server:server');
+var debug = require('debug')('vicinityServer:server');
 var http = require('http');
+var winston = require('winston');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-console.log('Port' + port);
+var port = normalizePort(process.env.PORT || '5000');
+//var global.VCNT_MNGR_API  = normalizePort(process.env.VCNT_MNGR_API || 'http://api.vicinity.bavenir.eu');
+
+winston.log('debug', 'Port: ' + port);
+winston.log('debug', 'VicinityManagerAPI: ' + process.env.VCNT_MNGR_API);
+winston.log('debug', 'VicinityManagerToken: ' + process.env.VCNT_MNGR_USR);
+winston.log('debug', 'VicinityManagerToken: ' + process.env.VCNT_MNGR_PWD);
+winston.log('debug', 'VicinityManagerDatabase: ' + process.env.VCNT_MNGR_DB);
+
 app.set('port', port);
 
 /**
@@ -67,11 +78,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      winston.log('error', bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      winston.log('error', bind + ' is already in use');
       process.exit(1);
       break;
     default:
