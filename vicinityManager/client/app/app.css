@@ -1044,6 +1044,49 @@ body.hold-transition .main-footer2
   max-width: 100%;
 }
 
+.tooltip2 {
+    float: right;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+    /* border-bottom: 1px dotted black; */
+}
+
+.tooltip2 .tooltiptext2 {
+    visibility: hidden;
+    width: 120px;
+    background-color: #222d32;
+    /*color: #fff;*/
+    text-align: center;
+    border-radius: 3px;
+    padding: 5px 0;
+    margin-left: -108px;
+    font-weight: bold;
+    font-size: 110%;
+    /*font-weight: 300;*/
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1000000;
+}
+
+.tooltip2:hover .tooltiptext2 {
+    visibility: visible;
+}
+
+#circle_green .tooltiptext2{
+  color: #00a65a;
+}
+
+#circle_red .tooltiptext2{
+  color: #dd4b39;
+}
+
+#circle_gray .tooltiptext2{
+  color: #d2d6de;
+}
+
+
 /*.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > div {
   background: #f4f4f4;
   text-decoration: none;
