@@ -44,10 +44,12 @@ $scope.$on('$destroy', function(){
     //     $scope.numberOfUnread++;
     //   };
     // };
-    if ($scope.notifs.length == 1){
+    if ($scope.notifs.length === 1){
       $scope.oneNotif = true;
+    }else{
+      $scope.oneNotif = false;
     };
-    if ($scope.notifs.length == 0){
+    if ($scope.notifs.length === 0){
       $scope.zeroNotif = true;
     }else{
       $scope.zeroNotif = false};
@@ -69,6 +71,8 @@ $scope.$on('$destroy', function(){
       // };
       if ($scope.notifs.length == 1){
         $scope.oneNotif = true;
+      }else{
+        $scope.oneNotif = false;
       };
       if ($scope.notifs.length == 0){
         $scope.zeroNotif = true;

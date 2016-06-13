@@ -807,8 +807,8 @@ li.notifications-menu ul.menu > li > div {
 }*/
 
 
-li.notifications-menu ul.menu > li.readNot{
-  background-color: red;
+#readNot{
+  background-color: #d2d6de;
 }
 
 /*#readNotImg{
@@ -819,46 +819,81 @@ li.notifications-menu ul.menu > li.readNot{
   /*padding-bottom: 13px;
 }*/
 
-li.notifications-menu ul.menu > li:after {
+/*gray division line between notifications*/
+
+/*li.notifications-menu ul.menu > li:after {
+
     content: "";
     display: block;
     height: 1px;
     width: 94%;
     margin: 10px;
-    background: #d2d6de;
+    background: #222d32; */
+    /*background: #d2d6de;*/
+    /* margin-top: 0px;
+    margin-bottom: 0px;
+
+}*/
+
+span.ciara {
+
+    content: "";
+    display: block;
+    height: 1px;
+    width: 94%;
+    margin: 10px;
+    background: #222d32;
+    /*background: #d2d6de;*/
+    margin-top: 0px;
+    margin-bottom: 0px;
+
 }
 
 
 li.notifications-menu ul.menu > li div.notification-avatar {
   float: left;
   width:30%;
+  margin-bottom: 5%;
+  height: 65px;
+
+  border-radius: 50%;
+  width: 65px;
+
 }
 
 li.notifications-menu ul.menu > li div.notification-avatar img {
-  border-radius: 50%;
+  /*border-radius: 50%;*/
   width: 75%;
   height: 75%;
   display: block;
   margin: auto;
+  position: relative;
+
+  min-width: 100%;
+  min-height: 100%;
 }
+
 
 li.notifications-menu ul.menu > li div.notification-description {
   display: block;
-  margin-left: 30%;
+  padding-left: 30%;
   white-space: pre-line;
   word-wrap: break-word;
   /*-ms-word-break: break-all;*/
   /*word-break: break-all;*/
   padding-top: 10px;
-  padding-left: 5px;
+  /*padding-left: 5px;*/
   padding-right: 5px;
   padding-bottom: 5px;
-  flow: left;
+  margin-bottom: 5%;
+  /*float: left;*/
 }
 
 li.notifications-menu ul.menu > li div.notification-actions {
-  margin-left:30%;
+  padding-left: 30%;
   clear: left;
+  margin-top: -14px;
+  padding-bottom: 5%;
 }
 
 li.notifications-menu ul.menu > li div.notification-actions button {
@@ -1055,14 +1090,15 @@ body.hold-transition .main-footer2
 .tooltip2 .tooltiptext2 {
     visibility: hidden;
     width: 120px;
-    background-color: #222d32;
+    background-color: #eee;
     /*color: #fff;*/
     text-align: center;
     border-radius: 3px;
     padding: 5px 0;
     margin-left: -108px;
-    font-weight: bold;
+    /*font-weight: bold;*/
     font-size: 110%;
+    color: #222d32;
     /*font-weight: 300;*/
 
     /* Position the tooltip */
@@ -1073,7 +1109,7 @@ body.hold-transition .main-footer2
 .tooltip2:hover .tooltiptext2 {
     visibility: visible;
 }
-
+/*
 #circle_green .tooltiptext2{
   color: #00a65a;
 }
@@ -1084,7 +1120,7 @@ body.hold-transition .main-footer2
 
 #circle_gray .tooltiptext2{
   color: #d2d6de;
-}
+}*/
 
 
 /*.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > div {
