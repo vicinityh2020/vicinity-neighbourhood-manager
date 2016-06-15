@@ -19,6 +19,7 @@ angular.module('VicinityManagerApp.controllers')
        $scope.note="Access for friends";
        $scope.isF = 0;
        $scope.loaded = false;
+       $scope.myId = $window.sessionStorage.companyAccountId;
       //  $scope.getNeigh = true;
       //  $scope.getAdd = false;
 

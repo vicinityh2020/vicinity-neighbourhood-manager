@@ -502,7 +502,7 @@ ul.messages li .message_wrapper blockquote {
   padding: 20px;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
-  height: 200px;
+  height: 169px;
   /*height: auto;*/
   position: static;
 }
@@ -544,6 +544,31 @@ ul.messages li .message_wrapper blockquote {
   padding-left: 0px;
   padding-right: 0px;
   padding-top: 3px;
+  display: block;
+}
+
+.widget-user-footer-moreinfo2 {
+  text-align: center;
+  /*padding-bottom: 1px;*/
+  padding-left: 0px;
+  padding-right: 0px;
+  /*padding-top: 1px;*/
+  display: block;
+  height: 20px;
+
+  /*border-top-color: #00a65a;*/
+}
+
+.widget-user-footer-moreinfo3 {
+  padding: 1px 5px;
+  padding-top: 1px;
+  padding-right: 5px;
+  padding-bottom: 1px;
+  padding-left: 5px;
+  font-size: 12px;
+  line-height: 1.5;
+
+  text-align: center;
   display: block;
 }
 
@@ -859,7 +884,8 @@ li.notifications-menu ul.menu > li > div {
 
 
 #readNot{
-  background-color: #d2d6de;
+  /*background-color: #d2d6de;*/
+  background-color: #eee;
 }
 
 /*#readNotImg{
@@ -936,7 +962,9 @@ li.notifications-menu ul.menu > li div.notification-description {
   /*padding-left: 5px;*/
   padding-right: 5px;
   padding-bottom: 5px;
-  margin-bottom: 5%;
+  /*margin-bottom: 5%;*/
+
+
   /*float: left;*/
 }
 
@@ -950,6 +978,19 @@ li.notifications-menu ul.menu > li div.notification-actions {
 li.notifications-menu ul.menu > li div.notification-actions button {
   width: 45%;
 }
+
+div.widget-user-footer-moreinfo2 button {
+  width: 49.6%;
+  height: 20px;
+  margin-top: -3px;
+}
+
+/*div.widget-user-footer-moreinfo2 {
+  padding-left: 30%;
+  clear: left;
+  margin-top: -14px;
+  padding-bottom: 5%;
+}*/
 
 .content-header > a > h1 {
   margin: 0;

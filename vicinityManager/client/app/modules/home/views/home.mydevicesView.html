@@ -10,27 +10,6 @@
         </div>
 
         <div class="col-md-12" ng-show="loaded">
-          <!-- <div class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Share with
-              <span class="caret"></span>
-            </a>
-
-            <ul class="dropdown-menu" role="menu">
-               <li><a href="#">Only me (Private)</a></li>
-               <li><a href="#">Neighbourhood</a></li>
-               <li><a href="#">Everybody (Public)</a></li>
-            </ul>
-           </div> -->
-
-
-
-           <!-- <div class="box box-solid">                             toto bolo povodne-->
-
-
-
-             <!-- <div class="box-header with-border">
-               <h3 class="box-title">...</h3>
-             </div> -->
 
              <!-- /.box-header -->
              <div class="box-body">
@@ -61,17 +40,8 @@
                    </div>
                    <div id="collapseThree" class="panel-collapse collapse in">
 
-                     <!-- <div class="box-body box-bg-grey">                        toto bolo povodne-->
 
                        <div class="row">
-
-                         <!-- <ul class="phones">
-                                 <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
-                                   <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
-                                   <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
-                                   <p>{{phone.snippet}}</p>
-                                 </li>
-                               </ul> -->
 
                          <div ng-show="noDevices" >
                             <h2 style="margin-left:20px;" >No devices to show.</h2>
@@ -82,25 +52,22 @@
 
                            <div class="box box-widget widget-user-2">
 
-                           <!-- <span class="info-box-icon bg-{{device.color}}"><img src={{device.avatar}}></img></span> -->
-
-                           <!-- <div class="info-box-content"> -->
-
                              <div style="z-index: -2" class="widget-user-header2 bg-yellow">
 
                                <div class="round">
                                  <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Device Avatar">
                                </div>
-                             <!-- <span class="info-box-icon bg-aqua"><img src="/app/img/tap_water2.png"></img></span> -->
+
                                <div class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
                                  <span class=" tooltiptext2" > Online</span>             <!-- <p style="cursor:default">  </p> title="Online"   -->
                                </div>
+
                                <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">{{device.name}}</a></h3>
                                <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                                <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -110,35 +77,32 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
-                               <!-- <div ng-show="interruptConnection" class="btn-group-justified">        //treba dokodit
-                               <div class="btn-group-sm btn-block loc_a ">
-                                 <button type="button" class="btn col-lg-10 btn-default ">
-
-                                    <i class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-                                 <button type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-                                   <span class="caret"></span>
-                                   <span class="sr-only">Toggle Dropdown</span>
-                                 </button>
-                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">     "right"pridane
-                                    <li><a ng-click="cancelAccess1()"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-                                 </ul>
-                               </div>
-                               </div>  -->
-
-
-
-
-                               <!-- <p class="ratings">
-                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                                 <a href="#"><span class="fa fa-square-o"></span></a>
-                               </p> -->
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             <!-- </div> -->
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -160,8 +124,8 @@
                                <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                                <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -171,9 +135,32 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             <!-- </div> -->
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -195,8 +182,8 @@
                                <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                                <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div style="z-index: 3"class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -206,9 +193,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -235,8 +244,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -246,8 +255,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
+
                               </div>
+
+                              <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                                <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                                <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                              </div>
+
                               <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
 
@@ -276,8 +308,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -287,8 +319,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
+
                               </div>
+
+                              <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                                <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                                <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                              </div>
+
                               <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
 
@@ -317,8 +372,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -328,8 +383,32 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
+
+
                               </div>
+
+                              <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                                <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                                <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                              </div>
+
+                              <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                              <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                              </div>
+
                               <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
 
@@ -360,8 +439,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -371,9 +450,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -400,8 +501,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -411,9 +512,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -440,8 +563,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div style="z-index: 3" class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -451,9 +574,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -479,8 +624,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -490,9 +635,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -517,8 +684,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -528,9 +695,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -555,8 +744,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -566,9 +755,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -593,8 +804,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -604,9 +815,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>
@@ -630,8 +863,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -641,7 +874,7 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
@@ -667,8 +900,8 @@
                              <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
                              <h5 class="widget-user-desc2">{{device.info.location}}</h5>
 
-                               <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
-                                 <button type="button" class="btn col-lg-10 btn-success " >  <!-- ng-click="acceptDataRequest(device._id)" -->
+                               <!-- <div class="btn-group btn-block statusDev" ng-show="device.canAnswer">
+                                 <button type="button" class="btn col-lg-10 btn-success " >
                                    <i class="fa fa-check-circle-o"></i>&nbsp;<b>Data request from {{device.accessRequestFrom[0].organisation}}</b></button>
                                  <button type="button" class="btn col-lg-2 btn-success dropdown-toggle" data-toggle="dropdown">
                                    <span class="caret"></span>
@@ -678,9 +911,31 @@
                                    <li><a ng-click="acceptDataRequest(device._id)"><i class="fa fa-check-circle-o"></i>&nbsp;Approve</a></li>
                                    <li><a ng-click="rejectDataRequest(device._id)"><i class="fa fa-times-circle-o"></i>&nbsp;Reject</a></li>
                                  </ul>
-                               </div>
+                               </div> -->
 
                              </div>
+
+                             <div ng-show="device.canAnswer" class="widget-user-footer-moreinfo2">
+                               <button  ng-click="acceptDataRequest(device._id)" type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp;Approve</button>
+                               <button  ng-click="rejectDataRequest(device._id)" type="button" class="btn btn-danger btn-xs"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==1 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is private </strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==2 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Metadata accessible</strong> </span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==3 && !device.canAnswer">
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                             </div>
+
+                             <div class="widget-user-footer-moreinfo3" ng-show="device.accessLevel==4 && !device.canAnswer" >
+                             <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+                             </div>
+
                              <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.deviceProfile.whoSee({deviceId: device._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
                            </div>
                          </div>

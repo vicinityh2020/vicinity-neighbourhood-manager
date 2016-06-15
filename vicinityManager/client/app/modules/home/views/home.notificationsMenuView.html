@@ -20,7 +20,7 @@
         <div class="notification-description"><p>You have device data request from <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
         <div class="notification-actions">
-          <button  ng-click="acceptDataRequest(notif.deviceId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>     <!-- ng-show="notif.status =='waiting'" -->
+          <button  ng-click="acceptDataRequest(notif.deviceId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
           <button  ng-click="rejectDataRequest(notif.deviceId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
         </div>
         <span class="ciara"></span>
