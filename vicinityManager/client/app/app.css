@@ -34,14 +34,14 @@
   border-bottom-right-radius: 3px;
 }
 
-.widget-user-footer-moreinfo {
+/*.widget-user-footer-moreinfo {
   text-align: center;
   padding-bottom: 3px;
   padding-left: 0px;
   padding-right: 0px;
   padding-top: 3px;
   display: block;
-}
+}*/
 
 .box-bg-grey {
     background: #f7f7f7 !important;
@@ -502,10 +502,14 @@ ul.messages li .message_wrapper blockquote {
   padding: 20px;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
-  /*height: 169px;*/
-  height: auto;
+  height: 200px;
+  /*height: auto;*/
   position: static;
 }
+
+/*.widget-user-2{
+  height: 200px;
+}*/
 
 .widget-user-2 .widget-user-username {
   margin-top: 5px;
@@ -534,14 +538,56 @@ ul.messages li .message_wrapper blockquote {
   margin-left: -45px;
 }
 
+.widget-user-footer-moreinfo {
+  text-align: center;
+  padding-bottom: 3px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 3px;
+  display: block;
+}
+
 .statusDev {
-  /*float: right;*/
-  width:35%;
+  float: right;
+  margin-left: 50%;
+  /*margin-bottom: 5%;*/
+  /*margin-top: 3%;*/
+  margin-bottom: 5%;
+  /*clear: left;*/
+  width:140px;
+  /*width: auto;*/
+  color: #222d32;
+  height: auto;
+
+  padding-top: 5px;
+  /*padding-bottom: 23px;*/
+
+  display: block;
+
+  position: relative;
+
+  z-index:-1;
+
+
+  /*margin-bottom: 20px;*/
+}
+
+/*.statusDev .a {
+  align-self: right;
+}*/
+
+/*statusDev from adminLTE*/
+
+
+/*.statusDev {*/
+
+  /*width:35%;
   color: #222d32;
   height: 35%;
   margin-left: 56%;
   margin-top: -5%;
   position: absolute;
+  z-index:-1;*/
 
   /*margin-top: 0%;*/
 
@@ -549,9 +595,10 @@ ul.messages li .message_wrapper blockquote {
 
   /*position: relative;
   right: auto;*/
+  /*float: right;*/
 
-  z-index:-1;
-}
+
+/*}*/
 
 .statusDev2 {
   /*float: right;*/
@@ -630,6 +677,7 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
   /*float: left;*/
   min-width: 100%;
   min-height: 100%;
+  display: block;
 }
 
 /*.round {
@@ -743,7 +791,7 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
     }
 
 .widget-user-2 .widget-user-username2 {
-  margin-left: 37%;
+  margin-left: 75px;
 }
 
 .widget-user-2 .widget-user-username2 {
@@ -751,11 +799,14 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
   margin-bottom: 5px;
   font-size: 20px;
   font-weight: 300;
+  display: block;
 }
 
 .widget-user-2 .widget-user-desc2 {
   margin-top: 0;
-  margin-left: 37%;
+  margin-left: 75px;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .bg-user {
@@ -1109,6 +1160,23 @@ body.hold-transition .main-footer2
 .tooltip2:hover .tooltiptext2 {
     visibility: visible;
 }
+
+/*@media (min-width: 1300px) {
+
+    .col-l-1 {width: 8.33%;}
+    .col-l-2 {width: 16.66%;}
+    .col-l-3 {width: 25%;}
+    .col-l-4 {width: 33.33%;}
+    .col-l-5 {width: 41.66%;}
+    .col-l-6 {width: 50%;}
+    .col-l-7 {width: 58.33%;}
+    .col-l-8 {width: 66.66%;}
+    .col-l-9 {width: 75%;}
+    .col-l-10 {width: 83.33%;}
+    .col-l-11 {width: 91.66%;}
+    .col-l-12 {width: 100%;}
+}*/
+
 /*
 #circle_green .tooltiptext2{
   color: #00a65a;
