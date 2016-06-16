@@ -6,18 +6,23 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.companyAccounts = [];
   $scope.thisCompany = {};
   $scope.friendsThisCom = [];
+  $scope.loaded = false;
 
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
     $scope.userAccounts = data.message.accountOf;
     $scope.thisCompany = data.message;
-  });
 
-  userAccountAPIService.getUserAccounts().success(function (data) {
-    $scope.companyAccounts = data.message;
-  });
+    userAccountAPIService.getUserAccounts().success(function (data) {
+      $scope.companyAccounts = data.message;
+    });
 
-  userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
-    $scope.friendsThisCom = data.message;
+
+    userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
+      $scope.friendsThisCom = data.message;
+    });
+
+    $scope.loaded = true;  
+
   });
 
 

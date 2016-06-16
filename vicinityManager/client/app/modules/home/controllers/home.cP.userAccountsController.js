@@ -24,9 +24,11 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
 
   $scope.userAccounts=[];
   $scope.companyId = $stateParams.companyAccountId;
+  $scope.loaded = false;
 
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
     $scope.userAccounts = data.message.accountOf;
+    $scope.loaded = true;
   });
 
 

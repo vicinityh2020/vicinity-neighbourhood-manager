@@ -1,11 +1,10 @@
-<!-- <div ng-hide="loaded">
-  <div style="margin: auto; width:60%">
-    <i class="fa fa-refresh fa-spin fa-5x" style="color: #ECF0F1"></i>
-  </div> -->
+<div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
 
 <div class="active tab-pane" id="activity" >
   <div class="row">
-    <div ng-repeat="device in devices | filter: searchFilterOn" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
+    <div ng-show="loaded" ng-repeat="device in devices | filter: searchFilterOn" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
       <div class="box box-widget widget-user-2">
         <div style="z-index: -2" class="widget-user-header2 bg-yellow">
           <div class="round">
@@ -19,7 +18,7 @@
       </div>
     </div>
 
-    <div ng-repeat="device in devices | filter: searchFilterOff" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
+    <div ng-show="loaded" ng-repeat="device in devices | filter: searchFilterOff" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
       <div class="box box-widget widget-user-2">
         <div style="z-index: -2" class="widget-user-header2 bg-yellow">
           <div class="round">
@@ -33,7 +32,7 @@
       </div>
     </div>
 
-    <div ng-repeat="device in devices | filter: searchFilterUn" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
+    <div ng-show="loaded" ng-repeat="device in devices | filter: searchFilterUn" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
       <div class="box box-widget widget-user-2">
         <div style="z-index: -2" class="widget-user-header2 bg-yellow">
           <div class="round">

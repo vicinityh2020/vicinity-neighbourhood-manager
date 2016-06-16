@@ -1,6 +1,10 @@
+<div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
+
 <div class="active tab-pane" id="activity">
     <div class="row">
-        <div class="col-md-6 col-lg-4" ng-repeat="friend in friends">
+        <div ng-show="loaded" class="col-md-6 col-lg-4" ng-repeat="friend in friends">
             <!-- Widget: user widget style 1 -->
             <div class="box box-widget widget-user-2">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -17,24 +21,3 @@
         </div>
     </div>
 </div>
-
-<!--
-<section class="content">
-  <div class="row">
-    <div class="col-md-4" ng-repeat="result in resultsList | filter: searchFilter">
-       Widget: user widget style 1
-      <div class="box box-widget widget-user-2">
-        Add the bg color to the header using any of the bg-* classes
-        <div class="widget-user-header bg-yellow">
-          <div class="widget-user-image">
-            <img class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
-          </div>
-           /.widget-user-image
-          <h3 class="widget-user-username">{{result.organisation}}</h3>
-          <h5 class="widget-user-desc">{{result._id}}</h5>
-        </div>
-        <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.neigbourhood({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-  </div>
-</section> -->

@@ -22,10 +22,12 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   // $scope.followers = [];
   // $scope.gateways = [];
 
-  $scope.friends=[];
+  $scope.friends = [];
+  $scope.loaded = false;
 
   userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
     $scope.friends = data.message;
+    $scope.loaded = true;
   });
 
 
