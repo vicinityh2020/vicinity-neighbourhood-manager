@@ -32,6 +32,4 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   });
 
 
-
-
 });

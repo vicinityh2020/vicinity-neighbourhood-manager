@@ -1202,6 +1202,10 @@ body.hold-transition .main-footer2
     visibility: visible;
 }
 
+.alert2{
+  background-color: #FF8784;
+}
+
 /*@media (min-width: 1300px) {
 
     .col-l-1 {width: 8.33%;}

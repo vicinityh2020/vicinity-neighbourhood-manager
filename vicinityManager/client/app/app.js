@@ -3,7 +3,7 @@
 angular.module('constants',[]).constant('configuration', this._env);
 
 
-angular.module('Authentication', ['ngCookies', 'constants']);
+angular.module('Authentication', ['ngCookies', 'constants', 'ui-notification']);
 
 
 
@@ -164,7 +164,7 @@ angular.module('VicinityManagerApp', [
             }
         })
         .state('root.main.companyProfile.friends', {
-            url: '/friends',
+            url: '/partners',
             views: {
                 'tabPanel@root.main.companyProfile':
                     {

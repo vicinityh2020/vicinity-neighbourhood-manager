@@ -7,17 +7,24 @@
     <p class="login-box-msg"> <a href="http://www.vicinity-h2020.eu"> About project </a> </p>
     <p class="login-box-msg">Log in to start your session</p>
 
-    <div ng-show="error" class="alert alert-danger">{{error}}</div>
+    <div style="text-align: center" ng-show="isError" class="alert alert-danger">{{error}}</div>
     <form name="form" role="form" ng-submit="login()">
       <div class="form-group has-feedback">
         <input type="email" name="username" id="username" class="form-control" ng-model="username" placeholder="Email" required/>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
         <span ng-show="form.username.$dirty && form.username.$error.required" class="help-block">Email address as username is required</span>
       </div>
+
       <div class="form-group has-feedback">
         <input type="password" class="form-control" placeholder="Password" name="password" username="password" ng-model="password" required/>
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
+
+      <!-- <div  class="form-group has-feedback" >
+        <input style="background-color: #FF8784" type="password" class="form-control" placeholder={{error}} name="password" username="password" ng-model="password" required/>
+        <span style="background-color: #FF8784" class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div> -->
+
       <div class="row">
         <div class="col-xs-8">
           <div class="checkbox">
