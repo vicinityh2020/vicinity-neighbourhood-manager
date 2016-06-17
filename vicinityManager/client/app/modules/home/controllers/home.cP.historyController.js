@@ -19,9 +19,8 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
 
     userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
       $scope.friendsThisCom = data.message;
+      $scope.loaded = true;
     });
-
-    $scope.loaded = true;  
 
   });
 

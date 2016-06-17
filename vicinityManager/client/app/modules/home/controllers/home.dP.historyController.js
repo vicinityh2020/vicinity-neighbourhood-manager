@@ -6,6 +6,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.companyAccounts = [];
   $scope.thisCompany = {};
   $scope.friendsThisCom = [];
+  $scope.loaded = false;
 
   itemsAPIService.getItemWithAdd($stateParams.deviceId).success(function(data){
     $scope.device = data.message;
@@ -21,8 +22,9 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
 
     userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id).success(function (data) {
       $scope.friendsThisCom = data.message;
-    });
 
+    });
+    $scope.loaded = true;
   });
 
 });

@@ -1,9 +1,14 @@
+<div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
+
+
 <div class="active tab-pane" id="activity">
   <div class="row">
 
-        <h4 style="margin-left: 15px" ng-show = "giveNote">{{note}} </h4>
+        <h4 style="margin-left: 15px" ng-show = "giveNote && loaded">{{note}} </h4>
 
-        <div ng-show = "!giveNote" class="col-md-6" ng-repeat="friend in friends">
+        <div ng-show = "!giveNote && loaded" class="col-md-6" ng-repeat="friend in friends">
             <!-- Widget: user widget style 1 -->
             <div class="box box-widget widget-user-2">
                 <!-- Add the bg color to the header using any of the bg-* classes -->

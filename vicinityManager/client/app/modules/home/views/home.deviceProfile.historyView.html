@@ -1,3 +1,6 @@
+<div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
 <!-- <ul style="list-style: none;" class="messages list-group list-group-unbordered">
   <li>
     <br />
@@ -63,7 +66,7 @@
     </section> -->
 
     <!-- Main content -->
-    <section class="content">
+    <section ng-show="loaded" class="content">
 
       <!-- row -->
       <div class="row">

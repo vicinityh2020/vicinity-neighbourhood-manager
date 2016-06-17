@@ -27,6 +27,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.AL = 0;
   $scope.device = {};
   $scope.giveNote = false;
+  $scope.loaded = false;
 
   itemsAPIService.getItemWithAdd($stateParams.deviceId).success(function(data){
     $scope.device = data.message;
@@ -45,6 +46,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
         // $scope.AL = $scope.device.accessLevel;
       })
     };
+    $scope.loaded = true;
   });
 
 
