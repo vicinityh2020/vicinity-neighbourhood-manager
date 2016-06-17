@@ -30,6 +30,7 @@ angular.module('Authentication')
                       control.bind('click', function () {
                           if (control.is(':checked')) {
                               field.prop('type', 'text');
+                              field.prop('autocomplete', 'off');
                           } else {
                               field.prop('type', 'password');
                           }
