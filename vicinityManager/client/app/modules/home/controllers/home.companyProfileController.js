@@ -157,7 +157,7 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
       $scope.occupation = response.message.accountOf.occupation;
       $scope.organisation = response.message.organisation;
       $scope.companyAccountId = response.message._id;
-      $scope.location = response.message.accountOf.location;
+      $scope.location = response.message.location;
       $scope.badges = response.message.badges;
       $scope.notes = response.message.notes;
       $scope.canSendNeighbourRequest = response.message.canSendNeighbourRequest;

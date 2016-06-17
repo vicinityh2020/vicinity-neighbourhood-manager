@@ -8,6 +8,7 @@ var userAccount = {
   creatorOf: [ObjectId], //Creator of UserAccounts
   follows: [ObjectId], //Follows UserAccounts
   memberOf: [ObjectId], //Member of UserGroups
+  location: String,
   accountOf: [{
     avatar: String,
     name: String,

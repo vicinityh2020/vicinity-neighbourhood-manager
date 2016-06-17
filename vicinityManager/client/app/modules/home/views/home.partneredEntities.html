@@ -20,7 +20,8 @@
           <!-- /.widget-user-image -->
           <h3 ng-show="activeCompanyID.toString() === result._id.toString()" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">{{result.organisation}}</a></h3>
           <h3 ng-show="!(activeCompanyID.toString() === result._id.toString())" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">{{result.organisation}}</a></h3>
-          <h5 class="widget-user-desc">{{result._id}}</h5>
+          <!-- <h5 class="widget-user-desc">{{result._id}}</h5> -->
+          <h5 class="widget-user-desc"><i class="fa fa-map-marker margin-r-5"></i> {{result.location}}</h5>
         </div>
         <a ng-show="activeCompanyID.toString() === result._id.toString()" href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
         <a ng-show="!(activeCompanyID.toString() === result._id.toString())" href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
