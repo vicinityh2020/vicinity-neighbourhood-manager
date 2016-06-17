@@ -979,8 +979,8 @@ span.ciara {
 
 li.notifications-menu ul.menu > li div.notification-avatar {
   float: left;
-  width:30%;
-  margin-bottom: 5%;
+  /*width:30%;*/
+  /*margin-bottom: 5%;*/
   height: 65px;
 
   border-radius: 50%;
