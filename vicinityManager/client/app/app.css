@@ -817,13 +817,13 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
   padding: 3px;
   border: 3px solid #d2d6de;
 
-  /*position: absolute;*/
+  /*position: relative;*/
   /*top: 65px;*/
   /*left: 18%;*/
   /*margin-left: -45px;*/
 }
 .round_profile img {
-  /*display: block;*/
+  display: block;
   /*position: absolute;*/
   /*width: 65px;
   height: auto;*/
@@ -831,8 +831,8 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
             /* Stretch
                   height: 100%;
                   width: 100%; */
-  min-width: 100%;
-  min-height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 #circle_red {
