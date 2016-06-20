@@ -379,6 +379,11 @@ ul.widget_profile_box li .profile_img {
   height: 70%;
 }
 
+.bg-service img{
+  width: 70%;
+  height: 70%;
+}
+
 
 .bg-olive img{
   width: 70%;
@@ -553,6 +558,15 @@ ul.messages li .message_wrapper blockquote {
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
   height: 169px;
+  /*height: auto;*/
+  position: static;
+}
+
+.widget-user-2 .widget-user-header3 {
+  padding: 20px;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  height: 145px;
   /*height: auto;*/
   position: static;
 }
@@ -893,6 +907,12 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
 .bg-gold{
   background-color: #9ACD32 !important;
 }
+
+.bg-service{
+  background-color: #EFCC00 !important;
+}
+
+
 
 .sr-only {
   position: absolute;
