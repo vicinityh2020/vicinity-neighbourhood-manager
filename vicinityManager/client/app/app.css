@@ -602,6 +602,19 @@ ul.messages li .message_wrapper blockquote {
   margin-left: -45px;
 }
 
+.widget-user-2 .widget-user-image2 > img {
+  width: 65px;
+  height: 65px;
+  float: left;
+}
+
+.widget-user2 .widget-user-image2 {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  margin-left: -45px;
+}
+
 .widget-user-footer-moreinfo {
   text-align: center;
   padding-bottom: 3px;

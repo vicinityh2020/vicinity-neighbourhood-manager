@@ -166,9 +166,29 @@ angular.module('VicinityManagerApp', [
           views: {
             'mainContentView@root':
             {
-              templateUrl: 'modules/home/views/home.serviceProfileView1.html',
+              templateUrl: 'modules/home/views/home.serviceProfileView1.html'
             }
           }
+        })
+
+        .state('root.main.serviceProfile1.consumers', {
+            url: '/consumers',
+            views: {
+                'tabPanel@root.main.serviceProfile1':
+                    {
+                        templateUrl: 'modules/home/views/home.SPView.consumers.html'
+                    }
+            }
+        })
+
+        .state('root.main.serviceProfile1.configuration', {
+            url: '/configuration',
+            views: {
+                'tabPanel@root.main.serviceProfile1':
+                    {
+                        templateUrl: 'modules/home/views/home.SPView.configuration.html'
+                    }
+            }
         })
 
         .state('root.main.serviceProfile2', {
@@ -176,9 +196,29 @@ angular.module('VicinityManagerApp', [
           views: {
             'mainContentView@root':
             {
-              templateUrl: 'modules/home/views/home.serviceProfileView2.html',
+              templateUrl: 'modules/home/views/home.serviceProfileView2.html'
             }
           }
+        })
+
+        .state('root.main.serviceProfile2.consumers', {
+            url: '/consumers',
+            views: {
+                'tabPanel@root.main.serviceProfile2':
+                    {
+                        templateUrl: 'modules/home/views/home.SPView.consumers.html'
+                    }
+            }
+        })
+
+        .state('root.main.serviceProfile2.configuration', {
+            url: '/configuration',
+            views: {
+                'tabPanel@root.main.serviceProfile2':
+                    {
+                        templateUrl: 'modules/home/views/home.SPView.configuration.html'
+                    }
+            }
         })
 
         .state('root.main.serviceProfile3', {
@@ -186,9 +226,29 @@ angular.module('VicinityManagerApp', [
           views: {
             'mainContentView@root':
             {
-              templateUrl: 'modules/home/views/home.serviceProfileView3.html',
+              templateUrl: 'modules/home/views/home.serviceProfileView3.html'
             }
           }
+        })
+
+        .state('root.main.serviceProfile3.consumers', {
+            url: '/consumers',
+            views: {
+                'tabPanel@root.main.serviceProfile3':
+                    {
+                        templateUrl: 'modules/home/views/home.SPView.consumers.html'
+                    }
+            }
+        })
+
+        .state('root.main.serviceProfile3.configuration', {
+            url: '/configuration',
+            views: {
+                'tabPanel@root.main.serviceProfile3':
+                    {
+                        templateUrl: 'modules/home/views/home.SPView.configuration.html'
+                    }
+            }
         })
 
         .state('root.main.companyProfile', {
