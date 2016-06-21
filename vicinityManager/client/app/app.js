@@ -3,7 +3,7 @@
 angular.module('constants',[]).constant('configuration', this._env);
 
 
-angular.module('Authentication', ['ngCookies', 'constants', 'ui-notification']);
+angular.module('Authentication', ['ngCookies', 'constants', 'ui-notification','VicinityManagerApp.controllers']);
 
 
 

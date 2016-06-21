@@ -5,70 +5,196 @@
   <!-- /.login-logo -->
   <div class="login-box-body">
     <p class="login-box-msg"> <a href="http://www.vicinity-h2020.eu"> About project </a> </p>
-    <p class="login-box-msg">Log in to start your session</p>
+    <p class="login-box-msg">{{note2}}</p>      <!-- Log in to start your session -->
 
     <!-- <div style="text-align: center" ng-show="isError" class="alert alert-danger">{{error}}</div> -->
 
     <form id="login-wrap" name="form" role="form" ng-submit="login()">
 
       <!-- username -->
-      <div class="form-group has-feedback">
+      <div id="zmiz" class="form-group has-feedback">
         <input id="user" type="email" name="username" id="username" class="form-control" ng-model="username" placeholder="Email" required/>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
         <span ng-show="form.username.$dirty && form.username.$error.required" class="help-block">Email address as username is required</span>
       </div>
 
       <!-- password -->
-      <div class="form-group has-feedback">
+      <div id="zmiz" class="form-group has-feedback">
         <input  type="password" id="pass" class="form-control" placeholder="Password" name="password" username="password" ng-model="password" required/>
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
-      <!-- password show password -->
-      <!-- <div ng-show="showPass" class="form-group has-feedback">
-        <input id="pass" type="text" class="form-control" placeholder="Password" name="password" username="password" ng-model="password" required/>
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-      </div> -->
 
-      <div class="checkbox">
+      <!-- <div class="checkbox">
         <label>
          <input type="checkbox" id="myCheck"> &nbsp; Show password
         </label>
-      </div>
-
-      <!-- <div  class="form-group has-feedback" >
-        <input style="background-color: #FF8784" type="password" class="form-control" placeholder={{error}} name="password" username="password" ng-model="password" required/>
-        <span style="background-color: #FF8784" class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div> -->
 
-      <div style="text-align: center" id="alert2" ng-show="isError" >{{error}}</div>
+      <div id="zmiz" style="text-align: center" id="alert2" ng-show="isError" >{{error}}</div>
 
-      <!-- class="alert alert-danger" -->
-
-      <div class="row">
-        <div class="col-xs-3">
+      <div id="zmiz" class="row">
+        <div class="col-xs-6">
           <div class="checkbox">
             <label>
             <!--  <input type="checkbox" disabled> Remember Me -->
         <!-- TODO: Implement remember me functionality -->
+
+
+                 <input type="checkbox" id="myCheck"> &nbsp; Show password
+
+
             </label>
           </div>
         </div>
         <!-- /.col -->
 
         <!-- submit button -->
-        <div class="col-xs-6">
+        <div id="zmiz" class="col-xs-6">
           <button id="login-button" type="submit" class="btn btn-primary btn-block btn-flat" ng-disabled="form.$invalid || dataLoading">Log In</button>
           <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
         </div>
 
 
+
+
         <!-- /.col -->
       </div>
+
     </form>
+
+    <div id="registerInput">
+      <span id="newRegistr" ng-hide="newRegisHide" class="box-title" style="width: auto">I want to register </span>     <!--ng-show="newRegis"-->
+      <select id="newRegistr" ng-hide="newRegisHide" class="pull-right" style="width: auto" name="menu" class="box-title">      <!-- ng-show="newRegis" -->
+        <option value="0" selected="selected">...</option>
+        <option value="1">new company</option>
+        <option value="2">new user in registered company</option>
+      </select>
+    </div>
+
+
+
+    <div id="newOrganisationInfo">
+
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Organisation </span>
+
+      <div  id="org">
+        <div  class="form-group has-feedback">
+          <span > Name </span><span style="color: red">*</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Name of your organisation" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Location</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Location of your organisation" required/>
+        </div>
+      </div>
+
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Administrator </span>
+
+      <div  id="org2">
+        <div  class="form-group has-feedback">
+          <span > Email </span><span style="color: red">*</span>
+          <input style="width: 60%" type="email"  class="pull-right" placeholder="Email of administrator" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Password </span><span style="color: red">*</span>
+          <input style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Repeat password </span><span style="color: red">*</span>
+          <input style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Name</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of administrator" />
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Occupation</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of administrator" />
+        </div>
+
+      </div>
+
+      <div class="col-xs-6">
+
+      </div>
+      <div class="col-xs-6" style="padding-right: 0px">
+        <button type="submit" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
+        <!-- <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/> -->
+      </div>
+
+    </div>
+
+    <div id="newUserInfo">
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Organisation </span>
+
+      <div  id="org">
+        <div  class="form-group has-feedback">
+          <span > Name </span><span style="color: red">*</span>
+          <!-- <input style="width: 60%" type="text"  class="pull-right" placeholder="Name of your organisation" required/> -->
+          <select class="pull-right" style="width: auto" name="menu" class="box-title">      <!-- ng-show="newRegis" -->
+            <option value="0" selected="selected">...</option>
+            <option value="{{number}}" ng-repeat="comp in comps">{{comp.organisation}}</option>
+          </select>
+        </div>
+
+        <!-- <div  class="form-group has-feedback">
+          <span > Location</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Location of your organisation" required/>
+        </div> -->
+      </div>
+
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> User </span>
+
+      <div  id="org2">
+        <div  class="form-group has-feedback">
+          <span > Email </span><span style="color: red">*</span>
+          <input style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Password </span><span style="color: red">*</span>
+          <input style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Repeat password </span><span style="color: red">*</span>
+          <input style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Name</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of user" />
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Occupation</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of user" />
+        </div>
+      </div>
+
+      <div class="col-xs-6">
+
+      </div>
+      <div class="col-xs-6" style="padding-right: 0px">
+        <button type="submit" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
+        <!-- <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/> -->
+      </div>
+
+    </div>
+
+    <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
+
+      </div>
+
 
   <!--  <a href="#">I forgot my password</a><br>  -->
 <!-- TODO: Implement forgot my password functionality -->
- <!--    <a href="#" class="text-center">Register a new member</a> -->
+
 <!-- TODO: Implement register a new membership functionality -->
 
   </div>

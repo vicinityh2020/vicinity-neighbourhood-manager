@@ -19,6 +19,49 @@
   display: inline;
 }
 
+#registerInput{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  /*height: 30px;*/
+}
+
+#org{
+  border: 1px solid #d2d6de;
+  /*margin-top: 15px;*/
+  margin-top: -9px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 15px;
+  margin-bottom: 10px;
+  /*border-color: black;*/
+}
+
+#org2{
+  border: 1px solid #d2d6de;
+  /*margin-top: 15px;*/
+  margin-top: -9px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 15px;
+  margin-bottom: 10px;
+  /*border-color: black;*/
+}
+
+/*#registerInput span {
+  width: 20%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 26px;
+}
+
+#registerInput input {
+  width: 80%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}*/
+
 /*.menu > li:before {
   content: "|";
   padding-right: 0.3em;
