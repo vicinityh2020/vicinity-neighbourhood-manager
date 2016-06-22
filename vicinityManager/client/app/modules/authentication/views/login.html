@@ -70,8 +70,8 @@
         <!-- /.col -->
       </div>
       <!-- <row> -->
-      <div style="margin-top: 5px" class="col-xs-6">
-        <a id="zmiz2" href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
+      <div id="zmiz2" style="margin-top: 5px" class="col-xs-6">
+        <a  href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
       </div>
     <!-- </row> -->
 
@@ -83,7 +83,7 @@
 
     <div id="newOrganisationInfo">
 
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Organisation </span>
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Company </span>
 
       <div  id="org">
         <div  class="form-group has-feedback">
@@ -138,27 +138,26 @@
     </div>
 
     <div id="newUserInfo">
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Organisation </span>
+      <!-- <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Organisation </span>
 
       <div  id="org">
         <div  class="form-group has-feedback">
           <span > Name </span><span style="color: red">*</span>
-          <!-- <input style="width: 60%" type="text"  class="pull-right" placeholder="Name of your organisation" required/> -->
-          <select class="pull-right" style="width: auto" name="menu" class="box-title">      <!-- ng-show="newRegis" -->
+          <select class="pull-right" style="width: auto" name="menu" class="box-title">
             <option value="0" selected="selected">...</option>
             <option value="{{number}}" ng-repeat="comp in comps">{{comp.organisation}}</option>
           </select>
         </div>
-
-        <!-- <div  class="form-group has-feedback">
-          <span > Location</span>
-          <input style="width: 60%" type="text"  class="pull-right" placeholder="Location of your organisation" required/>
-        </div> -->
-      </div>
+      </div> -->
 
       <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> User </span>
 
       <div  id="org2">
+        <div  class="form-group has-feedback">
+          <span > Company </span>
+          <span style="width: 60%" class="pull-right">ABC/ACME/whatever</span>
+        </div>
+
         <div  class="form-group has-feedback">
           <span > Email </span><span style="color: red">*</span>
           <input style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>

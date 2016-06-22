@@ -120,32 +120,34 @@ angular.module('Authentication')
                    $('div#zmiz').fadeOut('slow');
                    $('p#zmiz').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
-                   $('a#zmiz2').fadeOut('slow');
+                   $('div#zmiz2').fadeOut('slow');
+                   $('div#zmiz2').css('padding-left', '0px');
                    setTimeout(function() {
                      $('#newRegistr').fadeIn('slow');
                      $('div#newRegistr').fadeIn('slow');
                      $('select#newRegistr').fadeIn('slow');
                      $('a#zmiz').fadeIn('slow');
-                     $('a#zmiz2').fadeIn('slow');
-                  }, 800);
+                     $('div#zmiz2').fadeIn('slow');
+                  }, 1000);
 
                  }else{
                    $scope.newRegis = false;
                    $scope.note = "Register new member";
                    $scope.note2 = "Log in to start your session";
+                   $('div#zmiz2').css('padding-left', '15px');
                    $('#newRegistr').fadeOut('slow');
                    $('div#newRegistr').fadeOut('slow');
                    $('select#newRegistr').fadeOut('slow');
                    $('div#newOrganisationInfo').fadeOut('slow');
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
-                   $('a#zmiz2').fadeOut('slow');
+                   $('div#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                      $('div#zmiz').fadeIn('slow');
                      $('p#zmiz').fadeIn('slow');
                      $('a#zmiz').fadeIn('slow');
-                     $('a#zmiz2').fadeIn('slow');
-                  }, 800);
+                     $('div#zmiz2').fadeIn('slow');
+                  }, 1000);
                    $('select#newRegistr option[value="0"]').prop("selected","selected");
                  };
                };
@@ -166,31 +168,33 @@ angular.module('Authentication')
                  if (this.value === '1'){
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
-                   $('a#zmiz2').fadeOut('slow');
+                   $('div#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                     $('div#newOrganisationInfo').fadeIn('slow');
                     $('a#zmiz').fadeIn('slow');
-                  }, 800);
+                  }, 1000);
                    $scope.newComp = true;
                   //  $scope.newUser = false;
                  }else if (this.value === '2') {
                    $('div#newOrganisationInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
-                   $('a#zmiz2').fadeOut('slow');
+                   $('div#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                     $('div#newUserInfo').fadeIn('slow');
                     $('a#zmiz').fadeIn('slow');
-                  }, 800);
+                  }, 1000);
                   //  $scope.newComp = false;
                    $scope.newUser = true;
                  }else{
                    $('div#newOrganisationInfo').fadeOut('slow');
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
-                   $('a#zmiz2').fadeOut('slow');
+                   $('div#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                     $('a#zmiz').fadeIn('slow');
-                  }, 800);
+                    $('div#zmiz2').css('padding-left', '0px');
+                    $('div#zmiz2').fadeIn('slow');
+                  }, 1000);
                  };
                });
 
