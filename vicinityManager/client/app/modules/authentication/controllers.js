@@ -28,6 +28,7 @@ angular.module('Authentication')
                $("#pass").prop("type", "password");
                $('div#newOrganisationInfo').hide();
                $('div#newUserInfo').hide();
+               $('div#alert2').hide();
 
                userAccountAPIService.getUserAccounts().success(function (response){
                  var results = response.message;
@@ -78,6 +79,7 @@ angular.module('Authentication')
                      AuthenticationService.SetCredentials($scope.username, $scope.password, response.message);
                      $location.path("/home");
                      $scope.isError = false;
+                     $('div#alert2').hide();
                    } else {
                      $scope.error = "Incorrect email or password";
 
@@ -86,6 +88,7 @@ angular.module('Authentication')
 
                     //  Notification.error("Incorrect email or password");
                      $scope.isError = true;
+                     $('div#alert2').show();
                      $scope.dataLoading = false;
 
                      setTimeout(function() {
@@ -117,6 +120,7 @@ angular.module('Authentication')
                    $scope.newRegis = true;
                    $scope.note = "Back to log in";
                    $scope.note2 = "Registration form";
+                   $('div#alert2').fadeOut('slow');
                    $('div#zmiz').fadeOut('slow');
                    $('p#zmiz').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
@@ -136,6 +140,7 @@ angular.module('Authentication')
                    $scope.note2 = "Log in to start your session";
                    $('div#zmiz2').css('padding-left', '15px');
                    $('#newRegistr').fadeOut('slow');
+                   $('div#alert2').fadeOut('slow');
                    $('div#newRegistr').fadeOut('slow');
                    $('select#newRegistr').fadeOut('slow');
                    $('div#newOrganisationInfo').fadeOut('slow');
@@ -169,6 +174,7 @@ angular.module('Authentication')
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
                    $('div#zmiz2').fadeOut('slow');
+                   $('div#alert2').fadeOut('slow');
                    setTimeout(function() {
                     $('div#newOrganisationInfo').fadeIn('slow');
                     $('a#zmiz').fadeIn('slow');
@@ -179,6 +185,7 @@ angular.module('Authentication')
                    $('div#newOrganisationInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
                    $('div#zmiz2').fadeOut('slow');
+                   $('div#alert2').fadeOut('slow');
                    setTimeout(function() {
                     $('div#newUserInfo').fadeIn('slow');
                     $('a#zmiz').fadeIn('slow');
@@ -190,6 +197,7 @@ angular.module('Authentication')
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
                    $('div#zmiz2').fadeOut('slow');
+                   $('div#alert2').fadeOut('slow');
                    setTimeout(function() {
                     $('a#zmiz').fadeIn('slow');
                     $('div#zmiz2').css('padding-left', '0px');
