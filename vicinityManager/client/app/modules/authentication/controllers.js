@@ -112,6 +112,7 @@ angular.module('Authentication')
                  $scope.newRegisHide = false;
                  if ($scope.newRegis == false){
                    $('#newRegistr').hide();
+                   $('div#newRegistr').hide();
                    $('select#newRegistr').hide();
                    $scope.newRegis = true;
                    $scope.note = "Back to log in";
@@ -119,11 +120,13 @@ angular.module('Authentication')
                    $('div#zmiz').fadeOut('slow');
                    $('p#zmiz').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
-
+                   $('a#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                      $('#newRegistr').fadeIn('slow');
+                     $('div#newRegistr').fadeIn('slow');
                      $('select#newRegistr').fadeIn('slow');
                      $('a#zmiz').fadeIn('slow');
+                     $('a#zmiz2').fadeIn('slow');
                   }, 800);
 
                  }else{
@@ -131,14 +134,17 @@ angular.module('Authentication')
                    $scope.note = "Register new member";
                    $scope.note2 = "Log in to start your session";
                    $('#newRegistr').fadeOut('slow');
+                   $('div#newRegistr').fadeOut('slow');
                    $('select#newRegistr').fadeOut('slow');
                    $('div#newOrganisationInfo').fadeOut('slow');
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
+                   $('a#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                      $('div#zmiz').fadeIn('slow');
                      $('p#zmiz').fadeIn('slow');
                      $('a#zmiz').fadeIn('slow');
+                     $('a#zmiz2').fadeIn('slow');
                   }, 800);
                    $('select#newRegistr option[value="0"]').prop("selected","selected");
                  };
@@ -160,6 +166,7 @@ angular.module('Authentication')
                  if (this.value === '1'){
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
+                   $('a#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                     $('div#newOrganisationInfo').fadeIn('slow');
                     $('a#zmiz').fadeIn('slow');
@@ -169,6 +176,7 @@ angular.module('Authentication')
                  }else if (this.value === '2') {
                    $('div#newOrganisationInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
+                   $('a#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                     $('div#newUserInfo').fadeIn('slow');
                     $('a#zmiz').fadeIn('slow');
@@ -179,6 +187,7 @@ angular.module('Authentication')
                    $('div#newOrganisationInfo').fadeOut('slow');
                    $('div#newUserInfo').fadeOut('slow');
                    $('a#zmiz').fadeOut('slow');
+                   $('a#zmiz2').fadeOut('slow');
                    setTimeout(function() {
                     $('a#zmiz').fadeIn('slow');
                   }, 800);
