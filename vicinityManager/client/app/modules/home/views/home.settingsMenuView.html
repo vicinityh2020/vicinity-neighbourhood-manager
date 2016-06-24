@@ -1,0 +1,24 @@
+<!-- Menu toggle button -->
+<a href="" class="dropdown-toggle" data-toggle="dropdown" style="padding-top: 10px; padding-bottom: 11px">
+  <i class="fa fa-child fa-2x"></i><i class="fa fa-plus"></i>
+  <!-- <span ng-show="!zeroNotif" class="label label-warning">{{notifs.length}}</span> -->
+</a>
+
+<ul id="invitLi" class="dropdown-menu" style="border: 0px; margin-top: 1px">
+  <!-- <li ng-show="!oneNotif" class="header">You have {{notifs.length}} new notifications</li> -->
+  <!-- <li ng-show="oneNotif" class="header">You have 1 new notification</li> -->
+  <li id="invitLi">
+    <!-- Inner Menu: contains the notifications -->
+    <ul id="invitations" class="menu">
+      <li >    <!-- | filter: searchfilter1-->
+        <a id="invit" href="" ng-click="alertPopUp2()" style="color: #FFF"><i class="fa fa-building-o" ></i>Invite other company to join Vicinity</a>
+      </li>
+      <li ng-show="isAdmin">    <!-- | filter: searchfilter1-->
+        <a id="invit" href="" ng-click="alertPopUp1()" style="color: #FFF"><i class="fa fa-user-plus"></i>Invite new user from {{comp.organisation}} to join Vicinity</a>
+      </li>
+
+      <!-- end notification -->
+    </ul>
+  </li>
+  <!-- <li class="footer"><a href="">View all</a></li> -->
+</ul>

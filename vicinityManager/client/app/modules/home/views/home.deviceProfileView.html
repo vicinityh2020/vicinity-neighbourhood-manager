@@ -14,11 +14,24 @@
           <!-- Profile Image -->
           <div class="box box-primary">
             <div class="box-body box-profile">
-              <div class="round_profile">                 <!--      class="profile-user-img img-responsive img-circle" -->
+              <div ng-show="!isMyDevice" class="round_profile">                 <!--      class="profile-user-img img-responsive img-circle" -->
               <img ng-src="{{avatar}}" alt="User profile picture">
               </div>
 
-              <h3 class="profile-username text-center">{{name}}</h3>
+              <div ng-show="isMyDevice" id="changeAvatar" class="round_profile">
+                <span style="position: absolute">+Change avatar</span>
+                <a href="" ng-click="showLoadPic()">
+                  <img ng-src="{{avatar}}" alt="User profile picture"></a>
+              </div>
+
+              <input id="input1" ng-show="showInput" style="margin-left: 40%; margin-top: 10px; margin-bottom: 10px" type="file" />
+              <a ng-click="cancelLoadPic()" style="margin-left: 35%" ng-show="showInput" id="edits1" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+              <a ng-show="showInput" id="edits2" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
+
+              <!-- <input type="file" onchange="previewFile()"><br>
+              <img src="" height="200" alt="Image preview..."> -->
+
+              <h3 class="profile-username text-center" style="margin-top: 15px">{{name}}</h3>
 
               <!-- <p class="text-muted text-center">{{occupation}}</p> -->
 
@@ -30,25 +43,35 @@
                   <b>Following</b> <a class="pull-right">{{following.length}}</a>
                 </li> -->
                 <li class="list-group-item">
-                  <b>Status</b><span ng-show = "AL == 1" class="pull-right">Private</span>
+                  <b>Status</b>
+                               <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                               <span ng-show = "AL == 1" class="pull-right">Private</span>
                                <span ng-show = "AL == 2" class="pull-right">Metadata access</span>
                                <span ng-show = "AL == 3" class="pull-right">Shared with partners</span>
                                <span ng-show = "AL == 4" class="pull-right">Public</span>
                     <!-- <span class="pull-right">{{users.length}}</span></a> -->
+
+
+
                 </li>
                 <li class="list-group-item">
-                  <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <b>Owner</b>
+                  <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <b>Owner</b></a>
                     <!-- ng-href="#/profile/company/{{owner_id}}/devices"  -->
-                  <span  class="pull-right">{{owner}}</span></a>
-                  <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> <b>Owner</b>
-                  <span class="pull-right">Me</span></a>
+                  <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <span  class="pull-right">{{owner}}</span></a>
+                  <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> <b>Owner</b></a>
+                    <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                    <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"><span ng-show="isMyDevice" class="pull-right">Me</span></a>
                 </li>
                 <li class="list-group-item">
-                  <b>Serial number</b><span class="pull-right">{{serNumber}}</span>
+                  <b>Serial number</b>
+                  <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                  <span class="pull-right">{{serNumber}}</span>
                     <!-- <span class="pull-right">{{users.length}}</span></a> -->
                 </li>
                 <li class="list-group-item">
-                  <b>Location</b><span class="pull-right">{{location}}</span>
+                  <b>Location</b>
+                  <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                  <span class="pull-right">{{location}}</span>
                     <!-- <span class="pull-right">{{users.length}}</span></a> -->
                 </li>
               </ul>

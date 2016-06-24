@@ -28,10 +28,23 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.serNumber = "";
   $scope.location = "";
   $scope.AL = 0;
+  $scope.showInput = false;
+  $scope.showImg = false;
 
 
+  $scope.showLoadPic = function(){
+    $scope.showInput = true;
+    $('#edits1').fadeIn('slow');
+    $('#edits2').fadeIn('slow');
+    $('#input1').fadeIn('slow');
+  };
 
-
+  $scope.cancelLoadPic = function(){
+    $('#edits1').fadeOut('slow');
+    $('#edits2').fadeOut('slow');
+    $('#input1').fadeOut('slow');
+    // $scope.showInput = false;
+  };
 
     // $scope.sendNeighbourRequest = function () {
     //     var result = userAccountAPIService

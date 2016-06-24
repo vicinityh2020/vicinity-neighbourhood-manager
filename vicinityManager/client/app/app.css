@@ -2,11 +2,54 @@
 
 .menu {
   list-style: none;
-  border-bottom: 0.1em solid black;
+  /*border-bottom: 0.1em solid black;*/
   margin-bottom: 2em;
   padding: 0 0 0.5em;
 }
+/*li.notifications-menu #invitations > li:hover {
+  background-color: #222d32;
+}*/
 
+#invitations {
+  background-color: #222d32;
+  border-color: #222d32;
+}
+
+#edits{
+  margin-top: -5px;
+  margin-left: 10px;
+}
+
+#invitLI {
+  border-color: #222d32;
+}
+
+#invit{
+  background-color: #222d32;
+  border-color: #222d32;
+}
+
+#invit:hover{
+  background-color: black;
+}
+
+#changeAvatar:hover img{
+  opacity: 0.15;
+}
+
+/*#input1 {
+  color: transparent;
+}*/
+
+#changeAvatar:hover span{
+  display: block;
+  margin-top: 12%;
+  margin-left: 5%;
+}
+
+#changeAvatar span{
+  display: none;
+}
 /*.menu:before {
   content: "[";
 }

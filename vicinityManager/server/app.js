@@ -55,7 +55,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/', routes);
 //app.use('/users', users);
 app.use('/api', api);
-app.use('/useraccounts', [jwtauth, userAccounts]);
+app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup security
+// app.use('/useraccounts', userAccounts);
+
 
 //app.use('/companyaccounts', [jwtauth, userAccounts]);
 //app.use('/usergroups', [jwtauth, userGroups]);

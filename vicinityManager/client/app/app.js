@@ -45,9 +45,10 @@ angular.module('VicinityManagerApp', [
                   templateUrl: 'modules/home/views/home.searchUpView.html',
                   controller: 'searchUpController'
                 },
-            'taskMenuView':
+            'settingsMenuView':
               {
-                templateUrl: 'modules/home/views/home.taskMenuView.html'
+                templateUrl: 'modules/home/views/home.settingsMenuView.html',
+                controller: 'settingsController'
               },
             'userAccountView':
               {
