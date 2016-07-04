@@ -10,19 +10,9 @@ var userAccount = {
   memberOf: [ObjectId], //Member of UserGroups
   location: String,
   accountOf: [{
-    avatar: String,
-    name: String,
-    firstName: String,
-    surname: String,
-    lastName: String,
-    occupation: String,
-    location: String,
-    email: String,
-    organisation: String,
-    authentication: {
-      password: String,
-      principalRoles: [String]
-    }}], //UserAccount is account of Agent
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
+  }], //UserAccount is account of Agent
   knows: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'userAccount'
@@ -43,6 +33,30 @@ var userAccount = {
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   badges:[String],
   notes:String
+};
+
+var user = {
+  avatar: String,
+  name: String,
+  firstName: String,
+  surname: String,
+  lastName: String,
+  occupation: String,
+  location: String,
+  email: String,
+  organisation: String,
+  authentication: {
+    password: String,
+    principalRoles: [String]
+  }};
+
+var invitation = {
+    emailTo: String,
+    sentBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    type: {type: String, enum: ['newCompany','newUser']}
 };
 
 var notification = {

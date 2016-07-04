@@ -25,11 +25,12 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   });
 
   $scope.alertPopUp1 = function () {
-    alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
+    // alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
   }
 
   $scope.alertPopUp2 = function () {
-    alert("Please copy the following link and send it to administrator of new company: http://localhost:8000/app/#/login");
+    $("#myModal").prop("display", "block");
+    // alert("Please copy the following link and send it to administrator of new company: http://localhost:8000/app/#/login");
   }
 
 

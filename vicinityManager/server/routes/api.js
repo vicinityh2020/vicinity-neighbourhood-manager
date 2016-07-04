@@ -1,5 +1,6 @@
 var express = require('express');
 var userAccountsOp = require('../models/vicinityManager').userAccount;
+var userOp = require('../models/vicinityManager').user;
 var jwt = require('../helpers/jwtHelper');
 var moment = require('moment');
 var router = express.Router();
@@ -13,21 +14,25 @@ router.post('/authenticate', function(req, res, next) {
   var password = req.body.password;
 
   if (userName && password) {
-    userAccountsOp.find({ 'accountOf.email': userName }, function(error, result) {
+    userOp.find({ email: userName }, function(error, result) {
 
       if (error || !result || result.length !== 1){
         response = { success: false };
       } else {
-        var accounts = result[0].accountOf;
+        // var accounts = result[0].accountOf;
         // remove unnecessary accounts from results
-        for (var index = accounts.length - 1; index >= 0; index --) {
-            if (accounts[index].email !== userName){
-              accounts.splice(index,1);
-            }
-        }
+        // for (var index = accounts.length - 1; index >= 0; index --) {
+        //     if (accounts[index].email !== userName){
+        //       accounts.splice(index,1);
+        //     }
+        // }
 
-        if ((userName === result[0].accountOf[0].email) && (password === result[0].accountOf[0].authentication.password)) {
-          var credentials = jwt.jwtEncode(userName, result[0].accountOf[0].authentication.principalRoles, result[0].accountOf[0].id, result[0].id);
+        if ((userName === result[0].email) && (password === result[0].authentication.password)) {
+
+          userAccountsOp.find({ 'accountOf._id': result[0]._id }, function(error, result2) {
+          var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
+          });
+
           response = {
             success: true,
             message: credentials}
