@@ -1,4 +1,5 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var userAccountsOp = require('../models/vicinityManager').userAccount;
 var userOp = require('../models/vicinityManager').user;
 var jwt = require('../helpers/jwtHelper');
@@ -29,18 +30,25 @@ router.post('/authenticate', function(req, res, next) {
 
         if ((userName === result[0].email) && (password === result[0].authentication.password)) {
 
-          userAccountsOp.find({ 'accountOf._id': result[0]._id }, function(error, result2) {
-          var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
+          var o_id = mongoose.Types.ObjectId(result[0]._id);
+
+          userAccountsOp.find({ accountOf: {$elemMatch: {$eq : o_id }}}, function(error, result2) {
+            //TODO: test if exist result2
+            var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
+
+            response = {
+              success: true,
+              message: credentials};
+            res.json(response);
           });
 
-          response = {
-            success: true,
-            message: credentials}
+
         } else {
           response = { success: false};
+          res.json(response);
         }
       };
-      res.json(response);
+
     });
   } else {
     res.json({success: false});

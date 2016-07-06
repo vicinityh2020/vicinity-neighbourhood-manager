@@ -23,7 +23,7 @@ controller('userAccountController', function($scope, $window, userAccountAPIServ
         $scope.name =response.message.accountOf[j].name;
         $scope.occupation=response.message.accountOf[j].occupation;
         $scope.avatar =response.message.accountOf[j].avatar;
-        $scope.userAccountId = response.message.accountOf[j]._id;
+        $scope.userAccountId = $window.sessionStorage.userAccountId;
         i=1;
       };
       j++;

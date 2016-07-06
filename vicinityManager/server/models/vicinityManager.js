@@ -124,6 +124,7 @@ var item = {
 };
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
+module.exports.user = mongoose.model('user', user);
 module.exports.userGroup = mongoose.model('userGroup', userGroup);
 module.exports.organisationUnit = mongoose.model('organisationUnit', organisationUnit);
 module.exports.gateway = mongoose.model('gateway', gateway);

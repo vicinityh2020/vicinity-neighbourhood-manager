@@ -128,7 +128,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, Authe
         $scope.name =response.message.accountOf[j].name;
         $scope.occupation=response.message.accountOf[j].occupation;
         $scope.avatar =response.message.accountOf[j].avatar;
-        $scope.userAccountId = response.message.accountOf[j]._id;
+        $scope.userAccountId = $stateParams.userAccountId;
         $scope.location = response.message.accountOf[j].location;
         $scope.password = response.message.accountOf[j].authentication.password;
         $scope.email = response.message.accountOf[j].email;
