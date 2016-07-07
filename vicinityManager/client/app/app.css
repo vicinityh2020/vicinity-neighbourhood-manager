@@ -1364,7 +1364,9 @@ body.hold-transition .main-footer2
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    /* Location of the box */
+    /*padding-top: 100px;*/
+    padding-top: 15%;
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -1381,7 +1383,7 @@ body.hold-transition .main-footer2
     margin: auto;
     padding: 0;
     border: 1px solid #888;
-    width: 80%;
+    width: 50%;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
@@ -1419,6 +1421,39 @@ body.hold-transition .main-footer2
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
+}
+
+#bvrModal {
+  padding: 10px;
+}
+
+#bvrModal-footer {
+  padding: 10px;
+  text-align: center;
+}
+
+#bvrModal-footer:hover,
+#bvrModal-footer:focus {
+    background-color: #00a90e;
+    /*text-decoration: none;*/
+    cursor: pointer;
+}
+
+.style-1{
+  display: inline;
+  /*border: solid 1px #f2f2f2;*/
+  transition: box-shadow 0.3s, border 0.3s;
+  border-radius: 7%;
+  margin-left: 10px;
+}
+
+/*.modal-body p{
+  width: 135px;
+}*/
+
+.style-1:focus{
+  border: solid 1px #707070;
+  box-shadow: 0 0 5px 1px #969696;
 }
 
 .modal-body {padding: 2px 16px;}

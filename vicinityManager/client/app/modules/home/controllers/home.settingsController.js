@@ -8,6 +8,9 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   $scope.isAdmin = false;
   $scope.numberOfUnread = 0;
   $scope.comp = {};
+  // $("#myModal").prop("display", "block");
+  $('div#myModal1').hide();
+  $('div#myModal2').hide();
 
   userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (data) {
     $scope.comp = data.message;
@@ -27,17 +30,21 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   $scope.alertPopUp1 = function () {
     // alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
 
-    $("#myModal").prop("display", "block");
+    $('div#myModal1').show();
   }
 
   $scope.alertPopUp2 = function () {
-    $("#myModal").prop("display", "block");
+    $('div#myModal2').show();
     // alert("Please copy the following link and send it to administrator of new company: http://localhost:8000/app/#/login");
 
   }
 
-  $scope.closeNow = function () {
-    $("#closing").prop("display", "none");
+  $scope.closeNow1 = function () {
+    $('div#myModal1').hide();
+  }
+
+  $scope.closeNow2 = function () {
+    $('div#myModal2').hide();
   }
 
 

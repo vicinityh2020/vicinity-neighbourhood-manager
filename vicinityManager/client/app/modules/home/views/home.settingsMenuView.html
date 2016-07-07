@@ -23,21 +23,42 @@
   <!-- <li class="footer"><a href="">View all</a></li> -->
 </ul>
 
-<div id="myModal" class="modal">
+<div id="myModal2" class="modal">
 
   <!-- Modal content -->
   <div class="modal-content">
-    <div class="modal-header">
-      <span ng-click="closeNow()" id="closing" class="close">×</span>
-      <h2>Modal Header</h2>
+    <div class="modal-header" id="bvrModal">
+      <span ng-click="closeNow2()" id="closing" class="close">×</span>
+      <h2>Invite new company to join Vicinity</h2>
     </div>
     <div class="modal-body">
-      <p>Some text in the Modal Body</p>
-      <p>Some other text...</p>
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 135px">Name of the company: </p><input class="style-1" type="text"></input></span>
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 135px">Email address: </p><input type="email" class="style-1"></input></span>
     </div>
-    <div class="modal-footer">
-      <h3>Modal Footer</h3>
+    <div class="modal-footer" id="bvrModal-footer">
+      <h3>Send invitation</h3>
     </div>
+  </div>
+
+</div>
+
+<div id="myModal1" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header" id="bvrModal">
+      <span ng-click="closeNow1()" id="closing" class="close">×</span>
+      <h2>Invite new user from {{comp.organisation}} to join Vicinity</h2>
+    </div>
+    <div class="modal-body">
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 90px">Name of user: </p><input class="style-1" type="text"></input></span>
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 90px">Email address: </p><input type="email" class="style-1"></input></span>
+    </div>
+    <a href="">
+      <div class="modal-footer" id="bvrModal-footer">
+        <h3>Send invitation</h3>
+      </div>
+    </a>
   </div>
 
 </div>
