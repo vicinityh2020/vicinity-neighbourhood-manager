@@ -21,6 +21,7 @@ var userGroups = require('./routes/userGroups');
 var organisationUnits = require('./routes/organisationUnits');
 var gateways = require('./routes/gateways');
 var items = require('./routes/items');
+var user = require('./routes/user');
 var notifications = require('./routes/notifications');
 //var search = require('./routes/search');
 var jwtauth = require('./middlewares/jwtauth');
@@ -64,6 +65,7 @@ app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup sec
 //app.use('/organisationUnits', [jwtauth, organisationUnits]);
 app.use('/gateways', [jwtauth, gateways]);
 app.use('/items', [jwtauth, items]);
+app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
 
 

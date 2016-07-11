@@ -563,6 +563,7 @@ ul.widget_profile_box li .profile_img {
 .btn-primary-bvr.hover {
   background-color: #367fa9;
   color:#FFF;
+  cursor: pointer;
 }
 
 .badge_in_profile{

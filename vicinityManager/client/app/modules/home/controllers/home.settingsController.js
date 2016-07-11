@@ -12,6 +12,13 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   $('div#myModal1').hide();
   $('div#myModal2').hide();
 
+  $(document).keyup(function(e) {
+     if (e.keyCode == 27) {
+        $('div#myModal1').hide();
+        $('div#myModal2').hide();
+    }
+});
+
   userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (data) {
     $scope.comp = data.message;
     var index = 0;
