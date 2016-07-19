@@ -644,9 +644,49 @@ ul.messages li .message_wrapper blockquote {
   position: static;
 }
 
+.widget-user-2 .widget-user-header3 {
+  padding: 20px;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  height: 145px;
+  /*height: auto;*/
+  position: static;
+}
+
 /*.widget-user-2{
   height: 200px;
 }*/
+
+.widget-user-2 {
+  //User name container
+  .widget-user-header {
+    padding: 20px;
+    .border-top-radius(@box-border-radius);
+  }
+  //User name
+  .widget-user-username {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 25px;
+    font-weight: 300;
+  }
+  //User single line description
+  .widget-user-desc {
+    margin-top: 0;
+  }
+  .widget-user-username,
+  .widget-user-desc {
+    margin-left: 75px;
+  }
+  //User image container
+  .widget-user-image {
+    > img {
+      width: 65px;
+      height: auto;
+      float: left;
+    }
+  }
+}
 
 .widget-user-2 .widget-user-username {
   margin-top: 5px;
@@ -707,6 +747,17 @@ ul.messages li .message_wrapper blockquote {
 
   text-align: center;
   display: block;
+}
+
+.widget-user-footer-moreinfo6 {
+  text-align: center;
+  padding-bottom: 3px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 3px;
+  display: block;
+  /*position: absolute;*/
+  /*height: 20px;*/
 }
 
 .statusDev {
