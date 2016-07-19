@@ -101,6 +101,16 @@
               {{organisation}}
             </p>
 
+            <hr ng-show="sameCompany">
+
+            <strong ng-show="sameCompany"><i class="fa fa-pencil-square-o margin-r-5"></i> Roles</strong>
+
+            <p >
+              <div ng-show="sameCompany" ng-repeat="role in roles">
+                <span class="label label-success">{{role}}</span>
+              </div>
+            </p>
+
             <hr>
 
             <strong><i class="fa fa-briefcase margin-r-5"></i> Occupation</strong>

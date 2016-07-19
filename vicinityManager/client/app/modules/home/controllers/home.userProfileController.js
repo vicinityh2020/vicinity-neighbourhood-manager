@@ -26,8 +26,14 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, userA
   $scope.canCancelNeighbourRequest = false;
   $scope.canAnswerNeighbourRequest = false;
   $scope.isNeighbour = false;
+
+  $scope.sameCompany = false;
+
   $scope.location = {};
   $scope.badges = {};
+
+  $scope.roles = [];
+
   $scope.notes = {};
   $scope.friends = [];
   $scope.following = [];
@@ -560,6 +566,12 @@ $scope.uploadPic = function(){
     $scope.isMyProfile = false;
   }
 
+  if ($stateParams.companyAccountId.toString() === $window.sessionStorage.companyAccountId.toString()){
+    $scope.sameCompany = true;
+  } else {
+    $scope.sameCompany = false;
+  }
+
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
 
   function updateScopeAttributes(response){
@@ -578,6 +590,8 @@ $scope.uploadPic = function(){
         $scope.location = response.message.accountOf[j].location;
         $scope.password = response.message.accountOf[j].authentication.password;
         $scope.email = response.message.accountOf[j].email;
+        $scope.roles = response.message.accountOf[j].authentication.principalRoles;
+
         i=1;
       };
       j++;
