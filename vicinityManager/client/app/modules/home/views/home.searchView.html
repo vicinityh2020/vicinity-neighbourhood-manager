@@ -27,5 +27,21 @@
         <a ng-show="!(activeCompanyID.toString() === result._id.toString())" href="" class="widget-user-footer-moreinfo" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
     </div>
     </div>
+
+    <div class="col-md-4" ng-repeat="result2 in resultsList2 | filter: searchFilter2" ng-show="loaded && search">
+      <div class="box box-widget widget-user-2">
+          <!-- Add the bg color to the header using any of the bg-* classes -->
+          <div class="widget-user-header bg-user">
+              <div class="widget-user-image">
+                  <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})" class="img-circle" ng-src="{{result2.avatar}}" alt="User Avatar">
+              </div>
+              <!-- /.widget-user-image -->
+              <h3 class="widget-user-username"><a style="color: #FFF" href="" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})">{{result2.name}}</a></h3>       <!-- {{friend.accountOf.name}}-->
+              <h5 class="widget-user-desc">{{result2.occupation}}</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
+          </div>
+          <!-- <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.profile.neigbourhood({userAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a> -->
+      </div>
+    </div>
+
   </div>
 </section>

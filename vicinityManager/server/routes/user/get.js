@@ -1,4 +1,5 @@
 module.exports.getOne = getOne;
+module.exports.getAll = getAll;
 // module.exports.getAll = getAll;
 
 
@@ -23,6 +24,20 @@ function getOne(req, res, next) {
     winston.log('debug','End getOne');
     res.json(response);
   })
+}
+
+function getAll(req, res, next) {
+//TODO: User authentic - Role check
+  var response = {};
+
+  userOp.find({}, function(err, data) {
+    if (err) {
+      response = {"error": true, "message": "Error fetching data"};
+    } else {
+      response = {"error": false, "message": data};
+    }
+    res.json(response);
+  });
 }
 
 // function getAll(req, res, next) {

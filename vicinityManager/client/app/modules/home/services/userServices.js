@@ -12,6 +12,11 @@ factory('userAPIService', ['$http', 'configuration', function($http, configurati
     return $http.get(configuration.apiUrl +'/user/' + id);
   };
 
+  userAPI.getAll = function(id) {
+    return $http.get(configuration.apiUrl +'/user/');
+  };
+
+
   // userAPI.newUserProfile = function () {
   //   return $http.post(configuration.apiUrl +'/user/');
   // };

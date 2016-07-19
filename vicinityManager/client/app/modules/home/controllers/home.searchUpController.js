@@ -14,4 +14,6 @@ angular.module('VicinityManagerApp.controllers').
         };
     });
 
+  
+
   });
