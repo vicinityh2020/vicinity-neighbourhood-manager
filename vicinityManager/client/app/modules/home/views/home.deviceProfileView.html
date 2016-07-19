@@ -21,12 +21,12 @@
               <div ng-show="isMyDevice" id="changeAvatar" class="round_profile">
                 <span style="position: absolute">+Change avatar</span>
                 <a href="" ng-click="showLoadPic()">
-                  <img ng-src="{{avatar}}" alt="Device profile picture"></a>
+                  <img id="pic" ng-src="{{avatar}}" alt="Device profile picture"></a>
               </div>
 
               <input id="input1" ng-show="showInput" style="margin-left: 40%; margin-top: 10px; margin-bottom: 10px" type="file" />
-              <a ng-click="cancelLoadPic()" style="margin-left: 35%" ng-show="showInput" id="edits1" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-              <a ng-show="showInput" id="edits2" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
+              <a ng-click="cancelLoadPic()" style="margin-left: 35%" ng-show="showInput" id="editCancel1" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+              <a ng-show="showInput" id="editUpload2" ng-click="uploadPic()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
 
               <!-- <input type="file" onchange="previewFile()"><br>
               <img src="" height="200" alt="Image preview..."> -->
@@ -44,34 +44,84 @@
                 </li> -->
                 <li class="list-group-item">
                   <b>Status</b>
-                               <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-                               <span ng-show = "AL == 1" class="pull-right">Private</span>
-                               <span ng-show = "AL == 2" class="pull-right">Metadata access</span>
-                               <span ng-show = "AL == 3" class="pull-right">Shared with partners</span>
-                               <span ng-show = "AL == 4" class="pull-right">Public</span>
+                               <a ng-show="isMyDevice" id="nameButt" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInput()">Edit</a>
+                               <a ng-click="saveNewName()" id="edits2" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                               <a ng-click="backToEdit()" style="margin-left: 35%" id="edits1" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+
+                               <!-- <span ng-show = "AL == 1" style="display: block">Private</span>
+                               <span ng-show = "AL == 2" style="display: block">Metadata access</span>
+                               <span ng-show = "AL == 3" style="display: block">Shared with partners</span>
+                               <span ng-show = "AL == 4" style="display: block">Public</span>  -->
                     <!-- <span class="pull-right">{{users.length}}</span></a> -->
 
+                    <p id="nameP" class="text-muted" style="display: block">
+                      {{nameAvatar}}
+                    </p>
+                    <p id="namePnew" class="text-muted" style="display: block">
+                      {{newName}}
+                    </p>
 
+                    <!-- <form action="http://www.cs.tut.fi/cgi-bin/run/~jkorpela/checkcombo.pl" class="pull-right"><div> -->
+
+                      <select id="editNameInput" name="menu">
+                        <option value=0 selected>Change status to:</option>
+                        <option value=1>Private</option>
+                        <option value=2>Metadata access</option>
+                        <option value=3>Shared with partners</option>
+                        <option value=4>Public</option>
+                      </select>
+                      <!-- <div><input type="submit" value="Ok"></div> -->
+                    <!-- </form>  -->
+
+                    <!-- <input id="editNameInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="name1"></input>        -->
+                    <!-- need to be changed (not input!!!) but dropdown box look: my devices maybe?-->
 
                 </li>
                 <li class="list-group-item">
                   <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <b>Owner</b></a>
                     <!-- ng-href="#/profile/company/{{owner_id}}/devices"  -->
-                  <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <span  class="pull-right">{{owner}}</span></a>
+                  <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <span  style="display: block">{{owner}}</span></a>
                   <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> <b>Owner</b></a>
-                    <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-                    <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"><span ng-show="isMyDevice" class="pull-right">Me</span></a>
+                    <!-- <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a> -->
+                    <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"><span ng-show="isMyDevice" style="display: block">Me</span></a>
                 </li>
                 <li class="list-group-item">
                   <b>Serial number</b>
-                  <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-                  <span class="pull-right">{{serNumber}}</span>
+                  <a ng-show="isMyDevice" ng-click="changeToInput1()" id="nameButt1" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                  <a ng-click="saveNewOccupation()" id="edits21" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                  <a ng-click="backToEdit1()" style="margin-left: 35%" id="edits11" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+
+                  <!-- <span style="display: block">{{serNumber}}</span> -->
+
+                  <p id="nameP1" class="text-muted">
+                    {{occupationAvatar}}
+                  </p>
+
+                  <p id="nameP1new" class="text-muted">
+                    {{newOccupation}}
+                  </p>
+
+                  <input id="editOccupationInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="occupation"></input>
+
                     <!-- <span class="pull-right">{{users.length}}</span></a> -->
                 </li>
                 <li class="list-group-item">
                   <b>Location</b>
-                  <a ng-show="isMyDevice" id="edits" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
-                  <span class="pull-right">{{location}}</span>
+                  <a ng-show="isMyDevice" id="nameButt2" ng-click="changeToInput2()" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                  <a ng-click="saveNewLocation()" id="edits22" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                  <a ng-click="backToEdit2()" style="margin-left: 35%" id="edits12" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+
+                  <!-- <span style="display: block">{{location}}</span> -->
+
+                  <p id="namePloc" class="text-muted" style="display: block">
+                    {{locationAvatar}}
+                  </p>
+
+                  <p id="namePlocnew" class="text-muted" style="display: block">
+                    {{newLocation}}
+                  </p>
+
+                  <input id="editLocationInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="location"></input>
                     <!-- <span class="pull-right">{{users.length}}</span></a> -->
                 </li>
               </ul>

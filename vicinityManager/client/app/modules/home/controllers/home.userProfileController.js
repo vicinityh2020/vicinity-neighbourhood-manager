@@ -1,8 +1,8 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('userProfileController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, userAPIService, AuthenticationService, Notification) {
+function ($scope, $window, $stateParams, $location, userAccountAPIService, userAPIService, AuthenticationService, Notification  , FileUploader) {
 // , FileUploader
-  // $scope.uploader = new FileUploader();
+  $scope.uploader = new FileUploader();
 
   $scope.locationPrefix = $location.path();
   console.log("location:" + $location.path());
@@ -51,6 +51,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, userA
   var savedAlready = false;
   var savedAlready1 = false;
   var savedAlready2 = false;
+  var base64String= "";
 
   $('a#nameButt').show();
   $('a#edits1').hide();
@@ -79,6 +80,43 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, userA
 
   $('a#edits13').hide();
   $('a#edits23').hide();
+
+$("input#input1").on('change',function(evt) {
+
+  var tgt = evt.target || window.event.srcElement,
+        files = tgt.files;
+
+  if (FileReader && files && files.length) {
+        var fr = new FileReader();
+        fr.onload = function () {
+            // $("img#pic").src = fr.result;
+            $("img#pic").prop("src",fr.result);
+            base64String = fr.result;
+        }
+        fr.readAsDataURL(files[0]);
+    }else{
+        // fallback -- perhaps submit the input to an iframe and temporarily store
+        // them on the server until the user's session ends.
+    }
+});
+
+
+//   function readURL(input)
+// {
+//     // document.getElementById("pic").style.display = "block";
+//     $("img#pic").prop("display","block");
+//
+//     if (input.files && input.files[0]) {
+//         var reader = new FileReader();
+//
+//         reader.onload = function (e) {
+//             // document.getElementById('pic').src =  e.target.result;
+//             $("img#pic").prop("src",e.target.result);
+//         }
+//
+//         reader.readAsDataURL(input.files[0]);
+//     }
+// }
 
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
     $scope.userAccounts = data.message.accountOf;
@@ -368,7 +406,11 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, userA
     $('#editCancel1').fadeOut('slow');
     $('#editUpload2').fadeOut('slow');
     $('#input1').fadeOut('slow');
-    // $scope.showInput = false;
+    $('img#pic').fadeOut('slow');
+    setTimeout(function() {
+      $("img#pic").prop("src",$scope.avatar);
+      $('img#pic').fadeIn('slow');
+   }, 600);
   };
 
   // $scope.uploadPic = function(){
@@ -389,14 +431,40 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, userA
   //       }
 
 $scope.uploadPic = function(){
-  var f = document.getElementById('input1').files[0];
-  var r = new FileReader();
-  r.onloadend = function(e){
-    var data = e.target.result;
-    $("img#pic").prop("src",data);
-  };
-  r.readAsArrayBuffer(f);
+  userAPIService.editInfoAboutUser($stateParams.userAccountId, {avatar: base64String}).success(function (){
+    userAPIService.getUser($stateParams.userAccountId).success(function (response) {
+      $scope.avatar = response.message.avatar;
+      $('#editCancel1').fadeOut('slow');
+      $('#editUpload2').fadeOut('slow');
+      $('#input1').fadeOut('slow');
+      $('img#pic').fadeOut('slow');
+      setTimeout(function() {
+        $("img#pic").prop("src",$scope.avatar);
+        $('img#pic').fadeIn('slow');
+     }, 600);
+    });
+  });
+  // var f = document.getElementById('input1').files[0];
+  // var r = new FileReader();
+  // r.onloadend = function(e){
+  //   var data = e.target.result;
+  //   $("img#pic").prop("src",data);
+  // };
+  // r.readAsArrayBuffer(f);
 }
+
+// function getBase64Image(img) {
+//     var canvas = document.createElement("canvas");
+//     canvas.width = img.width;
+//     canvas.height = img.height;
+//
+//     var ctx = canvas.getContext("2d");
+//     ctx.drawImage(img, 0, 0);
+//
+//     var dataURL = canvas.toDataURL("image/png");
+//
+//     return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+// }
 
   // function updateScopeAttributes2(response){
   //       userAPIService.getUser($stateParams.userAccountId).success(function (response) {

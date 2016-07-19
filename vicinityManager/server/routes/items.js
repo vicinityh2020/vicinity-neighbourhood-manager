@@ -18,6 +18,7 @@ router
   // .get('/:id', getHelper.getOne)
   .get('/:id', getHelper.getItemWithAdd)
   .put('/:id', putHelper.putOne)
+  // .put('/:id', putHelper.putOne)
   .delete('/:id', deleteHelper.deleteOne)
   .put('/:id/access', deviceAccess.processDeviceAccess)
   .put('/:id/access/cancelRequest', cancelRequest.cancelDeviceRequest)

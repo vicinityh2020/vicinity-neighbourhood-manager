@@ -27,14 +27,18 @@
               <div ng-show="isMyProfile" id="changeAvatar" class="round_profile">
                 <span style="position: absolute">+Change avatar</span>
                 <a href="" ng-click="showLoadPic()">
-                  <img id="pic" ng-src="{{avatar}}" alt="User profile picture">
+                  <img id="pic" ng-src="{{avatar}}" alt="User profile picture" >
                 </a>
               </div>
 
-              <input id="input1" ng-show="showInput" style="margin-left: 44%; margin-top: 10px; margin-bottom: 10px" type="file"  />      <!-- fileread="uploadme.src"   nv-file-select uploader="uploader"-->
+              <!-- <input id="input1" ng-show="showInput" style="margin-left: 44%; margin-top: 10px; margin-bottom: 10px" type="file" nv-file-select uploader="uploader" />       fileread="uploadme.src" -->
+
+              <input id="input1" ng-show="showInput" style="margin-left: 44%; margin-top: 10px; margin-bottom: 10px" type="file" />       <!-- onchange="readURL(this)" -->
+
+
               <!-- Name: <span ng-bind="item.file.name"></span> -->
               <a ng-click="cancelLoadPic()" style="margin-left: 42%" ng-show="showInput" id="editCancel1" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-              <a ng-show="showInput" id="editUpload2" ng-click="item.upload()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
+              <a ng-show="showInput" id="editUpload2" ng-click="uploadPic()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>        <!--  -->
 
               <!-- <input type='file' onchange="readURL(this);" /> -->
               <!-- <img id="blah" src="#" alt="your image" /> -->
@@ -121,8 +125,6 @@
             <a id="nameButt2" ng-show="isMyProfile" ng-click="changeToInput2()" href="" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
             <a ng-click="saveNewLocation()" id="edits22" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
             <a ng-click="backToEdit2()" style="margin-left: 35%" id="edits12" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-
-
 
             <p id="namePloc" class="text-muted">
               {{locationAvatar}}

@@ -8,11 +8,13 @@ function putOne(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   var updates = req.body;
-  itemOp.update({ "_id": o_id}, updates, function(err, raw){
+  itemOp.update({ "_id": o_id}, {$set: updates}, function(err, raw){
     response = {"error": err, "message": raw};
     res.json(response);
   })
 }
+
+
 
 function delIdFromHasAccessAndAccessRequestFrom(adminId, friendId){
 

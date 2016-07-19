@@ -31,6 +31,10 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.get(configuration.apiUrl +'/items/' + id );
   };
 
+  itemsAPI.putOne = function(id, data) {
+    return $http.put(configuration.apiUrl +'/items/' + id, data);
+  };
+
   // itemsAPI.addFriendToHasAccess = function(id){
   //   return $http.put('http://localhost:3000/items/' + id '/hasAccess');
   // };

@@ -17,7 +17,8 @@ angular.module('VicinityManagerApp', [
   'ngCookies',
   'ui-notification',
   'Authentication',
-  'constants'
+  'constants',
+  'angularFileUpload'
 ]).
   config(function($stateProvider, $urlRouterProvider) {
 
