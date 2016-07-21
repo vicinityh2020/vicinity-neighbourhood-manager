@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('settingsController',
-function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, AuthenticationService, notificationsAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
 
   $scope.notifs = [];
   $scope.notifs2 = [];
@@ -8,6 +8,11 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   $scope.isAdmin = false;
   $scope.numberOfUnread = 0;
   $scope.comp = {};
+  $scope.user = {};
+  $scope.nameCompany = "";
+  $scope.emailCompany = "";
+  $scope.nameUser = "";
+  $scope.emailUser = "";
   // $("#myModal").prop("display", "block");
   $('div#myModal1').hide();
   $('div#myModal2').hide();
@@ -34,6 +39,12 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
     };
   });
 
+  userAPIService.getUser($window.sessionStorage.userAccountId).success(function (response) {
+    $scope.user = response.message;
+  });
+
+
+
   $scope.alertPopUp1 = function () {
     // alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
 
@@ -52,6 +63,18 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
 
   $scope.closeNow2 = function () {
     $('div#myModal2').hide();
+  }
+
+  $scope.inviteCompany = function () {
+    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: $scope.user, type: "newCompany"}).success(function (){
+      $('div#myModal2').hide();
+    });
+  }
+
+  $scope.inviteUser = function () {
+    invitationsAPIService.postOne({emailTo: $scope.emailUser, nameTo: $scope.nameUser ,sentBy: $scope.user, type: "newUser"}).success(function (){
+      $('div#myModal1').hide();
+    });
   }
 
 

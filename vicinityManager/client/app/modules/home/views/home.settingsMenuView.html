@@ -32,9 +32,10 @@
       <h2>Invite new company to join Vicinity</h2>
     </div>
     <div class="modal-body">
-      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 135px">Name of the company: </p><input class="style-1" type="text"></input></span>
-      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 135px">Email address: </p><input type="email" class="style-1"></input></span>
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 135px">Name of the company: </p><input class="style-1" type="text" ng-model="nameCompany" ></input></span>
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 135px">Email address: </p><input type="email" class="style-1" ng-model="emailCompany"></input></span>
     </div>
+    <a ng-click="inviteCompany()" href="">
     <div class="modal-footer" id="bvrModal-footer">
       <h3>Send invitation</h3>
     </div>
@@ -51,11 +52,11 @@
       <h2>Invite new user from {{comp.organisation}} to join Vicinity</h2>
     </div>
     <div class="modal-body">
-      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 90px">Name of user: </p><input class="style-1" type="text"></input></span>
-      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 90px">Email address: </p><input type="email" class="style-1"></input></span>
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 90px">Name of user: </p><input class="style-1" type="text" ng-model="nameUser"></input></span>
+      <span style="display: block; padding: 7px"><p style="display: inline-block; width: 90px">Email address: </p><input type="email" class="style-1" ng-model="emailUser"></input></span>
     </div>
-    <a href="">
-      <div class="modal-footer" id="bvrModal-footer">
+    <a ng-click="inviteUser()" href="">
+      <div  class="modal-footer" id="bvrModal-footer">
         <h3>Send invitation</h3>
       </div>
     </a>

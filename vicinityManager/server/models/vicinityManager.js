@@ -52,10 +52,12 @@ var user = {
 
 var invitation = {
     emailTo: String,
+    nameTo: String,
     sentBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
+    // sentBy: String,
     type: {type: String, enum: ['newCompany','newUser']}
 };
 
@@ -130,3 +132,4 @@ module.exports.organisationUnit = mongoose.model('organisationUnit', organisatio
 module.exports.gateway = mongoose.model('gateway', gateway);
 module.exports.item = mongoose.model('item', item);
 module.exports.notification = mongoose.model('notification', notification);
+module.exports.invitation = mongoose.model('invitation', invitation);
