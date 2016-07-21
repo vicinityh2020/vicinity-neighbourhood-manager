@@ -66,13 +66,13 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   }
 
   $scope.inviteCompany = function () {
-    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: $scope.user, type: "newCompany"}).success(function (){
+    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}).success(function (){
       $('div#myModal2').hide();
     });
   }
 
   $scope.inviteUser = function () {
-    invitationsAPIService.postOne({emailTo: $scope.emailUser, nameTo: $scope.nameUser ,sentBy: $scope.user, type: "newUser"}).success(function (){
+    invitationsAPIService.postOne({emailTo: $scope.emailUser, nameTo: $scope.nameUser ,sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newUser"}).success(function (){
       $('div#myModal1').hide();
     });
   }

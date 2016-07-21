@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var nodemailer = require('nodemailer');
 
 var invitationOp = require('../../models/vicinityManager').invitation;
-var userOP = require('../../models/vicinityManager').user;
+// var userOP = require('../../models/vicinityManager').user;
 
 
 function postOne(req, res, next) {
@@ -26,8 +26,7 @@ function postOne(req, res, next) {
 
   db.emailTo = req.body.emailTo;
   db.nameTo = req.body.nameTo;
-  userOP = req.body.sentBy;
-  db.sentBy = userOP;
+  db.sentBy = req.body.sentBy;
   db.type = req.body.type;
 
   // db.emailTo = 'viktor.oravec@gmail.com';
@@ -67,7 +66,7 @@ function send_mail(id, nameTo, emailTo, sentBy, type){
       from: 'noreply.vicinity@gmail.com', // sender address
       to: emailTo, // list of receivers
       subject: 'Invitation to join VICINITY', // Subject line
-      text: 'Dear '+ nameTo +', you got invitation to join VICINITY from ' + sentBy.name + '. Please, click on following link for registration: http://localhost:8000/app/#/login', // plaintext body
+      text: 'Dear '+ nameTo +', you got invitation to join VICINITY from ' + sentBy.name + '. Please, click on following link for registration: http://localhost:8000/app/#/login .', // plaintext body
       // html: '<b>Hello world 🐴</b>' // html body
     };
   }else{
@@ -75,7 +74,7 @@ function send_mail(id, nameTo, emailTo, sentBy, type){
       from: 'noreply.vicinity@gmail.com', // sender address
       to: emailTo, // list of receivers
       subject: 'Invitation to join VICINITY', // Subject line
-      text: 'Dear representant of '+ nameTo +', you got invitation to join VICINITY from ' + sentBy.name + 'from ' + sentBy.organisation + '. Please, click on following link to register your company: http://localhost:8000/app/#/login', // plaintext body
+      text: 'Dear representant of '+ nameTo +', you got invitation to join VICINITY from ' + sentBy.name + ' from ' + sentBy.organisation + '. Please, click on following link to register your company: http://localhost:8000/app/#/login .', // plaintext body
       // html: '<b>Hello world 🐴</b>' // html body
     };
   };

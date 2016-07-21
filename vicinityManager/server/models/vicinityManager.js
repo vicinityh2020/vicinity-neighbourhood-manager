@@ -44,7 +44,10 @@ var user = {
   occupation: String,
   location: String,
   email: String,
-  organisation: String,
+  // organisation: {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: 'userAccount'
+  // },
   authentication: {
     password: String,
     principalRoles: [String]
@@ -54,8 +57,9 @@ var invitation = {
     emailTo: String,
     nameTo: String,
     sentBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        name: String,
+        organisation: String,
+        email: String
     },
     // sentBy: String,
     type: {type: String, enum: ['newCompany','newUser']}
