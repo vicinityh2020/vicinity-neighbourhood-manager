@@ -66,8 +66,22 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   }
 
   $scope.inviteCompany = function () {
-    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}).success(function (){
-      $('div#myModal2').hide();
+    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}, function (response){
+
+      var $emailVer = $('input#emailVer');
+
+      if(response.success){
+        $('div#myModal2').hide();
+
+      }else{
+        // $emailVer.addClass("invalid");
+        $('input#emailVer').addClass("invalid");
+
+        setTimeout(function() {
+         $('input#emailVer').removeClass("invalid");
+
+       }, 2000);
+      };
     });
   }
 
