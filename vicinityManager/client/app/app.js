@@ -4,6 +4,7 @@ angular.module('constants',[]).constant('configuration', this._env);
 
 
 angular.module('Authentication', ['ngCookies', 'constants', 'ui-notification','VicinityManagerApp.controllers']);
+angular.module('Registration', ['ngCookies', 'constants', 'VicinityManagerApp.controllers']);
 
 
 
@@ -17,6 +18,7 @@ angular.module('VicinityManagerApp', [
   'ngCookies',
   'ui-notification',
   'Authentication',
+  'Registration',
   'constants',
   'angularFileUpload'
 ]).
@@ -274,6 +276,53 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('invitationOfNewUser', {
+          url: '/invitation/newUser/:invitationId',
+          templateUrl: 'modules/registration/views/invitation.newUser.html',
+          controller: 'invitationNewUserController',
+          onEnter: function(){
+            console.log('Activating state new user');
+          }
+        })
+
+        // .state('invitation.newUser', {
+        //   url: '/invitation/newUser/:invitationId',
+        //   views: {
+        //     'invitationNewUser':
+        //       {
+        //         templateUrl: 'modules/registration/views/invitation.newUser.html',
+        //         controller: 'invitationNewUserController'
+        //       }
+        //   }
+        // })
+
+        .state('invitationOfNewCompany', {
+          url: '/invitation/newCompany/:invitationId',
+          templateUrl: 'modules/registration/views/invitation.newCompany.html',
+          controller: 'invitationNewCompanyController',
+          onEnter: function(){
+            console.log('Activating state new company');
+          }
+        })
+
+        .state('registrationOfNewUser', {
+          url: '/registration/newUser/:registrationId',
+          templateUrl: 'modules/registration/views/registration.newUser.html',
+          controller: 'registrationNewUserController',
+          onEnter: function(){
+            console.log('Activating state new user reg');
+          }
+        })
+
+        .state('registrationOfNewCompany', {
+          url: '/registration/newCompany/:registrationId',
+          templateUrl: 'modules/registration/views/registration.newCompany.html',
+          controller: 'registrationNewCompanyController',
+          onEnter: function(){
+            console.log('Activating state new company reg');
+          }
+        })
+
         .state('login', {
           url: '/login',
           templateUrl: 'modules/authentication/views/login.html',
@@ -314,9 +363,37 @@ angular.module('VicinityManagerApp', [
 
         $rootScope.$on('$locationChangeStart', function(evetn, next, current) {
 
-        if($location.path() !== '/login' && !$window.sessionStorage.token){
+        if(($location.path() !== '/login') && !$window.sessionStorage.token){
 //TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
-            $location.path('/login');
+
+            var p = $location.path();
+            var lastPos = p.lastIndexOf("/");
+            // var strId = p.slice(-24);
+            var strId = p.substring(p.length-24,p.length);
+            var strBeg = p.substring(0,lastPos + 1);
+
+            // var strBeg = p.slice(0,lastPos + 1);
+
+            var patt1 = /[0-9a-fA-F]+/ ;
+            // /[\da-f]/i;
+
+            // /( [0-9] | [a-f] ){24}/
+
+            // var patt1 = new RegExp("( [0-9] | [a-f] ){24}","g")
+            // var result1 = strId.match(patt1);
+            var result1 = patt1.test(strId);
+
+            if ((strBeg == '/invitation/newCompany/') && result1){
+              $location.path('/invitation/newCompany/' + strId);
+            }else if ((strBeg == '/invitation/newUser/') && result1){
+              $location.path('/invitation/newUser/' + strId);
+            }else if ((strBeg == '/registration/newCompany/') && result1){
+              $location.path('/registration/newCompany/' + strId);
+            }else if ((strBeg == '/registration/newUser/') && result1){
+              $location.path('/registration/newUser/' + strId);
+            }else{
+              $location.path('/login');
+            };
           }
         });
 

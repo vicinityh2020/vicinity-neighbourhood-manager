@@ -58,11 +58,43 @@ var invitation = {
     nameTo: String,
     sentBy: {
         name: String,
+        companyId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'userAccount'
+        },
         organisation: String,
         email: String
     },
     // sentBy: String,
     type: {type: String, enum: ['newCompany','newUser']}
+};
+
+var registration = {
+    // invitationId: String,
+    // invitation: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'invitation'
+    // },
+    userName: String,
+    email: String,
+    password: String,
+    occupation: String,
+    companyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userAccount'
+    },
+    companyName: String,
+    companyLocation: String,
+    status: {type: String, enum: ['open','verified']},
+    type: {type: String, enum: ['newCompany','newUser']}
+    // nameTo: String,
+    // sentBy: {
+    //     name: String,
+    //     organisation: String,
+    //     email: String
+    // },
+    // // sentBy: String,
+    // type: {type: String, enum: ['newCompany','newUser']}
 };
 
 var notification = {
@@ -137,3 +169,4 @@ module.exports.gateway = mongoose.model('gateway', gateway);
 module.exports.item = mongoose.model('item', item);
 module.exports.notification = mongoose.model('notification', notification);
 module.exports.invitation = mongoose.model('invitation', invitation);
+module.exports.registration = mongoose.model('registration', registration);

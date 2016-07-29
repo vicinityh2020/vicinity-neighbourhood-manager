@@ -66,27 +66,45 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   }
 
   $scope.inviteCompany = function () {
-    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}, function (response){
+    // invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}, function (response){
+    //
+    //   var $emailVer = $('input#emailVer');
+    //
+    //   $('div#myModal2').hide();
+    //
+    //   if(response.success){
+    //     $('div#myModal2').hide();
+    //
+    //   }else{
+    //     // $emailVer.addClass("invalid");
+    //     $emailVer.addClass("invalid");
+    //
+    //     setTimeout(function() {
+    //      $('input#emailVer').removeClass("invalid");
+    //
+    //    }, 2000);
+    //   };
+    // });
 
-      var $emailVer = $('input#emailVer');
-
-      if(response.success){
-        $('div#myModal2').hide();
-
-      }else{
-        // $emailVer.addClass("invalid");
-        $('input#emailVer').addClass("invalid");
-
-        setTimeout(function() {
-         $('input#emailVer').removeClass("invalid");
-
-       }, 2000);
-      };
+    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, companyId: $window.sessionStorage.companyAccountId, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}).success(function (){
+      $('div#myModal2').hide();
     });
+
+
   }
 
   $scope.inviteUser = function () {
-    invitationsAPIService.postOne({emailTo: $scope.emailUser, nameTo: $scope.nameUser ,sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newUser"}).success(function (){
+    data = {
+        emailTo: $scope.emailUser,
+        nameTo: $scope.nameUser,
+        sentBy:
+          {name: $scope.user.name,
+            companyId: $window.sessionStorage.companyAccountId,
+            organisation: $scope.comp.organisation,
+            email: $scope.user.email},
+        type: "newUser"};
+
+    invitationsAPIService.postOne(data).success(function (){
       $('div#myModal1').hide();
     });
   }
