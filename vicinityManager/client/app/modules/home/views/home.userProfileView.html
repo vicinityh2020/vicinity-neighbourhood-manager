@@ -18,18 +18,35 @@
 
           <!-- <div class="box-body"> -->
 
-            <div id="login-wrap" class="box-body box box-primary">
+            <div id="login-wrap" class="box-body box box-primary" >
 
-              <div ng-show="!isMyProfile" class="round_profile">                 <!--      class="profile-user-img img-responsive img-circle" -->
-                <img ng-src="{{avatar}}" alt="User profile picture">
+              <div ng-show="!isMyProfile" style="width: 200px; text-align: center; margin: 0 auto">
+                <img ng-src="{{avatar}}" class="img-circle" alt="User profile picture" style="height:200px; width:200px;  text-align: center; border: 3px solid; border-color: #d2d6de">
               </div>
+              <!-- <div ng-show="!isMyProfile" class="round_profile">              -->
+                    <!--      class="profile-user-img img-responsive img-circle" -->
+                <!-- <img ng-src="{{avatar}}" alt="User profile picture">
+              </div> -->
 
-              <div ng-show="isMyProfile" id="changeAvatar" class="round_profile">
+              <!-- <div ng-show="isMyProfile" id="changeAvatar" class="round_profile">
                 <span style="position: absolute">+Change avatar</span>
                 <a href="" ng-click="showLoadPic()">
                   <img id="pic" ng-src="{{avatar}}" alt="User profile picture" >
                 </a>
-              </div>
+              </div> -->
+
+
+                <!-- <span style="position: absolute" >+Change avatar</span> -->
+                 <!-- style="display: inline-block" -->
+                 <!-- position: absolute -->
+
+                <div ng-show="isMyProfile" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
+                  <span style="position: absolute" >+Change avatar</span>
+                  <a href="" ng-click="showLoadPic()" style="cursor: pointer">
+                    <img id="pic" ng-src="{{avatar}}" class="img-circle" alt="User profile picture" style="height:200px; width:200px; text-align: center; border: 3px solid; border-color: #d2d6de">
+                  </a>
+                </div>
+
 
               <!-- <input id="input1" ng-show="showInput" style="margin-left: 44%; margin-top: 10px; margin-bottom: 10px" type="file" nv-file-select uploader="uploader" />       fileread="uploadme.src" -->
 

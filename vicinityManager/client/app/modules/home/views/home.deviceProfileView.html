@@ -14,14 +14,15 @@
           <!-- Profile Image -->
           <div class="box box-primary">
             <div class="box-body box-profile">
-              <div ng-show="!isMyDevice" class="round_profile">                 <!--      class="profile-user-img img-responsive img-circle" -->
-              <img ng-src="{{avatar}}" alt="User profile picture">
+
+              <div ng-show="!isMyDevice" style="width: 200px; text-align: center; margin: 0 auto">                 <!--      class="profile-user-img img-responsive img-circle" -->
+                <img ng-src="{{avatar}}" class="img-circle" alt="Device profile picture" style="height:120px; width:120px; text-align: center; border: 3px solid; border-color: #d2d6de">
               </div>
 
-              <div ng-show="isMyDevice" id="changeAvatar" class="round_profile">
+              <div ng-show="isMyDevice" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
                 <span style="position: absolute">+Change avatar</span>
                 <a href="" ng-click="showLoadPic()">
-                  <img id="pic" ng-src="{{avatar}}" alt="Device profile picture"></a>
+                  <img id="pic" class="img-circle" ng-src="{{avatar}}" alt="Device profile picture" style="height:120px; width:120px;  text-align: center; border: 3px solid; border-color: #d2d6de"></a>
               </div>
 
               <input id="input1" ng-show="showInput" style="margin-left: 40%; margin-top: 10px; margin-bottom: 10px" type="file" />
