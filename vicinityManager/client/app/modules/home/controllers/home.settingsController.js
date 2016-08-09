@@ -65,7 +65,26 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
     $('div#myModal2').hide();
   }
 
-  $scope.inviteCompany = function () {
+  $scope.inviteCompany = function (validBool2) {
+    if (validBool2){
+      data = {
+          emailTo: $scope.emailCompany,
+          nameTo: $scope.nameCompany,
+          sentBy:
+            {name: $scope.user.name,
+              companyId: $window.sessionStorage.companyAccountId,
+              organisation: $scope.comp.organisation,
+              email: $scope.user.email},
+          type: "newCompany"};
+      invitationsAPIService.postOne(data).success(function (){
+        $('div#myModal2').hide();
+      });
+    }else{
+      $('input#emailVer2').addClass("invalid");
+      setTimeout(function() {
+        $('input#emailVer2').removeClass("invalid");
+      }, 2000);
+    };
     // invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}, function (response){
     //
     //   var $emailVer = $('input#emailVer');
@@ -86,27 +105,29 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
     //   };
     // });
 
-    invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, companyId: $window.sessionStorage.companyAccountId, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}).success(function (){
-      $('div#myModal2').hide();
-    });
-
-
   }
 
-  $scope.inviteUser = function () {
-    data = {
-        emailTo: $scope.emailUser,
-        nameTo: $scope.nameUser,
-        sentBy:
-          {name: $scope.user.name,
-            companyId: $window.sessionStorage.companyAccountId,
-            organisation: $scope.comp.organisation,
-            email: $scope.user.email},
-        type: "newUser"};
+  $scope.inviteUser = function (validBool) {
+    if (validBool) {
+      data = {
+          emailTo: $scope.emailUser,
+          nameTo: $scope.nameUser,
+          sentBy:
+            {name: $scope.user.name,
+              companyId: $window.sessionStorage.companyAccountId,
+              organisation: $scope.comp.organisation,
+              email: $scope.user.email},
+          type: "newUser"};
 
-    invitationsAPIService.postOne(data).success(function (){
-      $('div#myModal1').hide();
-    });
+      invitationsAPIService.postOne(data).success(function (){
+        $('div#myModal1').hide();
+      });
+    }else{
+      $('input#emailVer').addClass("invalid");
+      setTimeout(function() {
+        $('input#emailVer').removeClass("invalid");
+      }, 2000);
+    };
   }
 
 
