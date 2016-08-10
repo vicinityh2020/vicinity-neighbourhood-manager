@@ -83,12 +83,12 @@
       <div  id="org">
         <div  class="form-group has-feedback">
           <span > Name </span><span style="color: red">*</span>
-          <input style="width: 60%" type="text"  class="pull-right" placeholder="Name of your organisation" required/>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Name of your organisation" ng-model="nameCompany" required/>
         </div>
 
         <div  class="form-group has-feedback">
           <span > Location</span>
-          <input style="width: 60%" type="text"  class="pull-right" placeholder="Location of your organisation" required/>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Location of your organisation" ng-model="location" required/>
         </div>
       </div>
 
@@ -97,27 +97,27 @@
       <div  id="org2">
         <div  class="form-group has-feedback">
           <span > Email </span><span style="color: red">*</span>
-          <input style="width: 60%" type="email"  class="pull-right" placeholder="Email of administrator" required/>
+          <input style="width: 60%" type="email"  class="pull-right" placeholder="Email of administrator" ng-model="emailCompany" required/>
         </div>
 
         <div  class="form-group has-feedback">
           <span > Password </span><span style="color: red">*</span>
-          <input id="pass1" style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
+          <input id="pass1" style="width: 60%" type="password"  class="pull-right" placeholder="Password" ng-model="firstPass" required/>
         </div>
 
         <div  class="form-group has-feedback">
           <span > Repeat password </span><span style="color: red">*</span>
-          <input id="pass2" style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
+          <input id="pass2" style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" ng-model="secondPass" required/>
         </div>
 
         <div  class="form-group has-feedback">
           <span > Name</span>
-          <input style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of administrator" />
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of administrator" ng-model="nameUser"/>
         </div>
 
         <div  class="form-group has-feedback">
           <span > Occupation</span>
-          <input style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of administrator" />
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of administrator" ng-model="occupation"/>
         </div>
 
       </div>

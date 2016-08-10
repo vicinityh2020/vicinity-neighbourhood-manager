@@ -88,14 +88,14 @@ function send_mail(id, name, emailTo, type){
     var mailOptions = {
       from: 'noreply.vicinity@gmail.com',
       to: emailTo,
-      subject: 'Invitation to join VICINITY',
+      subject: 'Verification email to join VICINITY',
       text: 'Dear '+ name +', to activate your Vicinity account, please click on following link: http://localhost:8000/app/#/registration/newUser/' + id + '.',
     };
   }else {
     var mailOptions = {
       from: 'noreply.vicinity@gmail.com',
       to: emailTo,
-      subject: 'Invitation to join VICINITY',
+      subject: 'Verification email to join VICINITY',
       text: 'Dear representant of '+ name +', to activate your and your company account, please click on following link: http://localhost:8000/app/#/registration/newCompany/' + id + '.',
     };
   };

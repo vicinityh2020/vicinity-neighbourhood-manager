@@ -24,7 +24,7 @@ function putOne(req, res) {
         var db = new userAccountOp();
         var db2 = new userOp();
 
-        db2.name =raw.username;
+        db2.name =raw.userName;
         db2.occupation =raw.occupation;
         db2.email =raw.email;
         db2.authentication.password =raw.password;

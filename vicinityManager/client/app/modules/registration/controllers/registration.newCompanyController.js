@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('registrationNewCompanyController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'userAccountAPIService', 'AuthenticationService',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, userAccountAPIService, AuthenticationService){
+             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService',
+             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService){
                //rest login status
               //  AuthenticationService.ClearCredentials();
 
@@ -35,6 +35,15 @@ angular.module('Registration')
                  var results = response.message;
                  $scope.comps = results;
                 //  $scope.loaded = true;
+               });
+
+               registrationsAPIService.getOne($stateParams.registrationId).success(function (response){
+                  $scope.registration = response.message;
+                  if ($scope.registration.status == "open"){
+                    registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).success(function (){
+
+                    });
+                  }
                });
 
 
@@ -215,7 +224,7 @@ angular.module('Registration')
                     setTimeout(function() {
                      $('div#verEmailSent').fadeIn('slow');
                    }, 1000);
-                   registrationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}).success(function (){
+                   registrationsAPIService.postOne({userName: $scope.nameUser, email: $scope.emailUser, password: $scope.firstPass, occupation: $scope.occupation, companyName: $scope.companyName , companyLocation: $scope.location, type: "newCompany"}).success(function (){
                     //  $('div#myModal2').hide();
                    });
                  }else{
