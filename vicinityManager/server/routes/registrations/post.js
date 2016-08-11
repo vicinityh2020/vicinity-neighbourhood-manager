@@ -65,7 +65,7 @@ function postOne(req, res, next) {
       //   // winston.log('debug','End getOne');
       //   // res.json(response);
       // })
-      send_mail(product._id, product.userName, product.email, product.type);
+      send_mail(product._id, product.userName, product.email, product.type, product.companyName);
       response = {"error": false, "message": "Data added!"};
     }
     res.json(response);
@@ -73,7 +73,7 @@ function postOne(req, res, next) {
 
 }
 
-function send_mail(id, name, emailTo, type){
+function send_mail(id, name, emailTo, type, companyName){
 
   var smtpConfig = {
     service: 'Gmail',
@@ -96,7 +96,7 @@ function send_mail(id, name, emailTo, type){
       from: 'noreply.vicinity@gmail.com',
       to: emailTo,
       subject: 'Verification email to join VICINITY',
-      text: 'Dear representant of '+ name +', to activate your and your company account, please click on following link: http://localhost:8000/app/#/registration/newCompany/' + id + '.',
+      text: 'Dear representant of '+ companyName +', to activate your and your company account, please click on following link: http://localhost:8000/app/#/registration/newCompany/' + id + '.',
     };
   };
 
