@@ -466,6 +466,11 @@ ul.widget_profile_box li .profile_img {
   height: 70%;
 }
 
+.bg-service img{
+  width: 70%;
+  height: 70%;
+}
+
 
 .bg-olive img{
   width: 70%;
@@ -710,6 +715,19 @@ ul.messages li .message_wrapper blockquote {
 }
 
 .widget-user2 .widget-user-image {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  margin-left: -45px;
+}
+
+.widget-user-2 .widget-user-image2 > img {
+  width: 65px;
+  height: 65px;
+  float: left;
+}
+
+.widget-user2 .widget-user-image2 {
   position: absolute;
   top: 65px;
   left: 50%;
@@ -1033,6 +1051,12 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
 .bg-gold{
   background-color: #9ACD32 !important;
 }
+
+.bg-service{
+  background-color: #EFCC00 !important;
+}
+
+
 
 .sr-only {
   position: absolute;
