@@ -84,8 +84,21 @@ function getUserAccountFacade(req, res, next) {
     //TODO: Issue #6 Update userAcount profile wheather the autenticated user is friend with :id
     //TODO: Remove foreing users;
 
-    userAccountOp.findById(o_id).populate('knows').populate('accountOf', 'avatar name email occupation location authentication').exec(function (err, data) {
-        if (!data) {
+      userAccountOp.findById(o_id).populate('knows').populate('accountOf', 'avatar name email occupation location authentication').exec(function (err, data) {
+      var numNeighbors = data.knows.length;
+
+          // TEST ONLY ====
+          // var i = 0;
+          //       for (index in data) {
+          //         if (typeof data[index] !== 'function') {
+          //         console.log(index);
+          //       i++;
+          //     }
+          // }
+          // console.log(i);
+          //===============
+
+        if (!data ) {
           res.status(404).send('Not found');
         } else {
           if (err) {
@@ -98,13 +111,14 @@ function getUserAccountFacade(req, res, next) {
                   canAnswerNeighbourRequest = false;
 
               } else {
-                  //Check wheather we are neihbours
-                  for (index in data.knows) {
+                  // Check wheather we are neihbours
+                  for(var index = 0; index < numNeighbors; index++){
                       if (data.knows[index]._id.toString() === req.body.decoded_token.context.cid) {
                           isNeighbour = true;
                           canSendNeighbourRequest = false;
                       }
-                  }
+                    }
+
 
                   //Check whether authenticated user received or sent neighbour request to requested profile
                   //Check whether authenticated user can be canceled sent neighbour request to requested profile

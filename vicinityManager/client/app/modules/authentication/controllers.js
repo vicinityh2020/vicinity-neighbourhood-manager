@@ -30,11 +30,11 @@ angular.module('Authentication')
                $('div#newUserInfo').hide();
                $('div#alert2').hide();
 
-               userAccountAPIService.getUserAccounts().success(function (response){
-                 var results = response.message;
-                 $scope.comps = results;
-                //  $scope.loaded = true;
-               });
+              //  userAccountAPIService.getUserAccounts().success(function (response){
+              //    var results = response.message;
+              //    $scope.comps = results;
+              //   //  $scope.loaded = true;
+              //  });
 
 
               (function ($) {

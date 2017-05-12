@@ -31,69 +31,113 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
     $scope.sendNeighbourRequest = function () {
         var result = userAccountAPIService
             .sendNeighbourRequest($stateParams.companyAccountId)
-                .success(function(response) {
-                    if (response.error == true) {
+                .then(
+                  function successCallback(response) {
+                    if (response.data.error == true) {
                         Notification.error("Sending partnership request failed!");
                     } else {
                         Notification.success("Partnership request sent!");
                     }
 
-                    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
-                });
+                    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+                      .then(
+                        function successCallback(response){
+                          updateScopeAttributes(response);
+                        },
+                        function errorCallback(response){}
+                      );
+                },
+                function errorCallback(response){}
+              );
     }
 
     $scope.acceptNeighbourRequest = function () {
         userAccountAPIService.acceptNeighbourRequest($stateParams.companyAccountId)
-            .success(function(response){
-                if (response.error == true) {
+            .then(
+              function successCallback(response){
+                if (response.data.error == true) {
                     Notification.error("Partnership request acceptation failed :(");
                 } else {
                     Notification.success("Partnership request accepted!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+                  .then(
+                    function successCallback(response){
+                      updateScopeAttributes(response);
+                    },
+                    function errorCallback(response){}
+                  );
                 // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);
-
-            });
+            },
+            function errorCallback(response){}
+          );
     }
 
     $scope.rejectNeighbourRequest = function() {
         userAccountAPIService.rejectNeighbourRequest($stateParams.companyAccountId)
-            .success(function(response){
-                if (response.error ==true) {
+            .then(
+              function successCallback(response){
+                if (response.data.error == true) {
                     Notification.error("Partnership request rejection failed :(");
                 } else {
                     Notification.success("Partnership request rejected!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
-            });
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+                  .then(
+                    function successCallback(response){
+                      updateScopeAttributes(response);
+                    },
+                    function errorCallback(response){}
+                  );
+            },
+            function errorCallback(response){}
+          );
     }
 
     $scope.cancelNeighbourRequest = function() {
         userAccountAPIService.cancelNeighbourRequest($stateParams.companyAccountId)
-            .success(function(response){
-                if (response.error ==true) {
+            .then(
+              function successCallback(response){
+                if (response.data.error ==true) {
                     Notification.error("Partnership request cancelation failed :(");
                 } else {
                     Notification.success("Partnership request canceled!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
-            });
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+                  .then(
+                    function successCallback(response){
+                      updateScopeAttributes(response);
+                    },
+                    function errorCallback(response){}
+                  );
+            },
+            function errorCallback(response){}
+          );
     }
 
     $scope.cancelNeighbourship = function() {
         userAccountAPIService.cancelNeighbourship($stateParams.companyAccountId)
-            .success(function(response){
-                if (response.error ==true) {
+            .then(
+              function successCallback(response){
+                if (response.data.error ==true) {
                     Notification.error("Partnership cancelation failed :(");
                 } else {
                     Notification.success("Partnership canceled!");
                 }
 
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
-            });
+                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+                  .then(
+                    function successCallback(response){
+                      updateScopeAttributes(response);
+                    },
+                    function errorCallback(response){}
+                  );
+            },
+            function errorCallback(response){}
+          );
     }
 
     var promise = {};
@@ -123,17 +167,24 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
       $scope.isMyProfile = false;
     }
 
-    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(
-      function(response){
+    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+      .then(
+      function successCallback(response){
         updateScopeAttributes(response);
         $scope.loaded = true;
-      });
+      },
+      function errorCallback(response){}
+    );
 
-    userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function(response){
-      $scope.devices=response.message;
-    });
+    userAccountAPIService.getMyDevices($stateParams.companyAccountId)
+      .then(
+        function successCallback(response){
+          $scope.devices=response.data.message;
+        },
+        function errorCallback(response){}
+      );
 
-  }
+    }
 
   if ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId){
     $scope.isMyProfile = true;
@@ -141,30 +192,37 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
     $scope.isMyProfile = false;
   }
 
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(
-    function(response){
-      updateScopeAttributes(response);
-      $scope.loaded = true;
-    });
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+    .then(
+      function successCallback(response){
+        updateScopeAttributes(response);
+        $scope.loaded = true;
+      },
+      function errorCallback(response){}
+    );
 
-  userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function(response){
-    $scope.devices=response.message;
-  });
+  userAccountAPIService.getMyDevices($stateParams.companyAccountId)
+    .then(
+      function successCallback(response){
+        $scope.devices=response.message;
+      },
+      function errorCallback(response){}
+    );
 
   function updateScopeAttributes(response){
-      $scope.name = response.message.organisation;
-      $scope.avatar = response.message.avatar;
-      $scope.occupation = response.message.accountOf.occupation;
-      $scope.organisation = response.message.organisation;
-      $scope.companyAccountId = response.message._id;
-      $scope.location = response.message.location;
-      $scope.badges = response.message.badges;
-      $scope.notes = response.message.notes;
-      $scope.canSendNeighbourRequest = response.message.canSendNeighbourRequest;
-      $scope.canCancelNeighbourRequest = response.message.canCancelNeighbourRequest;
-      $scope.canAnswerNeighbourRequest = response.message.canAnswerNeighbourRequest;
-      $scope.isNeighbour = response.message.isNeighbour;
-      $scope.friends = response.message.knows;
-      $scope.users = response.message.accountOf;
+      $scope.name = response.data.message.organisation;
+      $scope.avatar = response.data.message.avatar;
+      $scope.occupation = response.data.message.accountOf.occupation;
+      $scope.organisation = response.data.message.organisation;
+      $scope.companyAccountId = response.data.message._id;
+      $scope.location = response.data.message.location;
+      $scope.badges = response.data.message.badges;
+      $scope.notes = response.data.message.notes;
+      $scope.canSendNeighbourRequest = response.data.message.canSendNeighbourRequest;
+      $scope.canCancelNeighbourRequest = response.data.message.canCancelNeighbourRequest;
+      $scope.canAnswerNeighbourRequest = response.data.message.canAnswerNeighbourRequest;
+      $scope.isNeighbour = response.data.message.isNeighbour;
+      $scope.friends = response.data.message.knows;
+      $scope.users = response.data.message.accountOf;
   };
 });

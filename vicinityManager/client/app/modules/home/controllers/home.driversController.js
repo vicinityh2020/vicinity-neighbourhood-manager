@@ -21,13 +21,21 @@ controller('driverController', function($scope, $routeParams, ergastAPIservice) 
   $scope.races = [];
   $scope.driver = null;
 
-  ergastAPIservice.getDriverDetails($scope.id).success(function (response) {
-    $scope.driver = response.MRData.StandingsTable.StandingsLists[0].DriverStandings[0];
-  });
+  ergastAPIservice.getDriverDetails($scope.id)
+    .then(
+      function successCallback(response) {
+        $scope.driver = response.MRData.StandingsTable.StandingsLists[0].DriverStandings[0];
+      },
+      function errorCallback(response){}
+    );
 
-  ergastAPIservice.getDriverRaces($scope.id).success(function (response) {
-    $scope.races = response.MRData.RaceTable.Races;
-  });
+  ergastAPIservice.getDriverRaces($scope.id)
+    .then(
+      function successCallback(response) {
+        $scope.races = response.MRData.RaceTable.Races;
+      },
+      function errorCallback(response){}
+    );
 }).
 
 controller('sensorsElectroController', function($scope, argastAPIservice) {

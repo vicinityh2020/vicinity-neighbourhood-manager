@@ -371,25 +371,30 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   //     $scope.loaded = true;
   //   });
 
-  itemsAPIService.getItemWithAdd($stateParams.deviceId).success(function(response){
-    updateScopeAttributes(response);
-    $scope.loaded = true;
-  });
+  itemsAPIService.getItemWithAdd($stateParams.deviceId)
+    .then(
+      function successCallback(response){
+        updateScopeAttributes(response);
+        $scope.loaded = true;
+      },
+      function errorCallback(response){
+      }
+    );
 
   // userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function(response){
   //   $scope.devices=response.message;
   // });
 
   function updateScopeAttributes(response){
-      $scope.name = response.message.name;
-      $scope.avatar = response.message.avatar;
-      $scope.owner = response.message.hasAdministrator[0].organisation;
-      $scope.owner_id = response.message.hasAdministrator[0]._id;
-      $scope.serNumber = response.message.info.serial_number;
-      $scope.location = response.message.info.location;
-      $scope.locationAvatar = response.message.info.location;
-      $scope.occupationAvatar = response.message.info.serial_number;
-      $scope.AL = response.message.accessLevel;
+      $scope.name = response.data.message.name;
+      $scope.avatar = response.data.message.avatar;
+      $scope.owner = response.data.message.hasAdministrator[0].organisation;
+      $scope.owner_id = response.data.message.hasAdministrator[0]._id;
+      $scope.serNumber = response.data.message.info.serial_number;
+      $scope.location = response.data.message.info.location;
+      $scope.locationAvatar = response.data.message.info.location;
+      $scope.occupationAvatar = response.data.message.info.serial_number;
+      $scope.AL = response.data.message.accessLevel;
       $("input#editOccupationInput").val($scope.occupationAvatar);
       if ($scope.AL === 1){
         $scope.nameAvatar = "Private";

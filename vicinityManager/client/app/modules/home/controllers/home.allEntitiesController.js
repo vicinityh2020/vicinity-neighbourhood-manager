@@ -17,10 +17,15 @@ angular.module('VicinityManagerApp.controllers').
     //   $scope.loaded = true;
     // });
 
-    userAccountAPIService.getUserAccounts().success(function (response){
-      var results = response.message;
-      $scope.resultsList = results;
-      $scope.loaded = true;
-    });
+    userAccountAPIService.getUserAccounts()
+      .then(
+        function successCallback(response){
+          var results = response.data.message;
+          $scope.resultsList = results;
+          $scope.loaded = true;
+        },
+        function errorCallback(response){
+        }
+      );
 
   });

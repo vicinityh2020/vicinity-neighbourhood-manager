@@ -24,24 +24,34 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
     }
 });
 
-  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (data) {
-    $scope.comp = data.message;
-    var index = 0;
-    for (index in $scope.comp.accountOf){
-      if ($scope.comp.accountOf[index]._id.toString() === $window.sessionStorage.userAccountId.toString()){
-        var index2 = 0;
-        for (index2 in $scope.comp.accountOf[index].authentication.principalRoles){
-          if ($scope.comp.accountOf[index].authentication.principalRoles[index2] == "administrator"){
-            $scope.isAdmin = true;
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
+    .then(
+      function successCallback(response) {
+        $scope.comp = response.data.message;
+        var index = 0;
+        for (index in $scope.comp.accountOf){
+          if ($scope.comp.accountOf[index]._id.toString() === $window.sessionStorage.userAccountId.toString()){
+            var index2 = 0;
+            for (index2 in $scope.comp.accountOf[index].authentication.principalRoles){
+              if ($scope.comp.accountOf[index].authentication.principalRoles[index2] == "administrator"){
+                $scope.isAdmin = true;
+              };
+            };
           };
         };
-      };
-    };
-  });
+      },
+      function errorCallback(response){
+      }
+    );
 
-  userAPIService.getUser($window.sessionStorage.userAccountId).success(function (response) {
-    $scope.user = response.message;
-  });
+  userAPIService.getUser($window.sessionStorage.userAccountId)
+    .then(
+      function successCallback(response) {
+        $scope.user = response.data.message;
+      },
+      function errorCallback(response){
+      }
+  );
 
 
 

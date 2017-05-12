@@ -36,55 +36,79 @@ $scope.$on('$destroy', function(){
       $timeout.cancel(promise);
   });
 
-  userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId).success(function (data) {
-    $scope.notifs = data.message;
-    var index = 0;
-    // for (index in $scope.notifs){
-    //   if ($scope.notifs[index].isUnread == true){
-    //     $scope.numberOfUnread++;
-    //   };
-    // };
-    if ($scope.notifs.length === 1){
-      $scope.oneNotif = true;
-    }else{
-      $scope.oneNotif = false;
-    };
-    if ($scope.notifs.length === 0){
-      $scope.zeroNotif = true;
-    }else{
-      $scope.zeroNotif = false};
-  });
+  userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
+    .then(
+      function successCallback(response){
+        $scope.notifs = response.data.message;
+        var index = 0;
+        // for (index in $scope.notifs){
+        //   if ($scope.notifs[index].isUnread == true){
+        //     $scope.numberOfUnread++;
+        //   };
+        // };
+        if ($scope.notifs.length === 1){
+          $scope.oneNotif = true;
+        }else{
+          $scope.oneNotif = false;
+        };
+        if ($scope.notifs.length === 0){
+          $scope.zeroNotif = true;
+        }else{
+          $scope.zeroNotif = false};
+      },
+      function errorCallback(response) {
+      }
+    );
 
-  userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId).success(function (data) {
-    $scope.notifs2 = data.message;
-  });
+
+
+
+  userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId)
+    .then(
+      function successCallback(response){
+        $scope.notifs2 = response.data.message;
+      },
+      function errorCallback(response){
+      }
+    );
 
 
   $scope.getNotifsAndNotifs2 = function () {
-    userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId).success(function (data) {
-      $scope.notifs = data.message;
-      var index = 0;
-      // for (index in $scope.notifs){
-      //   if ($scope.notifs[index].isUnread == true){
-      //     $scope.numberOfUnread++;
-      //   };
-      // };
-      if ($scope.notifs.length == 1){
-        $scope.oneNotif = true;
-      }else{
-        $scope.oneNotif = false;
-      };
-      if ($scope.notifs.length == 0){
-        $scope.zeroNotif = true;
-      }else{
-        $scope.zeroNotif = false;
-      };
-    });
+    userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
+      .then(
+        function successCallback(response){
+          $scope.notifs = response.data.message;
+          var index = 0;
+          // for (index in $scope.notifs){
+          //   if ($scope.notifs[index].isUnread == true){
+          //     $scope.numberOfUnread++;
+          //   };
+          // };
+          if ($scope.notifs.length == 1){
+            $scope.oneNotif = true;
+          }else{
+            $scope.oneNotif = false;
+          };
+          if ($scope.notifs.length == 0){
+            $scope.zeroNotif = true;
+          }else{
+            $scope.zeroNotif = false;
+          };
+        },
+        function errorCallback(response){
+        }
+      )};
 
-    userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId).success(function (data) {
-      $scope.notifs2 = data.message;
-    });
-  }
+
+
+    userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId)
+      .then(
+        function successCallback(resource) {
+          $scope.notifs2 = resource.data.message;
+        },
+        function errorCallback(resource){
+        }
+      );
 
   $scope.changeIsUnread = function (notifID) {
     notificationsAPIService.changeIsUnreadToFalse(notifID).success(updateScopeAttributes);

@@ -23,19 +23,24 @@ angular.module('VicinityManagerApp.controllers')
     $scope.loaded = false;
     $scope.noDevices = true;
 
-    userAccountAPIService.getMyDevices($window.sessionStorage.companyAccountId).success(function (data) {
-         $scope.devices = data.message;
-        //  for (dev in $scope.devices){
-        //    itemsAPIService.getItemWithAdd($scope.devices[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
-        //  }
-         if ($scope.devices.length == 0){
-           $scope.noDevices = true;
-         }else{
-           $scope.noDevices = false;
-         };
+    userAccountAPIService.getMyDevices($window.sessionStorage.companyAccountId)
+      .then(
+        function successCallback(response) {
+           $scope.devices = response.data.message;
+          //  for (dev in $scope.devices){
+          //    itemsAPIService.getItemWithAdd($scope.devices[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
+          //  }
+           if ($scope.devices.length == 0){
+             $scope.noDevices = true;
+           }else{
+             $scope.noDevices = false;
+           };
 
-         $scope.loaded = true;
-    });
+           $scope.loaded = true;
+         },
+         function errorCallback(response){
+         }
+       );
 
     $scope.searchFilterOnline = function (result) {
 
@@ -283,39 +288,61 @@ angular.module('VicinityManagerApp.controllers')
 
 
     $scope.acceptDataRequest = function (dev_id) {
-      $scope.interruptConnection= true;
+      $scope.interruptConnection = true;
      //  Notification.success("Access request sent!");
-      itemsAPIService.acceptDeviceRequest(dev_id).success(function (response) {
-        if (response.error ==true) {
-            Notification.error("Sending data access request failed!");
-        } else {
-            Notification.success("Data access approved!");
-        };
+      itemsAPIService.acceptDeviceRequest(dev_id)
+        .then(
+          function successCallback(response){
+            if (response.data.error == true) {
+                Notification.error("Sending data access request failed!");
+            } else {
+                Notification.success("Data access approved!");
+            };
 
-        itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-
-      });
+            itemsAPIService.getItemWithAdd(dev_id)
+              .then(
+                function successCallback(response){
+                  updateScopeAttributes2(response);
+                },
+                function errorCallback(response){
+                }
+            );
+          },
+          function errorCallback(response){
+          }
+        );
       }
 
     $scope.rejectDataRequest = function (dev_id) {
        //  Notification.success("Access request sent!");
-        itemsAPIService.rejectDeviceRequest(dev_id).success(function (response) {
-          if (response.error ==true) {
+        itemsAPIService.rejectDeviceRequest(dev_id)
+          .then(
+            function successCallback(response) {
+          if (response.data.error == true) {
               Notification.error("Sending data access request failed!");
           } else {
               Notification.success("Data access rejected!");
           };
 
-          itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-
-        });
+          itemsAPIService.getItemWithAdd(dev_id)
+            .then(
+              function successCallback(response){
+                updateScopeAttributes2(response);
+              },
+              function errorCallback(response){
+              }
+          );
+        },
+        function errorCallback(response){
+        }
+      );
     }
 
 
     function updateScopeAttributes2(response){          //response je formatu ako z funkcie getItemWithAdd
       for (dev in $scope.devices){
-        if ($scope.devices[dev]._id.toString()===response.message._id.toString()){        //updatne len ten device, ktory potrebujeme
-          $scope.devices[dev]=response.message;
+        if ($scope.devices[dev]._id.toString()===response.data.message._id.toString()){        //updatne len ten device, ktory potrebujeme
+          $scope.devices[dev]=response.data.message;
         }
       }
         // $scope.name = response.message.organisation;

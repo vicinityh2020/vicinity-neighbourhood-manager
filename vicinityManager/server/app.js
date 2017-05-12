@@ -8,15 +8,12 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
-
+// ROUTES Import
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var userAccounts = require('./routes/userAccounts');
-
 //var userAccounts = require('./routes/companyAccounts');
-
-
 var userGroups = require('./routes/userGroups');
 var organisationUnits = require('./routes/organisationUnits');
 var gateways = require('./routes/gateways');
@@ -26,11 +23,11 @@ var notifications = require('./routes/notifications');
 var invitations = require('./routes/invitations');
 var registrations = require('./routes/registrations');
 //var search = require('./routes/search');
+
+// MIDDLEWARES Import
 var jwtauth = require('./middlewares/jwtauth');
 
 var app = express();
-
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -42,7 +39,7 @@ mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
   if (error){
     console.log("VMModel: Couldn't connect to data source!" + error);
   } else {
-    console.log("VMModel: Datasource connection establised!");
+    console.log("VMModel: Datasource connection established!");
   }
 });
 
@@ -69,11 +66,8 @@ app.use('/gateways', [jwtauth, gateways]);
 app.use('/items', [jwtauth, items]);
 app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
-
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -105,6 +99,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;

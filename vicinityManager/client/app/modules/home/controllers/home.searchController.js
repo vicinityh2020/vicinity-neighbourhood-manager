@@ -22,11 +22,16 @@ angular.module('VicinityManagerApp.controllers').
     //   $stateParams.searchTerm = "";
     // }
 
-    userAccountAPIService.getUserAccounts().success(function (response) {
-      var results = response.message;
-      $scope.resultsList = results;
-      $scope.loaded = true;
-    });
+    userAccountAPIService.getUserAccounts()
+      .then(
+        function successCallback(response) {
+          var results = response.data.message;
+          $scope.resultsList = results;
+          $scope.loaded = true;
+        },
+        function errorCallback(response){
+        }
+      );
 
     $scope.searchFilter2 = function (result2) {
       var keyword = new RegExp($stateParams.searchTerm, 'i');
@@ -34,11 +39,16 @@ angular.module('VicinityManagerApp.controllers').
       return $stateParams.searchTerm && keyword.test(result2.name) ;   // || keyword.test(result.accountOf.occupation)
     };
 
-    userAPIService.getAll().success(function (response) {   //users not userAccounts
-      var results2 = response.message;
-      $scope.resultsList2 = results2;
-      $scope.loaded = true;
-    });
+    userAPIService.getAll()
+      .then(
+        function successCallback(response) {   //users not userAccounts
+          var results2 = response.data.message;
+          $scope.resultsList2 = results2;
+          $scope.loaded = true;
+        },
+        function errorCallback(response){
+        }
+      );
 
 
   });

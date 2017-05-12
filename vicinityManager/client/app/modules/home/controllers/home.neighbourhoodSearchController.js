@@ -8,22 +8,26 @@ angular.module('VicinityManagerApp.controllers').
     $scope.onlyPrivateDevices = false;
     $scope.note="Access approved for friends";
 
-    userAccountAPIService.getNeighbourhood($window.sessionStorage.companyAccountId).success(function (data) {
-      $scope.devs = data.message;
-      var i=0;
-      for (dev in $scope.devs){
-        // updateDev($scope.devs[dev]);
-        // itemsAPIService.getItemWithAdd($scope.devs[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
-        if ($scope.devs[dev].accessLevel > 1){
-          i++;
-        };
-      };
-      if (i == 0){
-        $scope.onlyPrivateDevices = true;
-      }else{
-        $scope.onlyPrivateDevices = false;
-      };
-    });
+    userAccountAPIService.getNeighbourhood($window.sessionStorage.companyAccountId)
+      .then(
+        function successCallback(response) {
+          $scope.devs = reponse.data.message;
+          var i=0;
+          for (dev in $scope.devs){
+            // updateDev($scope.devs[dev]);
+            // itemsAPIService.getItemWithAdd($scope.devs[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
+            if ($scope.devs[dev].accessLevel > 1){
+              i++;
+            };
+          };
+          if (i == 0){
+            $scope.onlyPrivateDevices = true;
+          }else{
+            $scope.onlyPrivateDevices = false;
+          };
+        },
+        function errorCallback(response){}
+      );
 
     $scope.searchFilter = function (result) {
       var keyword = new RegExp($stateParams.searchTerm, 'i');

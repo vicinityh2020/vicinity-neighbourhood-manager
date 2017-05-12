@@ -26,10 +26,13 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.companyId = $stateParams.companyAccountId;
   $scope.loaded = false;
 
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
-    $scope.userAccounts = data.message.accountOf;
-    $scope.loaded = true;
-  });
-
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+    .then(
+      function successCallback(response){
+        $scope.userAccounts = response.data.message.accountOf;
+        $scope.loaded = true;
+      },
+      function errorCallback(response){}
+    );
 
 });

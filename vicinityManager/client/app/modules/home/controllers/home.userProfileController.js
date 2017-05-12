@@ -124,18 +124,33 @@ $("input#input1").on('change',function(evt) {
 //     }
 // }
 
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
-    $scope.userAccounts = data.message.accountOf;
-    $scope.thisCompany = data.message;
-  });
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+    .then(
+      function successCallback(response) {
+        $scope.userAccounts = response.data.message.accountOf;
+        $scope.thisCompany = response.data.message;
+      },
+      function errorCallback(response){
+      }
+    );
 
-  userAccountAPIService.getUserAccounts().success(function (data) {
-    $scope.companyAccounts = data.message;
-  });
+  userAccountAPIService.getUserAccounts()
+    .then(
+      function successCallback(resource) {
+        $scope.companyAccounts = resource.data.message;
+      },
+      function errorCallback(resource){
+      }
+    );
 
-  userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
-    $scope.friendsThisCom = data.message;
-  });
+  userAccountAPIService.getFriends($stateParams.companyAccountId)
+    .then(
+      function successCallback(resource) {
+        $scope.friendsThisCom = resource.data.message;
+      },
+      function errorCallback(resource){
+      }
+    );
 
   $scope.changeToInput = function () {
     $('a#nameButt').hide();
@@ -572,25 +587,34 @@ $scope.uploadPic = function(){
     $scope.sameCompany = false;
   }
 
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
+  // userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(updateScopeAttributes);
+
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+    .then(
+      function successCallback(resource){
+        updateScopeAttributes(resource);
+      },
+      function errorCallback(resource){
+      }
+    );
 
   function updateScopeAttributes(response){
 
     i=0;
     j=0;
     while (i==0){
-      if (response.message.accountOf[j]._id.toString() === $stateParams.userAccountId.toString()){
-        $scope.nameAvatar =response.message.accountOf[j].name;
-        $scope.name =response.message.accountOf[j].name;
-        $scope.occupation=response.message.accountOf[j].occupation;
-        $scope.occupationAvatar=response.message.accountOf[j].occupation;
-        $scope.avatar =response.message.accountOf[j].avatar;
+      if (response.data.message.accountOf[j]._id.toString() === $stateParams.userAccountId.toString()){
+        $scope.nameAvatar =response.data.message.accountOf[j].name;
+        $scope.name =response.data.message.accountOf[j].name;
+        $scope.occupation=response.data.message.accountOf[j].occupation;
+        $scope.occupationAvatar=response.data.message.accountOf[j].occupation;
+        $scope.avatar =response.data.message.accountOf[j].avatar;
         $scope.userAccountId = $stateParams.userAccountId;
-        $scope.locationAvatar = response.message.accountOf[j].location;
-        $scope.location = response.message.accountOf[j].location;
-        $scope.password = response.message.accountOf[j].authentication.password;
-        $scope.email = response.message.accountOf[j].email;
-        $scope.roles = response.message.accountOf[j].authentication.principalRoles;
+        $scope.locationAvatar = response.data.message.accountOf[j].location;
+        $scope.location = response.data.message.accountOf[j].location;
+        $scope.password = response.data.message.accountOf[j].authentication.password;
+        $scope.email = response.data.message.accountOf[j].email;
+        $scope.roles = response.data.message.accountOf[j].authentication.principalRoles;
 
         i=1;
       };
@@ -607,15 +631,15 @@ $scope.uploadPic = function(){
       // $scope.name = response.message.accountOf.name;
       // $scope.avatar = response.message.avatar;
       // $scope.occupation = response.message.accountOf.occupation;
-      $scope.organisation = response.message.organisation;
+      $scope.organisation = response.data.message.organisation;
       // $scope.userAccountId = response.message._id;
-      $scope.badges = response.message.badges;
-      $scope.notes = response.message.notes;
-      $scope.canSendNeighbourRequest = response.message.canSendNeighbourRequest;
-      $scope.canCancelNeighbourRequest = response.message.canCancelNeighbourRequest;
-      $scope.canAnswerNeighbourRequest = response.message.canAnswerNeighbourRequest;
-      $scope.isNeighbour = response.message.isNeighbour;
-      $scope.friends = response.message.knows;
+      $scope.badges = response.data.message.badges;
+      $scope.notes = response.data.message.notes;
+      $scope.canSendNeighbourRequest = response.data.message.canSendNeighbourRequest;
+      $scope.canCancelNeighbourRequest = response.data.message.canCancelNeighbourRequest;
+      $scope.canAnswerNeighbourRequest = response.data.message.canAnswerNeighbourRequest;
+      $scope.isNeighbour = response.data.message.isNeighbour;
+      $scope.friends = response.data.message.knows;
 
       $scope.loaded = true;
   }

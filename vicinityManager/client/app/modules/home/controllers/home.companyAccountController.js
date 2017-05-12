@@ -9,11 +9,16 @@ controller('companyAccountController', function($scope, $window, userAccountAPIS
   n=0;
 
 
-  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (response) {
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
+    .then(
+      function successCallback(response) {
 
-    $scope.name = response.message.organisation;
-    $scope.avatar = response.message.avatar;
-    $scope.companyAccountId = response.message._id;
-    $scope.loaded = true;
-  });
+        $scope.name = response.data.message.organisation;
+        $scope.avatar = response.data.message.avatar;
+        $scope.companyAccountId = response.data.message._id;
+        $scope.loaded = true;
+      },
+      function errorCallback(response){
+      }
+    );
 });

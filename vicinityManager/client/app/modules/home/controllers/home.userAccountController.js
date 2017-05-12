@@ -14,25 +14,29 @@ controller('userAccountController', function($scope, $window, userAccountAPIServ
     console.log("End: Signout");
   }
 
-  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).success(function (response) {
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).then(
+    function successCallback(response){
 
     i=0;
     j=0;
     while (i==0){
-      if (response.message.accountOf[j].email==$window.sessionStorage.username){
-        $scope.name =response.message.accountOf[j].name;
-        $scope.occupation=response.message.accountOf[j].occupation;
-        $scope.avatar =response.message.accountOf[j].avatar;
+      if (response.data.message.accountOf[j].email==$window.sessionStorage.username){
+        $scope.name =response.data.message.accountOf[j].name;
+        $scope.occupation=response.data.message.accountOf[j].occupation;
+        $scope.avatar =response.data.message.accountOf[j].avatar;
         $scope.userAccountId = $window.sessionStorage.userAccountId;
         i=1;
       };
       j++;
     }
 
-    $scope.organisation = response.message.organisation;
-    $scope.companyAccountId = response.message._id;
+    $scope.organisation = response.data.message.organisation;
+    $scope.companyAccountId = response.data.message._id;
     $scope.loaded = true;
-  });
+  },
+  function errorCallback(response){
+  }
+);
 
 
 });

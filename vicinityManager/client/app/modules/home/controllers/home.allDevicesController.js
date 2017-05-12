@@ -71,8 +71,10 @@ angular.module('VicinityManagerApp.controllers')
       //
       // });
 
-      userAccountAPIService.getAllDevices($window.sessionStorage.companyAccountId).success(function (data) {
-        $scope.devs = data.message;
+      userAccountAPIService.getAllDevices($window.sessionStorage.companyAccountId)
+      .then(
+        function successCallback(response){
+        $scope.devs = response.data.message;
 
         // $scope.getNeigh = true;
         // $scope.getAdd = false;
@@ -90,9 +92,10 @@ angular.module('VicinityManagerApp.controllers')
           $scope.onlyPrivateDevices = false;
         };
         $scope.loaded = true;
-
-
-      });
+      },
+      function errorCallback(response){
+      }
+    );
 
       // $scope.searchFilter = function (result) {
       //

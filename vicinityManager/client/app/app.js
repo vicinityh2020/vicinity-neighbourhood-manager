@@ -24,7 +24,6 @@ angular.module('VicinityManagerApp', [
 ]).
   config(function($stateProvider, $urlRouterProvider) {
 
-
     $stateProvider
         .state('root', {
           abstract: true,
@@ -473,7 +472,7 @@ angular.module('VicinityManagerApp', [
 
         $rootScope.$on('$locationChangeStart', function(evetn, next, current) {
 
-        if(($location.path() !== '/login') && !$window.sessionStorage.token){
+          if(($location.path() !== '/login') && !$window.sessionStorage.token){
 //TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
 
             var p = $location.path();

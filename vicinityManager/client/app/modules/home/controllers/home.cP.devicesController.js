@@ -7,20 +7,28 @@ $scope.friends = [];
 var isFriend = false;
 $scope.loaded = false;
 
-  userAccountAPIService.getMyDevices($stateParams.companyAccountId).success(function (data) {
-       $scope.devices = data.message;
+  userAccountAPIService.getMyDevices($stateParams.companyAccountId)
+    .then(
+      function successCallback(response) {
+       $scope.devices = response.data.message;
 
-       userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
-         $scope.friends = data.message;
-         for (fr in $scope.friends){
-             if ($scope.friends[fr]._id.toString()===$window.sessionStorage.companyAccountId.toString()){
-               isFriend = true;
-             };
-         };
-       });
+       userAccountAPIService.getFriends($stateParams.companyAccountId)
+        .then(
+          function successCallback(response) {
+             $scope.friends = response.data.message;
+             for (fr in $scope.friends){
+                 if ($scope.friends[fr]._id.toString()===$window.sessionStorage.companyAccountId.toString()){
+                   isFriend = true;
+                 };
+            };
+          },
+          function errorCallback(response){}
+        );
 
        $scope.loaded = true;
-  });
+  },
+  function errorCallback(response){}
+);
 
 
 

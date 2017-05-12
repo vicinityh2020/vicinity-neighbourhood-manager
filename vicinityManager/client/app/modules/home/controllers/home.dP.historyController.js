@@ -8,23 +8,42 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.friendsThisCom = [];
   $scope.loaded = false;
 
-  itemsAPIService.getItemWithAdd($stateParams.deviceId).success(function(data){
-    $scope.device = data.message;
+  itemsAPIService.getItemWithAdd($stateParams.deviceId)
+    .then(
+      function successCallback(response){
+        $scope.device = response.data.message;
 
-    userAccountAPIService.getUserAccountProfile($scope.device.hasAdministrator[0]._id).success(function (data) {
-      $scope.userAccounts = data.message.accountOf;
-      $scope.thisCompany = data.message;
-    });
+        userAccountAPIService.getUserAccountProfile($scope.device.hasAdministrator[0]._id)
+          .then(
+            function successCallback(response) {
+              $scope.userAccounts = response.data.message.accountOf;
+              $scope.thisCompany = response.data.message;
+            },
+            function errorCallback(response){
+            }
+          );
 
-    userAccountAPIService.getUserAccounts().success(function (data) {
-      $scope.companyAccounts = data.message;
-    });
+        userAccountAPIService.getUserAccounts()
+          .then(
+            function successCallback(response) {
+              $scope.companyAccounts = data.message;
+            },
+            function errorCallback(response){
+            }
+          );
 
-    userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id).success(function (data) {
-      $scope.friendsThisCom = data.message;
-
-    });
-    $scope.loaded = true;
-  });
+        userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id)
+          .then(
+            function successCallback(response){
+              $scope.friendsThisCom = data.message;
+            },
+            function errorCallback(response){
+            }
+          );
+        $scope.loaded = true;
+        },
+        function errorCallback(response){
+        }
+      );
 
 });

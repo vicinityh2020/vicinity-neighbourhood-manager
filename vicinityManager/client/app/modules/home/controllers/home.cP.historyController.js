@@ -8,21 +8,30 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.friendsThisCom = [];
   $scope.loaded = false;
 
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId).success(function (data) {
-    $scope.userAccounts = data.message.accountOf;
-    $scope.thisCompany = data.message;
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+    .then(
+      function successCallback(response) {
+        $scope.userAccounts = response.data.message.accountOf;
+        $scope.thisCompany = response.data.message;
 
-    userAccountAPIService.getUserAccounts().success(function (data) {
-      $scope.companyAccounts = data.message;
-    });
+        userAccountAPIService.getUserAccounts()
+          .then(
+            function successCallback (response) {
+          $scope.companyAccounts = response.data.message;
+        },
+        function errorCallback(response){}
+      );
 
 
-    userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
-      $scope.friendsThisCom = data.message;
-      $scope.loaded = true;
-    });
-
-  });
-
+    userAccountAPIService.getFriends($stateParams.companyAccountId).then(
+      function successCallback(response) {
+        $scope.friendsThisCom = response.data.message;
+        $scope.loaded = true;
+      },
+      function errorCallback(response){}
+    );
+  },
+  function errorCallback(response){}
+);
 
 });

@@ -17,10 +17,14 @@ angular.module('VicinityManagerApp.controllers').
     //   $scope.loaded = true;
     // });
 
-    userAccountAPIService.getFriends($window.sessionStorage.companyAccountId).success(function (response){
-      var results = response.message;
-      $scope.resultsList = results;
-      $scope.loaded = true;
-    });
-
+    userAccountAPIService.getFriends($window.sessionStorage.companyAccountId)
+      .then(
+        function successCallback(response){
+          var results = response.data.message;
+          $scope.resultsList = results;
+          $scope.loaded = true;
+        },
+        function errorCallback(response){
+        }
+      );
   });

@@ -33,9 +33,13 @@ angular.module('VicinityManagerApp.controllers')
       //    $scope.comps = results;
       //  });
 
-       userAccountAPIService.getFriends($window.sessionStorage.companyAccountId).success(function (data) {
-         $scope.comps = data.message;
-       });
+       userAccountAPIService.getFriends($window.sessionStorage.companyAccountId)
+          .then(
+            function successCallback(response) {
+              $scope.comps = response.data.message;
+            },
+            function errorCallback(response){}
+          );
 
 
       //  for (i = 0; i < $scope.comps.length; i++) {
@@ -44,28 +48,30 @@ angular.module('VicinityManagerApp.controllers')
       //    });
       //  }
 
-      userAccountAPIService.getNeighbourhood($window.sessionStorage.companyAccountId).success(function (data) {
-        $scope.devs = data.message;
+      userAccountAPIService.getNeighbourhood($window.sessionStorage.companyAccountId)
+        .then(
+          function successCallback(response) {
+            $scope.devs = response.data.message ;
 
-        // $scope.getNeigh = true;
-        // $scope.getAdd = false;
-        var i=0;
-        for (dev in $scope.devs){
-          // updateDev($scope.devs[dev]);
-          // itemsAPIService.getItemWithAdd($scope.devs[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
-          if ($scope.devs[dev].accessLevel > 1){
-            i++;
-          };
-        };
-        if (i == 0){
-          $scope.onlyPrivateDevices = true;
-        }else{
-          $scope.onlyPrivateDevices = false;
-        };
-        $scope.loaded = true;
-
-
-      });
+            // $scope.getNeigh = true;
+            // $scope.getAdd = false;
+            var i=0;
+            for (dev in $scope.devs){
+              // updateDev($scope.devs[dev]);
+              // itemsAPIService.getItemWithAdd($scope.devs[dev]._id).success(updateScopeAttributes2);     //postupne updatne vsetky devices
+              if ($scope.devs[dev].accessLevel > 1){
+                i++;
+              };
+            };
+            if (i == 0){
+              $scope.onlyPrivateDevices = true;
+            }else{
+              $scope.onlyPrivateDevices = false;
+            };
+            $scope.loaded = true;
+          },
+          function errorCallback(response){}
+        );
 
 
       $scope.searchFilter = function (result) {
@@ -104,27 +110,50 @@ angular.module('VicinityManagerApp.controllers')
        $scope.getAccess1 = function (dev_id) {
          $scope.cancelRequest= true;
         //  Notification.success("Access request sent!");
-         itemsAPIService.processDeviceAccess(dev_id).success(function (response) {
-           if (response.error ==true) {
-               Notification.error("Sending data access request failed!");
-           } else {
-               Notification.success("Access request sent!");
-           };
-          itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
-         }
+         itemsAPIService.processDeviceAccess(dev_id)
+          .then(
+            function successCallback(response) {
+               if (response.data.error ==true) {
+                   Notification.error("Sending data access request failed!");
+               } else {
+                   Notification.success("Access request sent!");
+               };
+
+              itemsAPIService.getItemWithAdd(dev_id)
+                .then(
+                  function successCallback(response){
+                    updateScopeAttributes2(reponse);
+                  },
+                  function errorCallback(response){}
+                );
+
+              },
+              function errorCallback(response){}
+            );
+          }
 
        $scope.cancelRequest1 = function (dev_id) {
          $scope.cancelRequest= false;
         //  Notification.success("Data access request canceled!");
-         itemsAPIService.cancelDeviceRequest(dev_id).success(function (response) {
-           if (response.error ==true) {
-               Notification.error("Sending data access request failed!");
-           } else {
-               Notification.success("Data access request canceled!");
-           };
-           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
+         itemsAPIService.cancelDeviceRequest(dev_id)
+          .then(
+            function successCallback(response) {
+               if (response.data.error ==true) {
+                   Notification.error("Sending data access request failed!");
+               } else {
+                   Notification.success("Data access request canceled!");
+               };
+
+               itemsAPIService.getItemWithAdd(dev_id)
+                 .then(
+                   function successCallback(response){
+                     updateScopeAttributes2(reponse);
+                   },
+                   function errorCallback(response){}
+                 );
+               },
+               function errorCallback(response){}
+             );
 
          }
 
@@ -132,14 +161,24 @@ angular.module('VicinityManagerApp.controllers')
          $scope.cancelAccess= false;
          $scope.note="";
 
-         itemsAPIService.cancelAccess3(dev_id).success(function (response) {
-           if (response.error ==true) {
-               Notification.error("Try for interruption failed!");
-           } else {
-               Notification.success("Connection interrupted!");
-           };
-           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
+         itemsAPIService.cancelAccess3(dev_id)
+          .then(
+            function successCallback(response) {
+               if (response.error ==true) {
+                   Notification.error("Try for interruption failed!");
+               } else {
+                   Notification.success("Connection interrupted!");
+               };
+               itemsAPIService.getItemWithAdd(dev_id)
+                 .then(
+                   function successCallback(response){
+                     updateScopeAttributes2(reponse);
+                   },
+                   function errorCallback(response){}
+                 );
+             },
+             function errorCallback(response){}
+           );
 
          }
 
@@ -147,20 +186,30 @@ angular.module('VicinityManagerApp.controllers')
          $scope.cancelAccess = true;
          $scope.note="You have acces to data";
 
-         itemsAPIService.getAccess3(dev_id).success(function (response) {
-           if (response.error ==true) {
-               Notification.error("Get back access failed!");
-           } else {
-               Notification.success("Connection was renewed!");
-           };
-           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
+         itemsAPIService.getAccess3(dev_id)
+          .then(
+            function successCallback(response) {
+               if (response.error ==true) {
+                   Notification.error("Get back access failed!");
+               } else {
+                   Notification.success("Connection was renewed!");
+               };
+               itemsAPIService.getItemWithAdd(dev_id)
+                 .then(
+                   function successCallback(response){
+                     updateScopeAttributes2(reponse);
+                   },
+                   function errorCallback(response){}
+                 );
+             },
+             function errorCallback(response){}
+           );
          }
 
        function updateScopeAttributes2(response){          //response je formatu ako z funkcie getItemWithAdd
         for (dev in $scope.devs){
-          if ($scope.devs[dev]._id.toString()===response.message._id.toString()){        //updatne len ten device, ktory potrebujeme
-              $scope.devs[dev]=response.message;
+          if ($scope.devs[dev]._id.toString()===response.data.message._id.toString()){        //updatne len ten device, ktory potrebujeme
+              $scope.devs[dev]=response.data.message;
               // $scope.getNeigh = false;
               // $scope.getAdd = true;
           }
