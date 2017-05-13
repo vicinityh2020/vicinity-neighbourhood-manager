@@ -1,8 +1,9 @@
 var jwt = require('jwt-simple');
 var config = require('../helpers/configuration');
+var logger = require("../middlewares/logger");
 
 module.exports = function(req, res, next) {
-  console.log('JWTAuth middleware');
+  logger.info('JWTAuth middleware');
 
   var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
 
@@ -18,11 +19,11 @@ module.exports = function(req, res, next) {
         return next();
       }
     } catch (err) {
-      console.log("JWT Validation error: " + err.text);
+      logger.info("JWT Validation error: " + err.text);
       return res.send(401);
     }
   } else {
     return res.send(401);
   }
-  console.log('JWTAuth done');
+  logger.info('JWTAuth done');
 };

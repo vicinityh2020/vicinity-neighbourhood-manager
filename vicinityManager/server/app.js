@@ -27,26 +27,28 @@ var registrations = require('./routes/registrations');
 // MIDDLEWARES Import
 var jwtauth = require('./middlewares/jwtauth');
 
+// Debugger import
+var logger = require("./middlewares/logger");
+
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-winston.level = 'debug';
-winston.log('info', "Connecting to database:  %s", process.env.VCNT_MNGR_DB);
 mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
   if (error){
-    console.log("VMModel: Couldn't connect to data source!" + error);
+    logger.error("VMModel: Couldn't connect to data source!" + error);
   } else {
-    console.log("VMModel: Datasource connection established!");
+    logger.info("VMModel: Datasource connection established!");
   }
 });
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(cors());
-app.use(logger('dev'));
+logger.debug("Overriding 'Express' logger");
+app.use(require('morgan')("combined",{ "stream": logger.stream }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
