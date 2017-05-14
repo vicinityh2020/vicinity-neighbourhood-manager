@@ -6,14 +6,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var winston = require('winston');
+//var winston = require('winston');
 
 // ROUTES Import
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var userAccounts = require('./routes/userAccounts');
-//var userAccounts = require('./routes/companyAccounts');
 var userGroups = require('./routes/userGroups');
 var organisationUnits = require('./routes/organisationUnits');
 var gateways = require('./routes/gateways');
@@ -23,11 +22,10 @@ var notifications = require('./routes/notifications');
 var invitations = require('./routes/invitations');
 var registrations = require('./routes/registrations');
 //var search = require('./routes/search');
+//var userAccounts = require('./routes/companyAccounts');
 
-// MIDDLEWARES Import
+// Custom MIDDLEWARES Import === jwauth && Winston Debugger
 var jwtauth = require('./middlewares/jwtauth');
-
-// Debugger import
 var logger = require("./middlewares/logger");
 
 var app = express();
@@ -36,13 +34,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
-  if (error){
-    logger.error("VMModel: Couldn't connect to data source!" + error);
-  } else {
-    logger.info("VMModel: Datasource connection established!");
-  }
-});
+// MIDDLEWARES ================
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -59,8 +51,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup security
 // app.use('/useraccounts', userAccounts);
-
-
 //app.use('/companyaccounts', [jwtauth, userAccounts]);
 //app.use('/usergroups', [jwtauth, userGroups]);
 //app.use('/organisationUnits', [jwtauth, organisationUnits]);
@@ -100,6 +90,17 @@ app.use(function(err, req, res, next) {
     message: err.message,
     error: {}
   });
+});
+
+// ENDING MIDDLEWARES ================
+
+// CONNECTING to MONGO
+mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
+  if (error){
+    logger.error("VMModel: Couldn't connect to data source!" + error);
+  } else {
+    logger.info("VMModel: Datasource connection established!");
+  }
 });
 
 module.exports = app;
