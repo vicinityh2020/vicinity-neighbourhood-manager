@@ -466,6 +466,7 @@ angular.module('VicinityManagerApp', [
 //          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
 //        }
 
+
         if ($window.sessionStorage.token) {
           $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
         }
