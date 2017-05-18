@@ -86,9 +86,13 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
               organisation: $scope.comp.organisation,
               email: $scope.user.email},
           type: "newCompany"};
-      invitationsAPIService.postOne(data).success(function (){
+      invitationsAPIService.postOne(data)
+      .then(
+        function successCallback(){
         $('div#myModal2').hide();
-      });
+      },
+        function errorCallback(){}
+    );
     }else{
       $('input#emailVer2').addClass("invalid");
       setTimeout(function() {
@@ -129,9 +133,13 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
               email: $scope.user.email},
           type: "newUser"};
 
-      invitationsAPIService.postOne(data).success(function (){
+      invitationsAPIService.postOne(data)
+      .then(
+        function successCallback(){
         $('div#myModal1').hide();
-      });
+      },
+      function errorCallback(){}
+    );
     }else{
       $('input#emailVer').addClass("invalid");
       setTimeout(function() {

@@ -6,13 +6,12 @@ module.exports.getAll = getAll;
 var mongoose = require('mongoose');
 var registrationOp = require('../../models/vicinityManager').registration;
 // var userAccountOp = require('../../models/vicinityManager').userAccount;
-var winston = require('winston');
+var logger = require("../../middlewares/logger");
 
-winston.level='debug';
 
 function getOne(req, res, next) {
 //TODO: User authentic - Role check
-  winston.log('debug','Start getOne');
+  logger.debug('Start getOne');
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   registrationOp.findById(o_id, function(err, data){
@@ -21,7 +20,7 @@ function getOne(req, res, next) {
     } else {
       response = {"error": false, "message": data};
     }
-    winston.log('debug','End getOne');
+    logger.debug('End getOne');
     res.json(response);
   })
 }

@@ -2,7 +2,6 @@
 
 angular.module('constants',[]).constant('configuration', this._env);
 
-
 angular.module('Authentication', ['ngCookies', 'constants', 'ui-notification','VicinityManagerApp.controllers']);
 angular.module('Registration', ['ngCookies', 'constants', 'VicinityManagerApp.controllers']);
 
@@ -23,6 +22,8 @@ angular.module('VicinityManagerApp', [
   'angularFileUpload'
 ]).
   config(function($stateProvider, $urlRouterProvider) {
+
+// ====== HOME VIEW =======
 
     $stateProvider
         .state('root', {
@@ -74,6 +75,9 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
+// ======== Side menu list views
+
         .state('root.main.neighbourhood', {
           url: '/neighbourhood/:searchTerm',
           views: {
@@ -154,6 +158,9 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
+// =========  Sub views of items in side menu / PROFILES =========
+
         .state('root.main.searchresults', {
           url: '/search/:searchTerm',
           views: {
@@ -385,6 +392,8 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+// ======= Login, Auth, invit, reg VIEWS ======
+
         .state('invitationOfNewUser', {
           url: '/invitation/newUser/:invitationId',
           templateUrl: 'modules/registration/views/invitation.newUser.html',
@@ -442,21 +451,25 @@ angular.module('VicinityManagerApp', [
         });
 
 })
+
+// Request pre-processing -- Sends JWT in every request
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push('jwtTokenHttpInterceptor');
 }])
+
 //Angular UI Notification configuration;
-    .config(function (NotificationProvider) {
-        NotificationProvider.setOptions({
-            delay: 10000,
-            startTop: 20,
-            startRight: 10,
-            verticalSpacing: 20,
-            horizontalSpacing: 20,
-            positionX: 'left',
-            positionY: 'bottom'
-        });
-    })
+  .config(function (NotificationProvider) {
+    NotificationProvider.setOptions({
+        delay: 10000,
+        startTop: 20,
+        startRight: 10,
+        verticalSpacing: 20,
+        horizontalSpacing: 20,
+        positionX: 'left',
+        positionY: 'bottom'
+    });
+  })
+
 .run(['$rootScope', '$location', '$cookies', '$http', '$window',
       function($rootScope, $location, $cookies, $http, $window){
 
@@ -466,18 +479,23 @@ angular.module('VicinityManagerApp', [
 //          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
 //        }
 
-
         if ($window.sessionStorage.token) {
           $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
         }
 
         $rootScope.$on('$locationChangeStart', function(evetn, next, current) {
 
-          if(($location.path() !== '/login') && !$window.sessionStorage.token){
+          if(($location.url() !== '/login') && !$window.sessionStorage.token){
 //TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
 
-            var p = $location.path();
+            var p = $location.url();
             var lastPos = p.lastIndexOf("/");
+            if(lastPos === 0){
+              while(p.lastIndexOf("%2F") !== -1 ){
+                p = p.replace("%2F","/");
+              }
+              lastPos = p.lastIndexOf("/");
+            }
             // var strId = p.slice(-24);
             var strId = p.substring(p.length-24,p.length);
             var strBeg = p.substring(0,lastPos + 1);
@@ -493,13 +511,13 @@ angular.module('VicinityManagerApp', [
             // var result1 = strId.match(patt1);
             var result1 = patt1.test(strId);
 
-            if ((strBeg == '/invitation/newCompany/') && result1){
+            if ((strBeg.indexOf('/invitation/newCompany/')) !== -1 && result1){
               $location.path('/invitation/newCompany/' + strId);
-            }else if ((strBeg == '/invitation/newUser/') && result1){
+            }else if ((strBeg.indexOf('/invitation/newUser/')) !== -1 && result1){
               $location.path('/invitation/newUser/' + strId);
-            }else if ((strBeg == '/registration/newCompany/') && result1){
+            }else if ((strBeg.indexOf('/registration/newCompany/')) !== -1 && result1){
               $location.path('/registration/newCompany/' + strId);
-            }else if ((strBeg == '/registration/newUser/') && result1){
+            }else if ((strBeg.indexOf('/registration/newUser/')) !== -1 && result1){
               $location.path('/registration/newUser/' + strId);
             }else{
               $location.path('/login');

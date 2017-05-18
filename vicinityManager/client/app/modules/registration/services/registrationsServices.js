@@ -19,10 +19,13 @@ factory('registrationsAPIService', ['$http', 'configuration', function($http, co
     return $http.put(configuration.apiUrl +'/registrations/' + id, data);
   };
 
-  // itemsAPI.addFriendToHasAccess = function(id){
-  //   return $http.put('http://localhost:3000/items/' + id '/hasAccess');
+  // registrationsAPI.postOneUser = function(data) {
+  //   return $http.post(configuration.apiUrl +'/user/', data);
   // };
 
+  // registrationsAPI.postOneUserAccount = function(data) {
+  //   return $http.post(configuration.apiUrl +'/userAccounts/', data);
+  // };
 
   return registrationsAPI;
 }]);

@@ -4,6 +4,7 @@ var userAccountsOp = require('../models/vicinityManager').userAccount;
 var userOp = require('../models/vicinityManager').user;
 var jwt = require('../helpers/jwtHelper');
 var moment = require('moment');
+var logger = require("../middlewares/logger");
 var router = express.Router();
 
 
@@ -16,9 +17,8 @@ router.post('/authenticate', function(req, res, next) {
 
   if (userName && password) {
     userOp.find({ email: userName }, function(error, result) {
-
       if (error || !result || result.length !== 1){
-        response = { success: false };
+        res.json({ success: false });
       } else {
         // var accounts = result[0].accountOf;
         // remove unnecessary accounts from results
@@ -27,28 +27,24 @@ router.post('/authenticate', function(req, res, next) {
         //       accounts.splice(index,1);
         //     }
         // }
-
         if ((userName === result[0].email) && (password === result[0].authentication.password)) {
 
-          var o_id = mongoose.Types.ObjectId(result[0]._id);
+            var o_id = mongoose.Types.ObjectId(result[0]._id);
 
-          userAccountsOp.find({ accountOf: {$elemMatch: {$eq : o_id }}}, function(error, result2) {
+            userAccountsOp.find({ accountOf: {$elemMatch: {$eq : o_id }}}, function(error, result2) {
             //TODO: test if exist result2
             var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
 
             response = {
               success: true,
-              message: credentials};
+              message: credentials
+            };
             res.json(response);
           });
-
-
         } else {
-          response = { success: false};
-          res.json(response);
+          res.json({success: false});
         }
       };
-
     });
   } else {
     res.json({success: false});

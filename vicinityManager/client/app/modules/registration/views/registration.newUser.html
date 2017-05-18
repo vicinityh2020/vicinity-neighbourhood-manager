@@ -1,11 +1,11 @@
-<div class="login-box" style="margin-bottom: 10px">
+<div class="login-box">
   <div class="login-logo">
     <img src="img/logos/vicinity_logo.png"/>
   </div>
   <!-- /.login-logo -->
-  <div class="login-box-body" style="padding-bottom: 0px">
+  <div class="login-box-body">
     <p class="login-box-msg"> <a href="http://www.vicinity-h2020.eu" style="cursor: pointer"> About project </a> </p>
-    <!-- <p class="login-box-msg" style="padding-bottom: 0px">{{note2}}</p>      -->
+    <!-- <p class="login-box-msg">{{note2}}</p>     -->
      <!-- Log in to start your session -->
 
     <!-- <div id="registerInput">
@@ -20,7 +20,7 @@
 
     <!-- <div style="text-align: center" ng-show="isError" class="alert alert-danger">{{error}}</div> -->
 
-    <form id="login-wrap" name="form" role="form" ng-submit="login()">
+    <!-- <form id="login-wrap" name="form" role="form" ng-submit="login()">
 
 
       <div id="zmiz" class="form-group has-feedback">
@@ -44,6 +44,9 @@
         <div class="col-xs-6">
           <div style="margin-bottom: 0px" class="checkbox">
             <label>
+            <input type="checkbox" disabled> Remember Me
+     TODO: Implement remember me functionality
+
 
                  <input type="checkbox" id="myCheck"> &nbsp; Show password
 
@@ -52,11 +55,11 @@
         </div>
 
 
+
         <div id="zmiz" class="col-xs-6">
           <button id="login-button" type="submit" class="btn btn-primary btn-block btn-flat" ng-disabled="form.$invalid || dataLoading">Log In</button>
           <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
         </div>
-
 
 
       </div>
@@ -66,15 +69,17 @@
       </div>
 
 
-    </form>
+    </form> -->
 
 
 
 
-
-    <!-- <div id="newOrganisationInfo">
+<!--
+    <div id="newOrganisationInfo">
 
       <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Company </span>
+
+      <form id="login-wrap" name="form" role="form" ng-submit="registerCompany()">
 
       <div  id="org">
         <div  class="form-group has-feedback">
@@ -98,12 +103,12 @@
 
         <div  class="form-group has-feedback">
           <span > Password </span><span style="color: red">*</span>
-          <input style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
+          <input id="pass1" style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
         </div>
 
         <div  class="form-group has-feedback">
           <span > Repeat password </span><span style="color: red">*</span>
-          <input style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
+          <input id="pass2" style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
         </div>
 
         <div  class="form-group has-feedback">
@@ -118,6 +123,58 @@
 
       </div>
 
+      <div class="col-xs-6"> -->
+        <!-- <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>       -->
+  <!--    </div>
+      <div class="col-xs-6" style="padding-right: 0px">
+        <button type="submit" class="btn btn-primary btn-block btn-flat" >Register me</button>  -->  <!-- ng-disabled="form.$invalid || dataLoading" -->
+        <!-- <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/> -->
+  <!--     </div>
+
+    </form>
+
+    </div> -->
+
+    <div id="verEmailSent" onload="myInit()">
+      <h3 style="color: green" class="login-box-msg" >Your VICINITY user account is active now! <i class="fa fa-check fa-3x" style="color: green"></i></h3>
+    </div>
+
+    <!-- <div id="newUserInfo">
+
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> User </span>
+
+      <div  id="org2">
+        <div  class="form-group has-feedback">
+          <span > Company </span>
+          <span style="width: 60%" class="pull-right">ABC/ACME/whatever</span>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Email </span><span style="color: red">*</span>
+          <input style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Password </span><span style="color: red">*</span>
+          <input style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Repeat password </span><span style="color: red">*</span>
+          <input style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Name</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of user" />
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > Occupation</span>
+          <input style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of user" />
+        </div>
+      </div>
+
       <div class="col-xs-6">
         <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>
       </div>
@@ -127,90 +184,17 @@
 
     </div> -->
 
-    <div id="newUserInfo">
-      <!-- <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Organisation </span>
-
-      <div  id="org">
-        <div  class="form-group has-feedback">
-          <span > Name </span><span style="color: red">*</span>
-          <select class="pull-right" style="width: auto" name="menu" class="box-title">
-            <option value="0" selected="selected">...</option>
-            <option value="{{number}}" ng-repeat="comp in comps">{{comp.organisation}}</option>
-          </select>
-        </div>
-      </div> -->
-
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> User </span>
-
-      <form id="login-wrap" name="form" role="form" ng-submit="registerUser()">
-
-      <div  id="org2">
-        <div  class="form-group has-feedback">
-          <span > Company </span>
-          <span style="width: 60%" class="pull-right">{{companyName}}</span>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Email </span><span style="color: red">*</span>
-          <input style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" ng-model="emailUser" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Password </span><span style="color: red">*</span>
-          <input id="pass1" style="width: 60%" type="password"  class="pull-right" placeholder="Password" ng-model="firstPass" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Repeat password </span><span style="color: red">*</span>
-          <input id="pass2" style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" ng-model="secondPass" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Name</span>
-          <input style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of user" ng-model="nameUser" />
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Occupation</span>
-          <input style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of user" ng-model="occupation" />
-        </div>
-      </div>
-
-      <div class="col-xs-6">
-        <!-- <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>     -->
-      </div>
-      <div class="col-xs-6" style="padding-right: 0px">
-        <button type="submit" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
-
-        <!-- ng-click=registerUser() -->
-        <!-- <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/> -->
-      </div>
-
-    </form>
-
-    </div>
-
-
-
     <!-- <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>       -->
 
-  </div>
+    </div>
 
 
   <!--  <a href="#">I forgot my password</a><br>  -->
 <!-- TODO: Implement forgot my password functionality -->
 
 <!-- TODO: Implement register a new membership functionality -->
-  <a ui-sref="login" style="cursor: pointer"> <p class="login-box-msg">  Log in </p> </a>
-  
+  <a href="/app/#/login" style="cursor: pointer"> <p class="login-box-msg">  Log in </p> </a>
   </div>
-
-  <div id="verEmailSent">
-    <h3 style="color: green; position: relative; display: block" class="login-box-msg">Your VICINITY user account is active now! <i class="fa fa-check fa-2x" style="color: green"></i></h3>
-  </div>
-
-  <p id="pLogIn" class="login-box-msg"> <a href="" ng-click="showLogin()"> Log in </a> </p>
-
   <!-- /.login-box-body -->
 </div>
 

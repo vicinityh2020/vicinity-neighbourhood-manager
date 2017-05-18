@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var nodemailer = require('nodemailer');
 var ce = require('cloneextend');
-
+var fs = require("fs");
 var invitationOp = require('../../models/vicinityManager').invitation;
 // var userOP = require('../../models/vicinityManager').user;
 
@@ -12,27 +12,10 @@ function postOne(req, res, next) {
 //TODO: Request body atributes null check;
 //TODO: ObjectId conversion;
 
-  // db.name = req.body.name;
-  // db.consistsOf = req.body.consistsOf;
-  // db.hasAdministrator = ce.clone(req.body.hasAdministrator);
-  // db.accessRequestFrom = ce.clone(req.body.accessRequestFrom);
-  // db.accessLevel = req.body.accessLevel;
-  // db.hasAccess = ce.clone(req.body.hasAccess);
-  // db.info = ce.clone(req.body.info);
-  // // db.info = {id_tag: req.body.info.id_tag, id_value: req.body.info.id_value};
-  // db.color = req.body.color;
-  // db.avatar = req.body.avatar;
-  // // db.electricity = ce.clone(req.body.electricity);
-  // db.info = ce.clone(req.body.info);
-
   db.emailTo = req.body.emailTo;
   db.nameTo = req.body.nameTo;
   db.sentBy = ce.clone(req.body.sentBy);
   db.type = req.body.type;
-
-  // db.emailTo = 'viktor.oravec@gmail.com';
-  // db.sentBy = 'Hana';
-  // db.type = 'newUser';
 
   db.save(function(err, product) {
     if (err) {
@@ -46,7 +29,7 @@ function postOne(req, res, next) {
 
 }
 
-function send_mail(id, nameTo, emailTo, sentBy, type){
+function send_mail(id, nameTo, emailTo, sentBy, type){ // Start send_mail
 
   var smtpConfig = {
     service: 'Gmail',
@@ -57,39 +40,69 @@ function send_mail(id, nameTo, emailTo, sentBy, type){
 
   var transporter = nodemailer.createTransport(smtpConfig);
 
-  // setup e-mail data with unicode symbols
+  if (type === "newUser"){ // MAIN IF
+    fs.exists("./helpers/mail/inviteUser.txt", function(fileok){
+      if(fileok){
+        fs.readFile("./helpers/mail/inviteUser.txt", function(error, data) {
 
-  // var name = sentBy.name;
-  // var company = sentBy.organisation;
+          var mailContent = String(data);
+          var link = "http://localhost:8000/app/#/invitation/newUser/" + id;
+          mailContent = mailContent.replace("#var1",nameTo);
+          mailContent = mailContent.replace("#var2",sentBy.name);
+          mailContent = mailContent.replace("#var3",link);
 
-  if (type === "newUser"){
-    var mailOptions = {
-      from: 'noreply.vicinity@gmail.com', // sender address
-      to: emailTo, // list of receivers
-      subject: 'Invitation to join VICINITY', // Subject line
-      text: 'Dear '+ nameTo +', you got invitation to join VICINITY from ' + sentBy.name + '. Please, click on following link for registration: http://localhost:8000/app/#/invitation/newUser/' + id + '.', // plaintext body
-      // html: '<b>Hello world 🐴</b>' // html body
-    };
-  }else{
-    var mailOptions = {
-      from: 'noreply.vicinity@gmail.com', // sender address
-      to: emailTo, // list of receivers
-      subject: 'Invitation to join VICINITY', // Subject line
-      text: 'Dear representant of '+ nameTo +', you got invitation to join VICINITY from ' + sentBy.name + ' from ' + sentBy.organisation + '. Please, click on following link to register your company: http://localhost:8000/app/#/invitation/newCompany/' + id + '.', // plaintext body
-      // html: '<b>Hello world 🐴</b>' // html body
-    };
-  };
+          var mailOptions = {
+            from: 'noreply.vicinity@gmail.com',
+            to: emailTo,
+            subject: 'Invitation email to join VICINITY',
+            // text: '',
+            html: mailContent,
+          };
 
+        transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+            return console.log(error);
+          };
+          console.log('Message sent: ' + info.response);
+        });
 
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-      return console.log(error);
-    };
-    console.log('Message sent: ' + info.response);
-});
+        });
+      }
+      else logger.debug("file not found");
+    });
+  }else{ // MAIN ELSE
+    fs.exists("./helpers/mail/inviteCompany.txt", function(fileok){
+      if(fileok){
+        fs.readFile("./helpers/mail/inviteCompany.txt", function(error, data) {
 
-}
+          var mailContent = String(data);
+          var link = "http://localhost:8000/app/#/invitation/newCompany/" + id;
+          mailContent = mailContent.replace("#var1",nameTo);
+          mailContent = mailContent.replace("#var2",sentBy.name);
+          mailContent = mailContent.replace("#var3",link);
+          mailContent = mailContent.replace("#var4",sentBy.organisation);
 
+          var mailOptions = {
+            from: 'noreply.vicinity@gmail.com',
+            to: emailTo,
+            subject: 'Invitation email to join VICINITY',
+            // text: '',
+            html: mailContent,
+          };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+            return console.log(error);
+          };
+          console.log('Message sent: ' + info.response);
+        });
+
+        });
+      }
+      else logger.debug("file not found");
+    });
+  }; // END MAIN IF/ELSE
+
+} // end send_mail
 
 module.exports.postOne = postOne;

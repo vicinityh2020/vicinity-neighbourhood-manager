@@ -20,10 +20,11 @@ module.exports = function(req, res, next) {
       }
     } catch (err) {
       logger.info("JWT Validation error: " + err.text);
-      return res.send(401);
+      return res.sendStatus(401);
     }
   } else {
-    return res.send(401);
+    logger.debug("No token!!");
+    return res.sendStatus(401);
   }
   logger.info('JWTAuth done');
 };

@@ -1,9 +1,10 @@
 var mongoose = require('mongoose');
 var nodemailer = require('nodemailer');
 var ce = require('cloneextend');
-
+var fs = require("fs");
+var logger = require("../../middlewares/logger");
 var registrationOp = require('../../models/vicinityManager').registration;
-var invitationOp = require('../../models/vicinityManager').invitation;
+// var invitationOp = require('../../models/vicinityManager').invitation;
 // var userOP = require('../../models/vicinityManager').user;
 
 
@@ -13,18 +14,6 @@ function postOne(req, res, next) {
 //TODO: Request body atributes null check;
 //TODO: ObjectId conversion;
 
-  // db.name = req.body.name;
-  // db.consistsOf = req.body.consistsOf;
-  // db.hasAdministrator = ce.clone(req.body.hasAdministrator);
-  // db.accessRequestFrom = ce.clone(req.body.accessRequestFrom);
-  // db.accessLevel = req.body.accessLevel;
-  // db.hasAccess = ce.clone(req.body.hasAccess);
-  // db.info = ce.clone(req.body.info);
-  // // db.info = {id_tag: req.body.info.id_tag, id_value: req.body.info.id_value};
-  // db.color = req.body.color;
-  // db.avatar = req.body.avatar;
-  // // db.electricity = ce.clone(req.body.electricity);
-  // db.info = ce.clone(req.body.info);
 
   // db.invitationId = req.body.invitationId;
   db.userName = req.body.userName;
@@ -40,10 +29,6 @@ function postOne(req, res, next) {
   // db.nameTo = req.body.nameTo;
   // db.sentBy = req.body.sentBy;
   // db.type = req.body.type;
-
-  // db.emailTo = 'viktor.oravec@gmail.com';
-  // db.sentBy = 'Hana';
-  // db.type = 'newUser';
 
   db.save(function(err, product) {
     if (err) {
@@ -84,30 +69,69 @@ function send_mail(id, name, emailTo, type, companyName){
 
   var transporter = nodemailer.createTransport(smtpConfig);
 
-  if (type == "newUser"){
-    var mailOptions = {
-      from: 'noreply.vicinity@gmail.com',
-      to: emailTo,
-      subject: 'Verification email to join VICINITY',
-      text: 'Dear '+ name +', to activate your Vicinity account, please click on following link: http://localhost:8000/app/#/registration/newUser/' + id + '.',
-    };
-  }else {
-    var mailOptions = {
-      from: 'noreply.vicinity@gmail.com',
-      to: emailTo,
-      subject: 'Verification email to join VICINITY',
-      text: 'Dear representant of '+ companyName +', to activate your and your company account, please click on following link: http://localhost:8000/app/#/registration/newCompany/' + id + '.',
-    };
-  };
+  //TODO rework else/if and simplify the code by using functions
 
-  transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-      return console.log(error);
-    };
-    console.log('Message sent: ' + info.response);
-});
+  if (type == "newUser"){ // MAIN IF
+    fs.exists("./helpers/mail/activateUser.txt", function(fileok){
+      if(fileok){
+        fs.readFile("./helpers/mail/activateUser.txt", function(error, data) {
 
+          var mailContent = String(data);
+          var link = "http://localhost:8000/app/#/registration/newUser/" + id;
+          mailContent = mailContent.replace("#name",name);
+          mailContent = mailContent.replace("#link",link);
+
+          var mailOptions = {
+            from: 'noreply.vicinity@gmail.com',
+            to: emailTo,
+            subject: 'Verification email to join VICINITY',
+            // text: '',
+            html: mailContent,
+          };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+            return console.log(error);
+          };
+          console.log('Message sent: ' + info.response);
+        });
+
+        });
+      }
+      else logger.debug("file not found");
+    });
+
+  }else { // MAIN ELSE
+
+    fs.exists("./helpers/mail/activateCompany.txt", function(fileok){
+      if(fileok){
+        fs.readFile("./helpers/mail/activateCompany.txt", function(error, data) {
+
+          var mailContent = String(data);
+          var link = "http://localhost:8000/app/#/registration/newCompany/" + id;
+          mailContent = mailContent.replace("#companyName",companyName);
+          mailContent = mailContent.replace("#link",link);
+
+          var mailOptions = {
+            from: 'noreply.vicinity@gmail.com',
+            to: emailTo,
+            subject: 'Verification email to join VICINITY',
+            // text: '',
+            html: mailContent,
+          };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+            return console.log(error);
+          };
+          console.log('Message sent: ' + info.response);
+        });
+
+        });
+      }
+      else logger.debug("file not found");
+    });
+  } // END MAIN IF/ELSE
 }
-
 
 module.exports.postOne = postOne;

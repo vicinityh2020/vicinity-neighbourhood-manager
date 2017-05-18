@@ -13,25 +13,11 @@ angular.module('Authentication')
               .then(function successCallback(response){
                 callback(response.data);
               }, function errorCallback(response){
-
               });
           };
 
-
-          // $http({
-          //   method: 'GET',
-          //   url: '/someUrl'
-          // }).then(function successCallback(response) {
-          //     // this callback will be called asynchronously
-          //     // when the response is available
-          //   }, function errorCallback(response) {
-          //     // called asynchronously if an error occurs
-          //     // or server returns response with an error status.
-          //   });
-
-
-
           service.signout = function(path){
+            console.log(path);
             service.ClearCredentialsAndInvalidateToken();
             $location.path(path);
           }
@@ -61,6 +47,9 @@ angular.module('Authentication')
           }
           return service;
 }])
+
+//  Enconding/Decoding + JWT   =======================================
+
 .factory('Base64', function () {
     /* jshint ignore:start */
 
@@ -146,6 +135,7 @@ angular.module('Authentication')
 
     /* jshint ignore:end */
 })
+
 .factory('jwtTokenHttpInterceptor', [function(){
   console.log('Begin: Inicialized jwtTokenHttpInterceptor');
 

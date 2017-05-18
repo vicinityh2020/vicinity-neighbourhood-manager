@@ -36,6 +36,7 @@ function createUserAccountFacade(req, res, next) {
   db.creatorOf = ce.clone(req.body.creatorOf);//Users that are creator UserAccount
   db.follows = ce.clone(req.body.follows); //Follows UserAccounts
   db.memberOf = ce.clone(req.body.memberOf); //Member of UserGroups
+  // db.location = req.body.location;
   db.accountOf = ce.clone(req.body.accountOf);
   db.knows = ce.clone(req.body.knows);
   db.knowsRequestsFrom = ce.clone(req.body.knowsRequestsFrom);

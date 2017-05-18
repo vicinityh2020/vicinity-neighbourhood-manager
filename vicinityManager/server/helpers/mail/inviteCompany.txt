@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <style>
+      .ref1{
+        display: block;
+        width: 115px;
+        height: 25px;
+        background: blue;
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
+
+      }
+      .center
+      {
+        margin: auto;
+        width: 50%;
+        padding: 10px;
+        }
+    </style>
+  </head>
+  <body>
+    <div>
+    <p class="center">Dear representant of #var1,</p>
+    <p class="center">you got invitation to join VICINITY from #var2 from #var4. Please, click on following link to register your company:</p><br>
+    <div class="center">
+      <a class="ref1" href="#var3" target="_blank">GET INVITATION</a>
+    </div><br>
+      <div style="border-top: 2px solid;">
+        <!-- Default to the left -->
+        <img src="./helpers/mail/flag_yellow_low.jpg"/>&nbsp; This project has received funding from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under grant agreement no 688467.
+        <br>
+        <br>
+        <strong>Copyright &copy; 2015 <a href="http://www.bavenir.eu" target="_blank">bAvenir, s.r.o </a>.</strong> All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
