@@ -72,9 +72,9 @@ function send_mail(id, name, emailTo, type, companyName){
   //TODO rework else/if and simplify the code by using functions
 
   if (type == "newUser"){ // MAIN IF
-    fs.exists("./helpers/mail/activateUser.txt", function(fileok){
+    fs.exists("./helpers/mail/activateUser.html", function(fileok){
       if(fileok){
-        fs.readFile("./helpers/mail/activateUser.txt", function(error, data) {
+        fs.readFile("./helpers/mail/activateUser.html", function(error, data) {
 
           var mailContent = String(data);
           var link = "http://localhost:8000/app/#/registration/newUser/" + id;
@@ -103,9 +103,9 @@ function send_mail(id, name, emailTo, type, companyName){
 
   }else { // MAIN ELSE
 
-    fs.exists("./helpers/mail/activateCompany.txt", function(fileok){
+    fs.exists("./helpers/mail/activateCompany.html", function(fileok){
       if(fileok){
-        fs.readFile("./helpers/mail/activateCompany.txt", function(error, data) {
+        fs.readFile("./helpers/mail/activateCompany.html", function(error, data) {
 
           var mailContent = String(data);
           var link = "http://localhost:8000/app/#/registration/newCompany/" + id;

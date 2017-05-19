@@ -23,10 +23,11 @@ angular.module('Authentication')
                $scope.note ="Register new member";
                $scope.note2 = "Log in to start your session";
                $scope.error = ""
+               $scope.termsAccepted = false;
                //$scope.newRegis2 = false;
                //$scope.comps = [];
 
-
+               $('div#myModal1').hide();
                $("#myCheck").prop("checked", false);
                $("#pass").prop("type", "password");
                $('div#newOrganisationInfo').hide();
@@ -138,6 +139,23 @@ angular.module('Authentication')
               //   };
               // }
 
+// Handling modals
+
+              $scope.alertPopUp1 = function () {
+                // alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
+
+                $('div#myModal1').show();
+              }
+
+              $scope.closeNow1 = function () {
+                $('div#myModal1').hide();
+              }
+
+              $scope.acceptTerms = function(){
+                $scope.termsAccepted = true;
+                $('div#myModal1').hide();
+              }
+// Switching login/register view
 
              $scope.registerNew = function(){
                $scope.newRegisHide = false;

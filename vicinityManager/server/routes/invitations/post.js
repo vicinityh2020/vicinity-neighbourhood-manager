@@ -41,9 +41,9 @@ function send_mail(id, nameTo, emailTo, sentBy, type){ // Start send_mail
   var transporter = nodemailer.createTransport(smtpConfig);
 
   if (type === "newUser"){ // MAIN IF
-    fs.exists("./helpers/mail/inviteUser.txt", function(fileok){
+    fs.exists("./helpers/mail/inviteUser.html", function(fileok){
       if(fileok){
-        fs.readFile("./helpers/mail/inviteUser.txt", function(error, data) {
+        fs.readFile("./helpers/mail/inviteUser.html", function(error, data) {
 
           var mailContent = String(data);
           var link = "http://localhost:8000/app/#/invitation/newUser/" + id;
@@ -71,9 +71,9 @@ function send_mail(id, nameTo, emailTo, sentBy, type){ // Start send_mail
       else logger.debug("file not found");
     });
   }else{ // MAIN ELSE
-    fs.exists("./helpers/mail/inviteCompany.txt", function(fileok){
+    fs.exists("./helpers/mail/inviteCompany.html", function(fileok){
       if(fileok){
-        fs.readFile("./helpers/mail/inviteCompany.txt", function(error, data) {
+        fs.readFile("./helpers/mail/inviteCompany.html", function(error, data) {
 
           var mailContent = String(data);
           var link = "http://localhost:8000/app/#/invitation/newCompany/" + id;
