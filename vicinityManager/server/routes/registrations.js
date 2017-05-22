@@ -6,7 +6,6 @@ var getHelper = require('./registrations/get.js');
 var putHelper = require('./registrations/put.js');
 
 router
-
   .post('/', postHelper.postOne)
   .get('/', getHelper.getAll)
   .get('/:id', getHelper.getOne)

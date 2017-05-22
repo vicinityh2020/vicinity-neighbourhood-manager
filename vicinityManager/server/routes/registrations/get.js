@@ -29,7 +29,7 @@ function getAll(req, res, next) {
 //TODO: User authentic - Role check
   var response = {};
 
-  registrationOp.find({}, function(err, data) {
+  registrationOp.find({type:"newCompany"}, function(err, data) {
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
     } else {
