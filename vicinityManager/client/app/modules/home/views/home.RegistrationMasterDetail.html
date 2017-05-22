@@ -1,0 +1,63 @@
+<div class="box">
+            <div class="box-header">
+
+              <h3 class="box-title"><strong>Registrations table</strong></h3>
+              <!-- <p><input type="text" placeholder="Search..." ng-model="searchValue"></p> -->
+
+            </div>
+
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="RegTable" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th ng-click="orderByMe('type')">Type</th>
+                  <th ng-click="orderByMe('name')">Name</th>
+                  <th ng-click="orderByMe('requester')">Requester</th>
+                  <th ng-click="orderByMe('status')">Status</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="regis in regisList | orderBy:myOrderBy">
+                  <td>Organization</td>
+                  <td>
+                    <span>{{regis.companyName}}</span>
+                    <span class="glyphicon glyphicon-plus pull-right" ng-click="goToProfile()"></span></td>
+                  <td>{{regis.email}}</td>
+                  <td>
+                    <span>{{regis.status}}</span>
+                    <div ng-if="regis.status === 'open' || regis.status === 'pending' " class="tooltip2" id="circle_yellow" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+                      <span class="tooltiptext2" > In progress </span>
+                    </div>
+                    <div ng-if="regis.status === 'verified'" class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+                      <span class="tooltiptext2" > Ready </span>
+                    </div>
+                    <div ng-if="regis.status === 'declined'" class="tooltip2" id="circle_red" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+                      <span class="tooltiptext2" > Rejected </span>
+                    </div>
+                  </td>
+                  <td>
+                      <button ng-click="f()" ng-if="regis.status === 'verified' ">verified action</button>
+                      <button ng-click="verifyAction($index)" ng-if="regis.status === 'open' ">Verify user</button>
+                      <button ng-click="declineAction($index)" ng-if="regis.status === 'open' ">Decline user</button>
+                      <button ng-click="f()" ng-if="regis.status === 'declined' ">declined action</button>
+                      <p ng-if="regis.status === 'pending' ">Waiting an answer</p>
+                  </td>
+                </tr>
+                </tbody>
+                <!-- <tfoot>
+                <tr>
+                  <th>Rendering engine</th>
+                  <th>Browser</th>
+                  <th>Platform(s)</th>
+                  <th>Engine version</th>
+                  <th>CSS grade</th>
+                </tr>
+                </tfoot> -->
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+  </div>

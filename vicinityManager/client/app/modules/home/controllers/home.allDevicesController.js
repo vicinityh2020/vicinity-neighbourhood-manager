@@ -177,58 +177,96 @@ angular.module('VicinityManagerApp.controllers')
        $scope.getAccess1 = function (dev_id) {
          $scope.cancelRequest= true;
         //  Notification.success("Access request sent!");
-         itemsAPIService.processDeviceAccess(dev_id).success(function (response) {
+         itemsAPIService.processDeviceAccess(dev_id)
+          .then(
+            function successCallback(response) {
            if (response.error ==true) {
                Notification.error("Sending data access request failed!");
            } else {
                Notification.success("Access request sent!");
            };
-          itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
-         }
+          itemsAPIService.getItemWithAdd(dev_id)
+          .then(
+            function successCallback(response){
+              updateScopeAttributes2(response);
+            },
+            function errorCallback(response){}
+            );
+          },
+          function errorCallback(response){}
+        );
+      }
 
        $scope.cancelRequest1 = function (dev_id) {
          $scope.cancelRequest= false;
         //  Notification.success("Data access request canceled!");
-         itemsAPIService.cancelDeviceRequest(dev_id).success(function (response) {
+         itemsAPIService.cancelDeviceRequest(dev_id)
+         .then(
+          function successCallback(response) {
            if (response.error ==true) {
                Notification.error("Sending data access request failed!");
            } else {
                Notification.success("Data access request canceled!");
            };
-           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
-
-         }
+           itemsAPIService.getItemWithAdd(dev_id)
+            .then(
+              function successCallback(response){
+                updateScopeAttributes2(response);
+              },
+              function errorCallback(response){}
+            );
+         },
+         function errorCallback(){}
+        );
+      }
 
        $scope.cancelAccess1 = function (dev_id) {
          $scope.cancelAccess= false;
          $scope.note="";
 
-         itemsAPIService.cancelAccess3(dev_id).success(function (response) {
+         itemsAPIService.cancelAccess3(dev_id)
+          .then(
+            function successCallback(response) {
            if (response.error ==true) {
                Notification.error("Try for interruption failed!");
            } else {
                Notification.success("Connection interrupted!");
            };
-           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
-
-         }
+           itemsAPIService.getItemWithAdd(dev_id)
+           .then(
+             function successCallback(response){
+               updateScopeAttributes2(response);
+             },
+             function errorCallback(response){}
+           );
+         },
+         function errorCallback(response){}
+       );
+      }
 
        $scope.getAccess2 = function (dev_id) {
          $scope.cancelAccess = true;
          $scope.note="You have acces to data";
 
-         itemsAPIService.getAccess3(dev_id).success(function (response) {
+         itemsAPIService.getAccess3(dev_id)
+          .then(
+            function successCallback(response) {
            if (response.error ==true) {
                Notification.error("Get back access failed!");
            } else {
                Notification.success("Connection was renewed!");
            };
-           itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-         });
-         }
+           itemsAPIService.getItemWithAdd(dev_id)
+           .then(
+             function successCallback(response){
+               updateScopeAttributes2(response);
+             },
+             function errorCallback(response){}
+           );
+         },
+         function errorCallback(response){}
+       );
+      }
 
        function updateScopeAttributes2(response){          //response je formatu ako z funkcie getItemWithAdd
         for (dev in $scope.devs){

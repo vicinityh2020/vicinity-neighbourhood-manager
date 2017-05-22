@@ -1013,6 +1013,16 @@ li.notifications-menu ul.menu > li div.notification-avatar img {
       /*z-index: -5;*/
     }
 
+  #circle_yellow {
+        width: 12px;
+        height: 12px;
+        -webkit-border-radius: 15px;
+        -moz-border-radius: 15px;
+        border-radius: 25px;
+        background: #ffff33;
+        /*z-index: -5;*/
+      }
+
 #circle_gray {
       width: 12px;
       height: 12px;

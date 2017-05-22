@@ -111,25 +111,37 @@ $scope.$on('$destroy', function(){
       );
 
   $scope.changeIsUnread = function (notifID) {
-    notificationsAPIService.changeIsUnreadToFalse(notifID).success(updateScopeAttributes);
-
+    notificationsAPIService.changeIsUnreadToFalse(notifID)
+      .then(
+        function successCallback(response){
+          updateScopeAttributes(response);
+        },
+        function errorCallback(response){}
+      );
   }
 
   function changeIsUnread2(notifID) {
-    notificationsAPIService.changeIsUnreadToFalse(notifID).success(updateScopeAttributes);
-
+    notificationsAPIService.changeIsUnreadToFalse(notifID)
+    .then(
+      function successCallback(response){
+        updateScopeAttributes(response);
+      },
+      function errorCallback(response){}
+    );
   }
 
 function updateScopeAttributes(response){
   var index = 0;
   for (index in $scope.notifs){
-    if ($scope.notifs[index]._id.toString() === response.message._id.toString()){        //updatne len tu notif., ktory potrebujeme
-        $scope.notifs[index]=response.message;
+    if ($scope.notifs[index]._id.toString() === response.data.message._id.toString()){        //updatne len tu notif., ktory potrebujeme
+        $scope.notifs[index]=response.data.message;
     };
-
   };
-  userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId).success(function (data) {
-    $scope.notifs = data.message;
+
+  userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
+    .then(
+      function successCallback(response) {
+    $scope.notifs = response.data.message;
 
     // $scope.numberOfUnread = 0;
 
@@ -139,17 +151,23 @@ function updateScopeAttributes(response){
     // if ($scope.notifs[index].isUnread == true){
     //   $scope.numberOfUnread++;
     // };
-  });
+    },
+    function errorCallback(response){}
+  );
 
-  userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId).success(function (data) {
-    $scope.notifs2 = data.message;
-  });
-}
+  userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId)
+    .then(
+      function successCallback(response) {
+        $scope.notifs2 = response.data.message;
+      },
+      function errorCallback(reponse){}
+    );
 
 $scope.acceptNeighbourRequest = function (notifId, friendId) {
     userAccountAPIService.acceptNeighbourRequest(friendId)
-        .success(function(response){
-            if (response.error == true) {
+        .then(
+          function successCallback(response){
+            if (response.data.error === true) {
                 Notification.error("Partnership request acceptation failed :(");
             } else {
                 Notification.success("Partnership request accepted!");
@@ -159,13 +177,15 @@ $scope.acceptNeighbourRequest = function (notifId, friendId) {
 
             // userAccountAPIService.getUserAccountProfile(friendId).success(updateScopeAttributes2);
             // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);
-
-        });
+        },
+        function errorCallback(response){}
+      );
 }
 
 $scope.rejectNeighbourRequest = function(notifId, friendId) {
     userAccountAPIService.rejectNeighbourRequest(friendId)
-        .success(function(response){
+        .then(
+          function successCallback(response){
             if (response.error ==true) {
                 Notification.error("Partnership request rejection failed :(");
             } else {
@@ -174,38 +194,44 @@ $scope.rejectNeighbourRequest = function(notifId, friendId) {
 
             changeIsUnread2(notifId);
             // userAccountAPIService.getUserAccountProfile(friendId).success(updateScopeAttributes2);
-        });
-}
+        },
+          function errorCallback(response){}
+      );
+    }
 
 $scope.acceptDataRequest = function (dev_id, notifId) {
   // $scope.interruptConnection= true;
  //  Notification.success("Access request sent!");
-  itemsAPIService.acceptDeviceRequest(dev_id).success(function (response) {
+  itemsAPIService.acceptDeviceRequest(dev_id)
+    .then(
+      function successCallback(response) {
     if (response.error ==true) {
         Notification.error("Sending data access request failed!");
     } else {
         Notification.success("Data access approved!");
     };
-
     changeIsUnread2(notifId);
     // itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-
-  });
-  }
+    },
+    function errorCallback(response){}
+  );
+}
 
 $scope.rejectDataRequest = function (dev_id, notifId) {
    //  Notification.success("Access request sent!");
-    itemsAPIService.rejectDeviceRequest(dev_id).success(function (response) {
+    itemsAPIService.rejectDeviceRequest(dev_id)
+      .then(
+        function successCallback(response) {
       if (response.error ==true) {
           Notification.error("Sending data access request failed!");
       } else {
           Notification.success("Data access rejected!");
       };
-
       changeIsUnread2(notifId);
       // itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-
-    });
+    },
+    function errorCallback(response){}
+  );
 }
 
 $scope.searchFilter1 = function (result) {

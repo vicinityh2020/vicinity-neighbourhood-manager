@@ -15,7 +15,7 @@
     "angular-cookies": "^1.4.9",
     "angular-ui-router": "ui-router#^0.2.17",
     "fastclick": "^1.0.6",
-    "angular-ui-notification": "^0.1.0",
+     "angular-ui-notification": "^0.1.0",
     "adminlte":"2.3.3",
     "angular-file-upload":"2.3.4"
   },

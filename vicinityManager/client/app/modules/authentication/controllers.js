@@ -91,14 +91,15 @@ angular.module('Authentication')
                     $('div#verEmailSent').fadeIn('slow');
                   }, 1000);
                   registrationsAPIService.postOne({userName: $scope.nameReg, email: $scope.emailReg, password: $scope.password1Reg, occupation: $scope.occupationReg, companyName: $scope.companynameReg , companyLocation: $scope.locationReg, type: "newCompany"})
-                    .then(function successCallback(response){
+                    .then(
+                      function successCallback(response){
                       $('div#allTemplates').fadeOut('slow');
                       setTimeout(function() {
                        $('div#verEmailSent').fadeIn();
                        }, 1000);
-                 },
-                  function errorCallback(){$window.alert("There was an issue in the registration process...");}
-               );
+                     },
+                     function errorCallback(){$window.alert("There was an issue in the registration process...");}
+                   );
                 }else{
                   $window.alert("Passwords do not match...");
                   $pass1.addClass("invalid");

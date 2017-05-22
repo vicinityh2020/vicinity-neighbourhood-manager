@@ -70,8 +70,8 @@ angular.module('VicinityManagerApp', [
           views: {
             'mainContentView@root':
               {
-                templateUrl: 'modules/home/views/home.allDevicesView.html',
-                controller: 'allDevicesController'
+                templateUrl: 'modules/home/views/home.home.html',
+                controller: 'homeController'
               }
           }
         })
@@ -155,6 +155,16 @@ angular.module('VicinityManagerApp', [
               {
                 templateUrl: 'modules/home/views/home.allServices.html',
                 controller: 'allServices'
+              }
+          }
+        })
+        .state('root.main.allRegistrations', {
+          url: '/allRegistrations',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.RegistrationMasterDetail.html',
+                controller: 'allRegistrationsController'
               }
           }
         })
@@ -392,6 +402,17 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('root.main.registrationProfile', {
+          url: '/profile/user/:registrationId',
+          views: {
+            'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.registrationProfile.html',
+              controller:  'registrationProfileController'
+            }
+          }
+        })
+
 // ======= Login, Auth, invit, reg VIEWS ======
 
         .state('invitationOfNewUser', {
@@ -458,7 +479,7 @@ angular.module('VicinityManagerApp', [
 }])
 
 //Angular UI Notification configuration;
-  .config(function (NotificationProvider) {
+.config(function (NotificationProvider) {
     NotificationProvider.setOptions({
         delay: 10000,
         startTop: 20,
@@ -490,13 +511,16 @@ angular.module('VicinityManagerApp', [
 
             var p = $location.url();
             var lastPos = p.lastIndexOf("/");
+
+            // Case url has / encoded as %2F
             if(lastPos === 0){
               while(p.lastIndexOf("%2F") !== -1 ){
                 p = p.replace("%2F","/");
               }
               lastPos = p.lastIndexOf("/");
             }
-            // var strId = p.slice(-24);
+
+            // Divide url and id
             var strId = p.substring(p.length-24,p.length);
             var strBeg = p.substring(0,lastPos + 1);
 
@@ -524,6 +548,4 @@ angular.module('VicinityManagerApp', [
             };
           }
         });
-
-
       }]);
