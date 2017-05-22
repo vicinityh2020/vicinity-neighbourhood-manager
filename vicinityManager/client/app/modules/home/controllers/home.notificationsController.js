@@ -137,7 +137,7 @@ function updateScopeAttributes(response){
         $scope.notifs[index]=response.data.message;
     };
   };
-
+}
   userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
     .then(
       function successCallback(response) {
