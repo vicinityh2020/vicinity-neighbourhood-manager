@@ -11,7 +11,7 @@
 
         <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Company </span>
 
-        <form id="regComp-wrap" name="formComp" role="form" ng-submit="regisComp()">
+        <form id="regComp-wrap" name="formComp" role="form" ng-submit="findMeDuplicates()">
 
         <div  id="org">
           <div  class="form-group has-feedback">
@@ -60,9 +60,11 @@
 
         </div>
 
-        <div class="col-xs-6">
-          <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
-        </div>
+        <!-- Register new member-->
+        <!-- <div class="col-xs-6">
+          <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>
+        </div> -->
+
         <div class="col-xs-6" style="padding-right: 0px">
             <input type="checkbox" id="zmiz" href="" ng-model="termsAccepted"></input>
             <a id="zmiz" href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>

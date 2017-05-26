@@ -5,7 +5,7 @@ angular.module('Registration')
   .controller('invitationNewUserController',
              ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService',
              function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService){
-
+               $scope.duplicities = [];
                $scope.isError = false;
                $scope.visib = 'visible';
                $scope.visib2 = 'hidden';
@@ -48,6 +48,7 @@ angular.module('Registration')
                 var $pass2 = $("#pwUs2");
                 if ($scope.password1Us){
                   if ($scope.password1Us === $scope.password2Us){
+                    if($scope.duplicities.length === 0){
                     registrationsAPIService.postOne({userName: $scope.nameUs, email: $scope.emailUs, password: $scope.password1Us, occupation: $scope.occupationUs, companyName: $scope.companynameUs , companyId:$scope.companyIdUs ,companyLocation: "", status: "pending", type: "newUser"})
                       .then(
                         function successCallback(response){
@@ -59,6 +60,11 @@ angular.module('Registration')
                         function errorCallback(){$window.alert("There was an issue in the registration process...");}
                       );
                     }else{
+                      loopArray($scope.duplicities);
+                      $window.alert('There are duplicated values!!!');
+                      $scope.duplicities = [];
+                    };
+                    }else{
                       $window.alert("Passwords do not match...");
                       $pass1.addClass("invalid");
                       $pass2.addClass("invalid");
@@ -68,6 +74,31 @@ angular.module('Registration')
                       }, 2000);
                     };
                   };
+                }
+
+                $scope.findMeDuplicates = function(){
+                  registrationsAPIService.findDuplicatesUser({email: $scope.emailUs})
+                  .then(
+                    function successCallback(response){
+                      if(response.data.message.length !== 0){
+                        $scope.duplicities.push(response.data.message);
+                      }
+                      $scope.regisUser();
+                      },
+                      function errorCallback(reponse){}
+                    );
+                  }
+
+                  var loopArray = function(arr) {
+                    if ( typeof(arr) == "object") {
+                        for (var i = 0; i < arr.length; i++) {
+                          // console.log(arr[i]);
+                          if($scope.emailUs === arr[i].email){
+                            $scope.emailUs = "";
+                          };
+                          loopArray(arr[i]);
+                        }
+                    }
                 }
 
 // Handling modals

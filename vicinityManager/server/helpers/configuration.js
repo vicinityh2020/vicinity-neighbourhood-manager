@@ -1,1 +1,0 @@
-module.exports.jwtTokenSecrete = 'eHUTx%A_v*V**DG+SgcUMes6LLk=y=JAQK+BW&%#vLbnh2S@mQM7cDejsgx2x^AApJMKP-cRCR4V$#R5GxEe2=G#D_xR4JjwbbG@28qHJWR&-rnWB__rT*R=^_*!wK?d'

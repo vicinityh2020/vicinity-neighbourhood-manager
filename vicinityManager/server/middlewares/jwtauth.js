@@ -1,5 +1,5 @@
 var jwt = require('jwt-simple');
-var config = require('../helpers/configuration');
+var config = require('../configuration/configuration');
 var logger = require("../middlewares/logger");
 
 module.exports = function(req, res, next) {
@@ -9,7 +9,7 @@ module.exports = function(req, res, next) {
 
   if (token) {
     try {
-      var decoded = jwt.decode(token, config.jwtTokenSecrete);
+      var decoded = jwt.decode(token, config.jwtTokenSecret);
       if (decoded.exp <= Date.now()) {
         res.end('access token has expired', 400);
       } else {

@@ -6,6 +6,7 @@ var registrationOp = require('../../models/vicinityManager').registration;
 var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
+var config = require('../../configuration/configuration');
 
 function putOne(req, res) {
 //TODO: User authentic - Role check
@@ -28,7 +29,7 @@ function putOne(req, res) {
         var db2 = new userOp();
 
         db2.name =raw.userName;
-        db2.avatar= "";
+        db2.avatar= config.avatarUser;
         db2.occupation =raw.occupation;
         db2.email =raw.email;
         db2.authentication.password =raw.password;
@@ -45,7 +46,7 @@ function putOne(req, res) {
             db.organisation = raw.companyName;
             db.location = raw.companyLocation;
             db.accountOf[0] = product._id;
-            db.avatar = "";
+            db.avatar = config.avatarOrg;
             //var product_id = mongoose.Types.ObjectId(product._id);
             //??? db.accountOf.push(product_id);
             db.save(function(err, product2) {
@@ -66,7 +67,8 @@ function putOne(req, res) {
 
         }else if ((raw.type == "newUser") && (raw.status == "verified")){
           var db2 = new userOp();
-          db2.name =raw.userName ;
+          db2.name =raw.userName;
+          db2.avatar= config.avatarUser;
           db2.occupation =raw.occupation;
           db2.email =raw.email;
           db2.authentication.password =raw.password;

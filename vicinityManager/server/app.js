@@ -26,7 +26,8 @@ var registrations = require('./routes/registrations');
 //var userAccounts = require('./routes/companyAccounts');
 
 // Custom MIDDLEWARES Import === jwauth && Winston Debugger
-var jwtauth = require('./middlewares/jwtauth');
+//var config = require("./configuration/configuration");
+var jwtauth = require("./middlewares/jwtauth");
 var logger = require("./middlewares/logger");
 
 var app = express();
