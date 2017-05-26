@@ -20,7 +20,8 @@ angular.module('Authentication')
             console.log(path);
             service.ClearCredentialsAndInvalidateToken();
             $location.path(path);
-          }
+          };
+
           service.SetCredentials = function(username, password, authResponse){
 //TODO: Store only token not username;
 //TODO: Implement service to get username from the token;
@@ -44,7 +45,8 @@ angular.module('Authentication')
             //TODO: Invalidate token
 //            $http.post("http://localhost:3000/api/authenticate/invalidate",{token: $window.sessionStorage.token});
             service.ClearCredentials();
-          }
+          };
+
           return service;
 }])
 
@@ -136,18 +138,58 @@ angular.module('Authentication')
     /* jshint ignore:end */
 })
 
+// ======= INITIALIZE token interceptor =======
+
 .factory('jwtTokenHttpInterceptor', [function(){
   console.log('Begin: Inicialized jwtTokenHttpInterceptor');
 
   var tokenInjector = {
     request: function(config) {
-      console.log('Begin config', config);
+      // console.log('Begin config', config);
       config.headers['Authorization'] = 'Basic d2VudHdvcnRobWFuOkNoYW5nZV9tZQ==';
-      console.log('End config', config);
+      // console.log('End config', config);
       return config;
     }
   };
 
   console.log('End: Inicialized jwtTokenHttpInterceptor');
   return tokenInjector;
-  }]);
+
+}])
+
+// ======= Decode token as a service =======
+
+.factory('tokenDecoder',
+        ['Base64', '$window',
+        function(Base64, $window){
+
+        var dT = {};
+
+        dT.deToken = function(){
+
+          var token = $window.sessionStorage.token;
+
+          //var header = token.split('.')[0];
+          var payload = token.split('.')[1];
+
+          //var decodedHeader = Base64.decode(header);
+          var decodedPayload = Base64.decode(payload);
+
+          if (decodedPayload.lastIndexOf(',"context":') !== -1){
+            var decodedRoles = decodedPayload.split(',"context":')[0] + '}';
+          }else{
+            $window.alert("The structure of the token changed, consider adapting the service in Authentication...");
+          };
+
+          // var headerObj = JSON.parse(decodedHeader);
+          var payloadObj = JSON.parse(decodedRoles, (key, value) => {
+            //console.log(key);
+            return value;
+          });
+
+        return payloadObj;
+      };
+
+      return dT;
+
+}]);

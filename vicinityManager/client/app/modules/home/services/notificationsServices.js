@@ -7,11 +7,17 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
     return $http.get(configuration.apiUrl +'/notifications');
   };
 
+  notificationsAPI.getNotificationsOfRegistration = function() {
+    return $http.get(configuration.apiUrl +'/notifications/registrations');
+  };
+
+  notificationsAPI.getNotificationsOfRegistrationRead = function() {
+    return $http.get(configuration.apiUrl +'/notifications/registrationsRead');
+  };
+
   notificationsAPI.changeIsUnreadToFalse = function(id) {
     return $http.put(configuration.apiUrl +'/notifications/' + id + '/changeIsUnreadToFalse');
   };
-
-
 
   return notificationsAPI;
 }]);

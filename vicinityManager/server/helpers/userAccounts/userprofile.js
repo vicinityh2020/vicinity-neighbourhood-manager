@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 var ce = require('cloneextend');
 
 var userAccountOp = require('../../models/vicinityManager').userAccount;
+var userOp = require('../../models/vicinityManager').user;
 
 function getAllUserAccountsFacade(req, res, next) {
   //TODO: Filter authentication info from user accounts;

@@ -270,8 +270,8 @@ angular.module('VicinityManagerApp.controllers')
 
        function updateScopeAttributes2(response){          //response je formatu ako z funkcie getItemWithAdd
         for (dev in $scope.devs){
-          if ($scope.devs[dev]._id.toString()===response.message._id.toString()){        //updatne len ten device, ktory potrebujeme
-              $scope.devs[dev]=response.message;
+          if ($scope.devs[dev]._id.toString()===response.message.data._id.toString()){        //updatne len ten device, ktory potrebujeme
+              $scope.devs[dev]=response.message.data;
               // $scope.getNeigh = false;
               // $scope.getAdd = true;
           }

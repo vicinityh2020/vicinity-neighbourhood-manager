@@ -21,6 +21,7 @@ var user = require('./routes/user');
 var notifications = require('./routes/notifications');
 var invitations = require('./routes/invitations');
 var registrations = require('./routes/registrations');
+// var devOps = require('./routes/devOps')
 //var search = require('./routes/search');
 //var userAccounts = require('./routes/companyAccounts');
 
@@ -60,6 +61,7 @@ app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
+// app.use('/devOps', [devOps]);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

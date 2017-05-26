@@ -20,10 +20,15 @@ angular.module('Registration')
                $scope.comps = [];
                $scope.note2 = "Registration form";
                $scope.compName = "";
+               $scope.termsAccepted = false;
+               //$scope.newRegis2 = false;
+               //$scope.comps = [];
 
+               $('div#myModal1').hide();
                $('div#newOrganisationInfo').show();
                $('div#newUserInfo').hide();
                $('div#verEmailSent').hide();
+
 
                var myInit = function(){
                  invitationsAPIService.getOne($stateParams.invitationId)
@@ -55,7 +60,10 @@ angular.module('Registration')
              var $pass2 = $("#pwUs2");
              if ($scope.password1Reg){
                if ($scope.password1Reg === $scope.password2Reg){
-                 registrationsAPIService.postOne({userName: $scope.nameReg, email: $scope.emailReg, password: $scope.password1Reg, occupation: $scope.occupationReg, companyName: $scope.companynameReg , companyLocation: $scope.locationReg, type: "newCompany"})
+                 registrationsAPIService.postOne({userName: $scope.nameReg, email: $scope.emailReg,
+                                                 password: $scope.password1Reg, occupation: $scope.occupationReg,
+                                                 companyName: $scope.companynameReg , companyLocation: $scope.locationReg,
+                                                 businessId: $scope.bidReg, termsAndConditions: true, status: "pending", type: "newCompany"})
                    .then(
                      function successCallback(response){
                        $('div#newOrganisationInfo').fadeOut('slow');
@@ -77,5 +85,21 @@ angular.module('Registration')
                };
              }
 
+ // Handling modals
+
+               $scope.alertPopUp1 = function () {
+                 // alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
+
+                 $('div#myModal1').show();
+               }
+
+               $scope.closeNow1 = function () {
+                 $('div#myModal1').hide();
+               }
+
+               $scope.acceptTerms = function(){
+                 $scope.termsAccepted = true;
+                 $('div#myModal1').hide();
+               }
 
 }]);

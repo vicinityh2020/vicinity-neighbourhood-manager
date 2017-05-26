@@ -65,7 +65,7 @@
         <!-- Register new member-->
         <a  href="" ng-click="registerNew()" class="text-center">{{note}}</a>
       </div>
-      <div id="zmiz2" style="margin-top: 20px" class="col-xs-6">
+      <div ng-hide="true" id="zmiz2" style="margin-top: 20px" class="col-xs-6">
         <a  href="" class="text-center">Forgot my password</a>
       </div>
     </form>
@@ -78,17 +78,22 @@
 
       <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Company </span>
 
-      <form id="regComp-wrap" name="formComp" role="form" ng-submit="registerCompany()">
+      <form id="regComp-wrap" name="formComp" role="form" ng-submit="findMeDuplicates()">
 
       <div  id="org">
         <div  class="form-group has-feedback">
           <span > Name </span><span style="color: red">*</span>
-          <input style="width: 60%" type="text" ng-model="companynameReg" class="pull-right" placeholder="Name of your organisation" required/>
+          <input style="width: 60%" type="text" ng-model="companynameReg" value='{{companynameReg}}' class="pull-right" placeholder="Name of your organisation" required/>
         </div>
 
         <div  class="form-group has-feedback">
           <span > Location</span>
           <input style="width: 60%" type="text" ng-model="locationReg" class="pull-right" placeholder="Location of your organisation" required/>
+        </div>
+
+        <div  class="form-group has-feedback">
+          <span > BID </span>
+          <input style="width: 60%" type="text" ng-model="bidReg" class="pull-right" placeholder="Business ID" required/>
         </div>
       </div>
 
@@ -126,7 +131,8 @@
         <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
       </div>
       <div class="col-xs-6" style="padding-right: 0px">
-        <a id="zmiz" href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
+          <input type="checkbox" id="zmiz" href="" ng-model="termsAccepted"></input>
+          <a id="zmiz" href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
       </div>
       <div style="margin-top: 50px">
         <button type="submit" ng-disabled="!termsAccepted" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->

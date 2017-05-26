@@ -5,8 +5,6 @@ angular.module('constants',[]).constant('configuration', this._env);
 angular.module('Authentication', ['ngCookies', 'constants', 'ui-notification','VicinityManagerApp.controllers']);
 angular.module('Registration', ['ngCookies', 'constants', 'VicinityManagerApp.controllers']);
 
-
-
 // Declare app level module which depends on views, and components
 angular.module('VicinityManagerApp', [
 //  'ngRoute',
@@ -28,7 +26,8 @@ angular.module('VicinityManagerApp', [
     $stateProvider
         .state('root', {
           abstract: true,
-          templateUrl: 'modules/home/views/home.html'
+          templateUrl: 'modules/home/views/home.html',
+          controller: 'homeController',
         })
         .state('root.main', {
           url: '',
@@ -70,8 +69,8 @@ angular.module('VicinityManagerApp', [
           views: {
             'mainContentView@root':
               {
-                templateUrl: 'modules/home/views/home.home.html',
-                controller: 'homeController'
+                templateUrl: 'modules/home/views/home.allDevicesView.html',
+                controller: 'allDevicesController'
               }
           }
         })
@@ -163,7 +162,7 @@ angular.module('VicinityManagerApp', [
           views: {
             'mainContentView@root':
               {
-                templateUrl: 'modules/home/views/home.RegistrationMasterDetail.html',
+                templateUrl: 'modules/home/views/home.registrationMasterDetail.html',
                 controller: 'allRegistrationsController'
               }
           }
@@ -403,7 +402,7 @@ angular.module('VicinityManagerApp', [
         })
 
         .state('root.main.registrationProfile', {
-          url: '/profile/user/:registrationId',
+          url: '/profile/registration/:registrationId',
           views: {
             'mainContentView@root':
             {
@@ -413,6 +412,16 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('root.main.registrationProfile.regAdmin', {
+          url: '/regAdmin',
+          views: {
+            'tabPanel@root.main.registrationProfile':
+            {
+              templateUrl: 'modules/home/views/home.registrationProfile.regAdminView.html',
+              controller:  'rPregAdminController'
+            }
+          }
+        })
 // ======= Login, Auth, invit, reg VIEWS ======
 
         .state('invitationOfNewUser', {
@@ -510,6 +519,9 @@ angular.module('VicinityManagerApp', [
 //TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
 
             var p = $location.url();
+
+            // Instead of replacing %2F for / check: https://stackoverflow.com/questions/41272314/angular-all-slashes-in-url-changed-to-2f
+            
             var lastPos = p.lastIndexOf("/");
 
             // Case url has / encoded as %2F

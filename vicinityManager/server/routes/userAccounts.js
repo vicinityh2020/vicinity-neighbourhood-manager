@@ -23,7 +23,6 @@ router
   .put('/:id', userProfile.update)
   // remove of the user account profile
   .delete('/:id', userProfile.delete)
-
   // Send friendship request to :id by autenticated user
   .post('/:id/friendship', friending.processFriendRequest)
 

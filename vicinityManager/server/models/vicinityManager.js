@@ -9,6 +9,7 @@ var userAccount = {
   follows: [ObjectId], //Follows UserAccounts
   memberOf: [ObjectId], //Member of UserGroups
   location: String,
+  businessID : String,
   accountOf: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user'
@@ -85,7 +86,9 @@ var registration = {
     },
     companyName: String,
     companyLocation: String,
-    status: {type: String, enum: ['open','verified']},
+    termsAndConditions: Boolean,
+    businessId: String,
+    status: {type: String, enum: ['open','verified','declined','pending']},
     type: {type: String, enum: ['newCompany','newUser']}
     // nameTo: String,
     // sentBy: {
@@ -106,7 +109,11 @@ var notification = {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'userAccount'
     },
-    type: {type: String, enum: ['friendRequest','deviceRequest']},
+    sentByReg: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'registration'
+    },
+    type: {type: String, enum: ['friendRequest','deviceRequest','registrationRequest']},
     deviceId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'item'
@@ -161,6 +168,17 @@ var item = {
   type: String
 };
 
+// var devOpsVicinity = {
+//  userId : {
+//        type: mongoose.Schema.Types.ObjectId,
+//        ref: 'user'
+//  },
+//  companyId : {
+//        type: mongoose.Schema.Types.ObjectId,
+//        ref: 'userAccount'
+//  },
+// };
+
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
 module.exports.user = mongoose.model('user', user);
 module.exports.userGroup = mongoose.model('userGroup', userGroup);
@@ -170,3 +188,4 @@ module.exports.item = mongoose.model('item', item);
 module.exports.notification = mongoose.model('notification', notification);
 module.exports.invitation = mongoose.model('invitation', invitation);
 module.exports.registration = mongoose.model('registration', registration);
+// module.exports.devOpsVicinity = mongoose.model('devOpsVicinity', devOpsVicinity);

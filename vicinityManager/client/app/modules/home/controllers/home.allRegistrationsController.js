@@ -32,14 +32,23 @@ angular.module('VicinityManagerApp.controllers').
         $window.alert("do something");
         }
 
-      $scope.goToProfile = function(){
-        $state.go("root.main.registrationProfile");
-      }
+      // $scope.goToProfile = function(){
+      //   $state.go("root.main.registrationProfile.regAdmin({registrationId: regis._id})");
+      // }
 
       $scope.verifyAction = function(i){
       registrationsAPIService.putOne($scope.regisList[i]._id,{userName: $scope.regisList[i].userName, email: $scope.regisList[i].email, companyName: $scope.regisList[i].companynameReg , type: "newCompany", status: "pending" })
         .then(
-          function successCallback(response){$window.alert("Verification mail was sent to the company!");},
+          function successCallback(response){
+            $window.alert("Verification mail was sent to the company!");
+            registrationsListService.getCompanies()
+              .then(
+                function successCallback(response){
+                  $scope.regisList = response.data.message;
+                },
+                function errorCallback(response){}
+              );
+          },
           function errorCallback(response){$window.alert("It was not possible to send the mail...");}
         );
       }
@@ -47,7 +56,16 @@ angular.module('VicinityManagerApp.controllers').
       $scope.declineAction = function(i){
       registrationsAPIService.putOne($scope.regisList[i]._id,{userName: $scope.regisList[i].userName, email: $scope.regisList[i].email, companyName: $scope.regisList[i].companynameReg , type: "newCompany", status: "declined" })
         .then(
-          function successCallback(response){$window.alert("Company was rejected!");},
+          function successCallback(response){
+            $window.alert("Company was rejected!");
+            registrationsListService.getCompanies()
+              .then(
+                function successCallback(response){
+                  $scope.regisList = response.data.message;
+                },
+                function errorCallback(response){}
+              );
+          },
           function errorCallback(response){$window.alert("It was not possible to send the mail...");}
         );
       }

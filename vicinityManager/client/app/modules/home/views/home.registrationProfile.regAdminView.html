@@ -1,0 +1,26 @@
+<div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
+
+
+<div class="active tab-pane" id="activity">
+  <div class="row">
+
+        <h4 style="margin-left: 15px" ng-show = "loaded">Company administrator</h4>
+
+        <div ng-show = "loaded" class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user-2">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-gold">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">{{userName}}</h3>       <!-- {{friend.accountOf.name}}-->
+                    <h5 class="widget-user-desc"> <i class="glyphicon glyphicon-briefcase"></i>{{occupation}}</h5>
+                    <h5 class="widget-user-desc"><i class="glyphicon glyphicon-send"></i> {{email}}</h5>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

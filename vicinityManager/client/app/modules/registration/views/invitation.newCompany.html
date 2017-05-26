@@ -7,10 +7,7 @@
 
     <!-- // REGISTER organization form template ================ -->
 
-      <div id="newOrganisationInfo" onload="myInit()">
-
-        <p class="login-box-msg"> <a href="http://www.vicinity-h2020.eu"> About project </a> </p>
-        <p class="login-box-msg">{{note2}}</p>      <!-- Log in to start your session -->
+      <div id="newOrganisationInfo">
 
         <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Company </span>
 
@@ -19,12 +16,17 @@
         <div  id="org">
           <div  class="form-group has-feedback">
             <span > Name </span><span style="color: red">*</span>
-            <input style="width: 60%" type="text" ng-model="companynameReg" class="pull-right" placeholder="{{companynameReg}}" required/>
+            <input style="width: 60%" type="text" ng-model="companynameReg" class="pull-right" placeholder="Name of your organisation" required/>
           </div>
 
           <div  class="form-group has-feedback">
             <span > Location</span>
             <input style="width: 60%" type="text" ng-model="locationReg" class="pull-right" placeholder="Location of your organisation" required/>
+          </div>
+
+          <div  class="form-group has-feedback">
+            <span > BID </span>
+            <input style="width: 60%" type="text" ng-model="bidReg" class="pull-right" placeholder="Business ID" required/>
           </div>
         </div>
 
@@ -33,7 +35,7 @@
         <div  id="org2">
           <div  class="form-group has-feedback">
             <span > Email </span><span style="color: red">*</span>
-            <input style="width: 60%" type="email" ng-model="emailReg" class="pull-right" placeholder="{{emailReg}}" required/>
+            <input style="width: 60%" type="email" ng-model="emailReg" class="pull-right" placeholder="Email of administrator" required/>
           </div>
 
           <div  class="form-group has-feedback">
@@ -58,12 +60,21 @@
 
         </div>
 
-        <div class="col-xs-6" style="padding-right: 0px">
-          <button type="submit" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
-          <!-- <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/> -->
+        <div class="col-xs-6">
+          <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
         </div>
+        <div class="col-xs-6" style="padding-right: 0px">
+            <input type="checkbox" id="zmiz" href="" ng-model="termsAccepted"></input>
+            <a id="zmiz" href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
+        </div>
+        <div style="margin-top: 50px">
+          <button type="submit" ng-disabled="!termsAccepted" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
+        </div>
+
       </form>
     </div>
+
+<!-- Confirmation mail -->
 
     <div id="verEmailSent">
       <h3 style="color: green" class="login-box-msg">Verification email was sent! <i class="fa fa-check fa-3x" style="color: green"></i></h3>
@@ -71,6 +82,31 @@
 
     </div>
   </div>
+
+  <!-- Terms and conditions -->
+
+     <div id="myModal1" class="modal">
+
+       <form name="myForm" id="login-wrap" role="form">
+
+         <div class="modal-content">
+           <div class="modal-header" id="bvrModal">
+             <span ng-click="closeNow1()" id="closing" class="close">×</span>
+             <h2>Terms and conditions</h2>
+           </div>
+           <div class="modal-body">
+             <p> ... Place content ... </p>
+           </div>
+           <a ng-click="acceptTerms()" href="">
+             <div class="modal-footer" id="bvrModal-footer" ng-model="termsAccepted">
+               <h3>Accept conditions</h3>
+             </div>
+           </a>
+         </div>
+
+       </form>
+
+     </div>
 
   <footer class="main-footer2">
   <!-- To the right -->

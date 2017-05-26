@@ -19,13 +19,13 @@ factory('registrationsAPIService', ['$http', 'configuration', function($http, co
     return $http.put(configuration.apiUrl +'/registrations/' + id, data);
   };
 
-  // registrationsAPI.postOneUser = function(data) {
-  //   return $http.post(configuration.apiUrl +'/user/', data);
-  // };
+  registrationsAPI.findDuplicatesUser = function(data) {
+    return $http.post(configuration.apiUrl +'/registrations/duplicatesUser', data);
+  };
 
-  // registrationsAPI.postOneUserAccount = function(data) {
-  //   return $http.post(configuration.apiUrl +'/userAccounts/', data);
-  // };
+  registrationsAPI.findDuplicatesCompany = function(data) {
+    return $http.post(configuration.apiUrl +'/registrations/duplicatesCompany', data);
+  };
 
   return registrationsAPI;
 }]);

@@ -10,5 +10,8 @@ router
   .get('/', getHelper.getAll)
   .get('/:id', getHelper.getOne)
   .put('/:id', putHelper.putOne)
-
+  // look for duplicates
+  .post('/duplicatesUser', postHelper.findDuplicatesUser)
+  .post('/duplicatesCompany', postHelper.findDuplicatesCompany)
+  
 module.exports = router;

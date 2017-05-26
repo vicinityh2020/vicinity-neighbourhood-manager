@@ -19,7 +19,9 @@ angular.module('Registration')
                $scope.number = 1;
                $scope.note ="Register new member";
                $scope.note2 = "Registration form";
+               $scope.termsAccepted = false;
 
+               $('div#myModal1').hide();
                $('div#newOrganisationInfo').hide();
                $('div#newUserInfo').show();
                $('div#verEmailSent').hide();
@@ -46,7 +48,7 @@ angular.module('Registration')
                 var $pass2 = $("#pwUs2");
                 if ($scope.password1Us){
                   if ($scope.password1Us === $scope.password2Us){
-                    registrationsAPIService.postOne({userName: $scope.nameUs, email: $scope.emailUs, password: $scope.password1Us, occupation: $scope.occupationUs, companyName: $scope.companynameUs , companyId:$scope.companyIdUs ,companyLocation: "", type: "newUser"})
+                    registrationsAPIService.postOne({userName: $scope.nameUs, email: $scope.emailUs, password: $scope.password1Us, occupation: $scope.occupationUs, companyName: $scope.companynameUs , companyId:$scope.companyIdUs ,companyLocation: "", status: "pending", type: "newUser"})
                       .then(
                         function successCallback(response){
                           $('div#newUserInfo').fadeOut('slow');
@@ -68,4 +70,20 @@ angular.module('Registration')
                   };
                 }
 
+// Handling modals
+
+              $scope.alertPopUp1 = function () {
+                // alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
+
+                $('div#myModal1').show();
+              }
+
+              $scope.closeNow1 = function () {
+                $('div#myModal1').hide();
+              }
+
+              $scope.acceptTerms = function(){
+                $scope.termsAccepted = true;
+                $('div#myModal1').hide();
+              }
 }]);

@@ -10,7 +10,7 @@ angular.module('Authentication')
 // INITIAL set up ===============================================
                //reset login status
                AuthenticationService.ClearCredentials();
-
+               $scope.duplicities = [];
                $scope.isError = false;
                $scope.visib = 'visible';
                $scope.visib2 = 'hidden';
@@ -86,20 +86,25 @@ angular.module('Authentication')
                 var $pass1 = $("#pw1");
                 var $pass2 = $("#pw2");
                 if ($scope.password1Reg === $scope.password2Reg){
-                   $('div#newOrganisationInfo').fadeOut('slow');
-                   setTimeout(function() {
-                    $('div#verEmailSent').fadeIn('slow');
-                  }, 1000);
-                  registrationsAPIService.postOne({userName: $scope.nameReg, email: $scope.emailReg, password: $scope.password1Reg, occupation: $scope.occupationReg, companyName: $scope.companynameReg , companyLocation: $scope.locationReg, type: "newCompany"})
-                    .then(
-                      function successCallback(response){
-                      $('div#allTemplates').fadeOut('slow');
-                      setTimeout(function() {
-                       $('div#verEmailSent').fadeIn();
-                       }, 1000);
-                     },
-                     function errorCallback(){$window.alert("There was an issue in the registration process...");}
-                   );
+                  if($scope.duplicities.length === 0){
+                    registrationsAPIService.postOne({userName: $scope.nameReg, email: $scope.emailReg,
+                                                    password: $scope.password1Reg, occupation: $scope.occupationReg,
+                                                    companyName: $scope.companynameReg , companyLocation: $scope.locationReg,
+                                                    businessId: $scope.bidReg, termsAndConditions: true, type: "newCompany"})
+                      .then(
+                        function successCallback(response){
+                        $('div#allTemplates').fadeOut('slow');
+                        setTimeout(function() {
+                         $('div#verEmailSent').fadeIn();
+                         }, 1000);
+                       },
+                       function errorCallback(){$window.alert("There was an issue in the registration process...");}
+                     );
+                  }else{
+                    loopArray($scope.duplicities);
+                    $window.alert('There are duplicated values!!!');
+                    $scope.duplicities = [];
+                  };
                 }else{
                   $window.alert("Passwords do not match...");
                   $pass1.addClass("invalid");
@@ -111,34 +116,49 @@ angular.module('Authentication')
                 };
               }
 
-// Function for registering new user
+                $scope.findMeDuplicates = function(){
+                  registrationsAPIService.findDuplicatesUser({email: $scope.emailReg})
+                  .then(
+                    function successCallback(response){
+                      if(response.data.message.length !== 0){
+                        $scope.duplicities.push(response.data.message);
+                      }
+                      registrationsAPIService.findDuplicatesCompany({companyName: $scope.companynameReg, businessID: $scope.bidReg})
+                        .then(
+                          function successCallback(response){
+                            if(response.data.message.length !== 0){
+                              $scope.duplicities.push(response.data.message);
+                            }
+                            $scope.registerCompany();
+                          },
+                          function errorCallback(reponse){}
+                        );
+                      },
+                      function errorCallback(reponse){}
+                    );
+                  }
 
-              // $scope.registerUser = function () {
-              //   var $pass1 = $("#pwUs1");
-              //   var $pass2 = $("#pwUs2");
-              //   if ($scope.password1Us === $scope.password2Us){
-              //      $('div#newUserInfo').fadeOut('slow');
-              //      setTimeout(function() {
-              //       $('div#verEmailSent').fadeIn('slow');
-              //     }, 1000);
-              //     registrationsAPIService.postOne({userName: $scope.nameUs, email: $scope.emailUs, password: $scope.password1Us, occupation: $scope.occupationUs, companyName: $scope.companynameUs , companyLocation: "", type: "newUser"})
-              //       .then(
-              //         function successCallback(response){
-              //           $window.alert("Registration completed, please check your mail to confirm ...");
-              //           $scope.registerNew();
-              //    },
-              //    function errorCallback(){$window.alert("There was an issue in the registration process...");}
-              //   );
-              //   }else{
-              //     $window.alert("Passwords do not match...");
-              //     $pass1.addClass("invalid");
-              //     $pass2.addClass("invalid");
-              //     setTimeout(function() {
-              //      $pass1.removeClass("invalid");
-              //      $pass2.removeClass("invalid");
-              //     }, 2000);
-              //   };
-              // }
+                  var loopArray = function(arr) {
+                    if ( typeof(arr) == "object") {
+                        for (var i = 0; i < arr.length; i++) {
+                          // console.log(arr[i]);
+                          if($scope.companynameReg === arr[i].organisation){
+                            $scope.companynameReg = "";
+                          };
+                          if($scope.emailReg === arr[i].email){
+                            $scope.emailReg = "";
+                          };
+                          if($scope.bidReg === arr[i].businessID){
+                            $scope.bidReg = "";
+                          };
+                          loopArray(arr[i]);
+                        }
+                    }
+                }
+
+
+
+
 
 // Handling modals
 

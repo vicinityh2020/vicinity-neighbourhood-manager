@@ -1,7 +1,7 @@
 <!-- Menu toggle button -->
 <a href="" class="dropdown-toggle" data-toggle="dropdown">
   <i class="fa fa-bell"></i>
-  <span ng-show="!zeroNotif" class="label label-warning">{{notifs.length}}</span>
+  <span ng-show="!zeroNotif" class="label label-warning">{{notifs.length + registrations.length}}</span>
 </a>
 <ul class="dropdown-menu" style="border-color: #FFF; margin-top: 2px">
   <li ng-show="!oneNotif" class="header">You have {{notifs.length}} new notifications</li>
@@ -75,6 +75,17 @@
         <span class="ciara"></span>
       </li>
 
+  <!-- Unread registration request notification -->
+        <li ng-repeat="reg in registrations" ng-show="(reg.type=='registrationRequest')">        <!-- | filter: searchfilter4 -->
+          <div class="notification-avatar">
+            <a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"/>
+          </div>
+            <div class="notification-description">
+              <p> You have received a registration request from: </p><a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><p> {{reg.sentByReg.companyName}} </p></a>
+            </div>
+          <span class="ciara"></span>
+        </li>
+
 <!-- Read device notifications !hotovo! -->
       <li ng-repeat="notif in notifs2 "  ng-show="(notif.type=='deviceRequest') && (notif.status== 'waiting') " >        <!-- | filter: searchfilter1 -->
         <div class="notification-avatar" id="readNot">
@@ -125,6 +136,17 @@
         </div>
         <div id="readNot" class="notification-description"><p>You are partner with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
+        <span class="ciara"></span>
+      </li>
+
+<!-- Read registration request notification-->
+      <li ng-repeat="reg in registrationsRead" ng-show="(reg.type=='registrationRequest')">        <!-- | filter: searchfilter4 -->
+        <div class="notification-avatar" id="readNot">
+          <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"/>
+        </div>
+          <div class="notification-description" id="readNot">
+            <p> You have received a registration request from: </p><a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><p> {{reg.sentByReg.companyName}} </p></a>
+          </div>
         <span class="ciara"></span>
       </li>
       <!-- end notification -->

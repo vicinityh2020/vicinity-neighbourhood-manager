@@ -30,7 +30,7 @@ angular.module('Registration')
                registrationsAPIService.getOne($stateParams.registrationId).then(
                  function successCallback(response){
                    $scope.registration = response.data.message;
-                  if ($scope.registration.status == "open"){
+                  if ($scope.registration.status == "open" || $scope.registration.status == "pending"){
                      registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).then(
                        function successCallback(){
                        $window.alert("verified");

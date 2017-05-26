@@ -11,10 +11,10 @@
               <table id="RegTable" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                  <th ng-click="orderByMe('type')">Type</th>
-                  <th ng-click="orderByMe('name')">Name</th>
-                  <th ng-click="orderByMe('requester')">Requester</th>
-                  <th ng-click="orderByMe('status')">Status</th>
+                  <th>Type</th>
+                  <th>Name<i ng-click="orderByMe('companyName')" class="fa fa-fw fa-sort"></th>
+                  <th>Requester<i ng-click="orderByMe('email')" class="fa fa-fw fa-sort"></th>
+                  <th>Status<i ng-click="orderByMe('status')" class="fa fa-fw fa-sort"></th>
                   <th>Actions</th>
                 </tr>
                 </thead>
@@ -23,7 +23,7 @@
                   <td>Organization</td>
                   <td>
                     <span>{{regis.companyName}}</span>
-                    <span class="glyphicon glyphicon-plus pull-right" ng-click="goToProfile()"></span></td>
+                    <span class="glyphicon glyphicon-plus pull-right" ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"></span></td>
                   <td>{{regis.email}}</td>
                   <td>
                     <span>{{regis.status}}</span>

@@ -28,6 +28,7 @@ function putOne(req, res) {
         var db2 = new userOp();
 
         db2.name =raw.userName;
+        db2.avatar= "";
         db2.occupation =raw.occupation;
         db2.email =raw.email;
         db2.authentication.password =raw.password;
@@ -40,6 +41,7 @@ function putOne(req, res) {
             res.json(response);
           } else {
             logger.debug('New user was successfuly saved!');
+            db.businessId = raw.businessId;
             db.organisation = raw.companyName;
             db.location = raw.companyLocation;
             db.accountOf[0] = product._id;
@@ -105,7 +107,7 @@ function putOne(req, res) {
 // Case we do not want that company to be registered
 
       }else if ((raw.type == "newCompany") && (raw.status == "declined")){
-        // send_mail(raw._id,raw.userName,raw.email,raw.type,raw.companyName, raw.status);
+        send_mail(raw._id,raw.userName,raw.email,raw.type,raw.companyName, raw.status);
         response = {"error": false, "message": "Verification mail sent!"};
         res.json(response);
 
@@ -204,38 +206,34 @@ function send_mail(id, name, emailTo, type, companyName, status){
       else logger.debug("file not found");
     });
 
-  }else{
+  }else{ // Reject company mail
 
-    // TODO Create a new message body to reject the user registration !!!
+    fs.exists("./helpers/mail/rejectCompany.html", function(fileok){
+      if(fileok){
+        fs.readFile("./helpers/mail/rejectCompany.html", function(error, data) {
 
-    // fs.exists("./helpers/mail/activateCompany.html", function(fileok){
-    //   if(fileok){
-    //     fs.readFile("./helpers/mail/activateCompany.html", function(error, data) {
-    //
-    //       var mailContent = String(data);
-    //       var link = "http://localhost:8000/app/#/registration/newCompany/" + id;
-    //       mailContent = mailContent.replace("#companyName",companyName);
-    //       mailContent = mailContent.replace("#link",link);
-    //
-    //       var mailOptions = {
-    //         from: 'noreply.vicinity@gmail.com',
-    //         to: emailTo,
-    //         subject: 'Verification email to join VICINITY',
-    //         // text: '',
-    //         html: mailContent,
-    //       };
-    //
-    //     transporter.sendMail(mailOptions, function(error, info){
-    //       if(error){
-    //         return console.log(error);
-    //       };
-    //       console.log('Message sent: ' + info.response);
-    //     });
-    //
-    //     });
-    //   }
-    //   else logger.debug("file not found");
-    // });
+          var mailContent = String(data);
+          mailContent = mailContent.replace("#companyName",companyName);
+
+          var mailOptions = {
+            from: 'noreply.vicinity@gmail.com',
+            to: emailTo,
+            subject: 'Verification email to join VICINITY',
+            // text: '',
+            html: mailContent,
+          };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+            return console.log(error);
+          };
+          //console.log('Message sent: ' + info.response);
+        });
+
+        });
+      }
+      else logger.debug("file not found");
+    });
 
   }
 }
