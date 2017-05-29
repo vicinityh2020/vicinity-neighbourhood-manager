@@ -11,6 +11,10 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.get(configuration.apiUrl +'/useraccounts');
   };
 
+  userAccountAPI.updateUserAccounts = function(id,data){
+    return $http.put(configuration.apiUrl +'/useraccounts/' + id, data);
+  };
+
   userAccountAPI.sendNeighbourRequest = function (id) {
     return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship');
   };

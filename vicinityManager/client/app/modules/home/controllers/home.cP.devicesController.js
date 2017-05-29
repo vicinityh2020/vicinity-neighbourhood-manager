@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cPdevicesController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
+function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification) {
 
 $scope.devices = [];
 $scope.friends = [];
@@ -29,8 +29,6 @@ $scope.loaded = false;
   },
   function errorCallback(response){}
 );
-
-
 
 
 

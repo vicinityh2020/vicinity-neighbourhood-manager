@@ -14,7 +14,23 @@
           <!-- Profile Image -->
           <div class="box box-primary">
             <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive img-circle" ng-src="{{avatar}}" alt="Company profile picture">
+              <!-- <img class="profile-user-img img-responsive img-circle" ng-src="{{avatar}}" alt="Company profile picture"> -->
+
+              <div ng-show="!isMyProfile" style="width: 200px; text-align: center; margin: 0 auto">
+                <img ng-src="{{avatar}}" class="img-circle" alt="User profile picture" style="height:200px; width:200px;  text-align: center; border: 3px solid; border-color: #d2d6de">
+              </div>
+
+                <div ng-show="isMyProfile" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
+                  <span style="position: absolute" >+Change avatar</span>
+                  <a href="" ng-click="showLoadPic()" style="cursor: pointer">
+                    <img id="pic" ng-src="{{avatar}}" class="img-circle" alt="User profile picture" style="height:200px; width:200px; text-align: center; border: 3px solid; border-color: #d2d6de">
+                  </a>
+                </div>
+
+              <input id="input1" ng-show="showInput" style="margin-left: 44%; margin-top: 10px; margin-bottom: 10px" type="file" />
+              <a ng-click="cancelLoadPic()" style="margin-left: 42%" ng-show="showInput" id="editCancel1" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+              <a ng-show="showInput" id="editUpload2" ng-click="uploadPic()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
+
 
               <h3 class="profile-username text-center">{{name}}</h3>
 
@@ -28,7 +44,7 @@
                   <b>Following</b> <a class="pull-right">{{following.length}}</a>
                 </li> -->
                 <li class="list-group-item">
-                  <a ng-href="#!/profile/company/{{companyAccountId}}/friends"> <b>Partners</b> <span class="pull-right">{{friends.length}}</span></a>
+                  <a ng-href="#!/profile/company/{{companyAccountId}}/partners"> <b>Partners</b> <span class="pull-right">{{friends.length}}</span></a>
                 </li>
                 <li class="list-group-item">
                   <a ng-href="#!/profile/company/{{companyAccountId}}/userAccounts"> <b>User accounts</b> <span class="pull-right">{{users.length}}</span></a>
@@ -77,31 +93,44 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <strong><i class="fa fa-university margin-r-5"></i> Organisation</strong>
 
-              <p class="text-muted">
-                {{organisation}}
-              </p>
+                <strong><i class="fa fa-university margin-r-5"></i> Organisation</strong><br>
+
+                  <a ng-show="false" ng-click="orgEdit()" id="org2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
+                  <a id="org4" ng-click="orgSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
+                  <a id="org5" ng-click="orgCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+                  <p class="text-muted" id="org1">{{organisation}}</p>
+                  <input id="org3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="organisationNew"></input>
+
+              <hr>
+
+              <strong><i class="fa fa-map-marker margin-r-5"></i> BID</strong>
+
+                <a ng-show="false" ng-click="bidEdit()" id="bid2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
+                <a id="bid4" ng-click="bidSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
+                <a id="bid5" ng-click="bidCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+                <p class="text-muted" id="bid1">{{bid}}</p>
+                <input id="bid3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="bidNew"></input>
 
               <hr>
 
               <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
 
-              <p class="text-muted">{{location}}</p>
-
-              <hr>
-
-              <strong><i class="fa fa-pencil margin-r-5"></i> Badges</strong>
-
-              <p>
-                <div ng-repeat="badge in badges"><span class="label label-success">{{badge}}</span></div>
-              </p>
+                <a ng-show="imAdmin" ng-click="locEdit()" id="loc2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
+                <a id="loc4" ng-click="locSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
+                <a id="loc5" ng-click="locCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+                <p class="text-muted" id="loc1">{{location}}</p>
+                <input id="loc3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="locationNew"></input>
 
               <hr>
 
               <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
+              <a ng-show="imAdmin" ng-click="notEdit()" id="not2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
+              <a id="not4" ng-click="notSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
+              <a id="not5" ng-click="notCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+              <input id="not3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="notesNew"></input>
+              <p id="not1">{{notes}}</p>
 
-              <p>{{notes}}</p>
             </div>
             <!-- /.box-body -->
           </div>
@@ -111,9 +140,8 @@
           <div class="nav-tabs-custom">
                        <!-- Nav tabs -->
             <ul class="nav nav-tabs">
-              <li ng-show="!isMyProfile" ui-sref-active="active"><a ui-sref="root.main.companyProfile.devices"><i class="fa fa-clone"></i>&nbsp;Devices</a></li>
+              <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.devices"><i class="fa fa-clone"></i>&nbsp;Devices</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.friends"><i class="fa fa-users"></i>&nbsp;Partners</a></li>
-              <!-- <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.friends"><i class="fa fa-users"></i>&nbsp;Friends</a></li> -->
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.history"><i class="fa fa-clock-o"></i>&nbsp;History</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.userAccounts"><i class="fa fa-user"></i>&nbsp;User accounts</a></li>
             </ul>

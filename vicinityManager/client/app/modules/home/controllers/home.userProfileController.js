@@ -42,8 +42,6 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, userA
 
   $scope.showInput = false;
 
-  // $scope.showInput = false;
-
   $scope.userAccounts = [];
   $scope.companyAccounts = [];
   $scope.thisCompany = {};
@@ -452,19 +450,28 @@ $("input#input1").on('change',function(evt) {
   //       }
 
 $scope.uploadPic = function(){
-  userAPIService.editInfoAboutUser($stateParams.userAccountId, {avatar: base64String}).success(function (){
-    userAPIService.getUser($stateParams.userAccountId).success(function (response) {
-      $scope.avatar = response.message.avatar;
-      $('#editCancel1').fadeOut('slow');
-      $('#editUpload2').fadeOut('slow');
-      $('#input1').fadeOut('slow');
-      $('img#pic').fadeOut('slow');
-      setTimeout(function() {
-        $("img#pic").prop("src",$scope.avatar);
-        $('img#pic').fadeIn('slow');
-     }, 600);
-    });
-  });
+  userAPIService.editInfoAboutUser($stateParams.userAccountId, {avatar: base64String})
+    .then(
+      function successCallback(){
+        userAPIService.getUser($stateParams.userAccountId)
+          .then(
+            function successCallback(response) {
+              $scope.avatar = response.data.message.avatar;
+              $('#editCancel1').fadeOut('slow');
+              $('#editUpload2').fadeOut('slow');
+              $('#input1').fadeOut('slow');
+              $('img#pic').fadeOut('slow');
+              setTimeout(function() {
+                $("img#pic").prop("src",$scope.avatar);
+                $('img#pic').fadeIn('slow');
+             }, 600);
+           },
+           function errorCallback(response){}
+        );
+    },
+    function errorCallback(){}
+  );
+}
   // var f = document.getElementById('input1').files[0];
   // var r = new FileReader();
   // r.onloadend = function(e){
@@ -472,7 +479,6 @@ $scope.uploadPic = function(){
   //   $("img#pic").prop("src",data);
   // };
   // r.readAsArrayBuffer(f);
-}
 
 // function getBase64Image(img) {
 //     var canvas = document.createElement("canvas");

@@ -9,7 +9,7 @@ var userAccount = {
   follows: [ObjectId], //Follows UserAccounts
   memberOf: [ObjectId], //Member of UserGroups
   location: String,
-  businessID : String,
+  businessId : String,
   accountOf: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user'
