@@ -313,6 +313,28 @@ angular.module('VicinityManagerApp', [
             }
         })
 
+        .state('root.main.companyProfile.userAccounts', {
+            url: '/userAccounts',
+            views: {
+                'tabPanel@root.main.companyProfile':
+                    {
+                        templateUrl: 'modules/home/views/home.companyProfile.userAccountsView.html',
+                        controller: 'cPuserAccountsController'
+                    }
+            }
+        })
+
+        .state('root.main.companyProfile.roleMgmt', {
+            url: '/roleMgmt',
+            views: {
+                'tabPanel@root.main.companyProfile':
+                    {
+                        templateUrl: 'modules/home/views/home.companyProfile.roleMgmtView.html',
+                        controller: 'cProleController'
+                    }
+            }
+        })
+
         .state('root.main.deviceProfile', {
           url: '/profile/device/:deviceId',
           views: {
@@ -377,18 +399,6 @@ angular.module('VicinityManagerApp', [
         //             }
         //     }
         // })
-
-
-        .state('root.main.companyProfile.userAccounts', {
-            url: '/userAccounts',
-            views: {
-                'tabPanel@root.main.companyProfile':
-                    {
-                        templateUrl: 'modules/home/views/home.companyProfile.userAccountsView.html',
-                        controller: 'cPuserAccountsController'
-                    }
-            }
-        })
 
         .state('root.main.userProfile', {
           url: '/profile/user/:companyAccountId/:userAccountId',
@@ -521,7 +531,7 @@ angular.module('VicinityManagerApp', [
             var p = $location.url();
 
             // Instead of replacing %2F for / check: https://stackoverflow.com/questions/41272314/angular-all-slashes-in-url-changed-to-2f
-            
+
             var lastPos = p.lastIndexOf("/");
 
             // Case url has / encoded as %2F

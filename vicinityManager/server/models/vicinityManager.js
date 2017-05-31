@@ -45,6 +45,7 @@ var user = {
   occupation: String,
   location: String,
   email: String,
+  status: String,
   // organisation: {
   //     type: mongoose.Schema.Types.ObjectId,
   //     ref: 'userAccount'

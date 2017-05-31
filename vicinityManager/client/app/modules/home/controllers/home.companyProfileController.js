@@ -405,11 +405,7 @@ $scope.uploadPic = function(){
 
 $scope.getUserProf = function () {
 
-  if ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId){
-    $scope.isMyProfile = true;
-  } else {
-    $scope.isMyProfile = false;
-  }
+  $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
 
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
   .then(

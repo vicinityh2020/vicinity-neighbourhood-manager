@@ -1,0 +1,43 @@
+<!-- <section class="content-header">
+  <h1>Company profile</h1>
+</section> -->
+
+<section>
+    <div class="row" ng-repeat="user in userAccounts">
+      <div ng-if="$index === selectedUser || editing === false && user.status !== 'deleted'">
+        <div class="col-sm-2">
+          <a ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})"><strong>{{user.name}}</strong></a>
+        </div>
+        <div class="col-sm-2">
+          <p>{{user.email}}</p>
+        </div>
+        <div class="col-sm-4">
+          <div ng-repeat="role in user.authentication.principalRoles">
+            <span class="label label-success pull-right">{{role}}</span>
+        </div>
+        </div>
+        <div class="col-sm-2">
+          <button class="btn btn-default btn-block pull-right" ng-show="!loaded" ng-click="startUpdate($index)">Change roles</button>
+        </div>
+        <div class="col-sm-2">
+          <button class="btn btn-default btn-block pull-right" ng-show="!loaded" ng-click="deleteUser($index)">Delete User</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-sm-4" ng-show="loaded">
+        <select class="form-control select2 select2-hidden-accessible" multiple="" data-placeholder="Select roles" style="width: 100%" tabindex="-1" aria-hidden="true">
+          <option>administrator</option>
+          <option>infrastructure operator</option>
+          <option>service provider</option>
+          <option>system integrator</option>
+        </select>
+      </div>
+      <div class="col-sm-2" ng-show="loaded">
+        <button class="btn btn-default btn-block" ng-click="updateRoles()">Update</button>
+      </div>
+      <div class="col-sm-2" ng-show="loaded">
+        <button class="btn btn-default btn-block" ng-click="cancelChanges()">Cancel</button>
+      </div>
+    </div>
+</section>

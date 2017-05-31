@@ -144,6 +144,7 @@
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.friends"><i class="fa fa-users"></i>&nbsp;Partners</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.history"><i class="fa fa-clock-o"></i>&nbsp;History</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.companyProfile.userAccounts"><i class="fa fa-user"></i>&nbsp;User accounts</a></li>
+              <li ng-show="imAdmin" ui-sref-active="active"><a ui-sref="root.main.companyProfile.roleMgmt"><i class="fa fa-lock"></i>&nbsp;Role management</a></li>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content" ui-view="tabPanel">
