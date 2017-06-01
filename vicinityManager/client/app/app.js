@@ -481,6 +481,15 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('recoverPassword', {
+          url: '/authentication/recoverPassword/:userId',
+          templateUrl: 'modules/authentication/views/recoverPassword.html',
+          controller: 'recoverPasswordController',
+          onEnter: function(){
+            console.log('Activating state password recovery');
+          }
+        })
+
         .state('login', {
           url: '/login',
           templateUrl: 'modules/authentication/views/login.html',
@@ -565,6 +574,8 @@ angular.module('VicinityManagerApp', [
               $location.path('/registration/newCompany/' + strId);
             }else if ((strBeg.indexOf('/registration/newUser/')) !== -1 && result1){
               $location.path('/registration/newUser/' + strId);
+            }else if ((strBeg.indexOf('/authentication/recoverPassword/')) !== -1 && result1){
+              $location.path('/authentication/recoverPassword/' + strId);
             }else{
               $location.path('/login');
             };

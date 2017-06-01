@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('notifications',
-function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, AuthenticationService, notificationsAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, AuthenticationService, notificationsAPIService, tokenDecoder, Notification) {
 
   // $scope.me = {};
   $scope.notifs = [];
@@ -27,7 +27,7 @@ $scope.$on('$destroy', function(){
      promise = $timeout(function() {
       $scope.getNotifsAndNotifs2();
       $scope.intervalFunction();
-    }, 30000)
+    }, 5000)
   }
 
   $scope.intervalFunction();
@@ -35,6 +35,13 @@ $scope.$on('$destroy', function(){
   $scope.$on('$destroy', function(){
       $timeout.cancel(promise);
   });
+
+// Checking if user is devOps =========================
+
+$scope.isDev = false;
+var payload = tokenDecoder.deToken();
+var keyword = new RegExp('devOps');
+$scope.isDev = keyword.test(payload.roles);
 
 // ====== Getting notifications onLoad (read and unread)
 
@@ -61,7 +68,9 @@ $scope.$on('$destroy', function(){
     notificationsAPIService.getNotificationsOfRegistration()
       .then(
         function successCallback(response){
-          if($window.sessionStorage.ImDev){$scope.registrations = response.data.message;};
+          if($scope.isDev){$scope.registrations = response.data.message;};
+          // TODO place this elsewhere
+          if($scope.notifs.length + $scope.registrations.length !== 0){Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!')};
           $scope.numberOfUnreadNotifs();
         },
         function errorCallback(response) {
@@ -71,10 +80,8 @@ $scope.$on('$destroy', function(){
       notificationsAPIService.getNotificationsOfRegistrationRead()
         .then(
           function successCallback(response){
-            if($window.sessionStorage.ImDev){$scope.registrationsRead = response.data.message;};
+            if($scope.isDev){$scope.registrationsRead = response.data.message;};
             $scope.numberOfUnreadNotifs();
-            // TODO place this elsewhere
-            if($scope.notifs.length + $scope.registrations.length !== 0){Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!')};
           },
           function errorCallback(response) {
           }

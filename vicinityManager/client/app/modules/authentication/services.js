@@ -8,6 +8,14 @@ angular.module('Authentication')
 
           var service = {};
 
+          service.recover = function(data) {
+            return $http.post(configuration.apiUrl + '/api/recovery',data)
+          };
+
+          service.resetPwd = function(id, data, callback) {
+            return $http.put(configuration.apiUrl + '/api/recovery/' + id ,data)
+          };
+
           service.Login = function(username, password, callback) {
             $http.post(configuration.apiUrl + '/api/authenticate',{ username: username, password: password})
               .then(function successCallback(response){

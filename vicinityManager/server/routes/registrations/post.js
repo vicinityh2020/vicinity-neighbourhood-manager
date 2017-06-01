@@ -33,6 +33,7 @@ if(!req.body.status || req.body.status !== 'pending'){
 
   db.save(function(err, product) {
     if (err) {
+      //logger.debug("Error notif");
       response = {"error": true, "message": "Error adding data!"};
     } else {
       dbNotif.sentByReg = product._id;
@@ -42,6 +43,7 @@ if(!req.body.status || req.body.status !== 'pending'){
       dbNotif.save(function(err,data){
         if(err){logger.debug("Error creating the notification");}
       });
+      //logger.debug("Success notif");
       response = {"error": false, "message": "Data added!"};
     }
     res.json(response);

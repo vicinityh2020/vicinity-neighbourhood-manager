@@ -14,36 +14,26 @@
     <p class="login-box-msg"> <a href="http://www.vicinity-h2020.eu"> About project </a> </p>
     <p class="login-box-msg">{{note2}}</p>      <!-- Log in to start your session -->
 
-    <!-- // REGISTER input  only for registry form template -->
-    <!-- <div id="registerInput">
-      <span id="newRegistr" ng-hide="newRegisHide" class="box-title" style="width: auto">I want to register </span>
-      <select id="newRegistr" ng-hide="newRegisHide" class="pull-right" style="width: auto" name="menu" class="box-title">
-        <option value="0" selected="selected">...</option>
-        <option value="1">new company</option>
-        <option value="2">new user in registered company</option>
-      </select>
-    </div> -->
-
   <!-- // LOGIN form template ================ -->
-
-    <form id="login-wrap" name="form" role="form" ng-submit="login()">
+  <div id="login-wrap">
+    <form name="form" role="form" ng-submit="login()">
 
       <!-- username -->
-      <div id="zmiz" class="form-group has-feedback">
-        <input id="user" type="email" name="username" id="username" class="form-control" ng-model="username" placeholder="Email" required/>
+      <div class="form-group has-feedback">
+        <input id="user" type="email" name="username" class="form-control" ng-model="username" placeholder="Email" required/>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
         <span ng-show="form.username.$dirty && form.username.$error.required" class="help-block">Email address as username is required</span>
       </div>
 
       <!-- password -->
-      <div id="zmiz" class="form-group has-feedback">
+      <div  class="form-group has-feedback">
         <input  type="password" id="pass" class="form-control" placeholder="Password" name="password" username="password" ng-model="password" required/>
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
 
       <div  style="text-align: center" id="alert2" ng-show="isError">{{error}}</div>
 
-      <div id="zmiz">
+      <div>
         <div class="col-xs-6">
           <div style="margin-bottom: 0px" class="checkbox">
             <label>
@@ -55,32 +45,33 @@
         </div>
 
         <!-- submit button -->
-        <div id="zmiz" class="col-xs-6">
-          <button id="login-button" type="submit" class="btn btn-primary btn-block btn-flat" ng-disabled="form.$invalid || dataLoading">Log In</button>
+        <div class="col-xs-6">
+          <button type="submit" class="btn btn-primary btn-block btn-flat" ng-disabled="form.$invalid || dataLoading">Log In</button>
           <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
         </div>
 
       </div>
-      <div id="zmiz2" style="margin-top: 20px" class="col-xs-6">
+      <div style="margin-top: 20px" class="col-xs-6">
         <!-- Register new member-->
         <a  href="" ng-click="registerNew()" class="text-center">{{note}}</a>
       </div>
-      <div ng-hide="true" id="zmiz2" style="margin-top: 20px" class="col-xs-6">
-        <a  href="" class="text-center">Forgot my password</a>
+      <div style="margin-top: 20px" class="col-xs-6">
+        <a href="" ng-click="forgotPwd()" class="text-center">Forgot my password</a>
       </div>
     </form>
+  </div>
 
 
 
   <!-- // REGISTER organization form template ================ -->
 
-    <div id="newOrganisationInfo">
+    <div id="newOrganisationInfo" >
 
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Company </span>
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> <strong> Company </strong> </span>
 
-      <form id="regComp-wrap" name="formComp" role="form" ng-submit="findMeDuplicates()">
+      <form name="formComp" role="form" ng-submit="findMeDuplicates()">
 
-      <div  id="org">
+      <div>
         <div  class="form-group has-feedback">
           <span > Name </span><span style="color: red">*</span>
           <input style="width: 60%" type="text" ng-model="companynameReg" value='{{companynameReg}}' class="pull-right" placeholder="Name of your organisation" required/>
@@ -97,9 +88,9 @@
         </div>
       </div>
 
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> Administrator </span>
+      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> <strong> Administrator </strong> </span>
 
-      <div  id="org2">
+      <div>
         <div  class="form-group has-feedback">
           <span > Email </span><span style="color: red">*</span>
           <input style="width: 60%" type="email" ng-model="emailReg" class="pull-right" placeholder="Email of administrator" required/>
@@ -128,11 +119,11 @@
       </div>
 
       <div class="col-xs-6">
-        <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
+        <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>      <!-- Register new member-->
       </div>
       <div class="col-xs-6" style="padding-right: 0px">
-          <input type="checkbox" id="zmiz" href="" ng-model="termsAccepted"></input>
-          <a id="zmiz" href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
+          <input type="checkbox" href="" ng-model="termsAccepted"></input>
+          <a href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
       </div>
       <div style="margin-top: 50px">
         <button type="submit" ng-disabled="!termsAccepted" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
@@ -143,11 +134,11 @@
 
 <!-- // REGISTER user form template ================ -->
 
-    <div id="newUserInfo">
+    <!-- <div id="newUserInfo">
 
       <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> User </span>
-      <form id="regUser-wrap" name="formUser" role="form" ng-submit="registerUser()">
-      <div  id="org2">
+      <form  name="formUser" role="form" ng-submit="registerUser()">
+      <div>
         <div  class="form-group has-feedback">
           <span > Company </span>
           <span ng-model="companynameUs" style="width: 60%" class="pull-right">ABC/ACME/whatever</span>
@@ -180,15 +171,15 @@
       </div>
 
       <div class="col-xs-6">
-        <a id="zmiz" href="" ng-click="registerNew()" class="text-center">{{note}}</a>      <!-- Register new member-->
+        <a id="zmiz" href="" ng-click="backToLogin()" class="text-center">{{note}}</a>
       </div>
       <div class="col-xs-6" style="padding-right: 0px">
-        <button type="submit"  class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
+        <button type="submit"  class="btn btn-primary btn-block btn-flat" >Register me</button>
       </div>
     </form>
     </div>
 
-    </div>
+    </div> -->
 
  <!-- Terms and conditions -->
 
@@ -215,15 +206,40 @@
 
     </div>
 
-<!-- Confirmation mail sent -->
+<!-- Forgot my password functionality -->
 
-    <div id="verEmailSent">
-      <h3 style="color: green" class="login-box-msg"> Dear user thanks for registering, you will receive a mail with further instructions. <i class="fa fa-check fa-3x" style="color: green"></i></h3>
+  <div id="forgot1">
+    <h3 style="color: black" class="login-box-msg"> Dear user, please introduce your email address.</h3>
+    <form role="form" ng-submit="recoverPwd()">
+      <div  class="well" style="padding: 10px">
+        <span> User email </span><span style="color: red">*</span>
+        <input ng-model="emailRecover" style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
+      </div>
+      <div class="col-xs-6">
+        <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>
+      </div>
+      <div class="col-xs-6">
+        <button type="submit"  class="btn btn-primary btn-block btn-flat" >Reset password</button>
+      </div>
+    </form>
     </div>
 
-<!-- TODO: Implement forgot my password functionality -->
-
   </div>
+
+  <!-- Confirmation mail sent registration and pwd -->
+
+      <div id="verEmailSent">
+        <div>
+          <h3 style="color: green" class="login-box-msg"> Dear user thanks for registering, you will receive a mail with further instructions. <i class="fa fa-check fa-3x" style="color: green"></i></h3>
+      </div>
+    </div>
+
+      <div id="forgot2">
+        <div>
+          <h3 style="color: green" class="login-box-msg"> Dear user, follow the instructions sent by mail in order to reset the password. <i class="fa fa-check fa-3x" style="color: green"></i></h3>
+      </div>
+    </div>
+
 </div>
 
 <footer class="main-footer2">
