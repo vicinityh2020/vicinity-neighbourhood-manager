@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
-var nodemailer = require('nodemailer');
+var mailing = require('../../configuration/mail/mailing');
 var ce = require('cloneextend');
-var fs = require("fs");
 var registrationOp = require('../../models/vicinityManager').registration;
 var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -102,14 +101,14 @@ function putOne(req, res) {
 // Case we just want to send verification mail
 
       }else if ((raw.type == "newCompany") && (raw.status == "pending")){
-        send_mail(raw._id,raw.userName,raw.email,raw.type,raw.companyName, raw.status);
+        send_mail(raw._id,raw.email,raw.companyName, raw.status);
         response = {"error": false, "message": "Verification mail sent!"};
         res.json(response);
 
 // Case we do not want that company to be registered
 
       }else if ((raw.type == "newCompany") && (raw.status == "declined")){
-        send_mail(raw._id,raw.userName,raw.email,raw.type,raw.companyName, raw.status);
+        send_mail(raw._id,raw.email,raw.companyName, raw.status);
         response = {"error": false, "message": "Verification mail sent!"};
         res.json(response);
 
@@ -130,7 +129,29 @@ function putOne(req, res) {
   });
 }
 
+function send_mail(id, emailTo, companyName, status){
 
+  if(status === 'pending'){
+    var thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+    var thisTmp = "activateCompany";
+    var thisSubject = 'Verification email to join VICINITY';
+  }else{
+    var thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+    var thisTmp = "rejectCompany";
+    var thisSubject = 'Issue in the process to join VICINITY';
+  }
+
+  var mailInfo = {
+    link : thisLink + id,
+    emailTo : emailTo,
+    subject : thisSubject,
+    tmpName : thisTmp,
+    name : companyName
+  }
+
+  mailing.sendMail(mailInfo);
+
+}
 
 // function delIdFromHasAccessAndAccessRequestFrom(adminId, friendId){
 //
@@ -166,79 +187,7 @@ function putOne(req, res) {
 //
 // }
 
-function send_mail(id, name, emailTo, type, companyName, status){
 
-  var smtpConfig = {
-    service: 'Gmail',
-    auth:
-    { user: 'noreply.vicinity@gmail.com',
-      pass: '9]hj4!gfmSa>8eA,' }
-  };
-
-  var transporter = nodemailer.createTransport(smtpConfig);
-
-  if(status === 'pending'){
-
-    fs.exists("./helpers/mail/activateCompany.html", function(fileok){
-      if(fileok){
-        fs.readFile("./helpers/mail/activateCompany.html", function(error, data) {
-
-          var mailContent = String(data);
-          var link = "http://localhost:8000/app/#/registration/newCompany/" + id;
-          mailContent = mailContent.replace("#companyName",companyName);
-          mailContent = mailContent.replace("#link",link);
-
-          var mailOptions = {
-            from: 'noreply.vicinity@gmail.com',
-            to: emailTo,
-            subject: 'Verification email to join VICINITY',
-            // text: '',
-            html: mailContent,
-          };
-
-        transporter.sendMail(mailOptions, function(error, info){
-          if(error){
-            return console.log(error);
-          };
-          console.log('Message sent: ' + info.response);
-        });
-
-        });
-      }
-      else logger.debug("file not found");
-    });
-
-  }else{ // Reject company mail
-
-    fs.exists("./helpers/mail/rejectCompany.html", function(fileok){
-      if(fileok){
-        fs.readFile("./helpers/mail/rejectCompany.html", function(error, data) {
-
-          var mailContent = String(data);
-          mailContent = mailContent.replace("#companyName",companyName);
-
-          var mailOptions = {
-            from: 'noreply.vicinity@gmail.com',
-            to: emailTo,
-            subject: 'Verification email to join VICINITY',
-            // text: '',
-            html: mailContent,
-          };
-
-        transporter.sendMail(mailOptions, function(error, info){
-          if(error){
-            return console.log(error);
-          };
-          //console.log('Message sent: ' + info.response);
-        });
-
-        });
-      }
-      else logger.debug("file not found");
-    });
-
-  }
-}
 
 module.exports.putOne = putOne;
 // module.exports.delIdFromHasAccessAndAccessRequestFrom = delIdFromHasAccessAndAccessRequestFrom;

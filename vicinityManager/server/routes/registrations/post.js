@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
-var nodemailer = require('nodemailer');
+var mailing = require('../../configuration/mail/mailing');
 var ce = require('cloneextend');
-var fs = require("fs");
 var logger = require("../../middlewares/logger");
 var registrationOp = require('../../models/vicinityManager').registration;
 var notificationOp = require('../../models/vicinityManager').notification;
@@ -65,14 +64,27 @@ if(!req.body.status || req.body.status !== 'pending'){
       if (err) {
         response = {"error": true, "message": "Error adding data!"};
       } else {
-        // dbNotif.sentByReg = product._id;
-        // dbNotif.type = "registrationRequest";
-        // dbNotif.status = "waiting";
-        // dbNotif.isUnread = true;
-        // dbNotif.save(function(err,data){
-        //   if(err){logger.debug("Error creating the notification");}
-        // });
-        send_mail(product._id,product.userName,product.email,product.type,product.companyName);
+
+        if(product.type === 'newUser'){
+          var thisLink = "http://localhost:8000/app/#/registration/newUser/" ;
+          var thisTmp = "activateUser";
+          var thisName = product.userName;
+        }else{
+          var thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+          var thisTmp = "activateCompany";
+          var thisName = product.companyName;
+        }
+
+        var mailInfo = {
+          link : thisLink + product._id,
+          emailTo : product.email,
+          subject : 'Verification email to join VICINITY',
+          tmpName : thisTmp,
+          name : thisName
+        }
+
+        mailing.sendMail(mailInfo);
+
         response = {"error": false, "message": "Data added!"};
         res.json(response);
       };
@@ -123,84 +135,6 @@ function findDuplicatesUser(req, res, next) {
       res.json(response);
     }
   });
-}
-
-// Verification mail for invited users =========
-
-function send_mail(id, name, emailTo, type, companyName, status){
-
-  var smtpConfig = {
-    service: 'Gmail',
-    auth:
-    { user: 'noreply.vicinity@gmail.com',
-      pass: '9]hj4!gfmSa>8eA,' }
-  };
-
-  var transporter = nodemailer.createTransport(smtpConfig);
-
-  if(type === 'newUser'){
-
-    fs.exists("./helpers/mail/activateUser.html", function(fileok){
-      if(fileok){
-        fs.readFile("./helpers/mail/activateUser.html", function(error, data) {
-
-          var mailContent = String(data);
-          var link = "http://localhost:8000/app/#/registration/newUser/" + id;
-          mailContent = mailContent.replace("#name",name);
-          mailContent = mailContent.replace("#link",link);
-
-          var mailOptions = {
-            from: 'noreply.vicinity@gmail.com',
-            to: emailTo,
-            subject: 'Verification email to join VICINITY',
-            // text: '',
-            html: mailContent,
-          };
-
-        transporter.sendMail(mailOptions, function(error, info){
-          if(error){
-            return console.log(error);
-          };
-          console.log('Message sent: ' + info.response);
-        });
-
-        });
-      }
-      else logger.debug("file not found");
-    });
-    // NewCompany
-  }else{
-    fs.exists("./helpers/mail/activateCompany.html", function(fileok){
-      if(fileok){
-        fs.readFile("./helpers/mail/activateCompany.html", function(error, data) {
-
-          var mailContent = String(data);
-          var link = "http://localhost:8000/app/#/registration/newCompany/" + id;
-          mailContent = mailContent.replace("#companyName",companyName);
-          mailContent = mailContent.replace("#link",link);
-
-          var mailOptions = {
-            from: 'noreply.vicinity@gmail.com',
-            to: emailTo,
-            subject: 'Verification email to join VICINITY',
-            // text: '',
-            html: mailContent,
-          };
-
-        transporter.sendMail(mailOptions, function(error, info){
-          if(error){
-            return console.log(error);
-          };
-          console.log('Message sent: ' + info.response);
-        });
-
-        });
-      }
-      else logger.debug("file not found");
-    });
-
-  }
-
 }
 
 module.exports.postOne = postOne;
