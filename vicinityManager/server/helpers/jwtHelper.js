@@ -11,14 +11,17 @@ module.exports.jwtEncode = function(username, roles, userAccountId, companyAccou
         sub: username,
         exp: expires,
         roles: roles,
-        context: {name: username, uid: userAccountId, cid: companyAccountId}
+        name: username,
+        uid: userAccountId,
+        cid: companyAccountId
+        // context: {name: username, uid: userAccountId, cid: companyAccountId}
     }, config.jwtTokenSecret);
-    var response ={
-      token: token,
-      expires: expires,
-      username: username,
-      userAccountId: userAccountId,
-      companyAccountId: companyAccountId};
+    var response = {
+      token: token};
+      // expires: expires,
+      // username: username,
+      // userAccountId: userAccountId,
+      // companyAccountId: companyAccountId};
     return response;
   };
 

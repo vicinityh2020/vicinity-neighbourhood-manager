@@ -93,7 +93,7 @@ function getNeighbourhood(req, res) {
 
 function getAllDevices(req, res) {
   var response = {};
-  var o_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+  var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
   var query = {};
 
   userAccountOp.find({_id: o_id}, function(err, data){

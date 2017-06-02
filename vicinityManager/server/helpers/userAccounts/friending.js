@@ -11,7 +11,7 @@ function processFriendRequest(req, res, next) {
     console.log("POST /:id/friendship");
     console.log(":id " + req.params.id);
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     var friend = {};
     var me = {};
     var response = {};
@@ -62,7 +62,7 @@ function acceptFriendRequest(req, res, next) {
     //TODO: Issue #6 update friendship counts.
     console.log("Running accept friend request");
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
         if (err || data === null) {
@@ -114,7 +114,7 @@ function rejectFriendRequest(req, res, next) {
     //TODO: Issue #6 update friendship counts.
     console.log("Running reject friend request");
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
         if (err || data === null) {
@@ -160,7 +160,7 @@ function rejectFriendRequest(req, res, next) {
 function cancelFriendRequest(req, res, next){
     console.log("Running cancelation of friend request!");
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
         if (err || data === null) {
@@ -207,7 +207,7 @@ function cancelFriendRequest(req, res, next){
 function cancelFriendship(req, res, next){
     console.log("Running cancelation of friendship!");
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
     userAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
         if (err || data === null) {

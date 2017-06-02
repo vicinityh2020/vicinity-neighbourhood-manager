@@ -3,8 +3,8 @@
 angular.module('Authentication')
 
 .factory('AuthenticationService',
-        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window', '$location', 'configuration',
-        function(Base64, $http, $cookies, $rootScope, $timeout, $window, $location, configuration){
+        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window', '$location', 'configuration', 'tokenDecoder',
+        function(Base64, $http, $cookies, $rootScope, $timeout, $window, $location, configuration, tokenDecoder){
 
           var service = {};
 
@@ -12,32 +12,28 @@ angular.module('Authentication')
             return $http.post(configuration.apiUrl + '/api/recovery',data)
           };
 
-          service.resetPwd = function(id, data, callback) {
+          service.resetPwd = function(id, data) {
             return $http.put(configuration.apiUrl + '/api/recovery/' + id ,data)
           };
 
-          service.Login = function(username, password, callback) {
-            $http.post(configuration.apiUrl + '/api/authenticate',{ username: username, password: password})
-              .then(function successCallback(response){
-                callback(response.data);
-              }, function errorCallback(response){
-              });
+          service.Login = function(username, password) {
+            return $http.post(configuration.apiUrl + '/api/authenticate',{ username: username, password: password})
           };
 
           service.signout = function(path){
             console.log(path);
             service.ClearCredentialsAndInvalidateToken();
             $location.path(path);
+            // $cookies.remove("rM_V"); Implemented in userAccountController
           };
 
-          service.SetCredentials = function(username, password, authResponse){
-//TODO: Store only token not username;
-//TODO: Implement service to get username from the token;
+          service.SetCredentials = function(authResponse){
             if (authResponse) {
               $window.sessionStorage.token = (authResponse.token) || {};
-              $window.sessionStorage.username = (authResponse.username) || {};
-              $window.sessionStorage.userAccountId = (authResponse.userAccountId) || {};
-              $window.sessionStorage.companyAccountId = (authResponse.companyAccountId) || {};
+              var tok = tokenDecoder.deToken();
+              $window.sessionStorage.username = (tok.name) || {};
+              $window.sessionStorage.userAccountId = (tok.uid) || {};
+              $window.sessionStorage.companyAccountId = (tok.cid) || {};
               $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
             }
           };
@@ -53,6 +49,37 @@ angular.module('Authentication')
             //TODO: Invalidate token
 //            $http.post("http://localhost:3000/api/authenticate/invalidate",{token: $window.sessionStorage.token});
             service.ClearCredentials();
+          };
+
+// If there is a cookie, look if it has assigned an id and if so refresh token and log the user
+// If the token in the cookie is faked or expired, the refresh token process will fail 
+          service.wasCookie = function(){
+            var myCookie = $cookies.getObject("rM_V");
+            if(myCookie){
+              $http.put(configuration.apiUrl + '/api/remember/' + myCookie.id, {token : myCookie.token})
+                .then(
+                    function successCallback(response){
+                      if(!response.data.error){
+                        service.SetCredentials(response.data.message);
+                        $location.path("/home");
+                      }else{
+                        alert('Token expired');
+                      }
+                    },
+                    function errorCallback(response){alert("Error");}
+                );
+              }
+              return false;
+            };
+
+          service.SetRememberMeCookie = function(data){
+            $http.post(configuration.apiUrl + '/api/remember', data).then(
+              function successCallback(response){
+                var content = {id: response.data.message._id, token:response.data.message.token};
+                $cookies.remove("rM_V");
+                $cookies.putObject("rM_V",content);
+              }
+            );
           };
 
           return service;
@@ -182,15 +209,10 @@ angular.module('Authentication')
 
           //var decodedHeader = Base64.decode(header);
           var decodedPayload = Base64.decode(payload);
-
-          if (decodedPayload.lastIndexOf(',"context":') !== -1){
-            var decodedRoles = decodedPayload.split(',"context":')[0] + '}';
-          }else{
-            $window.alert("The structure of the token changed, consider adapting the service in Authentication...");
-          };
+          var decodedPayload2 = decodedPayload.split('}')[0] + '}';
 
           // var headerObj = JSON.parse(decodedHeader);
-          var payloadObj = JSON.parse(decodedRoles, (key, value) => {
+          var payloadObj = JSON.parse(decodedPayload2, (key, value) => {
             //console.log(key);
             return value;
           });

@@ -106,7 +106,7 @@ function getUserAccountFacade(req, res, next) {
           if (err) {
               response = {"error": true, "message": "Error fetching data"};
           } else {
-              if (req.params.id === req.body.decoded_token.context.cid){
+              if (req.params.id === req.body.decoded_token.cid){
                   isNeighbour = false;
                   canSendNeighbourRequest = false;
                   canCancelNeighbourRequest = false;
@@ -115,7 +115,7 @@ function getUserAccountFacade(req, res, next) {
               } else {
                   // Check wheather we are neihbours
                   for(var index = 0; index < numNeighbors; index++){
-                      if (data.knows[index]._id.toString() === req.body.decoded_token.context.cid) {
+                      if (data.knows[index]._id.toString() === req.body.decoded_token.cid) {
                           isNeighbour = true;
                           canSendNeighbourRequest = false;
                       }
@@ -126,7 +126,7 @@ function getUserAccountFacade(req, res, next) {
                   //Check whether authenticated user can be canceled sent neighbour request to requested profile
 
                   for (index in data.knowsRequestsFrom) {
-                      if (data.knowsRequestsFrom[index].toString() === req.body.decoded_token.context.cid) {
+                      if (data.knowsRequestsFrom[index].toString() === req.body.decoded_token.cid) {
                           canSendNeighbourRequest = false;
                           canCancelNeighbourRequest = true;
                       }
@@ -135,7 +135,7 @@ function getUserAccountFacade(req, res, next) {
 
                   //Check whether authenticated user can cancel sent request
                   for (index  in data.knowsRequestsTo) {
-                      if (data.knowsRequestsTo[index].toString() === req.body.decoded_token.context.cid) {
+                      if (data.knowsRequestsTo[index].toString() === req.body.decoded_token.cid) {
                           canSendNeighbourRequest = false;
                           canAnswerNeighbourRequest = true;
                       }

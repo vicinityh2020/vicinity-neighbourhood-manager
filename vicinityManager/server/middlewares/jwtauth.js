@@ -19,7 +19,7 @@ module.exports = function(req, res, next) {
         return next();
       }
     } catch (err) {
-      logger.info("JWT Validation error: " + err.text);
+      logger.debug("JWT Validation error: " + err.text);
       return res.sendStatus(401);
     }
   } else {

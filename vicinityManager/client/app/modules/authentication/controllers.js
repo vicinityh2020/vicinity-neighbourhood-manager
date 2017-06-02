@@ -24,6 +24,7 @@ angular.module('Authentication')
                $scope.note2 = "Log in to start your session";
                $scope.error = ""
                $scope.termsAccepted = false;
+               $scope.rememberMe = false;
 
                $('div#allTemplates').show();
                $('div#login-wrap').show();
@@ -36,42 +37,46 @@ angular.module('Authentication')
                $('div#forgot1').hide();
                $('div#forgot2').hide();
 
+// Look for rememberMe cookie ==================================
+
+             AuthenticationService.wasCookie()
+
 // LOGIN function ===============================================
              $scope.login = function() {
 
                $scope.dataLoading = true;
-               AuthenticationService.Login($scope.username, $scope.password, function(response){
-                 // TODO change to angular
-                var $user = $("#user");
-                var $pass = $("#pass");
-                //  var $button = $("#login-button");
-                //  var $warButton = $("#warButt");
+               AuthenticationService.Login($scope.username, $scope.password)
+                .then(
+                  function successCallback(response){
+                    var $user = $("#user");
+                    var $pass = $("#pass");
 
-                 if(response.success){
-                  //  Notification.success("Welcome to Vicinity!");
-                   AuthenticationService.SetCredentials($scope.username, $scope.password, response.message);
-                   $location.path("/home");
-                   $scope.isError = false;
-                 } else {
-                   $scope.error = "Incorrect email or password";
-                  // TODO change to angular
-                  $user.addClass("invalid");
-                  $pass.addClass("invalid");
+                     if(response.data.success){
+                      //  Notification.success("Welcome to Vicinity!");
+                       AuthenticationService.SetCredentials(response.data.message);
+                       if($scope.rememberMe){AuthenticationService.SetRememberMeCookie(response.data.message);}
+                       $location.path("/home");
+                       $scope.isError = false;
+                     } else {
+                       $scope.error = "Incorrect email or password";
+                       $user.addClass("invalid");
+                       $pass.addClass("invalid");
 
-                  //  Notification.error("Incorrect email or password");
-                   $scope.isError = true;
-                   $scope.dataLoading = false;
-                   $scope.password = "";
+                      //  Notification.error("Incorrect email or password");
+                       $scope.isError = true;
+                       $scope.dataLoading = false;
+                       $scope.password = "";
 
-                   setTimeout(function() {
-                     // TODO change to angular
-                    $user.removeClass("invalid");
-                    $pass.removeClass("invalid");
-                    $scope.dataLoading = false;
-                  }, 2000);
-                 }
-               });
-             };
+                       setTimeout(function() {
+                         $user.removeClass("invalid");
+                         $pass.removeClass("invalid");
+                         $scope.dataLoading = false;
+                      }, 2000);
+                     }
+                  },
+                  function errorCallback(response){}
+                  );
+                }
 
 
 

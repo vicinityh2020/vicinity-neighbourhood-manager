@@ -1,5 +1,5 @@
 angular.module('VicinityManagerApp.controllers').
-controller('userAccountController', function($scope, $window, userAccountAPIService, AuthenticationService) {
+controller('userAccountController', function($scope, $window, $cookies, userAccountAPIService, AuthenticationService) {
   $scope.name = {};
   $scope.avatar = {};
   $scope.occupation = {};
@@ -10,6 +10,7 @@ controller('userAccountController', function($scope, $window, userAccountAPIServ
 
   $scope.signout = function(){
     console.log("Begin: Signout");
+    $cookies.remove("rM_V"); // If log out remove rememberMe cookie
     AuthenticationService.signout("/login");
     console.log("End: Signout");
   }

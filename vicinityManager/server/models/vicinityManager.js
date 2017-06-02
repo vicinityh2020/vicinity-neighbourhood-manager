@@ -169,6 +169,10 @@ var item = {
   type: String
 };
 
+var remember = {
+  token: String,
+};
+
 // var devOpsVicinity = {
 //  userId : {
 //        type: mongoose.Schema.Types.ObjectId,
@@ -189,4 +193,5 @@ module.exports.item = mongoose.model('item', item);
 module.exports.notification = mongoose.model('notification', notification);
 module.exports.invitation = mongoose.model('invitation', invitation);
 module.exports.registration = mongoose.model('registration', registration);
+module.exports.remember = mongoose.model('remember', remember);
 // module.exports.devOpsVicinity = mongoose.model('devOpsVicinity', devOpsVicinity);

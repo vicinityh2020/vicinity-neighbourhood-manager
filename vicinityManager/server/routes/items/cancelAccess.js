@@ -5,7 +5,7 @@ var itemOp = require('../../models/vicinityManager').item;
 function cancelAccess3(req, res, next){
     console.log("Running cancelation of data access (interruption of data access)!");
     dev_id = mongoose.Types.ObjectId(req.params.id);
-    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     var device = {};
     var response = {};
 

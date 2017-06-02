@@ -8,7 +8,7 @@ function processDeviceAccess(req, res, next) {
     console.log("PUT /:id/access");
     console.log(":id " + req.params.id);
     dev_id = mongoose.Types.ObjectId(req.params.id);
-    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     var device = {};
     var response = {};
 

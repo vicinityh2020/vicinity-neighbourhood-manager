@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var userAccountsOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
+var rememberOp = require('../../models/vicinityManager').remember;
 var jwt = require('../../helpers/jwtHelper');
 var moment = require('moment');
 var logger = require("../../middlewares/logger");
@@ -80,5 +81,22 @@ function findMail(req, res, next) {
   });
 }
 
+function rememberCookie(req, res, next) {
+  var db = new rememberOp();
+  var response = {};
+
+  db.token = req.body.token;
+
+  db.save(function(err,data){
+    if(err){
+      logger.debug("Error creating the notification");
+    }else{
+      response = {"error": false, "message": data};
+      res.json(response);
+    }
+  });
+}
+
 module.exports.authenticate = authenticate;
 module.exports.findMail = findMail;
+module.exports.rememberCookie = rememberCookie;

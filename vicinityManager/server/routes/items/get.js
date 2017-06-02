@@ -53,7 +53,7 @@ function getItemWithAdd(req, res, next) {
     //TODO: Remove foreing users;
 
     var dev_id = mongoose.Types.ObjectId(req.params.id);
-    var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+    var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     var device = {};
     var isOwner = false;
     var canAnswer = false;
