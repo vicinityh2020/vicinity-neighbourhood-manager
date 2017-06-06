@@ -5,6 +5,7 @@ angular.module('VicinityManagerApp.controllers')
             function ($scope, $window, Base64, tokenDecoder) {
 
               $scope.isDev = false;
+              $scope.isInfOp = false;
 
               var myInit = function(){
                 var payload = tokenDecoder.deToken();
@@ -12,8 +13,12 @@ angular.module('VicinityManagerApp.controllers')
                 for(i in payload.roles){
                   if(payload.roles[i] === 'devOps'){
                     $scope.isDev = true;
-                  };
-                };
+                  }
+                  if(payload.roles[i] === 'infrastructure operator'){
+
+                    $scope.isInfOp = true;
+                  }
+                }
               }
 
               myInit();

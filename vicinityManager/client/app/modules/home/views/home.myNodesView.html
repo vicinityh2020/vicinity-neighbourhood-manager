@@ -1,0 +1,47 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><strong>Organisation nodes</strong></h3>
+    <button class="btn btn-default btn-block pull-right" style="width:10%" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus pull-left"></span>Create node</button>
+  </div>
+
+
+  <!-- /.box-header -->
+  <div class="box-body">
+    <table id="RegTable" class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Name<i ng-click="orderByMe('name')" class="fa fa-fw fa-sort"></th>
+          <th>Types</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="nod in nodes | orderBy:myOrderBy:rev">
+          <td class="col-sm-2">
+            <a ui-sref="root.main.nodeDetail({nodeId: nod._id})"><span>{{nod.name}}</span></a>
+          </td>
+          <td class="col-sm-2">
+            <span>{{nod.type[0]}}</span>
+          </td>
+          <!-- <td class="col-sm-2" >
+            <div ng-repeat="typ in nod.type">
+              <span class="label label-success pull-right">{{typ}}</span>
+            </div>
+          </td> -->
+          <td class="col-sm-4">
+            <div class="row">
+              <div class="col-sm-4">
+                <button ng-click="goToEdit(nod._id)" class="btn btn-default btn-block">View node</button>
+              </div>
+              <div class="col-sm-4">
+                <button ng-click="deleteNode(nod._id)" class="btn btn-default btn-block">Delete node</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<!-- /.box-body -->
+</div>
+<!-- /.box -->

@@ -21,6 +21,7 @@ var user = require('./routes/user');
 var notifications = require('./routes/notifications');
 var invitations = require('./routes/invitations');
 var registrations = require('./routes/registrations');
+var nodes = require('./routes/nodes');
 // var devOps = require('./routes/devOps')
 //var search = require('./routes/search');
 //var userAccounts = require('./routes/companyAccounts');
@@ -57,6 +58,7 @@ app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup sec
 //app.use('/usergroups', [jwtauth, userGroups]);
 //app.use('/organisationUnits', [jwtauth, organisationUnits]);
 app.use('/gateways', [jwtauth, gateways]);
+app.use('/nodes', [jwtauth, nodes]);
 app.use('/items', [jwtauth, items]);
 app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);

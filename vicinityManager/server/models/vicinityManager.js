@@ -30,6 +30,10 @@ var userAccount = {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'notification'
   }],
+  hasNodes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'node'
+  }],
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   badges:[String],
@@ -67,7 +71,6 @@ var invitation = {
         organisation: String,
         email: String
     },
-    // sentBy: String,
     type: {type: String, enum: ['newCompany','newUser']}
 };
 
@@ -170,19 +173,21 @@ var item = {
 };
 
 var remember = {
-  token: String,
+  token: {type: String, required: true},
 };
 
-// var devOpsVicinity = {
-//  userId : {
-//        type: mongoose.Schema.Types.ObjectId,
-//        ref: 'user'
-//  },
-//  companyId : {
-//        type: mongoose.Schema.Types.ObjectId,
-//        ref: 'userAccount'
-//  },
-// };
+var node = {
+  name: {type: String, required: true},
+  eventUri: String,
+  type: [String],
+  agent: String,
+  status: String,
+  hasItems: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'item'
+  }]
+};
+
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
 module.exports.user = mongoose.model('user', user);
@@ -194,4 +199,4 @@ module.exports.notification = mongoose.model('notification', notification);
 module.exports.invitation = mongoose.model('invitation', invitation);
 module.exports.registration = mongoose.model('registration', registration);
 module.exports.remember = mongoose.model('remember', remember);
-// module.exports.devOpsVicinity = mongoose.model('devOpsVicinity', devOpsVicinity);
+module.exports.node = mongoose.model('node', node);

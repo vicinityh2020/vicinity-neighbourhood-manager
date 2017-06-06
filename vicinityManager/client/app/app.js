@@ -167,6 +167,16 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+        .state('root.main.myNodes', {
+          url: '/myNodes',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.myNodesView.html',
+                controller: 'myNodesController'
+              }
+          }
+        })
 
 // =========  Sub views of items in side menu / PROFILES =========
 
@@ -429,6 +439,17 @@ angular.module('VicinityManagerApp', [
             {
               templateUrl: 'modules/home/views/home.registrationProfile.regAdminView.html',
               controller:  'rPregAdminController'
+            }
+          }
+        })
+
+        .state('root.main.nodeDetail', {
+          url: '/nodeDetail/:nodeId',
+          views: {
+            'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.nodeDetail.html',
+              controller:  'nodeDetailController'
             }
           }
         })

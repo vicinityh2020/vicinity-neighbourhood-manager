@@ -14,6 +14,8 @@ angular.module('VicinityManagerApp.controllers').
 
 // Define variables
     $scope.regisList = [];
+    $scope.rev = false;
+    $scope.myOrderBy = 'companyName';
 
 // Functions
     registrationsListService.getCompanies()
@@ -25,6 +27,7 @@ angular.module('VicinityManagerApp.controllers').
       );
 
       $scope.orderByMe = function(x) {
+        if($scope.myOrderBy === x){$scope.rev=!($scope.rev)}
           $scope.myOrderBy = x;
         }
 

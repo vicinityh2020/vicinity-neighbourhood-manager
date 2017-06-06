@@ -1,0 +1,81 @@
+<div class="box-header with-border">
+  <h3 class="box-title">Node detail</h3>
+</div>
+
+<!-- MODIFY TEMPLATE -->
+
+<div ng-show="modify" class="box box-primary" style="width:50%">
+  <div class="box-header with-border">
+    <h3 class="box-title">{{myNode}}</h3>
+  </div>
+
+  <form name="form" role="form" ng-submit="submitNode()">
+    <div class="box-body">
+      <div class="form-group">
+        <label>Node name</label>
+        <input class="form-control" ng-model="nName" placeholder="Enter name">
+      </div>
+      <div class="form-group">
+        <label>URI</label>
+        <input class="form-control" ng-model="nUri" placeholder="Enter URI">
+      </div>
+      <div class="form-group">
+        <label>Agent</label>
+        <input class="form-control" ng-model="nAgent" placeholder="Enter agent">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" ng-model="nPass" placeholder="Enter password">
+      </div>
+    </div>
+
+  <div class="box-footer">
+    <div class="col-xs-6">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    <div class="col-xs-6">
+      <a href="" ng-click="backToList()" class="pull-right">Cancel</a>
+    </div>
+  </div>
+  </form>
+</div>
+
+<!-- READ ONLY TEMPLATE-->
+
+<div ng-show="!modify" class="box box-primary" style="width:50%">
+  <div class="box-header with-border">
+    <h3 class="box-title">{{myNode}}</h3>
+  </div>
+
+    <div class="box-body">
+      <div class="form-group">
+        <label>Node name</label>
+        <p>{{nName}}</p>
+      </div>
+      <div class="form-group">
+        <label>URI</label>
+        <p>{{nUri}}</p>
+      </div>
+      <div class="form-group">
+        <label>Agent</label>
+        <p>{{nAgent}}</p>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <p>{{nPass}}</p>
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <p>{{nType}}</p>
+      </div>
+    </div>
+
+  <div class="box-footer">
+    <div class="col-xs-6">
+      <button ng-click="toModify()" class="btn btn-primary">Modify</button>
+    </div>
+    <div class="col-xs-6">
+      <a href="" ng-click="backToList()" class="pull-right">Cancel</a>
+    </div>
+  </div>
+</div>

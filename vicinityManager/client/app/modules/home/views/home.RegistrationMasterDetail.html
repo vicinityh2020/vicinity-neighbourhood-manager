@@ -19,7 +19,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="regis in regisList | orderBy:myOrderBy">
+                <tr ng-repeat="regis in regisList | orderBy:myOrderBy:rev">
                   <td>Organization</td>
                   <td>
                     <span>{{regis.companyName}}</span>
