@@ -48,7 +48,7 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   $('p#not1').show();
   $('a#not4').hide();
   $('a#not5').hide();
-  $('input#not3').hide();
+  $('textarea#not3').hide();
   $('a#bid2').show();
   $('p#bid1').show();
   $('a#bid4').hide();
@@ -141,6 +141,7 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
    $('p#loc1').hide();
    $('a#loc4').show();
    $('a#loc5').show();
+   $scope.locationNew = $scope.location;
    $('input#loc3').show();
  }
 
@@ -169,7 +170,8 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
    $('p#not1').hide();
    $('a#not4').show();
    $('a#not5').show();
-   $('input#not3').show();
+   $scope.notesNew = $scope.notes;
+   $('textarea#not3').show();
  }
 
  $scope.notCancel = function(){
@@ -178,7 +180,7 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
    $('p#not1').show();
    $('a#not4').hide();
    $('a#not5').hide();
-   $('input#not3').hide();
+   $('textarea#not3').hide();
  }
 
  $scope.notSave = function(){
@@ -188,7 +190,7 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
    $('p#not1').show();
    $('a#not4').hide();
    $('a#not5').hide();
-   $('input#not3').hide();
+   $('textarea#not3').hide();
    $scope.notesNew = "";
  }
 

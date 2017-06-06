@@ -4,26 +4,29 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
 
   $scope.userAccounts = [];
   $scope.loaded = false;
-  $scope.selectedUser = "";
+  $scope.loadedPage = false;
+  $scope.selectedUser = {};
   $scope.editing = false;
   $scope.newRoles = [];
   $scope.companyId = $stateParams.companyAccountId;
+  $scope.rev = false; // Initial sorting set to alphabetical
 
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
     .then(
       function successCallback(response){
         $scope.userAccounts = response.data.message.accountOf;
+        $scope.loadedPage = true;
       },
       function errorCallback(response){}
     );
 
     $scope.updateUserInfo = function(data){
-      userAPIService.editInfoAboutUser($scope.userAccounts[$scope.selectedUser]._id,data)
+      userAPIService.editInfoAboutUser($scope.selectedUser._id,data)
         .then(
           function successCallback(response){
             var aux = [];
             for (i = 0; i < $scope.userAccounts.length; i++){
-              if($scope.selectedUser !== i){
+              if($scope.selectedUser._id !== $scope.userAccounts[i]._id){
                 aux.push($scope.userAccounts[i]);
               }
             }
@@ -54,7 +57,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
 
     $( ".select2" ).change(function() {
       var keyword = new RegExp('devOps');
-      if(keyword.test($scope.userAccounts[$scope.selectedUser].authentication.principalRoles)){
+      if(keyword.test($scope.selectedUser.authentication.principalRoles)){
         $scope.newRoles = ['user','devOps'];
       }else{
         $scope.newRoles = ['user'];
@@ -70,7 +73,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
 
     $scope.startUpdate = function(i){
       $scope.selectedUser = i;
-      $(".select2").val($scope.userAccounts[i].authentication.principalRoles).trigger('change'); // Clear selection
+      $(".select2").val($scope.selectedUser.authentication.principalRoles).trigger('change'); // Clear selection
       // $(".select2").trigger('change'); // Clear selection
       $scope.editing = true;
       $scope.loaded = true;
@@ -86,7 +89,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
 
     $scope.cancelChanges = function(){
       $scope.newRoles = [];
-      $scope.selectedUser = "";
+      $scope.selectedUser = {};
       $scope.editing = false;
       $scope.loaded = false;
     }
@@ -102,7 +105,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
           lastName: "",
           occupation: "",
           location: "",
-          email: $scope.userAccounts[$scope.selectedUser].email,
+          email: $scope.selectedUser.email,
           status: 'deleted',
           authentication: {
             password: "",
@@ -117,7 +120,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
       var keyword = new RegExp('administrator');
       var cont = 0;
       // Find out if removing admin role
-      if(keyword.test($scope.userAccounts[$scope.selectedUser].authentication.principalRoles) && !(keyword.test($scope.newRoles) === -1)){
+      if(keyword.test($scope.selectedUser.authentication.principalRoles) && !(keyword.test($scope.newRoles) === -1)){
         for(i = 0; i < $scope.userAccounts.length; i++){
           if(keyword.test($scope.userAccounts[i].authentication.principalRoles)){
             cont++;
@@ -133,5 +136,12 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
         return true;
       }
     }
+
+    // Sorting
+
+    $scope.onSort = function(order){
+      $scope.rev = order;
+    }
+
 
 });

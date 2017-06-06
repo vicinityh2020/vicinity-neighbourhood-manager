@@ -16,11 +16,11 @@
             <div class="box-body box-profile">
               <!-- <img class="profile-user-img img-responsive img-circle" ng-src="{{avatar}}" alt="Company profile picture"> -->
 
-              <div ng-show="!isMyProfile" style="width: 200px; text-align: center; margin: 0 auto">
+              <div ng-show="!imAdmin" style="width: 200px; text-align: center; margin: 0 auto">
                 <img ng-src="{{avatar}}" class="img-circle" alt="User profile picture" style="height:200px; width:200px;  text-align: center; border: 3px solid; border-color: #d2d6de">
               </div>
 
-                <div ng-show="isMyProfile" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
+                <div ng-show="imAdmin" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
                   <span style="position: absolute" >+Change avatar</span>
                   <a href="" ng-click="showLoadPic()" style="cursor: pointer">
                     <img id="pic" ng-src="{{avatar}}" class="img-circle" alt="User profile picture" style="height:200px; width:200px; text-align: center; border: 3px solid; border-color: #d2d6de">
@@ -128,7 +128,7 @@
               <a ng-show="imAdmin" ng-click="notEdit()" id="not2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
               <a id="not4" ng-click="notSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
               <a id="not5" ng-click="notCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-              <input id="not3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="notesNew"></input>
+              <textarea id="not3" rows="4" cols="40" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="notesNew"></textarea>
               <p id="not1">{{notes}}</p>
 
             </div>

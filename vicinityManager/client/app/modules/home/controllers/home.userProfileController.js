@@ -183,13 +183,19 @@ $("input#input1").on('change',function(evt) {
 
   $scope.saveNewName = function () {
     savedAlready = true;
-    userAPIService.editInfoAboutUser($stateParams.userAccountId, {name: $scope.name}).success(function (){
-      userAPIService.getUser($stateParams.userAccountId).success(function (response) {
+    userAPIService.editInfoAboutUser($stateParams.userAccountId, {name: $scope.name}).
+    then(
+      function successCallback(){
+      userAPIService.getUser($stateParams.userAccountId)
+        .then(
+          function successCallback(response) {
     //  $scope.newName = response.message.name;
-     $scope.newName = response.message.name;
+     $scope.newName = response.data.message.name;
      $('span#nameUnderAvatar').hide();
      $('span#newNameUnderAvatar').show();
-     });
+      },
+      function errorCallback(response){}
+    );
 
      $('a#edits1').fadeOut('slow');
      $('a#edits2').fadeOut('slow');
@@ -200,18 +206,24 @@ $("input#input1").on('change',function(evt) {
        $('p#namePnew').fadeIn('fast');
     }, 600);
 
-    });
-
+    },
+    function errorCallback(){}
+  );
   }
 
   $scope.saveNewOccupation = function () {
     savedAlready = true;
-    userAPIService.editInfoAboutUser($stateParams.userAccountId, {occupation: $scope.occupation}).success(function (){
-      userAPIService.getUser($stateParams.userAccountId).success(function (response) {
-     $scope.newOccupation = response.message.occupation;
+    userAPIService.editInfoAboutUser($stateParams.userAccountId, {occupation: $scope.occupation})
+      .then(
+        function successCallback(){
+      userAPIService.getUser($stateParams.userAccountId).then(
+        function successCallback(response) {
+     $scope.newOccupation = response.data.message.occupation;
      $('p#occupationUnderAvatar').hide();
      $('p#newOccupationUnderAvatar').show();
-     });
+     },
+     function errorCallback(response){}
+    );
 
      $('a#edits11').fadeOut('slow');
      $('a#edits21').fadeOut('slow');
@@ -222,7 +234,9 @@ $("input#input1").on('change',function(evt) {
        $('p#nameP1new').fadeIn('fast');
     }, 600);
 
-    });
+      },
+    function errorCallback(){}
+    );
   }
 
   $scope.changeToInput1 = function () {
@@ -259,12 +273,18 @@ $("input#input1").on('change',function(evt) {
 
   $scope.saveNewLocation = function () {
     savedAlready2 = true;
-    userAPIService.editInfoAboutUser($stateParams.userAccountId, {location: $scope.location}).success(function (){
-      userAPIService.getUser($stateParams.userAccountId).success(function (response) {
-     $scope.newLocation = response.message.location;
+    userAPIService.editInfoAboutUser($stateParams.userAccountId, {location: $scope.location})
+      .then(
+        function successCallback(){
+      userAPIService.getUser($stateParams.userAccountId)
+        .then(
+          function successCallback(response) {
+     $scope.newLocation = response.data.message.location;
     //  $('p#occupationUnderAvatar').hide();
     //  $('p#newOccupationUnderAvatar').show();
-     });
+    },
+    function errorCallback(){}
+  );
 
      $('a#edits12').fadeOut('slow');
      $('a#edits22').fadeOut('slow');
@@ -275,7 +295,9 @@ $("input#input1").on('change',function(evt) {
        $('p#namePlocnew').fadeIn('fast');
     }, 600);
 
-    });
+    },
+    function errorCallback(){}
+  );
   }
 
   $scope.changeToInput2 = function () {
@@ -327,8 +349,10 @@ $("input#input1").on('change',function(evt) {
     $('input#editPassNew1Input').fadeOut('slow');
     $('input#editPassNew2Input').fadeOut('slow');
 
-    userAPIService.getUser($stateParams.userAccountId).success(function (response) {
-     $scope.password = response.message.authentication.password;
+    userAPIService.getUser($stateParams.userAccountId)
+      .then(
+        function successCallback(response) {
+     $scope.password = response.data.message.authentication.password;
 
          $scope.text1="";
          k=0;
@@ -338,7 +362,9 @@ $("input#input1").on('change',function(evt) {
          };
 
         //  $('p#passP').fadeIn('fast');
-     });
+     },
+     function errorCallback(){}
+   );
 
 
     // if (savedAlready2){
@@ -362,13 +388,19 @@ $("input#input1").on('change',function(evt) {
   $scope.saveNewPassport = function () {
     // savedAlready2 = true;
 
-    userAPIService.getUser($stateParams.userAccountId).success(function (response) {
-     $scope.password = response.message.authentication.password;
+    userAPIService.getUser($stateParams.userAccountId)
+      .then(
+        function successCallback(response) {
+     $scope.password = response.data.message.authentication.password;
      if (($scope.pass1 === $scope.pass2) && ($scope.password === $scope.oldPass)){
 
-       userAPIService.editInfoAboutUser($stateParams.userAccountId, {"authentication.password": $scope.pass1}).success(function (){
-         userAPIService.getUser($stateParams.userAccountId).success(function (response) {
-           $scope.password = response.message.authentication.password;
+       userAPIService.editInfoAboutUser($stateParams.userAccountId, {"authentication.password": $scope.pass1})
+       .then(
+         function successCallback(response) {
+         userAPIService.getUser($stateParams.userAccountId)
+         .then(
+           function successCallback(response) {
+           $scope.password = response.data.message.authentication.password;
 
            $scope.text1="";
            k=0;
@@ -390,8 +422,12 @@ $("input#input1").on('change',function(evt) {
              $('a#passButt').fadeIn('fast');
              $('p#passP').fadeIn('fast');
           }, 600);
-        });
-      });
+        },
+        function errorCallback(){}
+      );
+      },
+      function errorCallback(){}
+    );
 
      }else{
        var $user = $("#editPassOldInput");
@@ -409,7 +445,9 @@ $("input#input1").on('change',function(evt) {
       }, 2000);
 
      };
-    });
+   },
+   function errorCallback(){}
+ );
   }
 
 
