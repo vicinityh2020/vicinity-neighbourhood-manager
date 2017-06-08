@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var logger = require("../middlewares/logger");
 
 var getHelper = require('./nodes/get.js');
 var postHelper = require('./nodes/post.js');

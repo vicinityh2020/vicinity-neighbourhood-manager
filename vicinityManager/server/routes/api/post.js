@@ -5,7 +5,7 @@ var rememberOp = require('../../models/vicinityManager').remember;
 var jwt = require('../../helpers/jwtHelper');
 var moment = require('moment');
 var logger = require("../../middlewares/logger");
-var mailing = require('../../configuration/mail/mailing');
+var mailing = require('../../helpers/mail/mailing');
 
 
 

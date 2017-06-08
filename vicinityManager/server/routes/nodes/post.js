@@ -15,7 +15,7 @@ function postOne(req, res, next) {
 
   db.save(function(err,data){
     if(err){
-      logger.debug("Error creating the notification");
+      logger.debug("Error creating the node");
     }else{
       userAccountOp.update({ "_id": cid}, {$push: {hasNodes:data._id}}, function(err, data2){
       response = {"error": false, "message": data};

@@ -52,7 +52,7 @@ angular.module('Authentication')
           };
 
 // If there is a cookie, look if it has assigned an id and if so refresh token and log the user
-// If the token in the cookie is faked or expired, the refresh token process will fail 
+// If the token in the cookie is faked or expired, the refresh token process will fail
           service.wasCookie = function(){
             var myCookie = $cookies.getObject("rM_V");
             if(myCookie){
@@ -175,14 +175,16 @@ angular.module('Authentication')
 
 // ======= INITIALIZE token interceptor =======
 
-.factory('jwtTokenHttpInterceptor', [function(){
+.factory('jwtTokenHttpInterceptor',
+        ['Base64',
+        function(Base64){
   console.log('Begin: Inicialized jwtTokenHttpInterceptor');
 
   var tokenInjector = {
     request: function(config) {
-      // console.log('Begin config', config);
-      config.headers['Authorization'] = 'Basic d2VudHdvcnRobWFuOkNoYW5nZV9tZQ==';
-      // console.log('End config', config);
+      var auth = Base64.encode('vicinity-nm:VredesteinLatexMliekoNaDefekt500ml');
+      // config.headers['Authorization'] = 'Basic d2VudHdvcnRobWFuOkNoYW5nZV9tZQ==';
+      config.headers['Authorization'] = 'Basic ' + auth;
       return config;
     }
   };

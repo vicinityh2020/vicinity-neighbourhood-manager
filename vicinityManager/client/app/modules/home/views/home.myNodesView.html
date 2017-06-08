@@ -5,8 +5,13 @@
 
   <!-- /.box-header -->
 <section class="content">
-  <span class="col-xs-2 col-xs-offset-10">
-    <button class="btn btn-default btn-block" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus pull-left"></span>Create node</button>
+  <span class="col-xs-4 col-xs-offset-8">
+  <div class="col-xs-6">
+    <button class="btn btn-default btn-block" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>Create node</button>
+  </div>
+  <div class="col-xs-6">
+    <button class="btn btn-default btn-block" ng-click="createGroup()" ng-disabled='true'><span class="glyphicon glyphicon-plus"></span>Create group</button>
+  </div>
   </span>
   <hr>
 <div class="box">

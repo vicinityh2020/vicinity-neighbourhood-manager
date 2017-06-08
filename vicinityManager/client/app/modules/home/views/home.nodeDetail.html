@@ -1,9 +1,9 @@
-<div class="box-header with-border">
-  <h3 class="box-title">Node detail</h3>
-</div>
+<section class="content-header">
+    <h1>Node detail</h1>
+</section>
 
 <!-- MODIFY TEMPLATE -->
-
+<section class="content">
 <div ng-show="modify" class="box box-primary" style="width:50%">
   <div class="box-header with-border">
     <h3 class="box-title">{{myNode}}</h3>
@@ -26,6 +26,10 @@
       <div class="form-group">
         <label>Password</label>
         <input type="password" class="form-control" ng-model="nPass" placeholder="Enter password">
+      </div>
+      <div class="form-group">
+        <label>Repeat Password</label>
+        <input type="password" class="form-control" ng-model="nPass2" placeholder="Repeat password">
       </div>
     </div>
 
@@ -60,10 +64,10 @@
         <label>Agent</label>
         <p>{{nAgent}}</p>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label>Password</label>
         <p>{{nPass}}</p>
-      </div>
+      </div> -->
       <div class="form-group">
         <label>Type</label>
         <p>{{nType}}</p>
@@ -79,3 +83,4 @@
     </div>
   </div>
 </div>
+</section>

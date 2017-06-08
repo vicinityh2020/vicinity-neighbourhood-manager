@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var mailing = require('../../configuration/mail/mailing');
+var mailing = require('../../helpers/mail/mailing');
 var ce = require('cloneextend');
 var logger = require("../../middlewares/logger");
 var registrationOp = require('../../models/vicinityManager').registration;

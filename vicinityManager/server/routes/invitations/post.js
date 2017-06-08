@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var ce = require('cloneextend');
 var invitationOp = require('../../models/vicinityManager').invitation;
-var mailing = require('../../configuration/mail/mailing');
+var mailing = require('../../helpers/mail/mailing');
 
 
 function postOne(req, res, next) {

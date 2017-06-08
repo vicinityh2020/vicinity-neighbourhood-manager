@@ -1,25 +1,20 @@
 var mongoose = require('mongoose');
-var mailing = require('../../configuration/mail/mailing');
+var mailing = require('../../helpers/mail/mailing');
 var ce = require('cloneextend');
 var registrationOp = require('../../models/vicinityManager').registration;
 var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 var config = require('../../configuration/configuration');
+var commServerPost = require('../../helpers/commServer/post');
 
 function putOne(req, res) {
 //TODO: User authentic - Role check
   var response = {};
-  // var response2 = {};
-  // var response3 = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   var updates = req.body;
 
-  registrationOp.update({ "_id": o_id}, {$set: updates}, function(err, data){
-
-    // if(!err){
-
-    registrationOp.findById(o_id, function(err, raw){
+registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function (err, raw) {
 
 // Case new company registration
 
@@ -46,8 +41,7 @@ function putOne(req, res) {
             db.location = raw.companyLocation;
             db.accountOf[0] = product._id;
             db.avatar = config.avatarOrg;
-            //var product_id = mongoose.Types.ObjectId(product._id);
-            //??? db.accountOf.push(product_id);
+
             db.save(function(err, product2) {
               if (err) {
                 response = {"error": true, "message": "Error adding data!"};
@@ -55,6 +49,7 @@ function putOne(req, res) {
                 res.json(response);
               } else {
                 logger.debug('New userAccount was successfuly saved!');
+                commServerPost.registerCompany(product2,req.headers.authorization); // Add group in commServer for given company
                 response = {"error": false, "message": "New userAccount was successfuly saved!"};
                 res.json(response);
               }
@@ -116,17 +111,10 @@ function putOne(req, res) {
 
       }else{
         response = {"error": false, "message": "Type is neither newUser nor newCompany!"};
+        logger.debug('Wrong status, doing nothing...')
         res.json(response);
       };
-
-
-    });
-
-  // }else{
-  //  response = {"error": err, "message": data};
-  // }
-
-  });
+   });
 }
 
 function send_mail(id, emailTo, companyName, status){
@@ -136,7 +124,7 @@ function send_mail(id, emailTo, companyName, status){
     var thisTmp = "activateCompany";
     var thisSubject = 'Verification email to join VICINITY';
   }else{
-    var thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+    var thisLink = "";
     var thisTmp = "rejectCompany";
     var thisSubject = 'Issue in the process to join VICINITY';
   }

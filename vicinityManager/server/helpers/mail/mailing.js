@@ -13,9 +13,9 @@ function sendMail(mailInfo){
 
   var transporter = nodemailer.createTransport(smtpConfig);
 
-    fs.exists( "./configuration/mail/" + mailInfo.tmpName + ".html", function(isFile){
+    fs.exists( "./helpers/mail/" + mailInfo.tmpName + ".html", function(isFile){
       if(isFile){
-        fs.readFile( "./configuration/mail/" + mailInfo.tmpName + ".html", function(error, data) {
+        fs.readFile( "./helpers/mail/" + mailInfo.tmpName + ".html", function(error, data) {
 
           var mailContent = String(data);
           if(mailInfo.name){mailContent = mailContent.replace("#name", mailInfo.name);}

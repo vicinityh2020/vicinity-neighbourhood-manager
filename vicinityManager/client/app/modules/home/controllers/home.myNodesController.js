@@ -9,10 +9,12 @@ angular.module('VicinityManagerApp.controllers').
             nodeAPIService,
             Notification) {
 
-//=================================
+// ======== Set initial variables ==========
+
   $scope.rev = false;
   $scope.myOrderBy = 'name';
 
+  var myInit = function(){
   nodeAPIService.getAll($window.sessionStorage.companyAccountId)
     .then(
       function successCallback(response){
@@ -20,15 +22,11 @@ angular.module('VicinityManagerApp.controllers').
       },
       function errorCallback(response){}
     );
-
-  $scope.goToEdit = function(i){
-      $state.go("root.main.nodeDetail",{nodeId: i});
   }
 
-  $scope.orderByMe = function(x) {
-    if($scope.myOrderBy === x){$scope.rev=!($scope.rev)}
-      $scope.myOrderBy = x;
-    }
+  myInit();
+
+// ======== Main functions =========
 
     $scope.deleteNode = function(id){
       var newNodes = [];
@@ -47,7 +45,16 @@ angular.module('VicinityManagerApp.controllers').
             nodeAPIService.updateOne(id, query2)
               .then(
                 function successCallback(response){
-                  $window.alert("Successfully removed!!");
+                  nodeAPIService.deleteResource('users', {route : id})
+                    .then(
+                      function successCallback(response){
+                        $window.alert("Successfully removed!!");
+                        myInit();
+                      },
+                      function errorCallback(response){
+                          $window.alert("Error");
+                      }
+                    );
                 },
                 function errorCallback(response){}
               );
@@ -55,5 +62,35 @@ angular.module('VicinityManagerApp.controllers').
           function errorCallback(response){}
         );
     }
+
+
+    $scope.createGroup = function(){
+
+      var payload = {
+        name: $window.sessionStorage.companyAccountId,
+        description: "Reagon"
+      };
+
+      nodeAPIService.postResource('groups',payload)
+        .then(
+          function successCallback(response){
+            $window.alert("Success");
+          },
+          function errorCallback(response){
+              $window.alert("Error");
+          }
+        );
+    }
+
+// ==== Navigation functions =====
+
+    $scope.goToEdit = function(i){
+        $state.go("root.main.nodeDetail",{nodeId: i});
+    }
+
+    $scope.orderByMe = function(x) {
+      if($scope.myOrderBy === x){$scope.rev=!($scope.rev)}
+        $scope.myOrderBy = x;
+      }
 
 });
