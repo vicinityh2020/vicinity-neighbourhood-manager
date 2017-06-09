@@ -35,5 +35,9 @@ factory('nodeAPIService', ['$http', 'configuration', function($http, configurati
     return $http.post(configuration.apiUrl + '/commServer/delete/' + endPoint, data);
   };
 
+  // nodeAPI.getResource = function(id) {
+  //   return $http.get(configuration.apiUrl + '/commServer/' + id);
+  // };
+
   return nodeAPI;
 }]);

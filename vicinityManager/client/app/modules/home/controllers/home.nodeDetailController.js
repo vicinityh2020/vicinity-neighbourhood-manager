@@ -55,13 +55,16 @@ angular.module('VicinityManagerApp.controllers').
                       function successCallback(response){
 
                           $scope.nId = response.data.message._id;
-                          var property = [{"agent" : $scope.nAgent},
-                                        {"uri" : $scope.nUri}];
+
                           var payload = {
                             username : $scope.nId,
                             name: $scope.nName,
                             password: $scope.nPass,
-                            properties: property
+                            properties: { property:
+                                        [
+                                          {'@key':'agent', '@value': $scope.nAgent},
+                                          {'@key':'uri', '@value': $scope.nUri}
+                                              ]}
                           };
 
                           nodeAPIService.postResource('users',payload)
@@ -70,7 +73,7 @@ angular.module('VicinityManagerApp.controllers').
                                 nodeAPIService.postResource('users' , { route : $scope.nId + '/groups/' + $window.sessionStorage.companyAccountId})
                                   .then(
                                     function successCallback(response){
-                                      $window.alert("Success");
+                                      Notification.success("Node successfully created!!");
                                       $scope.backToList();
                                     },
                                     function errorCallback(response){
@@ -88,18 +91,22 @@ angular.module('VicinityManagerApp.controllers').
                 nodeAPIService.updateOne($state.params.nodeId, query)
                   .then(
                     function successCallback(response){
-                      var property = [{"agent" : $scope.nAgent},
-                                    {"uri" : $scope.nUri}];
+
                       var payload = {
                         name: $scope.nName,
                         password: $scope.nPass,
-                        properties: property,
+                        properties: { property:
+                                    [
+                                      {'@key':'agent', '@value': $scope.nAgent},
+                                      {'@key':'uri', '@value': $scope.nUri}
+                                          ]},
                         route: $state.params.nodeId
                       };
-
+                      a = JSON.stringify(payload);
                       nodeAPIService.putResource('users',payload)
                         .then(
                           function successCallback(response){
+                            Notification.success("Node successfully modified!!");
                             $scope.backToList();
                           },
                           function errorCallback(response){

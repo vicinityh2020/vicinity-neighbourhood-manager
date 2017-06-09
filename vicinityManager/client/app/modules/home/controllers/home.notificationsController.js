@@ -49,56 +49,50 @@ $scope.isDev = keyword.test(payload.roles);
     .then(
       function successCallback(response){
         $scope.notifs = response.data.message;
-        $scope.numberOfUnreadNotifs();
+        userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId)
+          .then(
+            function successCallback(response){
+              $scope.notifs2 = response.data.message;
+              $scope.numberOfUnreadNotifs();
+              if($scope.isDev){
+                notificationsAPIService.getNotificationsOfRegistration()
+                  .then(
+                    function successCallback(response){
+                      $scope.registrations = response.data.message;
+                      $scope.numberOfUnreadNotifs();
+                      if($scope.notifs.length + $scope.registrations.length !== 0){
+                        Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!')
+                      }
+                      notificationsAPIService.getNotificationsOfRegistrationRead()
+                        .then(
+                          function successCallback(response){
+                            $scope.registrationsRead = response.data.message;
+                          },
+                          function errorCallback(response) {
+                          }
+                        );
+                    },
+                    function errorCallback(response) {
+                    }
+                  );
+              }else{
+                if($scope.notifs.length + $scope.registrations.length !== 0){
+                  Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!')
+                }
+              }
+            },
+            function errorCallback(response){
+            }
+          );
       },
       function errorCallback(response) {
       }
     );
 
-    userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId)
-      .then(
-        function successCallback(response){
-          $scope.notifs2 = response.data.message;
-          $scope.numberOfUnreadNotifs();
-        },
-        function errorCallback(response){
-        }
-      );
-
-    notificationsAPIService.getNotificationsOfRegistration()
-      .then(
-        function successCallback(response){
-          if($scope.isDev){$scope.registrations = response.data.message;};
-          // TODO place this elsewhere
-          if($scope.notifs.length + $scope.registrations.length !== 0){Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!')};
-          $scope.numberOfUnreadNotifs();
-        },
-        function errorCallback(response) {
-        }
-      );
-
-      notificationsAPIService.getNotificationsOfRegistrationRead()
-        .then(
-          function successCallback(response){
-            if($scope.isDev){$scope.registrationsRead = response.data.message;};
-            $scope.numberOfUnreadNotifs();
-          },
-          function errorCallback(response) {
-          }
-        );
-
-        // userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId)
-        //   .then(
-        //     function successCallback(resource) {
-        //       $scope.notifs2 = resource.data.message;
-        //     },
-        //     function errorCallback(resource){
-        //     }
-        //   );
 
 // =========
 
-$scope.numberOfUnreadNotifs = function(){
+  $scope.numberOfUnreadNotifs = function(){
     $scope.oneNotif = ($scope.notifs.length + $scope.registrations.length) === 1;
     $scope.zeroNotif = ($scope.notifs.length + $scope.registrations.length) === 0;
   }

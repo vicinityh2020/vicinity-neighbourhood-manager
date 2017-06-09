@@ -20,8 +20,8 @@
                 <tr ng-repeat="regis in regisList | orderBy:myOrderBy:rev">
                   <td>Organization</td>
                   <td>
-                    <span>{{regis.companyName}}</span>
-                    <span class="glyphicon glyphicon-plus pull-right" ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"></span></td>
+                    <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"><span>{{regis.companyName}}</span></a>
+                  </td>
                   <td>{{regis.email}}</td>
                   <td>
                     <span>{{regis.status}}</span>
@@ -37,8 +37,8 @@
                   </td>
                   <td>
                       <button ng-click="f()" ng-if="regis.status === 'verified' " class="btn btn-default btn-block">verified action</button>
-                      <button ng-click="verifyAction($index)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Verify user</button>
-                      <button ng-click="declineAction($index)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Decline user</button>
+                      <button ng-click="verifyAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Verify user</button>
+                      <button ng-click="declineAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Decline user</button>
                       <button ng-click="f()" ng-if="regis.status === 'declined' " class="btn btn-default btn-block">declined action</button>
                       <p ng-if="regis.status === 'pending' ">Waiting an answer</p>
                   </td>

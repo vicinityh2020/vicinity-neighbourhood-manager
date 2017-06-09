@@ -40,12 +40,14 @@ angular.module('Registration')
                     if ($scope.registration.status == "open" || $scope.registration.status == "pending"){
                       registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).then(
                         function successCallback(){
-                        $window.alert("verified");
+                        // $window.alert("verified");
                       },
                       function errorCallback(){$window.alert("verification failed");}
                     );
                     }
-                    else{$window.alert("verified")}
+                    else{
+                      // $window.alert("verified")
+                    }
                   },
                   function errorCallback(){$window.alert("verification failed");}
                 );

@@ -48,7 +48,7 @@ angular.module('VicinityManagerApp.controllers').
                   nodeAPIService.deleteResource('users', {route : id})
                     .then(
                       function successCallback(response){
-                        $window.alert("Successfully removed!!");
+                        Notification.success("Node successfully removed!!");
                         myInit();
                       },
                       function errorCallback(response){
@@ -64,8 +64,22 @@ angular.module('VicinityManagerApp.controllers').
     }
 
 
-    $scope.createGroup = function(){
+    $scope.createGroup = function(){  // Debug only -- TODO Remove
 
+      // var payload = {
+      //   route: '593a44510a1bad02b11d5d12',
+      //   description: "Reagon"
+      // };
+      //
+      // nodeAPIService.getResource('users')
+      //   .then(
+      //     function successCallback(response){
+      //       $window.alert("Success");
+      //     },
+      //     function errorCallback(response){
+      //         $window.alert("Error");
+      //     }
+      //   );
       var payload = {
         name: $window.sessionStorage.companyAccountId,
         description: "Reagon"

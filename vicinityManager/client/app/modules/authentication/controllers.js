@@ -3,8 +3,8 @@
 angular.module('Authentication')
 
   .controller('LoginController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', 'userAccountAPIService', 'AuthenticationService', 'registrationsAPIService',
-             function ($scope, $rootScope, $location, $state, $window, userAccountAPIService, AuthenticationService, registrationsAPIService){
+             ['$scope', '$rootScope', '$location', '$state', '$window', 'userAccountAPIService', 'AuthenticationService', 'registrationsAPIService', 'Notification',
+             function ($scope, $rootScope, $location, $state, $window, userAccountAPIService, AuthenticationService, registrationsAPIService, Notification){
 
 
 // INITIAL set up ===============================================
@@ -98,15 +98,15 @@ angular.module('Authentication')
                          $('div#verEmailSent').fadeIn();
                          }, 1000);
                        },
-                       function errorCallback(){$window.alert("There was an issue in the registration process...");}
+                       function errorCallback(){Notification.warning("There was an issue in the registration process...");}
                      );
                   }else{
                     loopArray($scope.duplicities);
-                    $window.alert('There are duplicated values!!!');
+                    Notification.warning('There are duplicated values!!!');
                     $scope.duplicities = [];
                   };
                 }else{
-                  $window.alert("Passwords do not match...");
+                  Notification.warning("Passwords do not match...");
                   $pass1.addClass("invalid");
                   $pass2.addClass("invalid");
                    setTimeout(function() {
@@ -143,7 +143,7 @@ angular.module('Authentication')
                       .then(
                         function successCallback(response){
                         if(response.data.error){
-                          alert("The username does not exist...");
+                          Notification.warning("The username does not exist...");
                           $scope.emailRecover = "";
                         }else{
                           $('div#allTemplates').fadeOut('slow');
@@ -278,8 +278,8 @@ angular.module('Authentication')
 // ==== recoverPasswordController controller ========
 
 .controller('recoverPasswordController',
-           ['$scope', '$stateParams', 'AuthenticationService',
-           function ($scope, $stateParams, AuthenticationService){
+           ['$scope', '$stateParams', 'AuthenticationService', 'Notification',
+           function ($scope, $stateParams, AuthenticationService, Notification){
 
              $('div#recoverTmp').show();
              $('div#emailSentTmp').hide();
@@ -300,7 +300,7 @@ angular.module('Authentication')
                       }
                     );
                   }else{
-                    alert("Passwords not matching");
+                    Notification.warning("Passwords not matching");
                     $scope.password1 = "";
                     $scope.password2 = "";
                   }

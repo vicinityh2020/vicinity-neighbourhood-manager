@@ -107,9 +107,12 @@
         </div>
 
         <div  class="form-group has-feedback">
-          <span > Repeat password </span><span style="color: red">*</span>
+          <span> Repeat password </span><span style="color: red">*</span>
           <input id="pw2" style="width: 60%" type="password" ng-model="password2Reg" class="pull-right" placeholder="Same password again" required/>
         </div>
+
+        <span class="help-block" style="color: green" ng-show="password1Reg===password2Reg && password2Reg"><i class="fa fa-check"></i> Passwords match!</span>
+        <span class="help-block" style="color: red" ng-show="password1Reg!==password2Reg && password2Reg"><i class="fa fa-times"></i> Passwords not matching</span>
 
         <div  class="form-group has-feedback">
           <span > Name</span>
@@ -131,7 +134,7 @@
           <a href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
       </div>
       <div style="margin-top: 50px">
-        <button type="submit" ng-disabled="!termsAccepted" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
+        <button type="submit" ng-disabled="!termsAccepted || password1Reg!==password2Reg" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
       </div>
 
     </form>

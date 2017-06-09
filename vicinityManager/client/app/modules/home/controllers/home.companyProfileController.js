@@ -73,7 +73,8 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
       // Refresh scope data every 5 sec
         $scope.intervalFunction = function(){
           promise = $timeout(function() {
-            $scope.getUserProf();
+            $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
+            $scope.myInit();
             $scope.intervalFunction();
           }, 5000)
         }
@@ -81,6 +82,7 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
         $scope.intervalFunction();
 
 // Get resources & data ================
+$scope.myInit = function(){
 
 userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
   .then(
@@ -98,6 +100,9 @@ userAccountAPIService.getMyDevices($stateParams.companyAccountId)
     },
     function errorCallback(response){}
   );
+}
+
+$scope.myInit();
 
 // Check if it is the company profile and if the user is its admin
 
@@ -105,130 +110,6 @@ $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.c
 var payload = tokenDecoder.deToken();
 var keyword = new RegExp('administrator');
 $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
-
-// Edit Profile Functions ===============
-
- // $scope.orgEdit = function(){
- //   $('a#org2').hide();
- //   $('p#org1').hide();
- //   $('a#org4').show();
- //   $('a#org5').show();
- //   $('input#org3').show();
- // }
- //
- // $scope.orgCancel = function(){
- //   $scope.organisationNew = "";
- //   $('a#org2').show();
- //   $('p#org1').show();
- //   $('a#org4').hide();
- //   $('a#org5').hide();
- //   $('input#org3').hide();
- // }
- //
- // $scope.orgSave = function(){
- //   var data = {organisation: $scope.organisationNew };
- //   $scope.updateCompany(data);
- //   $('a#org2').show();
- //   $('p#org1').show();
- //   $('a#org4').hide();
- //   $('a#org5').hide();
- //   $('input#org3').hide();
- //   $scope.organisationNew = "";
- // }
-
- $scope.locEdit = function(){
-   $('a#loc2').hide();
-   $('p#loc1').hide();
-   $('a#loc4').show();
-   $('a#loc5').show();
-   $scope.locationNew = $scope.location;
-   $('input#loc3').show();
- }
-
- $scope.locCancel = function(){
-   $scope.locationNew = "";
-   $('a#loc2').show();
-   $('p#loc1').show();
-   $('a#loc4').hide();
-   $('a#loc5').hide();
-   $('input#loc3').hide();
- }
-
- $scope.locSave = function(){
-   var data = {location: $scope.locationNew };
-   $scope.updateCompany(data);
-   $('a#loc2').show();
-   $('p#loc1').show();
-   $('a#loc4').hide();
-   $('a#loc5').hide();
-   $('input#loc3').hide();
-   $scope.locationNew = "";
- }
-
- $scope.notEdit = function(){
-   $('a#not2').hide();
-   $('p#not1').hide();
-   $('a#not4').show();
-   $('a#not5').show();
-   $scope.notesNew = $scope.notes;
-   $('textarea#not3').show();
- }
-
- $scope.notCancel = function(){
-   $scope.notesNew = "";
-   $('a#not2').show();
-   $('p#not1').show();
-   $('a#not4').hide();
-   $('a#not5').hide();
-   $('textarea#not3').hide();
- }
-
- $scope.notSave = function(){
-   var data = {notes: $scope.notesNew };
-   $scope.updateCompany(data);
-   $('a#not2').show();
-   $('p#not1').show();
-   $('a#not4').hide();
-   $('a#not5').hide();
-   $('textarea#not3').hide();
-   $scope.notesNew = "";
- }
-
- // $scope.bidEdit = function(){
- //   $('a#bid2').hide();
- //   $('p#bid1').hide();
- //   $('a#bid4').show();
- //   $('a#bid5').show();
- //   $('input#bid3').show();
- // }
- //
- // $scope.bidCancel = function(){
- //   $scope.bidNew = "";
- //   $('a#bid2').show();
- //   $('p#bid1').show();
- //   $('a#bid4').hide();
- //   $('a#bid5').hide();
- //   $('input#bid3').hide();
- // }
- //
- // $scope.bidSave = function(){
- //   var data = {businessId: $scope.bidNew };
- //   $scope.updateCompany(data);
- //   $('a#bid2').show();
- //   $('p#bid1').show();
- //   $('a#bid4').hide();
- //   $('a#bid5').hide();
- //   $('input#bid3').hide();
- //   $scope.bidNew = "";
- // }
-
-$scope.updateCompany = function(data){
-  userAccountAPIService.updateUserAccounts($window.sessionStorage.companyAccountId,data)
-    .then(
-      function successCallback(response){},
-      function errorCallback(response){}
-    );
-}
 
 // Avatar change functions ==============
 
@@ -301,14 +182,7 @@ $scope.uploadPic = function(){
                     } else {
                         Notification.success("Partnership request sent!");
                     }
-
-                    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-                      .then(
-                        function successCallback(response){
-                          updateScopeAttributes(response);
-                        },
-                        function errorCallback(response){}
-                      );
+                    $scope.onlyRefreshAccount();
                 },
                 function errorCallback(response){}
               );
@@ -323,14 +197,7 @@ $scope.uploadPic = function(){
                 } else {
                     Notification.success("Partnership request accepted!");
                 }
-
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-                  .then(
-                    function successCallback(response){
-                      updateScopeAttributes(response);
-                    },
-                    function errorCallback(response){}
-                  );
+                $scope.onlyRefreshAccount();
                 // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);
             },
             function errorCallback(response){}
@@ -346,14 +213,7 @@ $scope.uploadPic = function(){
                 } else {
                     Notification.success("Partnership request rejected!");
                 }
-
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-                  .then(
-                    function successCallback(response){
-                      updateScopeAttributes(response);
-                    },
-                    function errorCallback(response){}
-                  );
+                $scope.onlyRefreshAccount();
             },
             function errorCallback(response){}
           );
@@ -368,14 +228,7 @@ $scope.uploadPic = function(){
                 } else {
                     Notification.success("Partnership request canceled!");
                 }
-
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-                  .then(
-                    function successCallback(response){
-                      updateScopeAttributes(response);
-                    },
-                    function errorCallback(response){}
-                  );
+                $scope.onlyRefreshAccount();
             },
             function errorCallback(response){}
           );
@@ -390,14 +243,7 @@ $scope.uploadPic = function(){
                 } else {
                     Notification.success("Partnership canceled!");
                 }
-
-                userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-                  .then(
-                    function successCallback(response){
-                      updateScopeAttributes(response);
-                    },
-                    function errorCallback(response){}
-                  );
+                $scope.onlyRefreshAccount();
             },
             function errorCallback(response){}
           );
@@ -405,27 +251,15 @@ $scope.uploadPic = function(){
 
 // Refresh $scope =================
 
-$scope.getUserProf = function () {
-
-  $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
-
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-  .then(
-    function successCallback(response){
-      updateScopeAttributes(response);
-      $scope.loaded = true;
-    },
-    function errorCallback(response){}
-  );
-
-  userAccountAPIService.getMyDevices($stateParams.companyAccountId)
-  .then(
-    function successCallback(response){
-      $scope.devices =response.data.message;
-    },
-    function errorCallback(response){}
-  );
-}
+  $scope.onlyRefreshAccount = function(){
+    userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+      .then(
+        function successCallback(response){
+          updateScopeAttributes(response);
+        },
+        function errorCallback(response){}
+      );
+  }
 
   function updateScopeAttributes(response){
       $scope.name = response.data.message.organisation;
@@ -446,3 +280,71 @@ $scope.getUserProf = function () {
   };
 
 });
+
+// Edit Profile Functions ===============
+
+ $scope.locEdit = function(){
+   $('a#loc2').hide();
+   $('p#loc1').hide();
+   $('a#loc4').show();
+   $('a#loc5').show();
+   $scope.locationNew = $scope.location;
+   $('input#loc3').show();
+ }
+
+ $scope.locCancel = function(){
+   $scope.locationNew = "";
+   $('a#loc2').show();
+   $('p#loc1').show();
+   $('a#loc4').hide();
+   $('a#loc5').hide();
+   $('input#loc3').hide();
+ }
+
+ $scope.locSave = function(){
+   var data = {location: $scope.locationNew };
+   $scope.updateCompany(data);
+   $('a#loc2').show();
+   $('p#loc1').show();
+   $('a#loc4').hide();
+   $('a#loc5').hide();
+   $('input#loc3').hide();
+   $scope.locationNew = "";
+ }
+
+ $scope.notEdit = function(){
+   $('a#not2').hide();
+   $('p#not1').hide();
+   $('a#not4').show();
+   $('a#not5').show();
+   $scope.notesNew = $scope.notes;
+   $('textarea#not3').show();
+ }
+
+ $scope.notCancel = function(){
+   $scope.notesNew = "";
+   $('a#not2').show();
+   $('p#not1').show();
+   $('a#not4').hide();
+   $('a#not5').hide();
+   $('textarea#not3').hide();
+ }
+
+ $scope.notSave = function(){
+   var data = {notes: $scope.notesNew };
+   $scope.updateCompany(data);
+   $('a#not2').show();
+   $('p#not1').show();
+   $('a#not4').hide();
+   $('a#not5').hide();
+   $('textarea#not3').hide();
+   $scope.notesNew = "";
+ }
+
+$scope.updateCompany = function(data){
+  userAccountAPIService.updateUserAccounts($window.sessionStorage.companyAccountId,data)
+    .then(
+      function successCallback(response){},
+      function errorCallback(response){}
+    );
+}

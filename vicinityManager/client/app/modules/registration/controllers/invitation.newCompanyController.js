@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('invitationNewCompanyController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService){
+             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
+             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
                //rest login status
               //  AuthenticationService.ClearCredentials();
               $scope.duplicities = [];
@@ -63,15 +63,15 @@ angular.module('Registration')
                         $('div#verEmailSent').fadeIn();
                         }, 1000);
                      },
-                     function errorCallback(){$window.alert("There was an issue in the registration process...");}
+                     function errorCallback(){Notification.warning("There was an issue in the registration process...");}
                    );
                  }else{
                    loopArray($scope.duplicities);
-                   $window.alert('There are duplicated values!!!');
+                   Notification.warning('There are duplicated values!!!');
                    $scope.duplicities = [];
                  };
                  }else{
-                   $window.alert("Passwords do not match...");
+                   Notification.warning("Passwords do not match...");
                    $pass1.addClass("invalid");
                    $pass2.addClass("invalid");
                    setTimeout(function() {

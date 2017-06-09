@@ -18,9 +18,9 @@ function getResource(req, res, next) {
 
 request.get({
   headers: head,
-  uri:     config.commServerUrl + '/' + endPoint
+  uri:     config.commServerUrl + '/' + endPoint + '/' + '593a44510a1bad02b11d5d12'
 }, function(err, response, body) {
-    logger.debug('REQUEST RESULTS:', err, response.statusCode, body);
+    logger.debug('REQUEST RESULTS:', err, body);
     res.json({'success':true,'message':body});
 });
 

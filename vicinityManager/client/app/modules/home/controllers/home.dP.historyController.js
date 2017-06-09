@@ -26,7 +26,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
         userAccountAPIService.getUserAccounts()
           .then(
             function successCallback(response) {
-              $scope.companyAccounts = data.message;
+              $scope.companyAccounts = response.data.message;
             },
             function errorCallback(response){
             }
@@ -35,7 +35,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
         userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id)
           .then(
             function successCallback(response){
-              $scope.friendsThisCom = data.message;
+              $scope.friendsThisCom = response.data.message;
             },
             function errorCallback(response){
             }

@@ -1,6 +1,8 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cProleController',
-function ($scope, $stateParams, userAccountAPIService, userAPIService) {
+function ($scope, $stateParams, userAccountAPIService, userAPIService, Notification) {
+
+// Initialize variables ========
 
   $scope.userAccounts = [];
   $scope.loaded = false;
@@ -11,6 +13,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
   $scope.companyId = $stateParams.companyAccountId;
   $scope.rev = false; // Initial sorting set to alphabetical
 
+  $scope.myInit = function(){
   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
     .then(
       function successCallback(response){
@@ -19,6 +22,11 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
       },
       function errorCallback(response){}
     );
+  }
+
+  $scope.myInit();
+
+// Functions =======
 
     $scope.updateUserInfo = function(data){
       userAPIService.editInfoAboutUser($scope.selectedUser._id,data)
@@ -34,17 +42,12 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
               .then(
                 function successCallback(response){
                   userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-                    .then(
-                      function successCallback(response){
-                        $scope.userAccounts = response.data.message.accountOf;
-                      },
-                      function errorCallback(response){}
-                    );
+                    $scope.myInit();
                   },
                   function errorCallback(response){}
                 );
               },
-              function errorCallback(){alert("ERROR")}
+              function errorCallback(){Notification.error("Problem updating user profile");}
             );
           }
 
@@ -74,7 +77,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
     $scope.startUpdate = function(i){
       $scope.selectedUser = i;
       $(".select2").val($scope.selectedUser.authentication.principalRoles).trigger('change'); // Clear selection
-      // $(".select2").trigger('change'); // Clear selection
+      $(".select2").trigger('change');
       $scope.editing = true;
       $scope.loaded = true;
     }
@@ -83,6 +86,10 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
       if($scope.oneAdmin()){
         var query = {'authentication.principalRoles':$scope.newRoles};
         $scope.updateUserInfo(query);
+        $scope.cancelChanges();
+        Notification.success("User role modified");
+      }else{
+        Notification.warning("There must be at least one administrator");
         $scope.cancelChanges();
       }
     }
@@ -112,6 +119,7 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
             principalRoles: []
           }};
         $scope.updateUserInfo(query);
+        Notification.success("User removed");
       }
     }
 
@@ -120,14 +128,13 @@ function ($scope, $stateParams, userAccountAPIService, userAPIService) {
       var keyword = new RegExp('administrator');
       var cont = 0;
       // Find out if removing admin role
-      if(keyword.test($scope.selectedUser.authentication.principalRoles) && !(keyword.test($scope.newRoles) === -1)){
+      if(keyword.test($scope.selectedUser.authentication.principalRoles) && !keyword.test($scope.newRoles)){
         for(i = 0; i < $scope.userAccounts.length; i++){
           if(keyword.test($scope.userAccounts[i].authentication.principalRoles)){
             cont++;
           }
         }
         if(cont <= 1){
-          alert("You cannot remove the only admin in the company!");
           return false;
         }else{
           return true;

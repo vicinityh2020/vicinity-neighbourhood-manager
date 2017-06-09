@@ -1,11 +1,16 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('userProfileController',
 function ($scope, $window, $stateParams, $location, userAccountAPIService, userAPIService, AuthenticationService, Notification  , FileUploader) {
-// , FileUploader
+
+  $scope.loaded = false;
+
   $scope.uploader = new FileUploader();
+  $scope.uploadme = {};
+  $scope.uploadme.src = "";
 
   $scope.locationPrefix = $location.path();
   console.log("location:" + $location.path());
+
   $scope.name = {};
   $scope.avatar = {};
   $scope.nameAvatar = {};
@@ -47,10 +52,9 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, userA
   $scope.thisCompany = {};
   $scope.friendsThisCom = [];
 
-  $scope.loaded = false;
 
-  $scope.uploadme = {};
-  $scope.uploadme.src = "";
+
+
 
   var savedAlready = false;
   var savedAlready1 = false;

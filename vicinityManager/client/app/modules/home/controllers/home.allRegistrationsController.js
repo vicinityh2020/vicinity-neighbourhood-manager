@@ -1,23 +1,16 @@
 angular.module('VicinityManagerApp.controllers').
   controller('allRegistrationsController',
   function ($scope,
-            $state,
-            searchAPIService,
             registrationsAPIService,
             registrationsListService,
-            userAccountAPIService,
-            $stateParams,
-            $window,
-            $location,
-            $http,
             Notification) {
 
-// Define variables
+// Initialize variables
     $scope.regisList = [];
     $scope.rev = false;
     $scope.myOrderBy = 'companyName';
 
-// Functions
+    $scope.myInit = function(){
     registrationsListService.getCompanies()
       .then(
         function successCallback(response){
@@ -25,6 +18,33 @@ angular.module('VicinityManagerApp.controllers').
         },
         function errorCallback(response){}
       );
+    }
+
+    $scope.myInit();
+
+// Functions
+
+      $scope.verifyAction = function(reg){
+      registrationsAPIService.putOne(reg._id,{userName: reg.userName, email: reg.email, companyName: reg.companynameReg , type: "newCompany", status: "pending" })
+        .then(
+          function successCallback(response){
+            Notification.success("Verification mail was sent to the company!");
+            $scope.myInit();
+          },
+          function errorCallback(response){Notification.error("It was not possible to send the mail...");}
+        );
+      }
+
+      $scope.declineAction = function(reg){
+      registrationsAPIService.putOne(reg._id,{userName: reg.userName, email: reg.email, companyName: reg.companynameReg, type: "newCompany", status: "declined" })
+        .then(
+          function successCallback(response){
+            Notification.success("Company was rejected!");
+            $scope.myInit();
+          },
+          function errorCallback(response){Notification.error("It was not possible to send the mail...");}
+        );
+      }
 
       $scope.orderByMe = function(x) {
         if($scope.myOrderBy === x){$scope.rev=!($scope.rev)}
@@ -32,45 +52,7 @@ angular.module('VicinityManagerApp.controllers').
         }
 
       $scope.f = function(){ // Dummy function until we define new ones
-        $window.alert("do something");
+        Notification.warning("do something");
         }
-
-      // $scope.goToProfile = function(){
-      //   $state.go("root.main.registrationProfile.regAdmin({registrationId: regis._id})");
-      // }
-
-      $scope.verifyAction = function(i){
-      registrationsAPIService.putOne($scope.regisList[i]._id,{userName: $scope.regisList[i].userName, email: $scope.regisList[i].email, companyName: $scope.regisList[i].companynameReg , type: "newCompany", status: "pending" })
-        .then(
-          function successCallback(response){
-            $window.alert("Verification mail was sent to the company!");
-            registrationsListService.getCompanies()
-              .then(
-                function successCallback(response){
-                  $scope.regisList = response.data.message;
-                },
-                function errorCallback(response){}
-              );
-          },
-          function errorCallback(response){$window.alert("It was not possible to send the mail...");}
-        );
-      }
-
-      $scope.declineAction = function(i){
-      registrationsAPIService.putOne($scope.regisList[i]._id,{userName: $scope.regisList[i].userName, email: $scope.regisList[i].email, companyName: $scope.regisList[i].companynameReg , type: "newCompany", status: "declined" })
-        .then(
-          function successCallback(response){
-            $window.alert("Company was rejected!");
-            registrationsListService.getCompanies()
-              .then(
-                function successCallback(response){
-                  $scope.regisList = response.data.message;
-                },
-                function errorCallback(response){}
-              );
-          },
-          function errorCallback(response){$window.alert("It was not possible to send the mail...");}
-        );
-      }
 
   });

@@ -49,9 +49,6 @@ function registerCompany(data, authorization){
     description: data.organisation
   });
 
-  logger.debug(head);
-  logger.debug(payload);
-
   request.post({
     headers: head,
     uri: config.commServerUrl + '/' + endPoint,

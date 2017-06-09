@@ -33,7 +33,7 @@ angular.module('Registration')
                   if ($scope.registration.status == "open" || $scope.registration.status == "pending"){
                      registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).then(
                        function successCallback(){
-                       $window.alert("verified");
+                      //  $window.alert("verified");
                        // TODO update the process and do it in the server side
                       //  postNewUsers($scope.registration);
                       //  registrationsAPI.postOneUserAccount(data).then(

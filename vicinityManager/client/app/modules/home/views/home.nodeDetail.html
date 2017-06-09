@@ -13,29 +13,34 @@
     <div class="box-body">
       <div class="form-group">
         <label>Node name</label>
-        <input class="form-control" ng-model="nName" placeholder="Enter name">
+        <input class="form-control" ng-model="nName" placeholder="Enter name" required>
       </div>
       <div class="form-group">
         <label>URI</label>
-        <input class="form-control" ng-model="nUri" placeholder="Enter URI">
+        <input class="form-control" ng-model="nUri" placeholder="Enter URI" required>
       </div>
       <div class="form-group">
         <label>Agent</label>
-        <input class="form-control" ng-model="nAgent" placeholder="Enter agent">
+        <input class="form-control" ng-model="nAgent" placeholder="Enter agent" required>
       </div>
+
       <div class="form-group">
         <label>Password</label>
-        <input type="password" class="form-control" ng-model="nPass" placeholder="Enter password">
+        <input type="password" class="form-control" ng-model="nPass" placeholder="Enter password" required>
       </div>
+
       <div class="form-group">
         <label>Repeat Password</label>
-        <input type="password" class="form-control" ng-model="nPass2" placeholder="Repeat password">
+        <input type="password" class="form-control" ng-model="nPass2" placeholder="Repeat password" required/>
+        <span class="help-block" style="color: green" ng-show="nPass===nPass2 && nPass2"><i class="fa fa-check"></i> Passwords match!</span>
+        <span class="help-block" style="color: red" ng-show="nPass!==nPass2 && nPass2"><i class="fa fa-times"></i> Passwords do not match</span>
       </div>
-    </div>
+
+      </div>
 
   <div class="box-footer">
     <div class="col-xs-6">
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" ng-disabled="nPass!==nPass2 || !nPass2 || !nPass" class="btn btn-primary">Submit</button>
     </div>
     <div class="col-xs-6">
       <a href="" ng-click="backToList()" class="pull-right">Cancel</a>
