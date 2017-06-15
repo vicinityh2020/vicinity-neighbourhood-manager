@@ -36,50 +36,30 @@ angular.module('VicinityManagerApp.controllers').
         }
       }
       var query = {hasNodes: newNodes};
-      nodeAPIService.deleteOne($window.sessionStorage.companyAccountId,query)
+      nodeAPIService.deleteOne($window.sessionStorage.companyAccountId,query) // Delete node ref in useraccounts
         .then(
           function successCallback(response){
             var query2 = {
               status : "deleted"
             };
-            nodeAPIService.updateOne(id, query2)
+            nodeAPIService.updateOne(id, query2) // upd status to removed of node in MONGO
               .then(
                 function successCallback(response){
-                  nodeAPIService.deleteResource('users', {route : id})
-                    .then(
-                      function successCallback(response){
-                        Notification.success("Node successfully removed!!");
-                        myInit();
-                      },
-                      function errorCallback(response){
-                          $window.alert("Error");
-                      }
-                    );
+                  Notification.success("Node successfully removed!!");
+                  myInit();
                 },
-                function errorCallback(response){}
+                function errorCallback(response){
+                  Notification.error("Error");
+                }
               );
-          },
-          function errorCallback(response){}
-        );
-    }
+            },
+            function errorCallback(response){}
+          );
+        }
 
 
     $scope.createGroup = function(){  // Debug only -- TODO Remove
 
-      // var payload = {
-      //   route: '593a44510a1bad02b11d5d12',
-      //   description: "Reagon"
-      // };
-      //
-      // nodeAPIService.getResource('users')
-      //   .then(
-      //     function successCallback(response){
-      //       $window.alert("Success");
-      //     },
-      //     function errorCallback(response){
-      //         $window.alert("Error");
-      //     }
-      //   );
       var payload = {
         name: $window.sessionStorage.companyAccountId,
         description: "Reagon"

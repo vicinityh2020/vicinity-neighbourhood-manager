@@ -46,72 +46,28 @@ angular.module('VicinityManagerApp.controllers').
                   name: $scope.nName,
                   eventUri: $scope.nUri,
                   agent: $scope.nAgent,
-                  type: "generic.adapter.vicinity.eu"
+                  type: "generic.adapter.vicinity.eu",
+                  pass: $scope.nPass
                 };
                 if($scope.nodeId === '0'){
 
                   nodeAPIService.postOne($window.sessionStorage.companyAccountId, query)
                     .then(
                       function successCallback(response){
-
-                          $scope.nId = response.data.message._id;
-
-                          var payload = {
-                            username : $scope.nId,
-                            name: $scope.nName,
-                            password: $scope.nPass,
-                            properties: { property:
-                                        [
-                                          {'@key':'agent', '@value': $scope.nAgent},
-                                          {'@key':'uri', '@value': $scope.nUri}
-                                              ]}
-                          };
-
-                          nodeAPIService.postResource('users',payload)
-                            .then(
-                              function successCallback(response){
-                                nodeAPIService.postResource('users' , { route : $scope.nId + '/groups/' + $window.sessionStorage.companyAccountId})
-                                  .then(
-                                    function successCallback(response){
-                                      Notification.success("Node successfully created!!");
-                                      $scope.backToList();
-                                    },
-                                    function errorCallback(response){
-                                        $window.alert("Error");
-                                    });
-                              },
-                              function errorCallback(response){
-                                  $window.alert("Error");
-                              });
-                      },
+                        Notification.success("Node successfully created!!");
+                        $scope.backToList();
+                       },
                       function errorCallback(response){}
+
                     );
+
                 }else{
 
                 nodeAPIService.updateOne($state.params.nodeId, query)
                   .then(
                     function successCallback(response){
-
-                      var payload = {
-                        name: $scope.nName,
-                        password: $scope.nPass,
-                        properties: { property:
-                                    [
-                                      {'@key':'agent', '@value': $scope.nAgent},
-                                      {'@key':'uri', '@value': $scope.nUri}
-                                          ]},
-                        route: $state.params.nodeId
-                      };
-                      a = JSON.stringify(payload);
-                      nodeAPIService.putResource('users',payload)
-                        .then(
-                          function successCallback(response){
-                            Notification.success("Node successfully modified!!");
-                            $scope.backToList();
-                          },
-                          function errorCallback(response){
-                              $window.alert("Error");
-                          });
+                      Notification.success("Node successfully modified!!");
+                      $scope.backToList();
                     },
                     function errorCallback(response){}
                   );

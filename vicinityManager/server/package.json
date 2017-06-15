@@ -32,7 +32,6 @@
     "nodemon": "^1.9.2",
     "request": "^2.81.0",
     "request-debug": "^0.2.0",
-    "request-promise": "^4.2.1",
     "serve-favicon": "~2.3.0",
     "winston": "^2.2.0"
   },

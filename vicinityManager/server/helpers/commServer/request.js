@@ -1,18 +1,13 @@
 var config = require('../../configuration/configuration');
 var logger = require('../../middlewares/logger');
-var request = require('request');
+var request = require('request-promise');
+
 require('request-debug')(request);
 
+function callCommServer(data, endPoint, myMethod, authorization){
 
-function deleteResource(req, res, next) {
-
-  var endPoint = req.params.endPoint;
-  var auth = req.headers.authorization;
+  var auth = authorization;
   var format = 'application/json';
-
-  if(req.body.route){
-    var endPoint = req.params.endPoint + '/' + req.body.route;
-  }
 
   var head = {
     'authorization' : auth,
@@ -20,14 +15,17 @@ function deleteResource(req, res, next) {
     'Accept' : format
   };
 
-  request.delete({
+  payload = JSON.stringify(data);
+
+  return request({
+    method : myMethod,
     headers: head,
     uri: config.commServerUrl + '/' + endPoint,
+    body: payload
   }, function(err, response, body) {
       logger.debug('REQUEST RESULTS:', err, response.statusCode, body);
-      res.json({'success':true,'message':body});
+      //res.json({'success':true,'message':body});
   });
-
 }
 
-module.exports.deleteResource = deleteResource;
+module.exports.callCommServer = callCommServer;

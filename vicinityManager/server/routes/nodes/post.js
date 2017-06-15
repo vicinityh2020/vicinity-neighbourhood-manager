@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
+var commServer = require('../../helpers/commServer/request');
 
 function postOne(req, res, next) {
   var db = new nodeOp();
@@ -17,12 +18,58 @@ function postOne(req, res, next) {
     if(err){
       logger.debug("Error creating the node");
     }else{
-      userAccountOp.update({ "_id": cid}, {$push: {hasNodes:data._id}}, function(err, data2){
-      response = {"error": false, "message": data};
-      res.json(response);
-      });
+      successSave(data);
     }
   });
+
+  function successSave(data){ // SAVED node in MONGO
+    var payload = {
+      username : data._id,
+      name: data.name,
+      password: req.body.pass,
+      properties: { property:
+                  [
+                    {'@key':'agent', '@value': data.agent},
+                    {'@key':'uri', '@value': data.eventUri}
+                        ]}
+    };
+    commServer.callCommServer(payload, 'users', 'POST', req.headers.authorization) // SAVE node in commServer
+    .then(callBackCommServer1(data)) // Add node to company group in commServer
+    .then(callBackCommServer2(data)) // Create node group in commServer
+    .then(callBackCommServer3(data)) // Add node to company in MONGO
+    .catch(callbackError)
+  }
+
+  // ==== Callbacks ====
+
+  function callBackCommServer1(data){
+    return commServer.callCommServer({}, 'users/' + data._id + '/groups/' + cid + '_agents', 'POST', req.headers.authorization)
+  }
+
+  function callBackCommServer2(data){
+    var groupData = {
+      name: data._id,
+      description: data.name
+    };
+    return commServer.callCommServer(groupData, 'groups/', 'POST', req.headers.authorization)
+  }
+
+  function callBackCommServer3(data){
+    userAccountOp.update({ "_id": cid}, {$push: {hasNodes:data._id}}, function(err,data){
+      if(err){
+        logger.debug("Error creating the node");
+      }else{
+        response = {"error": false};
+        res.json(response);
+      }
+    });
+  }
+
+  function callBackError(){
+    //TODO delete the node on error
+    logger.debug("Error creating the node");
+  }
+
 }
 
 module.exports.postOne = postOne;
