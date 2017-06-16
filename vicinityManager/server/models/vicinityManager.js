@@ -156,20 +156,22 @@ var item = {
   accessLevel: Number,
   color: String,
   avatar: String,
-  info: {
-    serial_number: String,
-    location: String,
-    id_tag: String,
-    id_value: String,
-    status: String,
-    datasources: [{
-      name: String,
-      typeOf: String,
-      format: String,
-      unitOfMeasurement: String
-    }]
-  },
-  type: String
+  // info: Object{
+  //   serial_number: String,
+  //   location: String,
+  //   id_tag: String,
+  //   id_value: String,
+  //   status: String,
+  //   datasources: [{
+  //     name: String,
+  //     typeOf: String,
+  //     format: String,
+  //     unitOfMeasurement: String
+  //   }]
+  // },
+  info: mongoose.Schema.Types.Mixed,
+  type: String,
+  status: String
 };
 
 var remember = {

@@ -64,7 +64,7 @@ app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
-// app.use('/commServer', commServer);
+app.use('/commServer', commServer);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
