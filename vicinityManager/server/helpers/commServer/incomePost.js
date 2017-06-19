@@ -1,8 +1,10 @@
 var mongoose = require('mongoose');
 var ce = require('cloneextend');
 var itemOp = require('../../models/vicinityManager').item;
+var notifOp = require('../../models/vicinityManager').notification;
+var logger = require("../../middlewares/logger");
 
-function postOne(req, res, next) {
+function postResource(req, res, next) {
   var db = new itemOp();
   var response = {};
 //TODO: Request body atributes null check;
@@ -13,24 +15,26 @@ function postOne(req, res, next) {
   db.accessRequestFrom = ce.clone(req.body.accessRequestFrom);
   db.accessLevel = req.body.accessLevel;
   db.hasAccess = ce.clone(req.body.hasAccess);
-  //db.info = ce.clone(req.body.info);
-  // db.info = {id_tag: req.body.info.id_tag, id_value: req.body.info.id_value};
   db.color = req.body.color;
   db.avatar = req.body.avatar;
-  // db.electricity = ce.clone(req.body.electricity);
   db.info = req.body.info;
   db.markModified('info');
   db.status = 'disabled';
   db.type = 'device';
-  
+
   db.save(function(err) {
     if (err) {
       response = {"error": true, "message": "Error adding data!"};
     } else {
       response = {"error": false, "message": "Data added!"};
+      //createNotif();
     }
     res.json(response);
   });
+
+  //TODO add notif on incoming message
+  //function createNotif(){}
+
 }
 
-module.exports.postOne = postOne;
+module.exports.postResource = postResource;
