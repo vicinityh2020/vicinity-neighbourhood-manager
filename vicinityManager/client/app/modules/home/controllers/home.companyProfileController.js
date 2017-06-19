@@ -279,8 +279,6 @@ $scope.uploadPic = function(){
       $scope.users = response.data.message.accountOf;
   };
 
-});
-
 // Edit Profile Functions ===============
 
  $scope.locEdit = function(){
@@ -348,3 +346,5 @@ $scope.updateCompany = function(data){
       function errorCallback(response){}
     );
 }
+
+});

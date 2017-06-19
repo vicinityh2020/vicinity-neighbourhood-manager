@@ -10,6 +10,8 @@ angular.module('VicinityManagerApp.controllers')
      Notification)
      {
 
+// Initialize variables and retrieve initial data -----------------
+
     $scope.canAnswerNeighbourRequest = false;
     $scope.interruptConnection = false;
     $scope.devices=[];
@@ -41,6 +43,8 @@ angular.module('VicinityManagerApp.controllers')
          function errorCallback(response){
          }
        );
+
+// Filters -------------------------------------------------------
 
     $scope.searchFilterOnline = function (result) {
 
@@ -74,6 +78,8 @@ angular.module('VicinityManagerApp.controllers')
 
       return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "Unknown")) ;
     }
+
+// Different views (Dropdown) --------------------------------------
 
     $scope.allDevices = function (result) {
 
@@ -285,6 +291,9 @@ angular.module('VicinityManagerApp.controllers')
       };
 
     }
+
+
+// REQUESTS -----------------------------------------------
 
 
     $scope.acceptDataRequest = function (dev_id) {

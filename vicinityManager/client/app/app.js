@@ -378,6 +378,17 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('root.main.deviceProfile.description', {
+          url: '/description',
+          views: {
+            'tabPanel@root.main.deviceProfile':
+            {
+              templateUrl: 'modules/home/views/home.deviceProfile.description.html',
+              controller:  'dPdescriptionController'
+            }
+          }
+        })
+
 
         // .state('root.main.deviceProfile.devices', {
         //     url: '/devices',
