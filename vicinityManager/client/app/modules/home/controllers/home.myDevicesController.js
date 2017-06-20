@@ -15,7 +15,7 @@ angular.module('VicinityManagerApp.controllers')
     $scope.canAnswerNeighbourRequest = false;
     $scope.interruptConnection = false;
     $scope.devices=[];
-    $scope.note = "My devices";
+    $scope.note = ""; //"My devices";
 
     $scope.showAllDevices = true;
     $scope.showPrivateDevices = false;

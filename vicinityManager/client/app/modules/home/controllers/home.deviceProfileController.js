@@ -53,10 +53,53 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
       itemsAPIService.putOne($stateParams.deviceId, {"status": query})
         .then(
           function successCallback(){
+            Notification.success('Device status updated!!');
             initData();
           }
         );
     }
+
+    //TODO delete when obsolete from controller and view
+
+    // $scope.makeItem = function(){
+    //   var thingDescr = {
+    //       "datasources": [
+    //           {
+    //               "_id": "574feefdf117cab30724bf46",
+    //               "unitOfMeasurement": "W",
+    //               "format": "float",
+    //               "typeOf": "PowerConsumption",
+    //               "name": "Power consumption"
+    //           },
+    //           {
+    //               "_id": "574feefdf117cab30724bf45",
+    //               "unitOfMeasurement": "-",
+    //               "format": "string",
+    //               "typeOf": "ON_OFF_Switch",
+    //               "name": "Switch status"
+    //           }
+    //       ],
+    //       "id_value": "000D6F0000994EAB",
+    //       "id_tag": "url_sufix",
+    //       "status": "On",
+    //       "location": "South office",
+    //       "serial_number": "000D6F0000994EA"
+    //   }
+    //   var query = {
+    //       color: 'invisible',
+    //       name: 'test2',
+    //       hasAdministrator: $window.sessionStorage.companyAccountId,
+    //       accessLevel: 4,
+    //       avatar: String,
+    //       info: thingDescr
+    //   }
+    //   itemsAPIService.postOne(query)
+    //     .then(
+    //       function successCallback(response){
+    //         $window.alert('done');
+    //       }
+    //     );
+    // }
 
 // HIDE && SHOW DOM =========================
 
