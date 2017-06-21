@@ -41,8 +41,8 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
         }
         else{
           txt += '<p class="panel-heading" style="margin: ' + ind + 'px"><b>' + i + ':  </b>';
-          txt += '<a data-toggle="collapse" data-target="#lvl1' + i + '"><i style="color: white" class="fa fa-plus-square pull-right"></i></a></p>';
-          txt += '<div id="lvl1' + i + '" class="collapse">';
+          txt += '<a data-toggle="collapse" data-target="#lvl' + ind + i + '"><i style="color: white" class="fa fa-plus-square pull-right"></i></a></p>';
+          txt += '<div id="lvl' + ind + i + '" class="collapse">';
           txt = innerObj(arr[i],txt,ind);
           txt += '</div>'
           if(ind>10){ind -= 10}
@@ -66,8 +66,8 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
             var aux = i;
           }
           txt += '<div class="panel panel-info" style="margin: ' + ind + 'px"><p class="panel-heading" style="margin: 10px"><b>' + aux + '</b>';
-          txt += '<a data-toggle="collapse" data-target="#lvl2' + i + '"><i style="color: white" class="fa fa-plus-square pull-right"></i></a></p>';
-          txt += '<div id="lvl2' + i + '" class="collapse">'
+          txt += '<a data-toggle="collapse" data-target="#lvl' + ind + i + '"><i style="color: white" class="fa fa-plus-square pull-right"></i></a></p>';
+          txt += '<div id="lvl' + ind + i + '" class="collapse">'
           txt = innerObj(arr[i],txt,ind);
           txt += '</div>';
           txt += '</div>';
