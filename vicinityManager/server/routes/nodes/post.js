@@ -34,10 +34,9 @@ function postOne(req, res, next) {
                         ]}
     };
     commServer.callCommServer(payload, 'users', 'POST', req.headers.authorization) // SAVE node in commServer
-    .then(callBackCommServer1(data)) // Add node to company group in commServer
-    .then(callBackCommServer2(data)) // Create node group in commServer
-    .then(callBackCommServer3(data)) // Add node to company in MONGO
-    .catch(callbackError)
+    .then(callBackCommServer1(data),callbackError) // Add node to company group in commServer
+    .then(callBackCommServer2(data),callbackError) // Create node group in commServer
+    .then(callBackCommServer3(data),callbackError) // Add node to company in MONGO
   }
 
   // ==== Callbacks ====
@@ -65,9 +64,9 @@ function postOne(req, res, next) {
     });
   }
 
-  function callBackError(){
+  function callbackError(err){
     //TODO delete the node on error
-    logger.debug("Error creating the node");
+    logger.debug("Error creating the node: " + err);
   }
 
 }

@@ -169,7 +169,7 @@ $scope.acceptNeighbourRequest = function (notifId, friendId) {
     userAccountAPIService.acceptNeighbourRequest(friendId)
         .then(
           function successCallback(response){
-            if (response.data.error === true) {
+            if (response.error) {
                 Notification.error("Partnership request acceptation failed :(");
             } else {
                 Notification.success("Partnership request accepted!");
@@ -188,7 +188,7 @@ $scope.rejectNeighbourRequest = function(notifId, friendId) {
     userAccountAPIService.rejectNeighbourRequest(friendId)
         .then(
           function successCallback(response){
-            if (response.error == true) {
+            if (response.error) {
                 Notification.error("Partnership request rejection failed :(");
             } else {
                 Notification.success("Partnership request rejected!");
@@ -207,7 +207,7 @@ $scope.acceptDataRequest = function (dev_id, notifId) {
   itemsAPIService.acceptDeviceRequest(dev_id)
     .then(
       function successCallback(response) {
-    if (response.error ==true) {
+    if (response.error) {
         Notification.error("Sending data access request failed!");
     } else {
         Notification.success("Data access approved!");
@@ -224,7 +224,7 @@ $scope.rejectDataRequest = function (dev_id, notifId) {
     itemsAPIService.rejectDeviceRequest(dev_id)
       .then(
         function successCallback(response) {
-      if (response.error ==true) {
+      if (response.error) {
           Notification.error("Sending data access request failed!");
       } else {
           Notification.success("Data access rejected!");

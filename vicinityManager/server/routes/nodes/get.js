@@ -16,6 +16,15 @@ function getOne(req, res, next) {
     }
     res.json(response);
   })
+
+  // EXAMPLE GET BODY
+  // commServer.callCommServer({}, 'users/' + o_id, 'GET', req.headers.authorization)
+  // .then(function (response) { // Example how to GET body
+  //     logger.debug(response.body);
+  //   },
+  //   callbackError
+  // )
+
 }
 
 function getAll(req, res, next) {

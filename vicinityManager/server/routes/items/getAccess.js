@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var itemOp = require('../../models/vicinityManager').item;
 
-function getAccess3(req, res, next){
+function getAccess(req, res, next){
     console.log("Getting back access (renewing of access data)!");
     dev_id = mongoose.Types.ObjectId(req.params.id);
     activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
@@ -31,4 +31,4 @@ function getAccess3(req, res, next){
         res.json(response);
     });
 }
-module.exports.getAccess3 = getAccess3;
+module.exports.getAccess = getAccess;

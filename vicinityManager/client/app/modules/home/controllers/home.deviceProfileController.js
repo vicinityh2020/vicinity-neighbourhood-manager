@@ -46,11 +46,27 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
 
     $scope.changeStatus = function(){
       if($scope.device.status === 'enabled'){
-        var query = 'disabled';
+        var query = {
+          "public":$scope.AL===4,
+          "modifyCommServer":true,
+          "status":'disabled',
+          "name":$scope.device.name,
+          "cid": $scope.owner_id,
+          // "agent_id": .... ,
+          "password":"test"
+        };
       }else{
-        var query = 'enabled';
+        var query = {
+          "public":$scope.AL===4,
+          "modifyCommServer":true,
+          "status":'enabled',
+          "name":$scope.device.name,
+          "cid": $scope.owner_id,
+          // "agent_id": .... ,
+          "password":"test"
+        };
       }
-      itemsAPIService.putOne($stateParams.deviceId, {"status": query})
+      itemsAPIService.putOne($stateParams.deviceId, query)
         .then(
           function successCallback(){
             Notification.success('Device status updated!!');
@@ -60,7 +76,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
     }
 
     //TODO delete when obsolete from controller and view
-
+    //
     // $scope.makeItem = function(){
     //   var thingDescr = {
     //       "datasources": [
@@ -86,11 +102,11 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
     //       "serial_number": "000D6F0000994EA"
     //   }
     //   var query = {
-    //       color: 'invisible',
-    //       name: 'test2',
+    //       color: 'some',
+    //       name: 'testingCommServPublic',
     //       hasAdministrator: $window.sessionStorage.companyAccountId,
     //       accessLevel: 4,
-    //       avatar: String,
+    //       avatar: "",
     //       info: thingDescr
     //   }
     //   itemsAPIService.postOne(query)

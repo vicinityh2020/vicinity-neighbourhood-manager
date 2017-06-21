@@ -24,8 +24,8 @@ router
   .put('/:id/access/cancelRequest', cancelRequest.cancelDeviceRequest)
   .put('/:id/access/accept', acceptRequest.acceptDeviceRequest)
   .put('/:id/access/reject', rejectRequest.rejectDeviceRequest)
-  .put('/:id/access/cancel', cancelAccess.cancelAccess3)
-  .put('/:id/access/get', getAccess.getAccess3)
+  .put('/:id/access/cancel', cancelAccess.cancelAccess)
+  .put('/:id/access/get', getAccess.getAccess)
   // .put('/:id/hasAccess',addHasAccess.addFriendToHasAccess);
 
 module.exports = router;

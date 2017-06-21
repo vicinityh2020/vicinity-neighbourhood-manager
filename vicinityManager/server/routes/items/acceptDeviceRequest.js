@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
-
+var logger = require("../../middlewares/logger");
+var commServer = require('../../helpers/commServer/request');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
 var notificationOp = require('../../models/vicinityManager').notification;
@@ -30,7 +31,8 @@ function acceptDeviceRequest(req, res, next) {
                     device.accessRequestFrom.splice(index, 1);
                     // }
                 }
-
+                logger.debug(dev_id);
+                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + friend_id + '_foreignDevices', 'POST', req.headers.authorization)
                 notificationAPI.changeStatusToResponded(friend_id, activeCompany_id, 'deviceRequest','waiting');
                 notificationAPI.markAsRead(friend_id, activeCompany_id, 'deviceRequest','waiting');
 

@@ -19,11 +19,11 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/reject');
   };
 
-  itemsAPI.cancelAccess3 = function(id) {
+  itemsAPI.cancelAccess = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancel');
   };
 
-  itemsAPI.getAccess3 = function(id) {
+  itemsAPI.getAccess = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/get');
   };
 

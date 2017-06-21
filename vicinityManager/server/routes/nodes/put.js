@@ -34,15 +34,13 @@ function putOne(req, res) {
                         ]}
     };
     commServer.callCommServer(payload, 'users/' + data._id, 'PUT', req.headers.authorization) // Update node in commServer
-    .then(callBackCommServer(data))
-    .catch(callbackError)
+    .then(callBackCommServer(data),callbackError)
   }
 
   function successDelete(data){ // Change node status to deleted in MONGO then...
     commServer.callCommServer({}, 'users/' + data._id, 'DELETE', req.headers.authorization) // Update node in commServer
-    .then(callBackCommServerDelete(data))
-    .then(callBackCommServer(data))
-    .catch(callbackError)
+    .then(callBackCommServerDelete(data),callbackError)
+    .then(callBackCommServer(data),callbackError)
   }
 
   function callBackCommServerDelete(data){
@@ -54,9 +52,9 @@ function putOne(req, res) {
     res.json(response);
   }
 
-  function callbackError(){
+  function callbackError(err){
     //TODO delete the node on error
-    logger.debug("Error updating the node");
+    logger.debug("Error updating the node: " + err);
   }
 
 }
