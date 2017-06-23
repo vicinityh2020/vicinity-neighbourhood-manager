@@ -96,14 +96,36 @@ function changeStatusToResponded(senderID, recepID, type, status){
     });
 }
 
-function changeIsUnreadToFalse(req, res){
-    var response = {};
-    var o_id = mongoose.Types.ObjectId(req.params.id);
-    notificationOp.findOne({_id: o_id},function(err,data){
-      var notif = data;
-      notif.isUnread = false;
-      notif.save();
+function updateNotificationOfRegistration(req,res){
+var response = {};
+var o_id = mongoose.Types.ObjectId(req.params.id);
+  notificationOp.findOneAndUpdate({sentByReg:o_id}, { $set: { status: 'responded', isUnread: false }}, { new: true }, function (err, notif) {
+    if (err) {
+      response = {"error": true, "message": "Error fetching data"};
+    } else {
+      response = {"error": false, "message": notif};
+    }
+    res.json(response);
+  });
+}
 
+function changeStatusToResponded2(req,res){
+var response = {};
+var o_id = mongoose.Types.ObjectId(req.params.id);
+  notificationOp.findByIdAndUpdate(o_id, { $set: { status: 'responded', isUnread: false }}, { new: true }, function (err, notif) {
+    if (err) {
+      response = {"error": true, "message": "Error fetching data"};
+    } else {
+      response = {"error": false, "message": notif};
+    }
+    res.json(response);
+  });
+}
+
+function changeIsUnreadToFalse(req, res){
+  var response = {};
+  var o_id = mongoose.Types.ObjectId(req.params.id);
+    notificationOp.findByIdAndUpdate(o_id, { $set: { isUnread: false }}, { new: true }, function (err, notif) {
       if (err) {
         response = {"error": true, "message": "Error fetching data"};
       } else {
@@ -130,6 +152,8 @@ function processFoundUnreadNotifications(err, data){
 module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.getNotificationsOfUser = getNotificationsOfUser;
 module.exports.changeStatusToResponded = changeStatusToResponded;
+module.exports.changeStatusToResponded2 = changeStatusToResponded2;
+module.exports.updateNotificationOfRegistration = updateNotificationOfRegistration;
 module.exports.getAll = getAll;
 module.exports.markAsRead = markAsRead;
 module.exports.deleteNot = deleteNot;

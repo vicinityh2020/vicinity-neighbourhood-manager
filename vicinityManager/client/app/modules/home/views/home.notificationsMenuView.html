@@ -14,7 +14,7 @@
       <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'waiting') ">    <!-- | filter: searchfilter1-->
         <div class="notification-avatar">
           <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
-           <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar" style="width: 25px; height: 25px">
+           <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
           </a>
         </div>
         <div class="notification-description"><p>You have device data request from <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
@@ -29,7 +29,7 @@
      <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'waiting') " >  <!-- | filter: searchfilter2 -->
        <div class="notification-avatar">
          <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
-          <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar" style="width: 25px; height: 25px">
+          <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
          </a>
        </div>
        <div class="notification-description"><p>You have partnership request from <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
@@ -56,10 +56,11 @@
       <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'accepted') ">  <!-- | filter: searchfilter3 -->
         <div class="notification-avatar">
           <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
-            <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar" style="width: 25px; height: 25px">
+            <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
           </a>
         </div>
-        <div class="notification-description"><p>You've got data access to device <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
+        <div class="notification-description">
+          <p>You've got data access to device <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
         </div>
         <span class="ciara"></span>
       </li>
@@ -67,21 +68,74 @@
       <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'accepted')">     <!-- | filter: searchfilter4"-->
         <div class="notification-avatar">
           <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
-            <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar" style="width: 25px; height: 25px">
+            <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
           </a>
         </div>
         <div class="notification-description"><p>You are partner with <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
         <span class="ciara"></span>
       </li>
-
+      <!-- Unread rejected device notification !hotovo! -->
+           <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'rejected') ">  <!-- | filter: searchfilter3 -->
+             <div class="notification-avatar">
+               <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
+                 <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
+               </a>
+             </div>
+             <div class="notification-description">
+               <p>Your data access to device <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a> has been rejected.</p>
+             </div>
+             <span class="ciara"></span>
+           </li>
+      <!-- Unread rejected friend notifications !hotovo!-->
+           <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'rejected')">     <!-- | filter: searchfilter4"-->
+             <div class="notification-avatar">
+               <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
+                 <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
+               </a>
+             </div>
+             <div class="notification-description"><p>Your partner request with <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> has been rejected.</p>
+             </div>
+             <span class="ciara"></span>
+           </li>
+           <!-- Unread enabled device notification !hotovo! -->
+            <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceEnabled') && (notif.status== 'waiting') ">  <!-- | filter: searchfilter3 -->
+              <div class="notification-avatar">
+                <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
+                  <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
+                </a>
+              </div>
+              <div class="notification-description">
+                <p>A new device has been activated:  <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
+              </div>
+              <span class="ciara"></span>
+            </li>
+            <!-- Unread disabled device notification !hotovo! -->
+             <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceDisabled') && (notif.status== 'waiting') ">  <!-- | filter: searchfilter3 -->
+               <div class="notification-avatar">
+                 <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
+                   <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
+                 </a>
+               </div>
+               <div class="notification-description">
+                 <p>A device has been deactivated:  <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
+               </div>
+               <span class="ciara"></span>
+             </li>
   <!-- Unread registration request notification -->
-        <li ng-repeat="reg in registrations" ng-show="(reg.type=='registrationRequest')">        <!-- | filter: searchfilter4 -->
+        <li ng-repeat="reg in registrations" ng-show="(reg.type=='registrationRequest') && (reg.status== 'waiting') ">        <!-- | filter: searchfilter4 -->
           <div class="notification-avatar">
-            <a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"/>
+            <a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
+                <!-- <i style="cursor: pointer; width: 25px; height: 25px" onmouseover="" class="fa fa-file-text" aria-hidden="true"></i> -->
+              <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar">
+            </a>
           </div>
             <div class="notification-description">
               <p> You have received a registration request from: </p><a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><p> {{reg.sentByReg.companyName}} </p></a>
+            </div>
+            <div class="notification-actions">
+              <button  ng-click="acceptRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Approve</button>
+              <button  ng-click="rejectRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Reject</button>
             </div>
           <span class="ciara"></span>
         </li>
@@ -90,12 +144,12 @@
       <li ng-repeat="notif in notifs2 "  ng-show="(notif.type=='deviceRequest') && (notif.status== 'waiting') " >        <!-- | filter: searchfilter1 -->
         <div class="notification-avatar" id="readNot">
           <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
-           <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar" style="width: 25px; height: 25px">
+           <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
           </a>
         </div>
-        <div id="readNot"  class="notification-description"><p>You have device data request from <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
+        <div class="notification-description readNot"><p>You have device data request from <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
-        <div id="readNot" class="notification-actions">
+        <div class="notification-actions readNot">
           <button  ng-click="acceptDataRequest(notif.deviceId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>     <!-- ng-show="notif.status =='waiting'" -->
           <button  ng-click="rejectDataRequest(notif.deviceId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
         </div>
@@ -103,49 +157,77 @@
       </li>
 <!-- Read friend notifications !hotovo!-->
      <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='friendRequest') && (notif.status== 'waiting') " >    <!-- | filter: searchfilter2 -->
-        <div  class="notification-avatar" id="readNot">
+        <div  class="notification-avatar readNot">
           <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
-            <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar" style="width: 25px; height: 25px">
+            <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
           </a>
         </div>
-        <div  id="readNot" class="notification-description"><p>You have partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
+        <div class="notification-description readNot"><p>You have partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
-        <div id="readNot" class="notification-actions">
+        <div class="notification-actions readNot">
           <button  ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Accept</button>     <!-- ng-show="notif.status =='waiting'" -->
           <button  ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Decline</button>
         </div>
         <span class="ciara"></span>
       </li>
 <!-- Read approved device notifications !hotovo!-->
-      <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='deviceRequest') && (notif.status== 'accepted') " >  <!-- | filter: searchfilter3 -->
-        <div class="notification-avatar" id="readNot">
+      <!-- <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='deviceRequest') && (notif.status== 'accepted') " >
+        <div class="notification-avatar readNot">
           <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
-            <img style="cursor: pointer" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar" style="width: 25px; height: 25px">
+            <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
           </a>
         </div>
-        <div id="readNot" class="notification-description"><p>You've got data access to device <a  ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
+        <div class="notification-description readNot"><p>You've got data access to device <a  ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
         </div>
         <span class="ciara"></span>
-      </li>
+      </li> -->
 <!-- Read approved friend notifications  !hotovo!-->
-      <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='friendRequest') && (notif.status== 'accepted') ">        <!-- | filter: searchfilter4 -->
-        <div class="notification-avatar" id="readNot">
+      <!-- <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='friendRequest') && (notif.status== 'accepted') ">
+        <div class="notification-avatar readNot">
           <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
             <img class="round2" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
           </a>
         </div>
-        <div id="readNot" class="notification-description"><p>You are partner with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
+        <div class="notification-description readNot"><p>You are partner with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
         <span class="ciara"></span>
-      </li>
-
+      </li> -->
+      <!-- Read rejected device notifications !hotovo!-->
+            <!-- <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='deviceRequest') && (notif.status== 'rejected') " >
+              <div class="notification-avatar readNot">
+                <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
+                  <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
+                </a>
+              </div>
+              <div class="notification-description readNot"><p>Your data access request to device <a  ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a> has been rejected.</p>
+              </div>
+              <span class="ciara"></span>
+            </li> -->
+      <!-- Read rejected friend notifications  !hotovo!-->
+            <!-- <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='friendRequest') && (notif.status== 'rejected') ">
+              <div class="notification-avatar readNot">
+                <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
+                  <img class="round2" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
+                </a>
+              </div>
+              <div class="notification-description readNot"><p>Your partner request with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> has been rejected.</p>
+              </div>
+              <span class="ciara"></span>
+            </li> -->
 <!-- Read registration request notification-->
-      <li ng-repeat="reg in registrationsRead" ng-show="(reg.type=='registrationRequest')">        <!-- | filter: searchfilter4 -->
-        <div class="notification-avatar" id="readNot">
-          <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"/>
+      <li ng-repeat="reg in registrationsRead" ng-show="(reg.type=='registrationRequest') && (reg.status== 'waiting') ">        <!-- | filter: searchfilter4 -->
+        <div class="notification-avatar readNot">
+          <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
+            <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar"/>
+            <!-- <span style="cursor: pointer; width: 25px; height: 25px" onmouseover=""><i class="fa fa-file-text" aria-hidden="true"></i></span> -->
+          </a>
         </div>
-          <div class="notification-description" id="readNot">
+          <div class="notification-description readNot">
             <p> You have received a registration request from: </p><a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><p> {{reg.sentByReg.companyName}} </p></a>
+          </div>
+          <div class="notification-actions readNot">
+            <button  ng-click="acceptRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Approve</button>
+            <button  ng-click="rejectRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Reject</button>
           </div>
         <span class="ciara"></span>
       </li>

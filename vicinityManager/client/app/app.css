@@ -1107,7 +1107,7 @@ li.notifications-menu ul.menu > li > div {
 }*/
 
 
-#readNot{
+div.readNot{
   /*background-color: #d2d6de;*/
   background-color: #eee;
 }

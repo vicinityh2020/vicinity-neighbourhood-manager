@@ -117,12 +117,12 @@ var notification = {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'registration'
     },
-    type: {type: String, enum: ['friendRequest','deviceRequest','registrationRequest']},
+    type: {type: String, enum: ['friendRequest','deviceRequest','registrationRequest','deviceEnabled','deviceDisabled']},
     deviceId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'item'
     },
-    status: {type: String, enum: ['waiting','responded','accepted']},
+    status: {type: String, enum: ['waiting','responded','accepted','rejected']},
     isUnread: Boolean
 };
 

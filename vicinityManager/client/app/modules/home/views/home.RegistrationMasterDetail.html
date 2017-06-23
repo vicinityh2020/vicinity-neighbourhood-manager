@@ -4,59 +4,58 @@
 
 <section class="content">
 <div class="box">
-            <!-- /.box-header -->
-            <div class="box-body">
-              <table id="RegTable" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th>Type</th>
-                  <th>Name<i ng-click="orderByMe('companyName')" class="fa fa-fw fa-sort"></th>
-                  <th>Requester<i ng-click="orderByMe('email')" class="fa fa-fw fa-sort"></th>
-                  <th>Status<i ng-click="orderByMe('status')" class="fa fa-fw fa-sort"></th>
-                  <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="regis in regisList | orderBy:myOrderBy:rev">
-                  <td>Organization</td>
-                  <td>
-                    <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"><span>{{regis.companyName}}</span></a>
-                  </td>
-                  <td>{{regis.email}}</td>
-                  <td>
-                    <span>{{regis.status}}</span>
-                    <div ng-if="regis.status === 'open' || regis.status === 'pending' " class="tooltip2" id="circle_yellow" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-                      <span class="tooltiptext2" > In progress </span>
-                    </div>
-                    <div ng-if="regis.status === 'verified'" class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-                      <span class="tooltiptext2" > Ready </span>
-                    </div>
-                    <div ng-if="regis.status === 'declined'" class="tooltip2" id="circle_red" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-                      <span class="tooltiptext2" > Rejected </span>
-                    </div>
-                  </td>
-                  <td>
-                      <button ng-click="f()" ng-if="regis.status === 'verified' " class="btn btn-default btn-block">verified action</button>
-                      <button ng-click="verifyAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Verify user</button>
-                      <button ng-click="declineAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Decline user</button>
-                      <button ng-click="f()" ng-if="regis.status === 'declined' " class="btn btn-default btn-block">declined action</button>
-                      <p ng-if="regis.status === 'pending' ">Waiting an answer</p>
-                  </td>
-                </tr>
-                </tbody>
-                <!-- <tfoot>
-                <tr>
-                  <th>Rendering engine</th>
-                  <th>Browser</th>
-                  <th>Platform(s)</th>
-                  <th>Engine version</th>
-                  <th>CSS grade</th>
-                </tr>
-                </tfoot> -->
-              </table>
-            </div>
-            <!-- /.box-body -->
+  <!-- /.box-header -->
+  <div class="box-body">
+    <table id="RegTable" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name<i ng-click="orderByMe('companyName')" class="fa fa-fw fa-sort"/></th>
+        <th>Requester<i ng-click="orderByMe('email')" class="fa fa-fw fa-sort"/></th>
+        <th>Status<i ng-click="orderByMe('status')" class="fa fa-fw fa-sort"/></th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="regis in regisList | orderBy:myOrderBy:rev">
+        <td>Organization</td>
+        <td>
+          <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"><span>{{regis.companyName}}</span></a>
+        </td>
+        <td>{{regis.email}}</td>
+        <td>
+          <span>{{regis.status}}</span>
+          <div ng-if="regis.status === 'open' || regis.status === 'pending' " class="tooltip2" id="circle_yellow" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+            <span class="tooltiptext2" > In progress </span>
           </div>
-          <!-- /.box -->
+          <div ng-if="regis.status === 'verified'" class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+            <span class="tooltiptext2" > Ready </span>
+          </div>
+          <div ng-if="regis.status === 'declined'" class="tooltip2" id="circle_red" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+            <span class="tooltiptext2" > Rejected </span>
+          </div>
+        </td>
+        <td>
+            <button ng-click="f()" ng-if="regis.status === 'verified' " class="btn btn-default btn-block">verified action</button>
+            <button ng-click="verifyAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Verify user</button>
+            <button ng-click="declineAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Decline user</button>
+            <button ng-click="f()" ng-if="regis.status === 'declined' " class="btn btn-default btn-block">declined action</button>
+            <p ng-if="regis.status === 'pending' ">Waiting an answer</p>
+        </td>
+      </tr>
+      </tbody>
+      <!-- <tfoot>
+      <tr>
+        <th>Rendering engine</th>
+        <th>Browser</th>
+        <th>Platform(s)</th>
+        <th>Engine version</th>
+        <th>CSS grade</th>
+      </tr>
+      </tfoot> -->
+    </table>
   </div>
+  <!-- /.box-body -->
+</div>
+          <!-- /.box -->
 </section>

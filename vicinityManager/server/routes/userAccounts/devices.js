@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
-var winston = require('winston');
+var logger = require("../../middlewares/logger");
 
 function getMyDevices(req, res) {
 //TODO: User authentic - Role check
@@ -19,11 +19,11 @@ function getMyDevices(req, res) {
 
 
     if (err) {
-      winston.log('error','Find Items Error: ' + err.message);
+      logger.debug('error','Find Items Error: ' + err.message);
       response =  {"error": true, "message": "Error fetching data"};
     } else {
       response = {"error": false, "message": dataWithAdditional};
-    };
+    }
 
     res.json(response);
   });
@@ -34,7 +34,7 @@ function sortResult(data,s) {
       data.sort(sortListOfDevicesASC);
   } else if (s === "DESC") {
       data.sort(sortListOfDevicesDESC);
-  };
+  }
 }
 
 
@@ -46,29 +46,29 @@ function getNeighbourhood(req, res) {
 
   userAccountOp.find({_id: o_id}, function(err, data){
     if (err){
-      winston.log('error','UserAccount Items Error: ' + err.message);
+      logger.debug('error','UserAccount Items Error: ' + err.message);
     }
     if (data && data.length == 1){
 
       if (req.query.hasAccess){
         if (req.query.hasAccess == '1') {
-            winston.log('debug', 'hasAccess filter applied');
+            logger.debug('debug', 'hasAccess filter applied');
             query = {
               hasAdministrator: { $in: data[0].knows },
-              $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2, hasAccess: {$in: [data[0]._id]}}]}
+              $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2, hasAccess: {$in: [data[0]._id]}}]};
         } else if (req.query.hasAccess == '0') {
-          winston.log('debug', 'hasAccess filter not applied');
+          logger.debug('debug', 'hasAccess filter not applied');
           query = {
             hasAdministrator: { $in: data[0].knows },
-            $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}]}
+            $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}]};
         }
       } else {
-        winston.log('debug', 'hasAccess filter not applied');
+        logger.debug('debug', 'hasAccess filter not applied');
         query = {
           hasAdministrator: { $in: data[0].knows },
-          $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}]}
+          $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}]};
       }
-      winston.log('debug', 'my friends are: ' + data[0].knows);
+      logger.debug('debug', 'my friends are: ' + data[0].knows);
 
       }
 
@@ -77,11 +77,11 @@ function getNeighbourhood(req, res) {
         var dataWithAdditional = getAdditional(data,o_id);
 
         if (err) {
-          winston.log('error','Find Items Error: ' + err.message);
+          logger.debug('error','Find Items Error: ' + err.message);
           response =  {"error": true, "message": "Error fetching data"};
         } else {
           response = {"error": false, "message": dataWithAdditional};
-        };
+        }
 
         res.json(response);
       });
@@ -98,7 +98,7 @@ function getAllDevices(req, res) {
 
   userAccountOp.find({_id: o_id}, function(err, data){
     if (err){
-      winston.log('error','UserAccount Items Error: ' + err.message);
+      logger.debug('error','UserAccount Items Error: ' + err.message);
     }
     // var hasAdmin = [];
     // hasAdmin = data[0].knows;
@@ -108,50 +108,49 @@ function getAllDevices(req, res) {
       // var nameComp = data.organisation;
       if (req.query.hasAccess){
         if (req.query.hasAccess == '1') {
-            winston.log('debug', 'hasAccess filter applied');
+            logger.debug('debug', 'hasAccess filter applied');
             query = {
               $or :[
               {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2, hasAccess: {$in: [data[0]._id]}}] } ] },
               {$and: [ {hasAdministrator: {'$ne':o_id}}, {accessLevel: 4}] },
               {hasAdministrator: o_id}
             ]
-            }
+          };
         } else if (req.query.hasAccess == '0') {
-          winston.log('debug', 'hasAccess filter not applied');
+          logger.debug('debug', 'hasAccess filter not applied');
           query = {
             $or :[
             {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}] } ] },
             {$and: [ {hasAdministrator: {'$ne':o_id}}, {accessLevel: 4} ] },
             {hasAdministrator: o_id}
           ]
-          }
+        };
         }
       } else {
-        winston.log('debug', 'hasAccess filter not applied');
+        logger.debug('debug', 'hasAccess filter not applied');
         query = {
           $or :[
           {$and: [ { hasAdministrator: {$in: data[0].knows}}, { $or : [{accessLevel: 4}, {accessLevel: 3}, {accessLevel: 2}] } ] },
           {$and: [ {hasAdministrator: {'$ne':o_id}}, {accessLevel: 4}] },
           {hasAdministrator: o_id}
         ]
-        }
+      };
       }
-      winston.log('debug', 'my friends are: ' + data[0].knows);
+      logger.debug('debug', 'my friends are: ' + data[0].knows);
 
       }
 
       itemOp.find(query).populate('hasAdministrator','organisation').exec(function(err, data){
         var s = req.query.sort;
         sortResult2(data,s);
-
         var dataWithAdditional = getAdditional(data,o_id);
 
         if (err) {
-          winston.log('error','Find Items Error: ' + err.message);
+          logger.debug('error','Find Items Error: ' + err.message);
           response =  {"error": true, "message": "Error fetching data"};
         } else {
           response = {"error": false, "message": dataWithAdditional};
-        };
+        }
 
         res.json(response);
       });
@@ -164,7 +163,7 @@ function sortResult2(data,s) {
       data.sort(sortListOfAllDevices);
   } else if (s === "DESC") {
       data.sort(sortListOfAllDevices);
-  };
+  }
 }
 
 function sortListOfAllDevices(a,b){
@@ -179,12 +178,13 @@ function sortListOfAllDevices(a,b){
 
 function getAdditional(data,activeCompany_id){
 
-    winston.log('debug','enter function getAdditional');
+    logger.debug('debug','enter function getAdditional');
 
-          // var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.context.cid);
+          var activeCompanyStr = activeCompany_id.toString();
           var device = {};
           var plain_data = [];
           var deviceWithAdd = {};
+          var index;
 
           for (index in data){
             var isOwner = false;
@@ -199,93 +199,103 @@ function getAdditional(data,activeCompany_id){
             var isMetaCanReq = -5;
             var isMetaNotReq = -5;
             var isMetaInter = -5;
+
             device = data[index];
 
-            if (activeCompany_id.toString() === device.hasAdministrator[0]._id.toString()){
+            if (activeCompanyStr === device.hasAdministrator[0]._id.toString()){
               isOwner = true;
             } else {
               isOwner = false;
-            };
+            }
 
-            if (device.accessRequestFrom.length > 0 && isOwner==true){
+            if (device.accessRequestFrom.length > 0 && isOwner===true){
               canAnswer = true;
-            };
+            }
 
-            if (isOwner==false && device.accessLevel==1){
+            if (isOwner===false && device.accessLevel===1){
               isPrivate = true;
-            };
+            }
 
-            if (isOwner==false && device.accessLevel==2){
+            if (isOwner===false && device.accessLevel===2){
               isMeta = true;
-            };
+            }
 
-            a=0;
-            for (index1 in device.accessRequestFrom){
-              if (device.accessRequestFrom[index1].toString() === activeCompany_id.toString()){
+            var index1;
+            var a = 0;
+            for (index1 = 0; index1 < device.accessRequestFrom.length; index1++){
+              if (device.accessRequestFrom[index1].toString() === activeCompanyStr){
                 a++;
               }
-            };
+            }
 
-            c=0;
-            for (index2 in device.hasAccess){
-              if (device.hasAccess[index2].toString() === activeCompany_id.toString()){
-                c++;
+//TODO POSSIBLE ERROR HERE, CHECK IMPORTANT
+            var index2;
+            var c = 0;
+            for (index2 = 0; index2 < device.hasAccess.length; index2++){
+              if(device.hasAccess[index2]){
+                if (device.hasAccess[index2].toString() === activeCompanyStr){
+                  c++;
+                }
               }
-            };
+            }
 
-             if (isMeta==true && (a+c)==0){
+             if (isMeta===true && (a+c)===0){
               cancelRequest2=false;
-            };
+            }
 
-             if (isMeta==true && a>0){
+             if (isMeta===true && a>0){
               cancelRequest2=true;
-            };
+            }
 
-             if (isMeta==true && c>0){
+             if (isMeta===true && c>0){
               interruptConnection2=true;
-            };
+            }
 
 
-            if (isOwner==false && device.accessLevel==3){
+            if (isOwner===false && device.accessLevel===3){
               isFriendData = true;
-            };
+            }
 
-            b=0;
+//TODO POSSIBLE ERROR HERE, CHECK IMPORTANT
+            var index3;
+            var b = 0;
 
-            for (index in device.hasAccess){
-              if (device.hasAccess[index].toString() === activeCompany_id.toString()){
-                b++;
+            for (index3 = 0; index3 < device.hasAccess.length; index3++){
+              if(device.hasAccess[index3]){
+                if (device.hasAccess[index3].toString() === activeCompanyStr){
+                  b++;
+                }
               }
-            };
+            }
 
-             if (isFriendData==true && b>0){
+             if (isFriendData===true && b>0){
               cancelAccess2=true;
-            };
-             if (isFriendData==true && b==0){
+            }
+             if (isFriendData===true && b===0){
                cancelAccess2=false;
-             };
+             }
 
-            if (isOwner==false && device.accessLevel==4){
+            if (isOwner===false && device.accessLevel===4){
               isPublic = true;
-            };
+            }
 
             if (isMeta && cancelRequest2){
               isMetaCanReq = 100;
               isMetaNotReq = -5;
               isMetaInter = -5;
-            };
+            }
 
             if (isMeta && !cancelRequest2 && !interruptConnection2){
               isMetaCanReq = -5;
               isMetaInter = -5;
               isMetaNotReq = 100;
-            };
+            }
 
             if (isMeta && interruptConnection2){
               isMetaCanReq = -5;
               isMetaInter = 100;
               isMetaNotReq = -5;
-            };
+            }
 
             deviceWithAdd = device.toObject();
             deviceWithAdd.isOwner = isOwner;
@@ -304,9 +314,9 @@ function getAdditional(data,activeCompany_id){
 
             plain_data.push(deviceWithAdd);
 
-          };
+          }
 
-          winston.log('debug','exit getAdditional');
+          logger.debug('debug','exit getAdditional');
 
           // res.json(response);     //??
           return plain_data;

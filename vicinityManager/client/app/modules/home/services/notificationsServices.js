@@ -1,3 +1,4 @@
+"use strict";
 var services = angular.module('VicinityManagerApp.services').
 factory('notificationsAPIService', ['$http', 'configuration', function($http, configuration){
 
@@ -17,6 +18,14 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
 
   notificationsAPI.changeIsUnreadToFalse = function(id) {
     return $http.put(configuration.apiUrl +'/notifications/' + id + '/changeIsUnreadToFalse');
+  };
+
+  notificationsAPI.changeStatusToResponded = function(id) {
+    return $http.put(configuration.apiUrl +'/notifications/' + id + '/changeStatusToResponded');
+  };
+
+  notificationsAPI.updateNotificationOfRegistration = function(id) {
+    return $http.put(configuration.apiUrl +'/notifications/' + id + '/updateNotificationOfRegistration');
   };
 
   return notificationsAPI;
