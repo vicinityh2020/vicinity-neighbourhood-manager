@@ -1,76 +1,54 @@
+"use strict";
 angular.module('VicinityManagerApp.controllers')
-.controller('cPdevicesController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification) {
+.filter('custom',
+ function() {
+  return function(input, isFriend, cid) {
 
-$scope.devices = [];
-$scope.friends = [];
-var isFriend = false;
-$scope.loaded = false;
+    var out = [];
+    var keyword = new RegExp(cid);
+    var keyword2 = new RegExp("2");
+    var keyword3 = new RegExp("3");
+    var keyword4 = new RegExp("4");
+
+    angular.forEach(input,
+      function(device) {
+       if (keyword.test(device.hasAdministrator[0]._id) || keyword.test(device.hasAccess) || keyword4.test(device.accessLevel) || ((keyword3.test(device.accessLevel) || keyword2.test(device.accessLevel)) && isFriend)) {
+          out.push(device);
+       }
+      }
+    );
+    return out;
+  };
+})
+.controller('cPdevicesController', ['$scope', '$window', '$stateParams', '$location', 'userAccountAPIService', 'itemsAPIService', 'AuthenticationService', 'Notification', 'customFilter',
+function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
+  $scope.cid = $window.sessionStorage.companyAccountId.toString();
+  $scope.devices = [];
+  $scope.friends = [];
+  $scope.isFriend = false;
+  $scope.loaded = false;
 
   userAccountAPIService.getMyDevices($stateParams.companyAccountId)
-    .then(
-      function successCallback(response) {
-       $scope.devices = response.data.message;
+    .then(successCallback1, errorCallback)
+    .then(successCallback2, errorCallback);
 
-       userAccountAPIService.getFriends($stateParams.companyAccountId)
-        .then(
-          function successCallback(response) {
-             $scope.friends = response.data.message;
-             for (fr in $scope.friends){
-                 if ($scope.friends[fr]._id.toString()===$window.sessionStorage.companyAccountId.toString()){
-                   isFriend = true;
-                 };
-            };
-          },
-          function errorCallback(response){}
-        );
+  function successCallback1(response) {
+    $scope.devices = response.data.message;
+    return userAccountAPIService.getFriends($stateParams.companyAccountId);
+  }
 
-       $scope.loaded = true;
-  },
-  function errorCallback(response){}
-);
+  function successCallback2(response) {
+   $scope.friends = response.data.message;
+   for (var fr in $scope.friends){
+       if ($scope.friends[fr]._id.toString()===$window.sessionStorage.companyAccountId.toString()){
+         $scope.isFriend = true;
+       }
+     }
+     $scope.loaded = true;
+   }
 
+  function errorCallback(err){
+    Notification.error("Problem retrieving devices: " + err);
+  }
 
-
-  $scope.searchFilterOn = function (result) {
-
-    var keyword=new RegExp($window.sessionStorage.companyAccountId.toString());
-    var keyword3=new RegExp("3");
-    var keyword4=new RegExp("4");
-    var keyword2=new RegExp("2");
-
-    return ((keyword.test(result.hasAccess) || keyword4.test(result.accessLevel) || (keyword3.test(result.accessLevel) && isFriend) || (keyword2.test(result.accessLevel) && isFriend)) && result.info.status==="On");
-
-    // keyword.test(result.hasAccess) || keyword4.test(result.accessLevel) || (keyword3.test(result.accessLevel) && isFriend) || (keyword2.test(result.accessLevel)&& isFriend)
-
-  };
-
-  $scope.searchFilterOff = function (result) {
-
-    var keyword=new RegExp($window.sessionStorage.companyAccountId.toString());
-    var keyword3=new RegExp("3");
-    var keyword4=new RegExp("4");
-    var keyword2=new RegExp("2");
-
-
-    return ((keyword.test(result.hasAccess) || keyword4.test(result.accessLevel) || (keyword3.test(result.accessLevel) && isFriend) || (keyword2.test(result.accessLevel) && isFriend))&& result.info.status==="Off");
-
-    // keyword.test(result.hasAccess) || keyword4.test(result.accessLevel) || (keyword3.test(result.accessLevel) && isFriend) || (keyword2.test(result.accessLevel)&& isFriend)
-
-  };
-
-  $scope.searchFilterUn = function (result) {
-
-    var keyword=new RegExp($window.sessionStorage.companyAccountId.toString());
-    var keyword3=new RegExp("3");
-    var keyword4=new RegExp("4");
-    var keyword2=new RegExp("2");
-
-
-    return ((keyword.test(result.hasAccess) || keyword4.test(result.accessLevel) || (keyword3.test(result.accessLevel) && isFriend) || (keyword2.test(result.accessLevel) && isFriend))&& result.info.status==="Unknown");
-
-    // keyword.test(result.hasAccess) || keyword4.test(result.accessLevel) || (keyword3.test(result.accessLevel) && isFriend) || (keyword2.test(result.accessLevel)&& isFriend)
-
-  };
-
-});
+}]);

@@ -1,9 +1,10 @@
+"use strict";
 angular.module('VicinityManagerApp.controllers')
 .controller('companyProfileController',
 function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, tokenDecoder, AuthenticationService, Notification) {
 
   $scope.locationPrefix = $location.path();
-  console.log("location:" + $location.path());
+  // console.log("location:" + $location.path());
   $scope.name = {};
   $scope.avatar = {};
   $scope.occupation = {};
@@ -76,8 +77,8 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
             $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
             $scope.myInit();
             $scope.intervalFunction();
-          }, 5000)
-        }
+          }, 5000);
+        };
 
         $scope.intervalFunction();
 
@@ -100,7 +101,7 @@ userAccountAPIService.getMyDevices($stateParams.companyAccountId)
     },
     function errorCallback(response){}
   );
-}
+};
 
 $scope.myInit();
 
@@ -126,7 +127,7 @@ $("input#input1").on('change',function(evt) {
             // $("img#pic").src = fr.result;
             $("img#pic").prop("src",fr.result);
             base64String = fr.result;
-        }
+        };
         fr.readAsDataURL(files[0]);
     }else{
         // fallback -- perhaps submit the input to an iframe and temporarily store
@@ -168,7 +169,7 @@ $scope.uploadPic = function(){
       },
       function errorCallback(response){}
     );
-}
+};
 
 // Functions Neighbors ==================
 
@@ -177,7 +178,7 @@ $scope.uploadPic = function(){
             .sendNeighbourRequest($stateParams.companyAccountId)
                 .then(
                   function successCallback(response) {
-                    if (response.data.error == true) {
+                    if (response.data.error === true) {
                         Notification.error("Sending partnership request failed!");
                     } else {
                         Notification.success("Partnership request sent!");
@@ -186,13 +187,13 @@ $scope.uploadPic = function(){
                 },
                 function errorCallback(response){}
               );
-    }
+    };
 
     $scope.acceptNeighbourRequest = function () {
         userAccountAPIService.acceptNeighbourRequest($stateParams.companyAccountId)
             .then(
               function successCallback(response){
-                if (response.data.error == true) {
+                if (response.data.error === true) {
                     Notification.error("Partnership request acceptation failed :(");
                 } else {
                     Notification.success("Partnership request accepted!");
@@ -202,13 +203,13 @@ $scope.uploadPic = function(){
             },
             function errorCallback(response){}
           );
-    }
+    };
 
     $scope.rejectNeighbourRequest = function() {
         userAccountAPIService.rejectNeighbourRequest($stateParams.companyAccountId)
             .then(
               function successCallback(response){
-                if (response.data.error == true) {
+                if (response.data.error === true) {
                     Notification.error("Partnership request rejection failed :(");
                 } else {
                     Notification.success("Partnership request rejected!");
@@ -217,13 +218,13 @@ $scope.uploadPic = function(){
             },
             function errorCallback(response){}
           );
-    }
+    };
 
     $scope.cancelNeighbourRequest = function() {
         userAccountAPIService.cancelNeighbourRequest($stateParams.companyAccountId)
             .then(
               function successCallback(response){
-                if (response.data.error ==true) {
+                if (response.data.error === true) {
                     Notification.error("Partnership request cancelation failed :(");
                 } else {
                     Notification.success("Partnership request canceled!");
@@ -232,13 +233,13 @@ $scope.uploadPic = function(){
             },
             function errorCallback(response){}
           );
-    }
+    };
 
     $scope.cancelNeighbourship = function() {
         userAccountAPIService.cancelNeighbourship($stateParams.companyAccountId)
             .then(
               function successCallback(response){
-                if (response.data.error ==true) {
+                if (response.data.error === true) {
                     Notification.error("Partnership cancelation failed :(");
                 } else {
                     Notification.success("Partnership canceled!");
@@ -247,7 +248,7 @@ $scope.uploadPic = function(){
             },
             function errorCallback(response){}
           );
-    }
+    };
 
 // Refresh $scope =================
 
@@ -259,7 +260,7 @@ $scope.uploadPic = function(){
         },
         function errorCallback(response){}
       );
-  }
+  };
 
   function updateScopeAttributes(response){
       $scope.name = response.data.message.organisation;
@@ -277,7 +278,7 @@ $scope.uploadPic = function(){
       $scope.isNeighbour = response.data.message.isNeighbour;
       $scope.friends = response.data.message.knows;
       $scope.users = response.data.message.accountOf;
-  };
+  }
 
 // Edit Profile Functions ===============
 
@@ -288,7 +289,7 @@ $scope.uploadPic = function(){
    $('a#loc5').show();
    $scope.locationNew = $scope.location;
    $('input#loc3').show();
- }
+ };
 
  $scope.locCancel = function(){
    $scope.locationNew = "";
@@ -297,7 +298,7 @@ $scope.uploadPic = function(){
    $('a#loc4').hide();
    $('a#loc5').hide();
    $('input#loc3').hide();
- }
+ };
 
  $scope.locSave = function(){
    var data = {location: $scope.locationNew };
@@ -308,7 +309,7 @@ $scope.uploadPic = function(){
    $('a#loc5').hide();
    $('input#loc3').hide();
    $scope.locationNew = "";
- }
+ };
 
  $scope.notEdit = function(){
    $('a#not2').hide();
@@ -317,7 +318,7 @@ $scope.uploadPic = function(){
    $('a#not5').show();
    $scope.notesNew = $scope.notes;
    $('textarea#not3').show();
- }
+ };
 
  $scope.notCancel = function(){
    $scope.notesNew = "";
@@ -326,7 +327,7 @@ $scope.uploadPic = function(){
    $('a#not4').hide();
    $('a#not5').hide();
    $('textarea#not3').hide();
- }
+ };
 
  $scope.notSave = function(){
    var data = {notes: $scope.notesNew };
@@ -337,7 +338,7 @@ $scope.uploadPic = function(){
    $('a#not5').hide();
    $('textarea#not3').hide();
    $scope.notesNew = "";
- }
+ };
 
 $scope.updateCompany = function(data){
   userAccountAPIService.updateUserAccounts($window.sessionStorage.companyAccountId,data)
@@ -345,6 +346,6 @@ $scope.updateCompany = function(data){
       function successCallback(response){},
       function errorCallback(response){}
     );
-}
+};
 
 });
