@@ -20,12 +20,14 @@ function cancelAccess(req, res, next){
                 var device = data[0];
 
                 for (var index = device.hasAccess.length - 1; index >= 0; index --) {
+                  if(device.hasAccess[index] && activeCompany_id){
                     if (device.hasAccess[index].toString() === activeCompany_id.toString()) {
                         device.hasAccess.splice(index, 1);
                     }
+                  }
                 }
 
-                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + activeCompany_id + '_foreignDevices', 'DELETE', req.headers.authorization)
+                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + activeCompany_id + '_foreignDevices', 'DELETE', req.headers.authorization);
                 device.save();
                 response = {"error": false, "message": "Processing data success!"};
             } else {

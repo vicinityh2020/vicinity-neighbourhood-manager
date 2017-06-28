@@ -13,7 +13,6 @@
         <th>Name<i ng-click="orderByMe('companyName')" class="fa fa-fw fa-sort"/></th>
         <th>Requester<i ng-click="orderByMe('email')" class="fa fa-fw fa-sort"/></th>
         <th>Status<i ng-click="orderByMe('status')" class="fa fa-fw fa-sort"/></th>
-        <th>Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -24,23 +23,21 @@
         </td>
         <td>{{regis.email}}</td>
         <td>
-          <span>{{regis.status}}</span>
-          <div ng-if="regis.status === 'open' || regis.status === 'pending' " class="tooltip2" id="circle_yellow" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class="tooltiptext2" > In progress </span>
+          <div style="padding-left:40%" ng-if="regis.status === 'open' || regis.status === 'pending' "> &nbsp; &nbsp; &nbsp;
+            <span class="label label-warning">Pending</span>
           </div>
-          <div ng-if="regis.status === 'verified'" class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class="tooltiptext2" > Ready </span>
+          <div style="padding-left:40%" ng-if="regis.status === 'verified'"> &nbsp; &nbsp; &nbsp;
+            <span class="label label-success">Verified</span>
           </div>
-          <div ng-if="regis.status === 'declined'" class="tooltip2" id="circle_red" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class="tooltiptext2" > Rejected </span>
+          <div style="padding-left:40%" ng-if="regis.status === 'declined'"> &nbsp; &nbsp; &nbsp;
+            <span class="label label-danger">Declined</span>
           </div>
         </td>
         <td>
-            <button ng-click="f()" ng-if="regis.status === 'verified' " class="btn btn-default btn-block">verified action</button>
-            <button ng-click="verifyAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Verify user</button>
-            <button ng-click="declineAction(regis)" ng-if="regis.status === 'open' " class="btn btn-default btn-block">Decline user</button>
-            <button ng-click="f()" ng-if="regis.status === 'declined' " class="btn btn-default btn-block">declined action</button>
-            <p ng-if="regis.status === 'pending' ">Waiting an answer</p>
+          <i ng-if="regis.status === 'open' " ng-click="verifyAction(regis)" style="color: green; padding-left:10%" class="fa fa-check fa-lg col-sm-4"></i>
+          <i ng-if="regis.status === 'open' " ng-click="declineAction(regis)" style="color: red; padding-left:10%" class="fa fa-close fa-lg col-sm-4"></i>
+          <a ng-if="regis.status === 'open' " ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"><i style="padding-left:10%" class="fa fa-search fa-lg col-sm-4"></i></a>
+          <a ng-if="regis.status !== 'open' " ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"><i style="padding-left:40%" class="fa fa-search fa-lg col-sm-4"></i></a>
         </td>
       </tr>
       </tbody>

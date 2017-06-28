@@ -102,8 +102,8 @@ $scope.isDev = keyword.test(payload.roles);
           );
         }
 
-    $scope.notifResponded =  function(notifID){   // Need to be call external, no need for hoisting
-      notificationsAPIService.changeStatusToResponded(notifID)
+    $scope.notifResponded =  function(notifID,answer){   // Need to be call external, no need for hoisting
+      notificationsAPIService.changeStatusToResponded(notifID,answer)
         .then(
           function successCallback(response){
             // updateScopeAttributes(response);
@@ -113,7 +113,12 @@ $scope.isDev = keyword.test(payload.roles);
         );
       };
 
-      $scope.changeIsUnread =  function(notifID){   // Need to be call external, no need for hoisting
+      $scope.changeIsUnreadAndResponded =  function(notifID){   // Need to be call external, no need for hoisting
+        notificationsAPIService.changeIsUnreadToFalse(notifID)
+          .then($scope.notifResponded(notifID,'responded'), errorCallback);
+        };
+
+      $scope.changeIsUnread =  function(notifID){
         notificationsAPIService.changeIsUnreadToFalse(notifID)
           .then(
             function successCallback(response){
@@ -122,7 +127,7 @@ $scope.isDev = keyword.test(payload.roles);
             },
             errorCallback
           );
-        };
+      };
 
       function updateScopeAttributes(response){ // Need to be hoisted
         var index = 0;
@@ -145,7 +150,7 @@ $scope.isDev = keyword.test(payload.roles);
                 Notification.success("Partnership request accepted!");
             }
 
-            $scope.notifResponded(notifId);
+            $scope.notifResponded(notifId,'responded');
 
             // userAccountAPIService.getUserAccountProfile(friendId).success(updateScopeAttributes2);
             // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);
@@ -164,7 +169,7 @@ $scope.isDev = keyword.test(payload.roles);
                   Notification.success("Partnership request rejected!");
               }
 
-              $scope.notifResponded(notifId);
+              $scope.notifResponded(notifId,'responded');
               // userAccountAPIService.getUserAccountProfile(friendId).success(updateScopeAttributes2);
           },
           errorCallback
@@ -182,7 +187,7 @@ $scope.isDev = keyword.test(payload.roles);
         } else {
             Notification.success("Data access approved!");
         }
-        $scope.notifResponded(notifId);
+        $scope.notifResponded(notifId,'responded');
         // itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
         },
         errorCallback
@@ -199,7 +204,7 @@ $scope.isDev = keyword.test(payload.roles);
           } else {
               Notification.success("Data access rejected!");
           }
-          $scope.notifResponded(notifId);
+          $scope.notifResponded(notifId,'responded');
           // itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
         },
         errorCallback
@@ -219,12 +224,12 @@ $scope.isDev = keyword.test(payload.roles);
 
     function verifyCallback(notifId){
       Notification.success("Verification mail was sent to the company!");
-      $scope.notifResponded(notifId);
+      $scope.notifResponded(notifId,'responded');
     }
 
     function declineCallback(notifId){
       Notification.success("Company was rejected!");
-      $scope.notifResponded(notifId);
+      $scope.notifResponded(notifId,'responded');
     }
 
     // Custom filters ============

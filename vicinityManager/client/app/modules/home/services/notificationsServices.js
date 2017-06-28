@@ -16,12 +16,20 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
     return $http.get(configuration.apiUrl +'/notifications/registrationsRead');
   };
 
+  notificationsAPI.getAllUserNotifications = function(id) {
+    return $http.get(configuration.apiUrl +'/notifications/' + id + '/allNotifications');
+  };
+
+  notificationsAPI.getAllRegistrations = function() {
+    return $http.get(configuration.apiUrl +'/notifications/allRegistrations');
+  };
+
   notificationsAPI.changeIsUnreadToFalse = function(id) {
     return $http.put(configuration.apiUrl +'/notifications/' + id + '/changeIsUnreadToFalse');
   };
 
-  notificationsAPI.changeStatusToResponded = function(id) {
-    return $http.put(configuration.apiUrl +'/notifications/' + id + '/changeStatusToResponded');
+  notificationsAPI.changeStatusToResponded = function(id,answer) {
+    return $http.put(configuration.apiUrl +'/notifications/' + id + '/' + answer + '/changeStatusToResponded');
   };
 
   notificationsAPI.updateNotificationOfRegistration = function(id) {

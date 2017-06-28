@@ -177,6 +177,16 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+        .state('root.main.myNotifications', {
+          url: '/myNotifications',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.myNotificationsView.html',
+                controller: 'myNotificationsController'
+              }
+          }
+        })
 
 // =========  Sub views of items in side menu / PROFILES =========
 

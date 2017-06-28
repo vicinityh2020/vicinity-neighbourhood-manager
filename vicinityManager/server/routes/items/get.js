@@ -22,7 +22,7 @@ function getOne(req, res, next) {
     }
     winston.log('debug','End getOne');
     res.json(response);
-  })
+  });
 }
 
 function getAll(req, res, next) {
@@ -70,104 +70,110 @@ function getItemWithAdd(req, res, next) {
 
     itemOp.find({_id: dev_id}).populate('hasAdministrator','organisation')
         .exec(function(err, data){
+
       if (err || data === null) {
           response = {"error": true, "message": "Processing data failed!"};
       } else {
           if (data.length == 1) {
-
               var device = data[0];
+              var activeCompanyStr = activeCompany_id.toString();
 
-              if (activeCompany_id.toString() === device.hasAdministrator[0]._id.toString()){
+              if (activeCompanyStr === device.hasAdministrator[0]._id.toString()){
                 isOwner = true;
               } else {
                 isOwner = false;
-              };
+              }
 
-              if (device.accessRequestFrom.length > 0 && isOwner==true){
+              if (device.accessRequestFrom.length > 0 && isOwner===true){
                 canAnswer = true;
-              };
+              }
 
-              if (isOwner==false && device.accessLevel==1){
+              if (isOwner===false && device.accessLevel===1){
                 isPrivate = true;
-              };
+              }
 
-              if (isOwner==false && device.accessLevel==2){
+              if (isOwner===false && device.accessLevel===2){
                 isMeta = true;
-              };
+              }
 
-              a=0;
+            var index1;
+            var a = 0;
+            for (index1 = 0; index1 < device.accessRequestFrom.length; index1++){
+              if (device.accessRequestFrom[index1].toString() === activeCompanyStr){
+                a++;
+              }
+            }
 
-              for (index1 in device.accessRequestFrom){
-                if (device.accessRequestFrom[index1].toString() === activeCompany_id.toString()){
-                  a++;
+  //TODO POSSIBLE ERROR HERE, CHECK IMPORTANT
+              var index2;
+              var c = 0;
+              for (index2 = 0; index2 < device.hasAccess.length; index2++){
+                if(device.hasAccess[index2]){
+                  if (device.hasAccess[index2].toString() === activeCompanyStr){
+                    c++;
+                  }
                 }
-              };
+              }
 
 
-              c=0;
-
-              for (index2 in device.hasAccess){
-                if (device.hasAccess[index2].toString() === activeCompany_id.toString()){
-                  c++;
-                }
-              };
-
-
-
-               if (isMeta==true && (a+c)==0){
+               if (isMeta===true && (a+c)===0){
                 cancelRequest2=false;
-              };
+              }
 
-               if (isMeta==true && a>0){
+               if (isMeta===true && a>0){
                 cancelRequest2=true;
-              };
+              }
 
-               if (isMeta==true && c>0){
+               if (isMeta===true && c>0){
                 interruptConnection2=true;
-              };
+              }
 
 
-              if (isOwner==false && device.accessLevel==3){
+              if (isOwner===false && device.accessLevel===3){
                 isFriendData = true;
-              };
+              }
 
-              b=0;
+  //TODO POSSIBLE ERROR HERE, CHECK IMPORTANT
+              var index3;
+              var b = 0;
 
-              for (index in device.hasAccess){
-                if (device.hasAccess[index].toString() === activeCompany_id.toString()){
-                  b++;
+              for (index3 = 0; index3 < device.hasAccess.length; index3++){
+                if(device.hasAccess[index3]){
+                  if (device.hasAccess[index3].toString() === activeCompanyStr){
+                    b++;
+                  }
                 }
-              };
+              }
 
-
-               if (isFriendData==true && b>0){
+               if (isFriendData===true && b>0){
                 cancelAccess2=true;
-              };
-               if (isFriendData==true && b==0){
-                 cancelAccess2=false;
-               };
+              }
 
-              if (isOwner==false && device.accessLevel==4){
+               if (isFriendData===true && b===0){
+                 cancelAccess2=false;
+               }
+
+              if (isOwner===false && device.accessLevel==4){
                 isPublic = true;
-              };
+              }
 
               if (isMeta && cancelRequest2){
                 isMetaCanReq = 100;
                 isMetaNotReq = -5;
                 isMetaInter = -5;
-              };
+              }
 
               if (isMeta && !cancelRequest2 && !interruptConnection2){
                 isMetaCanReq = -5;
                 isMetaInter = -5;
                 isMetaNotReq = 100;
-              };
+              }
 
               if (isMeta && interruptConnection2){
                 isMetaCanReq = -5;
                 isMetaInter = 100;
                 isMetaNotReq = -5;
-              };
+              }
 
 
               // var company = {};

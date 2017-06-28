@@ -10,7 +10,7 @@
     <button class="btn btn-default btn-block" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>Create node</button>
   </div>
   <div class="col-xs-6">
-    <button class="btn btn-default btn-block" ng-click="createGroup()" ng-disabled='true'><span class="glyphicon glyphicon-plus"></span>Create group</button>
+    <button class="btn btn-default btn-block" ng-click="createGroup()" ng-disabled="true"><span class="glyphicon glyphicon-plus"></span>Create group</button>
   </div>
   </span>
   <hr>
@@ -19,9 +19,8 @@
     <table id="RegTable" class="table table-bordered table-striped">
       <thead>
         <tr>
-          <th>Name<i ng-click="orderByMe('name')" class="fa fa-fw fa-sort"></th>
-          <th>Types</th>
-          <th>Actions</th>
+          <th>Name<i ng-click="orderByMe('name')" class="fa fa-fw fa-sort"/></th>
+          <th>Types<i ng-click="orderByMe('types')" class="fa fa-fw fa-sort"/></th>
         </tr>
       </thead>
       <tbody>
@@ -38,14 +37,11 @@
             </div>
           </td> -->
           <td class="col-sm-4">
-            <div class="row">
-              <div class="col-xs-4">
-                <button ng-click="goToEdit(nod._id)" class="btn btn-default btn-block">View node</button>
-              </div>
-              <div class="col-xs-4">
-                <button ng-click="deleteNode(nod._id)" class="btn btn-default btn-block">Delete node</button>
-              </div>
-            </div>
+              <span>
+                <i ng-click="goToEdit(nod._id)" style="color: black; padding-left:10%" class="fa fa-pencil fa-lg col-sm-4"></i>
+                <i ng-click="deleteNode(nod._id)" style="color: red; padding-left:10%" class="fa fa-close fa-lg col-sm-4"></i>
+                <a ui-sref="root.main.nodeDetail({nodeId: nod._id})"><i style="padding-left:10%" class="fa fa-search fa-lg col-sm-4"></i></a>
+              </span>
           </td>
         </tr>
       </tbody>

@@ -6,22 +6,17 @@ var mongoose = require('mongoose');
 var winston = require('winston');
 var logger = require("../../middlewares/logger");
 
-// var userAccountOp = require('../../models/vicinityManager').userAccount;
-// var userAccountOp2 = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
-// var registrationOp = require('../../models/vicinityManager').registration;
 
 // FUNCTIONS to get notifications
 
 function getNotificationsOfUser(req,res){
-  // winston.log('debug','Start getNotificationsOfUser');
 
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
 
  notificationOp.find({addressedTo: {$in : [o_id]}, isUnread: true}).populate('sentBy','avatar organisation').populate('deviceId','avatar name').exec(function(err,data){
    response = {"error": false, "message": data};
-  //  winston.log('debug','responding getNotificationsOfUser');
    res.json(response);
 
  });
@@ -46,9 +41,27 @@ function getNotificationsOfRegistration(req,res){
 
  notificationOp.find({type:"registrationRequest", isUnread: true}).populate('sentByReg','companyName').exec(function(err,data){
    response = {"error": false, "message": data};
-  //  logger.debug('debug','responding getNotificationsOfREGISTRATION');
    res.json(response);
  });
+}
+
+function getAllUserNotifications(req,res){
+
+  var response = {};
+  var o_id = mongoose.Types.ObjectId(req.params.id);
+  notificationOp.find({addressedTo: {$in : [o_id]}}).populate('sentBy','avatar organisation').populate('deviceId','avatar name').exec(function(err,data){
+     response = {"error": false, "message": data};
+     res.json(response);
+  });
+}
+
+function getAllRegistrations(req,res){
+
+  var response = {};
+  notificationOp.find({type:"registrationRequest"}).populate('sentByReg','companyName').exec(function(err,data){
+    response = {"error": false, "message": data};
+    res.json(response);
+  });
 }
 
 function getNotificationsOfRegistrationRead(req,res){
@@ -79,9 +92,7 @@ function getAll(req, res, next) {
 // Functions to manipulate notifications
 
 function deleteNot(senderID, recepID, type, status){
-
     notificationOp.remove({ sentBy: senderID, addressedTo: {$in : [recepID]}, type: type, status: status},function(err, removed){
-
     });
 }
 
@@ -112,7 +123,8 @@ var o_id = mongoose.Types.ObjectId(req.params.id);
 function changeStatusToResponded2(req,res){
 var response = {};
 var o_id = mongoose.Types.ObjectId(req.params.id);
-  notificationOp.findByIdAndUpdate(o_id, { $set: { status: 'responded', isUnread: false }}, { new: true }, function (err, notif) {
+var stat = req.params.status;
+  notificationOp.findByIdAndUpdate(o_id, { $set: { status: stat, isUnread: false }}, { new: true }, function (err, notif) {
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
     } else {
@@ -141,7 +153,6 @@ function markAsRead(sender_id, recipient_id, type, status){
 }
 
 function processFoundUnreadNotifications(err, data){
-
     for (var index in data){
         var item = data[index];
         item.isUnread = false;
@@ -160,3 +171,5 @@ module.exports.deleteNot = deleteNot;
 module.exports.getNotificationsOfUserRead = getNotificationsOfUserRead;
 module.exports.getNotificationsOfRegistration = getNotificationsOfRegistration;
 module.exports.getNotificationsOfRegistrationRead = getNotificationsOfRegistrationRead;
+module.exports.getAllUserNotifications = getAllUserNotifications;
+module.exports.getAllRegistrations = getAllRegistrations;

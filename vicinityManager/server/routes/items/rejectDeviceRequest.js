@@ -33,7 +33,7 @@ function rejectDeviceRequest(req, res, next) {
                     // }
                 }
 
-                notificationAPI.changeStatusToResponded(friend_id, activeCompany_id, 'deviceRequest', 'waiting');
+                //notificationAPI.changeStatusToResponded(friend_id, activeCompany_id, 'deviceRequest', 'waiting');
                 notificationAPI.markAsRead(friend_id, activeCompany_id, 'deviceRequest', 'waiting');
 
                 var notification = new notificationOp();

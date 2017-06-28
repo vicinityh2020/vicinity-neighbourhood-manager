@@ -4,9 +4,8 @@
   <span ng-show="!zeroNotif" class="label label-warning">{{notifs.length + registrations.length}}</span>
 </a>
 <ul class="dropdown-menu" style="border-color: #FFF; margin-top: 2px">
-  <li ng-show="!oneNotif" class="header">You have {{notifs.length}} new notifications</li>
-  <li ng-show="oneNotif" class="header">You have 1 new notification</li>
-  <li>
+  <li ng-show="!oneNotif" class="header">You have {{notifs.length}} new notifications <span><a ui-sref="root.main.myNotifications"><i class="fa fa-plus pull-right"></i></a></span></li>
+  <li ng-show="oneNotif" class="header">You have 1 new notification  <span><a ui-sref="root.main.myNotifications"><i class="fa fa-plus pull-right"></i></a></span></li>
     <!-- Inner Menu: contains the notifications -->
     <ul class="menu">
 
@@ -101,24 +100,24 @@
            <!-- Unread enabled device notification !hotovo! -->
             <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceEnabled') && (notif.status== 'waiting') ">  <!-- | filter: searchfilter3 -->
               <div class="notification-avatar">
-                <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
+                <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
                   <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
                 </a>
               </div>
               <div class="notification-description">
-                <p>A new device has been activated:  <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
+                <p>A new device has been activated:  <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
               </div>
               <span class="ciara"></span>
             </li>
             <!-- Unread disabled device notification !hotovo! -->
              <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceDisabled') && (notif.status== 'waiting') ">  <!-- | filter: searchfilter3 -->
                <div class="notification-avatar">
-                 <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
+                 <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
                    <img style="cursor: pointer; width: 25px; height: 25px" onmouseover=""  class="img-circle" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
                  </a>
                </div>
                <div class="notification-description">
-                 <p>A device has been deactivated:  <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
+                 <p>A device has been deactivated:  <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.deviceId.name}}</a>.</p>
                </div>
                <span class="ciara"></span>
              </li>
