@@ -14,15 +14,14 @@ function putOne(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   var updates = req.body;
+  var db = new userAccountOp();
+  var db2 = new userOp();
 
 registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function (err, raw) {
 
 // Case new company registration
 
   if ((raw.type == "newCompany") && (raw.status == "verified")){
-    var db = new userAccountOp();
-    var db2 = new userOp();
-
     db2.name =raw.userName;
     db2.avatar= config.avatarUser;
     db2.occupation =raw.occupation;
@@ -30,7 +29,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
     db2.authentication.password =raw.password;
     db2.authentication.principalRoles[0] ="user";
     db2.authentication.principalRoles[1] ="administrator";
-    db2.save(function(err, product) {
+    db2.save(function(err, userData) {
       if (err) {
         response = {"error": true, "message": "Error adding data!"};
         logger.debug('Error in saving new user!');
@@ -40,60 +39,39 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
         db.businessId = raw.businessId;
         db.organisation = raw.companyName;
         db.location = raw.companyLocation;
-        db.accountOf[0] = product._id;
+        db.accountOf[0] = userData._id;
         db.avatar = config.avatarOrg;
 
-        db.save(function(err, product2) {
+        db.save(function(err, orgData) {
           if (err) {
             response = {"error": true, "message": "Error adding data!"};
             logger.debug('Error in saving new userAccount!');
             res.json(response);
           } else {
+            userData.organisation = orgData._id; // Adding the company id to the new user
+            userData.save();
+
+            createOrganisationGroups(orgData,req.headers.authorization); // Creates necessary groups in comm server
+
             logger.debug('New userAccount was successfuly saved!');
-
-            var names = ['_ownDevices', '_agents', '_foreignDevices'];
-            var payload = {
-              name: product2._id + names[0],
-              description: product2.organisation
-            };
-
-            commServer.callCommServer(payload, 'groups', 'POST', req.headers.authorization)
-              .then(callbackNext(names[1]))
-              .then(callbackNext(names[2]))
-              .then(callbackSendResult)
-              .catch(errorCallback1(err))
-
-              function callbackNext(n){
-                payload.name = product2._id + n;
-                return commServer.callCommServer(payload, 'groups', 'POST', req.headers.authorization);
-              }
-
-              function callbackSendResult(){
-                response = {"error": false, "message": "New userAccount was successfuly saved!"};
-                return res.json(response);
-              }
-
-              function errorCallback1(err){
-                //TODO delete org on error
-                logger.debug('error: ' + err);
-              }
-
+            response = {"error": false, "message": "New userAccount was successfuly saved!"};
+            res.json(response);
           }
         });
-      };
+      }
     });
 
 // Case new user registration
 
         }else if ((raw.type == "newUser") && (raw.status == "verified")){
-          var db2 = new userOp();
           db2.name =raw.userName;
           db2.avatar= config.avatarUser;
           db2.occupation =raw.occupation;
           db2.email =raw.email;
           db2.authentication.password =raw.password;
           db2.authentication.principalRoles[0] ="user";
-          db2.save(function(err, product) {
+          db2.organisation = mongoose.Types.ObjectId(raw.companyId);
+          db2.save(function(err, userData) {
             if (err) {
               response = {"error": true, "message": "Error adding data!"};
               logger.debug('Error in saving new user!');
@@ -101,7 +79,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
             } else {
                 var userAccountId = mongoose.Types.ObjectId(raw.companyId);
                 userAccountOp.findById(userAccountId, function(err, data2){
-                  var user_id = mongoose.Types.ObjectId(product._id);
+                  var user_id = mongoose.Types.ObjectId(userData._id);
                   if (err) {
                     response = {"error": true, "message": "Error fetching data"};
                     logger.debug('Error in saving new user!');
@@ -136,22 +114,54 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
 
       }else{
         response = {"error": false, "message": "Type is neither newUser nor newCompany!"};
-        logger.debug('Wrong status, doing nothing...')
+        logger.debug('Wrong status, doing nothing...');
         res.json(response);
-      };
+      }
    });
 }
 
+
+// Functions supporting registration process ===================
+
+// Main function for creating comm server groups
+function createOrganisationGroups(data,auth){
+  var names = ['_ownDevices', '_agents', '_foreignDevices'];
+  var payload = {
+    name: data._id + names[0],
+    description: data.organisation
+  };
+  commServer.callCommServer(payload, 'groups', 'POST', auth)
+    .then(callbackNext(data, auth, payload, names[1]),errorCallback1)
+    .then(callbackNext(data, auth, payload, names[2]),errorCallback1);
+}
+
+// Creates new organisation groups in the comm server
+function callbackNext(data, auth, payload, n){
+  payload.name = data._id + n;
+  return commServer.callCommServer(payload, 'groups', 'POST', auth);
+}
+
+// Error handling
+function errorCallback1(err){
+  //TODO delete org on error
+  logger.debug('error: ' + err);
+}
+
+// Prepares an object with the necessary info to prepare a mail. The mail is then sent
+// using the mailing service created under helpers
 function send_mail(id, emailTo, companyName, status){
+  var thisLink;
+  var thisTmp;
+  var thisSubject;
 
   if(status === 'pending'){
-    var thisLink = "http://localhost:8000/app/#/registration/newCompany/";
-    var thisTmp = "activateCompany";
-    var thisSubject = 'Verification email to join VICINITY';
+    thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+    thisTmp = "activateCompany";
+    thisSubject = 'Verification email to join VICINITY';
   }else{
-    var thisLink = "";
-    var thisTmp = "rejectCompany";
-    var thisSubject = 'Issue in the process to join VICINITY';
+    thisLink = "";
+    thisTmp = "rejectCompany";
+    thisSubject = 'Issue in the process to join VICINITY';
   }
 
   var mailInfo = {
@@ -160,47 +170,10 @@ function send_mail(id, emailTo, companyName, status){
     subject : thisSubject,
     tmpName : thisTmp,
     name : companyName
-  }
+  };
 
   mailing.sendMail(mailInfo);
-
 }
-
-// function delIdFromHasAccessAndAccessRequestFrom(adminId, friendId){
-//
-//     itemOp.find({ hasAdministrator: {$in : [adminId]}, accessRequestFrom: {$in : [friendId]}},function(err, data){
-//         var dev = {};
-//         for (index in data){
-//           dev = data[index];
-//
-//           for (var index2 = dev.accessRequestFrom.length - 1; index >= 0; index --) {
-//               if (dev.accessRequestFrom[index2].toString() === friendId.toString()) {
-//                   dev.accessRequestFrom.splice(index2, 1);
-//               }
-//           };
-//
-//           dev.save();
-//         };
-//     });
-//
-//     itemOp.find({ hasAdministrator: {$in : [adminId]}, hasAccess: {$in : [friendId]}},function(err, data){
-//         var dev = {};
-//         for (index in data){
-//           dev = data[index];
-//
-//           for (var index2 = dev.hasAccess.length - 1; index >= 0; index --) {
-//               if (dev.hasAccess[index2].toString() === friendId.toString()) {
-//                   dev.hasAccess.splice(index2, 1);
-//               }
-//           };
-//
-//           dev.save();
-//         };
-//     });
-//
-// }
-
 
 
 module.exports.putOne = putOne;
-// module.exports.delIdFromHasAccessAndAccessRequestFrom = delIdFromHasAccessAndAccessRequestFrom;

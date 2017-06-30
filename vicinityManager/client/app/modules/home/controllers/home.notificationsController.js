@@ -86,21 +86,26 @@ $scope.isDev = keyword.test(payload.roles);
 
     // ========= Other Functions ===============
 
-      function numberOfUnreadNotifs(){ // Need to be hoisted
-        $scope.oneNotif = ($scope.notifs.length + $scope.registrations.length) === 1;
-        $scope.zeroNotif = ($scope.notifs.length + $scope.registrations.length) === 0;
-      }
+    function numberOfUnreadNotifs(){ // Need to be hoisted
+      $scope.oneNotif = ($scope.notifs.length + $scope.registrations.length) === 1;
+      $scope.zeroNotif = ($scope.notifs.length + $scope.registrations.length) === 0;
+    }
 
-      function getNotifsAndNotifs(){ // Need to be hoisted
-        userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
-          .then(
-            function successCallback(response){
-              $scope.notifs = response.data.message;
-              numberOfUnreadNotifs();
-            },
-            errorCallback
-          );
-        }
+    function getNotifsAndNotifs(){ // Need to be hoisted
+      userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
+        .then(getRegistrationNotifications,errorCallback)
+        .then(saveNewRegistrations,errorCallback);
+    }
+
+    function getRegistrationNotifications(response){
+      $scope.notifs = response.data.message;
+      return notificationsAPIService.getNotificationsOfRegistration();
+    }
+
+    function saveNewRegistrations(response){
+      $scope.registrations = response.data.message;
+      numberOfUnreadNotifs();
+    }
 
     $scope.notifResponded =  function(notifID,answer){   // Need to be call external, no need for hoisting
       notificationsAPIService.changeStatusToResponded(notifID,answer)

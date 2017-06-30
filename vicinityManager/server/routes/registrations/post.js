@@ -81,15 +81,15 @@ if(!req.body.status || req.body.status !== 'pending'){
           subject : 'Verification email to join VICINITY',
           tmpName : thisTmp,
           name : thisName
-        }
+        };
 
         mailing.sendMail(mailInfo);
 
         response = {"error": false, "message": "Data added!"};
         res.json(response);
-      };
+      }
     });
-  };
+  }
 }
 
 
@@ -106,7 +106,7 @@ function findDuplicatesCompany(req, res, next) {
         {"organisation":companyName},
         {"businessID":bid},
         ]
-      }
+      };
   userAccountOp.find(query, function(err, data) {
     logger.debug("data: " + data);
     if (err) {
