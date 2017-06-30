@@ -1,54 +1,48 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers').
-  controller('searchController', function ($scope, searchAPIService, userAccountAPIService, userAPIService, $stateParams, $window) {
-    $scope.resultsList = [];
+  controller('searchController', function ($scope, searchAPIService, userAccountAPIService, $stateParams, $window, Notification) {
+
+    $scope.resultsOrganisations = [];
+    $scope.resultsUsers = [];
+    $scope.resultsItems = [];
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
     $scope.search = $stateParams.searchTerm;
 
+    searchAPIService.searchOrganisation($scope.search)
+      .then(searchUsers,errorCallback)
+      .then(searchFriends,errorCallback)
+      .then(searchItems,errorCallback)
+      .then(searchFinish,errorCallback);
 
-    $scope.searchFilter = function (result) {
-      var keyword = new RegExp($stateParams.searchTerm, 'i');
+      function searchUsers(response){
+        $scope.resultsOrganisations = response.data.message;
+        $scope.loaded1 = true;
+        return searchAPIService.searchUser($scope.search);
+      }
 
-      return $stateParams.searchTerm && keyword.test(result.organisation) ;   // || keyword.test(result.accountOf.occupation)
-    };
+      function searchFriends(response){
+        $scope.resultsUsers = response.data.message;
+        $scope.loaded2 = true;
+        return userAccountAPIService.getFriends($scope.activeCompanyID);
+      }
 
-    // var promise = $timeout(emptySearch, 1000);
-    //
-    // $scope.$on('$locationChangeStart', function(){
-    //     $timeout.cancel(promise);
-    // });
-    //
-    // function emptySearch(){
-    //   $stateParams.searchTerm = "";
-    // }
-
-    userAccountAPIService.getUserAccounts()
-      .then(
-        function successCallback(response) {
-          var results = response.data.message;
-          $scope.resultsList = results;
-          $scope.loaded = true;
-        },
-        function errorCallback(response){
+      function searchItems(response){
+        var payload = [];
+        for(var elem in response.data.message){
+          payload.push(response.data.message[elem]._id);
         }
-      );
+        return searchAPIService.searchItem($scope.activeCompanyID, $scope.search, payload);
+      }
 
-    $scope.searchFilter2 = function (result2) {
-      var keyword = new RegExp($stateParams.searchTerm, 'i');
+      function searchFinish(response){
+        $scope.resultsItems = response.data.message;
+        $scope.loaded3 = true;
+        $scope.loaded = true;
+      }
 
-      return $stateParams.searchTerm && keyword.test(result2.name) ;   // || keyword.test(result.accountOf.occupation)
-    };
-
-    userAPIService.getAll()
-      .then(
-        function successCallback(response) {   //users not userAccounts
-          var results2 = response.data.message;
-          $scope.resultsList2 = results2;
-          $scope.loaded = true;
-        },
-        function errorCallback(response){
-        }
-      );
-
+      function errorCallback(err){
+        Notification.error('Problem in the search: ' + err);
+      }
 
   });

@@ -22,8 +22,8 @@ var notifications = require('./routes/notifications');
 var invitations = require('./routes/invitations');
 var registrations = require('./routes/registrations');
 var nodes = require('./routes/nodes');
-var commServer = require('./routes/commServer')
-//var search = require('./routes/search');
+var commServer = require('./routes/commServer');
+var search = require('./routes/search');
 //var userAccounts = require('./routes/companyAccounts');
 
 // Custom MIDDLEWARES Import === jwauth && Winston Debugger
@@ -62,6 +62,7 @@ app.use('/nodes', [jwtauth, nodes]);
 app.use('/items', [jwtauth, items]);
 app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
+app.use('/search', [jwtauth, search]);
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
 app.use('/commServer', commServer);

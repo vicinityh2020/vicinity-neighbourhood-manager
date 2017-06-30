@@ -2,7 +2,11 @@ var mongoose = require('mongoose');
 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var userAccount = {
+var Schema = mongoose.Schema;
+
+// Vicinity neighorhood schemas
+
+var userAccount = new Schema({
   organisation: String,
   avatar: String,
   creatorOf: [ObjectId], //Creator of UserAccounts
@@ -38,9 +42,9 @@ var userAccount = {
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   badges:[String],
   notes:String
-};
+});
 
-var user = {
+var user = new Schema({
   avatar: String,
   name: String,
   firstName: String,
@@ -50,14 +54,14 @@ var user = {
   location: String,
   email: String,
   status: String,
-  // organisation: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: 'userAccount'
-  // },
+  organisation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'userAccount'
+  },
   authentication: {
     password: String,
     principalRoles: [String]
-  }};
+  }});
 
 var invitation = {
     emailTo: String,
@@ -147,7 +151,7 @@ var gateway = {
   }] // Gateway has Items.
 };
 
-var item = {
+var item = new Schema({
   name: String,
   consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
   hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
@@ -172,7 +176,7 @@ var item = {
   info: mongoose.Schema.Types.Mixed,
   type: String,
   status: String
-};
+});
 
 var remember = {
   token: {type: String, required: true},
@@ -190,6 +194,23 @@ var node = {
   }]
 };
 
+// Indexes to perform text search ======
+// Only works for FULL TEXT search !!!!
+// userAccount.index({organisation: 'text'});
+//
+// user.index({name: 'text'});
+//
+// item.index({name: 'text'});
+
+// Indexes for common field searchUser
+
+userAccount.index({organisation: 1});
+
+user.index({name: 1});
+
+item.index({name: 1});
+
+// Exports =============================
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
 module.exports.user = mongoose.model('user', user);

@@ -1,23 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
+var getHelper = require('../helpers/search/get.js');
 
-var userAccountOp = require('../models/vicinityManager').userAccount;
-
-router
-  .get('/:searchTerm', function(req, res, next) {
-//TODO: User authentic - Role check
-    var response = {};
-    var searchTerm = req.params.searchTerm;
-  
-    userAccountOp.find({'accountOf.name': searchTerm }, function(err, data) {    
-      if (err) {
-        response = {"error": true, "message": "Error fetching data"};
-      } else {
-        response = {"error": false, "message": data};
-      }
-      res.json(response);
-    });
-  });
+  router
+    .get('/organisation', getHelper.searchOrganisation)
+    .get('/user', getHelper.searchUser)
+    .post('/item/:cid', getHelper.searchItem);
 
 module.exports = router;
