@@ -79,22 +79,85 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
     //
     // $scope.makeItem = function(){
     //   var thingDescr = {
-    //       "datasources": [
-    //           {
-    //               "_id": "574feefdf117cab30724bf46",
-    //               "unitOfMeasurement": "W",
-    //               "format": "float",
-    //               "typeOf": "PowerConsumption",
-    //               "name": "Power consumption"
-    //           },
-    //           {
-    //               "_id": "574feefdf117cab30724bf45",
-    //               "unitOfMeasurement": "-",
-    //               "format": "string",
-    //               "typeOf": "ON_OFF_Switch",
-    //               "name": "Switch status"
-    //           }
-    //       ],
+		// "actions": [
+		// 	{
+		// 		"affects": "OnOff",
+		// 		"aid": "status",
+		// 		"input": {
+		// 			"datatype": "",
+		// 			"units": "Adimensional"
+		// 		},
+		// 		"read_links": [
+		// 			{
+		// 				"href": "/objects/34b10cef-cd46-40b3-a9f8-9d40c20c2131/properties/status",
+		// 				"mediaType": "application/json"
+		// 			}
+		// 		],
+		// 		"write_links": [
+		// 			{
+		// 				"href": "/objects/{oid}/actions/UCtrlOnOff",
+		// 				"mediaType": "application/json"
+		// 			}
+		// 		]
+		// 	}
+		// ],
+		// "oid": "hvacs:HVAC_LG_14",
+		// "properties": [
+		// 	{
+		// 		"monitors": "AmbientTemperature",
+		// 		"output": {
+		// 			"datatype": "",
+		// 			"units": "Î’Â°C"
+		// 		},
+		// 		"pid": "setTemp",
+		// 		"read_links": [
+		// 			{
+		// 				"href": "/objects/34b10cef-cd46-40b3-a9f8-9d40c20c2131/properties/setTemp",
+		// 				"mediaType": "application/json"
+		// 			}
+		// 		],
+		// 		"writable": true,
+		// 		"write_links": [
+		// 			{
+		// 				"href": "/objects/{oid}/properties/UCtrlTempSetPoint",
+		// 				"mediaType": "application/json"
+		// 			}
+		// 		]
+		// 	},
+		// 	{
+		// 		"monitors": "AmbientTemperature",
+		// 		"output": {
+		// 			"datatype": "",
+		// 			"units": "Î’Â°C"
+		// 		},
+		// 		"pid": "tempAct",
+		// 		"read_links": [
+		// 			{
+		// 				"href": "/objects/34b10cef-cd46-40b3-a9f8-9d40c20c2131/properties/tempAct",
+		// 				"mediaType": "application/json"
+		// 			}
+		// 		],
+		// 		"writable": false,
+		// 		"write_links": []
+		// 	},
+		// 	{
+		// 		"monitors": "Mode",
+		// 		"output": {
+		// 			"datatype": "",
+		// 			"units": "Adimensional"
+		// 		},
+		// 		"pid": "userControl",
+		// 		"read_links": [
+		// 			{
+		// 				"href": "/objects/34b10cef-cd46-40b3-a9f8-9d40c20c2131/properties/userControl",
+		// 				"mediaType": "application/json"
+		// 			}
+		// 		],
+		// 		"writable": false,
+		// 		"write_links": []
+		// 	}
+		// ],
+		// "type": "HVACSensor",
     //       "id_value": "000D6F0000994EAB",
     //       "id_tag": "url_sufix",
     //       "status": "On",
@@ -103,7 +166,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
     //   }
     //   var query = {
     //       color: 'some',
-    //       name: 'testingCommServPublic',
+    //       name: 'Device_test_2',
     //       hasAdministrator: $window.sessionStorage.companyAccountId,
     //       accessLevel: 4,
     //       avatar: "",

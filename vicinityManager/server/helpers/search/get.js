@@ -48,7 +48,29 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
       friends.push(mongoose.Types.ObjectId(req.body[i]));
     }
 
-    itemOp.find({$query: {name: sT, 'status':'enabled', $or: [{hasAdministrator:{$in:friends}},{accessLevel:4}] } ,$hint: { name : 1 }}, function(err, data) {
+    var query = {
+      name: sT,
+      status:'enabled',
+      $or: [
+        {
+          $and: [
+            {hasAdministrator:cid},
+            {accessLevel:1}
+          ]
+        },
+        {
+          $and:[
+            {hasAdministrator:{$in:friends}},
+            {accessLevel:{$in:[2,3]}}
+          ]
+        },
+        {
+          accessLevel:4
+        }
+      ]
+    };
+
+    itemOp.find({$query: query ,$hint: { name : 1 }}, function(err, data) {
       if (err) {
         response = {"error": true, "message": "Error fetching data"};
       } else {
