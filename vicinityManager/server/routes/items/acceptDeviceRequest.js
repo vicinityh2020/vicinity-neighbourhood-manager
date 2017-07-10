@@ -32,7 +32,7 @@ function acceptDeviceRequest(req, res, next) {
                     // }
                 }
                 logger.debug(dev_id);
-                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + friend_id + '_foreignDevices', 'POST', req.headers.authorization)
+                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + friend_id + '_foreignDevices', 'POST')
                 //notificationAPI.changeStatusToResponded(friend_id, activeCompany_id, 'deviceRequest','waiting');
                 notificationAPI.markAsRead(friend_id, activeCompany_id, 'deviceRequest','waiting');
 

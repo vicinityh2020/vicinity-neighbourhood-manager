@@ -1,3 +1,9 @@
+/*
+Logger middleware - replaces node default logger
+Writes in console and in text files
+The level of verbosity can be customized based on needs
+*/
+
 var winston = require('winston');
 winston.emitErrs = true;
 
@@ -23,6 +29,7 @@ var logger = new winston.Logger({
 });
 
 module.exports = logger;
+
 module.exports.stream = {
     write: function(message, encoding){
         logger.info(message.slice(0,-1)); // Remove additional line char

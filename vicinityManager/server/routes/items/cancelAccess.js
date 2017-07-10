@@ -27,7 +27,7 @@ function cancelAccess(req, res, next){
                   }
                 }
 
-                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + activeCompany_id + '_foreignDevices', 'DELETE', req.headers.authorization);
+                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + activeCompany_id + '_foreignDevices', 'DELETE');
                 device.save();
                 response = {"error": false, "message": "Processing data success!"};
             } else {

@@ -121,7 +121,14 @@ var notification = {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'registration'
     },
-    type: {type: String, enum: ['friendRequest','deviceRequest','registrationRequest','deviceEnabled','deviceDisabled']},
+    type: {type: String,
+      enum: ['friendRequest',
+            'deviceRequest',
+            'registrationRequest',
+            'deviceEnabled',
+            'deviceDisabled',
+            'deviceDiscovered']
+            },
     deviceId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'item'
@@ -153,13 +160,18 @@ var gateway = {
 
 var item = new Schema({
   name: String,
-  consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
+  oid: String, // Object id -- different to Mongo uid
+  aid: String, // agent id
   hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
   hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
   accessRequestFrom: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
   accessLevel: Number,
-  color: String,
   avatar: String,
+  info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
+  type: String,
+  status: String
+  // consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
+  // color: String,
   // info: Object{
   //   serial_number: String,
   //   location: String,
@@ -173,9 +185,6 @@ var item = new Schema({
   //     unitOfMeasurement: String
   //   }]
   // },
-  info: mongoose.Schema.Types.Mixed,
-  type: String,
-  status: String
 });
 
 var remember = {

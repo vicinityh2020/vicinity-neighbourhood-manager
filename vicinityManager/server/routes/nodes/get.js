@@ -1,8 +1,12 @@
+
+// Global objects
+
 var mongoose = require('mongoose');
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 
+// Function 1
 
 function getOne(req, res, next) {
 
@@ -15,7 +19,7 @@ function getOne(req, res, next) {
       response = {"error": false, "message": data};
     }
     res.json(response);
-  })
+  });
 
   // EXAMPLE GET BODY
   // commServer.callCommServer({}, 'users/' + o_id, 'GET', req.headers.authorization)
@@ -27,6 +31,8 @@ function getOne(req, res, next) {
 
 }
 
+// Function 2
+
 function getAll(req, res, next) {
 
   var response = {};
@@ -37,12 +43,14 @@ function getAll(req, res, next) {
       response =  {"error": true, "message": "Error fetching data"};
     } else {
       response = {"error": false, "message": data};
-    };
+    }
 
     res.json(response);
   });
 
 }
+
+// Exports Functions
 
 module.exports.getOne = getOne;
 module.exports.getAll = getAll;

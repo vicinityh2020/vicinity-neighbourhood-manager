@@ -121,7 +121,14 @@
                </div>
                <span class="ciara"></span>
              </li>
-  <!-- Unread registration request notification -->
+             <!-- Unread disabled device notification !hotovo! -->
+              <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') ">  <!-- | filter: searchfilter3 -->
+                <div class="notification-description">
+                  <p><a ng-click="changeIsUnreadAndResponded(notif._id)" >New devices have been activated!</a></p>
+                </div>
+                <span class="ciara"></span>
+              </li>
+        <!-- Unread registration request notification -->
         <li ng-repeat="reg in registrations" ng-show="(reg.type=='registrationRequest') && (reg.status== 'waiting') ">        <!-- | filter: searchfilter4 -->
           <div class="notification-avatar">
             <a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">

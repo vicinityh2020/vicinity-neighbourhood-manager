@@ -8,7 +8,8 @@ var notificationOp = require('../../models/vicinityManager').notification;
 function putOne(req, res) {
 //TODO: User authentic - Role check
   var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
+  var o_id = mongoose.Types.ObjectId(req.params.oid);
+  var aid = mongoose.Types.ObjectId(req.params.aid);
   var updates = req.body;
   var payload = {
     username : o_id,
@@ -18,29 +19,29 @@ function putOne(req, res) {
 
   if(updates.status === 'enabled' && updates.modifyCommServer && updates.public){
     commServer.callCommServer(payload, 'users', 'POST', req.headers.authorization)
-      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + updates.cid + '_ownDevs', 'POST', req.headers.authorization),callbackError) // Add to company group
-      // .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + agent_id, 'POST', req.headers.authorization)) // Add to agent group
-      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + 'publicDevices', 'POST', req.headers.authorization),callbackError) // Add to public devices group
+      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + updates.cid + '_ownDevices', 'POST'),callbackError) // Add to company group
+      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + aid, 'POST')) // Add to agent group
+      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + 'publicDevices', 'POST'),callbackError) // Add to public devices group
       .then(deviceActivityNotif(o_id, updates.cid, 'Enabled'),callbackError)
       .then(itemStatusUpdate(o_id,updates),callbackError);
 
   }else if(updates.status === 'enabled' && updates.modifyCommServer && !updates.public){
-    commServer.callCommServer(payload, 'users', 'POST', req.headers.authorization)
-      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + updates.cid + '_ownDevs', 'POST', req.headers.authorization),callbackError) // Add to company group
-      // .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + agent_id, 'POST', req.headers.authorization)) // Add to agent group
+    commServer.callCommServer(payload, 'users', 'POST')
+      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + updates.cid + '_ownDevices', 'POST'),callbackError) // Add to company group
+      .then(commServer.callCommServer({}, 'users/' + o_id + '/groups/' + aid, 'POST')) // Add to agent group
       .then(deviceActivityNotif(o_id, updates.cid, 'Enabled'),callbackError)
       .then(itemStatusUpdate(o_id,updates),callbackError);
 
   }else if(updates.status === 'disabled' && updates.modifyCommServer){
-    commServer.callCommServer({}, 'users/' + o_id , 'DELETE', req.headers.authorization)
+    commServer.callCommServer({}, 'users/' + o_id , 'DELETE')
       .then(deviceActivityNotif(o_id, updates.cid, 'Disabled'),callbackError)
       .then(itemStatusUpdate(o_id,updates),callbackError);
 
   }else{
     if(updates.accessLevel === '4'){ // Add/removes devices from commServer shared public group
-      commServer.callCommServer({}, 'users/' + o_id + '/groups/' + 'publicDevices', 'POST', req.headers.authorization);
+      commServer.callCommServer({}, 'users/' + o_id + '/groups/' + 'publicDevices', 'POST');
     }else if(updates.accessLevel && updates.accessLevel !== '4'){
-      commServer.callCommServer({}, 'users/' + o_id + '/groups/' + 'publicDevices', 'DELETE', req.headers.authorization);
+      commServer.callCommServer({}, 'users/' + o_id + '/groups/' + 'publicDevices', 'DELETE');
     }
     itemOp.update({ "_id": o_id}, {$set: updates}, function(err, raw){
       if(!err){
@@ -82,7 +83,7 @@ function deviceActivityNotif(did,cid,state){
   function callbackError(err){
     logger.debug('Error updating item: ' + err);
     // TODO some error handling ...
-    // commServer.callCommServer({}, 'users/' + o_id , 'DELETE', req.headers.authorization)
+    // commServer.callCommServer({}, 'users/' + o_id , 'DELETE')
   }
 
 }

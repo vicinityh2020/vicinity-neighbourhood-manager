@@ -1,7 +1,17 @@
+/*
+Configuration sheet:
+Security
+URLs
+Avatars
+*/
+
 var config = module.exports = {};
 
-//Token Secret
+//Token Secret for Server side
 config.jwtTokenSecret = 'eHUTx%A_v*V**DG+SgcUMes6LLk=y=JAQK+BW&%#vLbnh2S@mQM7cDejsgx2x^AApJMKP-cRCR4V$#R5GxEe2=G#D_xR4JjwbbG@28qHJWR&-rnWB__rT*R=^_*!wK?d';
+
+//Token Secret for Communication Server
+config.commServerToken = "Basic " + new Buffer("vicinity-nm:VredesteinLatexMliekoNaDefekt500ml").toString('base64');
 
 // URL comm server
 config.commServerUrl = "http://138.201.156.73:9090/plugins/restapi/v1";

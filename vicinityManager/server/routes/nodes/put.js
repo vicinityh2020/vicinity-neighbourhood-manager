@@ -1,29 +1,41 @@
+
+// Global objects
+
 var mongoose = require('mongoose');
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 var commServer = require('../../helpers/commServer/request');
 
-// UPDATE =================================
+// Function 1
 
-function putOne(req, res) {
-  var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-  var updates = req.body;
+  /*
+  Updates a node for an organisation
+  Adds or deletes a node depending on the status field of the node MONGO object
+  Receives request from client
+  */
+  function putOne(req, res) {
+    var response = {};
+    var o_id = mongoose.Types.ObjectId(req.params.id);
+    var updates = req.body;
 
-  nodeOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function(err, data){
-    if(err){
-        logger.debug("Error updating the node");
-    }else{
-      if(req.body.status === 'deleted'){
-        successDelete(data)
+    nodeOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function(err, data){
+      if(err){
+          logger.debug("Error updating the node");
       }else{
-        successUpdate(data);
+        if(req.body.status === 'deleted'){
+          successDelete(data);
+        }else{
+          successUpdate(data);
+        }
       }
-    }
-  })
+    });
 
-  function successUpdate(data){ // UPDATED node in MONGO then...
+  /*
+  On node saved successfully in MONGO,
+  the update process continues in the commServer
+  */
+  function successUpdate(data){
     var payload = {
       name: data.name,
       password: req.body.pass,
@@ -33,20 +45,33 @@ function putOne(req, res) {
                     {'@key':'uri', '@value': data.eventUri}
                         ]}
     };
-    commServer.callCommServer(payload, 'users/' + data._id, 'PUT', req.headers.authorization) // Update node in commServer
-    .then(callBackCommServer(data),callbackError)
+    commServer.callCommServer(payload, 'users/' + data._id, 'PUT') // Update node in commServer
+    .then(callBackCommServer(data),callbackError);
   }
 
+  /*
+  On node status active in MONGO,
+  the update process continues in the commServer
+  */
   function successDelete(data){ // Change node status to deleted in MONGO then...
-    commServer.callCommServer({}, 'users/' + data._id, 'DELETE', req.headers.authorization) // Update node in commServer
+    commServer.callCommServer({}, 'users/' + data._id, 'DELETE') // Update node in commServer
     .then(callBackCommServerDelete(data),callbackError)
-    .then(callBackCommServer(data),callbackError)
+    .then(callBackCommServer(data),callbackError);
   }
 
+// Callbacks
+
+  /*
+  On node status changed to deleted in MONGO,
+  the update process continues in the commServer
+  */
   function callBackCommServerDelete(data){
-    return commServer.callCommServer({}, 'groups/' + data._id, 'DELETE', req.headers.authorization)
+    return commServer.callCommServer({}, 'groups/' + data._id, 'DELETE');
   }
 
+  /*
+  Sends response when process completed
+  */
   function callBackCommServer(data){
     var response = {"error": false, "message": data};
     res.json(response);
@@ -59,9 +84,13 @@ function putOne(req, res) {
 
 }
 
-// DELETE =================================
+// Function 2 - DELETE
 
-function deleteOne(req, res) { // Delete node ref in useraccounts in MONGO
+/*
+Deletes node reference in useraccounts
+Breaks connection with organisation in MONGO
+*/
+function deleteOne(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   var updates = req.body;
@@ -71,9 +100,10 @@ function deleteOne(req, res) { // Delete node ref in useraccounts in MONGO
           var response = {"error": err};
           res.json(response);
       }
-  })
+  });
 }
 
+// Export Functions
 
 module.exports.putOne = putOne;
 module.exports.deleteOne = deleteOne;

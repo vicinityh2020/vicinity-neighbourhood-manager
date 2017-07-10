@@ -39,6 +39,10 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.post(configuration.apiUrl +'/items/', data);
   };
 
+  itemsAPI.postBulk = function(data) {
+    return $http.post(configuration.apiUrl +'/commServer/', data);
+  };
+
   // itemsAPI.addFriendToHasAccess = function(id){
   //   return $http.put('http://localhost:3000/items/' + id '/hasAccess');
   // };

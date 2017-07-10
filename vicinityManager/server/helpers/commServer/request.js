@@ -1,15 +1,26 @@
+
+// Global Objects
+
 var config = require('../../configuration/configuration');
 var logger = require('../../middlewares/logger');
 var request = require('request-promise');
 
-function callCommServer(data, endPoint, myMethod, authorization){
+// Functions
 
-  var auth = authorization;
-  var format = 'application/json';
+/*
+Communication Server request service
+When invoked requires 3 obligatory parameters:
+data - Object - Contains payload and may be an empty object  if not required {}
+endpoint - String - Endpoint where the request must be addressed
+myMethod - String - POST, GET, PUT, DELETE
+The headers are preconfigured and the token is stored under /configuration
+*/
+function callCommServer(data, endPoint, myMethod){
+
   var head = {
-    'authorization' : auth,
-    'Content-Type' : format,
-    'Accept' : format
+    'authorization' : config.commServerToken,
+    'Content-Type' : 'application/json',
+    'Accept' : 'application/json'
   };
 
   payload = JSON.stringify(data);

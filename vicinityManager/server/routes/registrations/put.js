@@ -1,3 +1,6 @@
+
+// Global objects
+
 var mongoose = require('mongoose');
 var mailing = require('../../helpers/mail/mailing');
 var ce = require('cloneextend');
@@ -8,7 +11,15 @@ var logger = require("../../middlewares/logger");
 var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
 
+// Functions
 
+/*
+Receives a registration update request,
+based on type and status different actions can be done:
+Add new organisation - Creates userAccount and User Admin in MONGO
+Add new user - Create user in MONGO
+Send verification or rejection mail to new Organisation
+*/
 function putOne(req, res) {
 //TODO: User authentic - Role check
   var response = {};
@@ -51,7 +62,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
             userData.organisation = orgData._id; // Adding the company id to the new user
             userData.save();
 
-            createOrganisationGroups(orgData,req.headers.authorization); // Creates necessary groups in comm server
+            createOrganisationGroups(orgData); // Creates necessary groups in comm server
 
             logger.debug('New userAccount was successfuly saved!');
             response = {"error": false, "message": "New userAccount was successfuly saved!"};
@@ -121,34 +132,42 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
 }
 
 
-// Functions supporting registration process ===================
+// Functions supporting registration process
 
-// Main function for creating comm server groups
-function createOrganisationGroups(data,auth){
+/*
+Main function for creating comm server groups
+*/
+function createOrganisationGroups(data){
   var names = ['_ownDevices', '_agents', '_foreignDevices'];
   var payload = {
     name: data._id + names[0],
     description: data.organisation
   };
-  commServer.callCommServer(payload, 'groups', 'POST', auth)
-    .then(callbackNext(data, auth, payload, names[1]),errorCallback1)
-    .then(callbackNext(data, auth, payload, names[2]),errorCallback1);
+  commServer.callCommServer(payload, 'groups', 'POST')
+    .then(callbackNext(data, payload, names[1]),errorCallback1)
+    .then(callbackNext(data, payload, names[2]),errorCallback1);
 }
 
-// Creates new organisation groups in the comm server
-function callbackNext(data, auth, payload, n){
+/*
+Creates new organisation groups in the comm server
+*/
+function callbackNext(data, payload, n){
   payload.name = data._id + n;
-  return commServer.callCommServer(payload, 'groups', 'POST', auth);
+  return commServer.callCommServer(payload, 'groups', 'POST');
 }
 
-// Error handling
+/*
+Error handling
+*/
 function errorCallback1(err){
   //TODO delete org on error
   logger.debug('error: ' + err);
 }
 
-// Prepares an object with the necessary info to prepare a mail. The mail is then sent
-// using the mailing service created under helpers
+/*
+Prepares an object with the necessary info to prepare a mail. The mail is then sent
+using the mailing service created under helpers
+*/
 function send_mail(id, emailTo, companyName, status){
   var thisLink;
   var thisTmp;
@@ -175,5 +194,6 @@ function send_mail(id, emailTo, companyName, status){
   mailing.sendMail(mailInfo);
 }
 
+// Export Functions
 
 module.exports.putOne = putOne;

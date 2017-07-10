@@ -76,7 +76,7 @@ angular.module('VicinityManagerApp.controllers')
         $scope.noDevices = false;
       };
 
-      return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "Unknown")) ;
+      return (keyword.test(result.hasAdministrator[0]._id)) ;
     }
 
 // Different views (Dropdown) --------------------------------------
@@ -120,7 +120,7 @@ angular.module('VicinityManagerApp.controllers')
           $scope.noDevices = false;
         };
 
-        return (keyword.test(result.hasAdministrator[0]._id) && (result.info.status === "Unknown")) ;
+        return (keyword.test(result.hasAdministrator[0]._id)) ;
       };
     }
 
@@ -161,7 +161,7 @@ angular.module('VicinityManagerApp.controllers')
           $scope.noDevices = false;
         };
 
-        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
+        return (keyword.test(result.accessLevel)) ;
       };
 
     }
@@ -203,7 +203,7 @@ angular.module('VicinityManagerApp.controllers')
           $scope.noDevices = false;
         };
 
-        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
+        return (keyword.test(result.accessLevel)) ;
       };
 
     }
@@ -245,7 +245,7 @@ angular.module('VicinityManagerApp.controllers')
           $scope.noDevices = false;
         };
 
-        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
+        return (keyword.test(result.accessLevel)) ;
       };
 
     }
@@ -287,7 +287,7 @@ angular.module('VicinityManagerApp.controllers')
           $scope.noDevices = false;
         };
 
-        return (keyword.test(result.accessLevel) && (result.info.status === "Unknown")) ;
+        return (keyword.test(result.accessLevel)) ;
       };
 
     }

@@ -1,3 +1,6 @@
+
+// Global objects
+
 var mongoose = require('mongoose');
 var mailing = require('../../helpers/mail/mailing');
 var ce = require('cloneextend');
@@ -7,6 +10,7 @@ var notificationOp = require('../../models/vicinityManager').notification;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
 
+// Functions
 
 function postOne(req, res, next) {
   var db = new registrationOp();
@@ -64,15 +68,17 @@ if(!req.body.status || req.body.status !== 'pending'){
       if (err) {
         response = {"error": true, "message": "Error adding data!"};
       } else {
-
+        var thisLink;
+        var thisTmp;
+        var thisName;
         if(product.type === 'newUser'){
-          var thisLink = "http://localhost:8000/app/#/registration/newUser/" ;
-          var thisTmp = "activateUser";
-          var thisName = product.userName;
+          thisLink = "http://localhost:8000/app/#/registration/newUser/" ;
+          thisTmp = "activateUser";
+          thisName = product.userName;
         }else{
-          var thisLink = "http://localhost:8000/app/#/registration/newCompany/";
-          var thisTmp = "activateCompany";
-          var thisName = product.companyName;
+          thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+          thisTmp = "activateCompany";
+          thisName = product.companyName;
         }
 
         var mailInfo = {
@@ -92,9 +98,9 @@ if(!req.body.status || req.body.status !== 'pending'){
   }
 }
 
-
-// Looking for duplicates in company registration =========
-
+/*
+Looking for duplicates in company registration
+*/
 function findDuplicatesCompany(req, res, next) {
 
   var response = {};
@@ -119,8 +125,9 @@ function findDuplicatesCompany(req, res, next) {
   });
 }
 
-// Looking for duplicates in user registration =======
-
+/*
+Looking for duplicates in user registration
+*/
 function findDuplicatesUser(req, res, next) {
 
   var response = {};
@@ -136,6 +143,8 @@ function findDuplicatesUser(req, res, next) {
     }
   });
 }
+
+// Export functions
 
 module.exports.postOne = postOne;
 module.exports.findDuplicatesUser = findDuplicatesUser;

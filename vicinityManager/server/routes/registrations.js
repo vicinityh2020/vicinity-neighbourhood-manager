@@ -12,6 +12,6 @@ router
   .put('/:id', putHelper.putOne)
   // look for duplicates
   .post('/duplicatesUser', postHelper.findDuplicatesUser)
-  .post('/duplicatesCompany', postHelper.findDuplicatesCompany)
-  
+  .post('/duplicatesCompany', postHelper.findDuplicatesCompany);
+
 module.exports = router;

@@ -1,7 +1,16 @@
+
+// Global objects
+
 var nodemailer = require('nodemailer');
 var fs = require("fs");
 var logger = require("../../middlewares/logger");
 
+// Functions
+
+/*
+Mailing service
+When invoked needs to receive an object with the mail fields
+*/
 function sendMail(mailInfo){
 
   var smtpConfig = {
@@ -32,9 +41,9 @@ function sendMail(mailInfo){
 
           transporter.sendMail(mailOptions, function(error, info){
             if(error){
-              return console.log(error);
-            };
-            console.log('Message sent: ' + info.response);
+              logger.debug(error);
+            }
+            logger.debug('Message sent: ' + info.response);
           });
 
         });
