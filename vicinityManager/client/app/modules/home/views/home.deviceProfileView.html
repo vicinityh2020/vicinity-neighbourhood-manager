@@ -57,11 +57,11 @@
                     </p>
 
                     <select id="editAccessName" name="menu">
-                      <option value=0 selected>Change status to:</option>
-                      <option value=1>Private</option>
-                      <option value=2>Metadata access</option>
-                      <option value=3>Shared with partners</option>
-                      <option value=4>Public</option>
+                      <option value="0" selected>Change status to:</option>
+                      <option value="1">Private</option>
+                      <option value="2">Metadata access</option>
+                      <option value="3">Shared with partners</option>
+                      <option value="4">Public</option>
                     </select>
 
                   </li>
@@ -87,7 +87,7 @@
                       {{devInfo.serial_number}}
                     </p>
 
-                    <input id="editSerialInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="devInfo.serial_number"></input>
+                    <input id="editSerialInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="devInfo.serial_number"> </input>
 
                   </li>
 
@@ -106,10 +106,10 @@
 
                   </li>
                   <!-- Delete Temporary button to create device -->
-                  <li class="list-group-item">
+                  <!-- <li class="list-group-item">
                     <b>Temp button</b>
                     <a ng-click="makeItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Create Item</a>
-                  </li>
+                  </li> -->
               </ul>
 
             </div>
