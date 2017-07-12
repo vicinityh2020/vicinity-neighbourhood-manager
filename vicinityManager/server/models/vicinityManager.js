@@ -218,7 +218,7 @@ userAccount.index({organisation: 1});
 
 user.index({name: 1});
 
-item.index({name: 1});
+item.index({name: 1, oid: 1});
 
 // Exports =============================
 

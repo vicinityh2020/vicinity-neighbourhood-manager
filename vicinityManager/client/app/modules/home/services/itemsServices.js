@@ -40,9 +40,10 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.post(configuration.apiUrl +'/items/', data);
   };
 
-  itemsAPI.postBulk = function(data) {
-    return $http.post(configuration.apiUrl +'/commServer/', data);
-  };
+  // TODO test purpuses, remove in final versions
+  // itemsAPI.postBulk = function(data) {
+  //   return $http.post(configuration.apiUrl +'/commServer/search', data);
+  // };
 
   itemsAPI.getMyDevices = function(id) {
     return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/devices');

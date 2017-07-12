@@ -14,7 +14,7 @@ var commServer = require('../../helpers/commServer/request');
 Save in Mongo dB all objects contained in the req.
 Message producing the req is sent by the agent with thingDescriptions
 */
-function postResource(req, res, next){
+function postRegistration(req, res, next){
   var documents = [];
   var credentialsArray = req.body.creds;
   var objectsArray = req.body.thingDescriptions;
@@ -126,4 +126,4 @@ function matchOid(elements){
 
 // Export Functions
 
-module.exports.postResource = postResource;
+module.exports.postRegistration = postRegistration;

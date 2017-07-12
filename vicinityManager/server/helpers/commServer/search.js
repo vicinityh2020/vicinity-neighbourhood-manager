@@ -1,0 +1,31 @@
+// Global Objects
+
+var mongoose = require('mongoose');
+var ce = require('cloneextend');
+var itemOp = require('../../models/vicinityManager').item;
+var logger = require('../../middlewares/logger');
+
+// Functions
+
+/*
+Find in Mongo dB all objects contained in the req.
+Return the thingDescriptions
+*/
+function postSearch(req, res, next){
+  var oidArray = req.body;
+
+  itemOp.find({oid: { $in: oidArray } }, {aid:1, oid:1, name:1, info:1}, {$hint: { oid : 1 } })
+    .exec(
+      function(err,data){
+        if(err || !data){
+          res.json({"error" : true, "message" : "No match found"});
+        } else {
+          res.json({"error": false, "message" : data });
+        }
+      }
+    );
+}
+
+// Export Functions
+
+module.exports.postSearch = postSearch;
