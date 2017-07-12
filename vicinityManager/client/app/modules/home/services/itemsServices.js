@@ -1,3 +1,4 @@
+'use strict';
 var services = angular.module('VicinityManagerApp.services').
 factory('itemsAPIService', ['$http', 'configuration', function($http, configuration){
 
@@ -23,9 +24,9 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancel');
   };
 
-  itemsAPI.getAccess = function(id) {
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/get');
-  };
+  // itemsAPI.getAccess = function(id) {
+  //   return $http.put(configuration.apiUrl +'/items/' + id + '/access/get');
+  // };
 
   itemsAPI.getItemWithAdd = function(id){
     return $http.get(configuration.apiUrl +'/items/' + id );
@@ -43,10 +44,22 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.post(configuration.apiUrl +'/commServer/', data);
   };
 
+  itemsAPI.getMyDevices = function(id) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/devices');
+  };
+
+  itemsAPI.getNeighbourhood = function(id) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/neighbourhood');
+  };
+
+  itemsAPI.getAllDevices = function(id) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allDevices');
+  };
+
   // itemsAPI.addFriendToHasAccess = function(id){
   //   return $http.put('http://localhost:3000/items/' + id '/hasAccess');
   // };
 
-
   return itemsAPI;
+
 }]);

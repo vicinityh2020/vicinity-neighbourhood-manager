@@ -61,7 +61,8 @@ var user = new Schema({
   authentication: {
     password: String,
     principalRoles: [String]
-  }});
+  }
+});
 
 var invitation = {
     emailTo: String,
@@ -161,7 +162,7 @@ var gateway = {
 var item = new Schema({
   name: String,
   oid: String, // Object id -- different to Mongo uid
-  aid: String, // agent id
+  aid: String, // Agent id
   hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
   hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
   accessRequestFrom: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
@@ -169,7 +170,7 @@ var item = new Schema({
   avatar: String,
   info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
   type: String,
-  status: String
+  status: String // Enabled or disabled
   // consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
   // color: String,
   // info: Object{

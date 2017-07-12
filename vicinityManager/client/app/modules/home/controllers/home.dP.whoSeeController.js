@@ -1,30 +1,10 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPwhoSeeController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
-
-  // $scope.locationPrefix = $location.path();
-  // console.log("location:" + $location.path());
-  // $scope.name = {};
-  // $scope.avatar = {};
-  // $scope.occupation = {};
-  // $scope.organisation = {};
-  // $scope.companyAccountId = {};
-  // $scope.isMyProfile = true;
-  // $scope.canSendNeighbourRequest = false;
-  // $scope.canCancelNeighbourRequest = false;
-  // $scope.canAnswerNeighbourRequest = false;
-  // $scope.isNeighbour = false;
-  // $scope.location = {};
-  // $scope.badges = {};
-  // $scope.notes = {};
-  // $scope.friends = [];
-  // $scope.following = [];
-  // $scope.followers = [];
-  // $scope.gateways = [];
+function ($scope, $stateParams, userAccountAPIService, itemsAPIService, Notification) {
 
   $scope.friends=[];
   $scope.note = "";
-  $scope.AL = 0;
   $scope.device = {};
   $scope.giveNote = false;
   $scope.loaded = false;
@@ -32,46 +12,32 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   itemsAPIService.getItemWithAdd($stateParams.deviceId)
     .then(
       function successCallback(response){
-        $scope.device = response.data.message;
-
-        if ($scope.device.accessLevel == 4){
+        $scope.device = response.data.message[0];
+        if ($scope.device.accessLevel === 8){
           userAccountAPIService.getUserAccounts()
             .then(
-              function successCallback(response){                                     //pole useraccountov
-                $scope.friends=response.data.message;
-                // $scope.AL = 4;
+              function successCallback(response){                                    
+                $scope.friends = response.data.message;
               },
-              function errorCallback(response){
-              }
-            )
-        }else if ($scope.device.accessLevel == 1) {
-          $scope.note = "Device is private. No one can see this device.";
-          $scope.giveNote = true;
-        }else {
-          userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id).then( function successCallback(response){
-            $scope.friends = response.data.message;
-            // $scope.AL = $scope.device.accessLevel;
-          },
-          function errorCallback(response){
+              errorCallback
+            );
+          }else if ($scope.device.accessLevel === 1) {
+            $scope.note = "Device is private. No one can see this device.";
+            $scope.giveNote = true;
+          }else {
+            userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id).then(
+              function successCallback(response){
+                $scope.friends = response.data.message;
+              },
+              errorCallback
+            );
           }
-        )
-        };
-        $scope.loaded = true;
-      },
-      function errorCallback(response){
+          $scope.loaded = true;
+        },
+        errorCallback
+      );
+
+      function errorCallback(err){
+        Notification.error("There was an error: " + err);
       }
-    );
-
-
-
-  // userAccountAPIService.getFriends($stateParams.companyAccountId).success(function (data) {
-  //   $scope.friends = data.message;
-  // });
-
-
-
-
-
-
-
 });

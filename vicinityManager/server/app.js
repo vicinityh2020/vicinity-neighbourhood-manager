@@ -50,13 +50,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //app.use('/', routes);
-//app.use('/users', users);
 app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup security
-// app.use('/useraccounts', userAccounts);
-//app.use('/companyaccounts', [jwtauth, userAccounts]);
-//app.use('/usergroups', [jwtauth, userGroups]);
-//app.use('/organisationUnits', [jwtauth, organisationUnits]);
 app.use('/gateways', [jwtauth, gateways]);
 app.use('/nodes', [jwtauth, nodes]);
 app.use('/items', [jwtauth, items]);
@@ -66,6 +61,7 @@ app.use('/search', [jwtauth, search]);
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
 app.use('/commServer', commServer);
+//app.use('/usergroups', [jwtauth, userGroups]);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

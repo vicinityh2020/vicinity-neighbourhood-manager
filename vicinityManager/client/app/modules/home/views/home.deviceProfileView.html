@@ -59,9 +59,13 @@
                     <select id="editAccessName" name="menu">
                       <option value="0" selected>Change status to:</option>
                       <option value="1">Private</option>
-                      <option value="2">Metadata access</option>
-                      <option value="3">Shared with partners</option>
-                      <option value="4">Public</option>
+                      <option value="2">Metadata Only</option>
+                      <option value="3">Data Under Request</option>
+                      <option value="4">Data Shared With Partners</option>
+                      <option value="5">Public Metadata Only</option>
+                      <option value="6">Public Data Under Request</option>
+                      <option value="7">Public Data Shared With Partners</option>
+                      <option value="8">Public</option>
                     </select>
 
                   </li>
@@ -75,13 +79,13 @@
                   </li>
 
                   <!-- Serial Number -->
-                  <li class="list-group-item">
+                  <!-- <li class="list-group-item">
                     <b>Serial number</b>
                     <a ng-show="isMyDevice" ng-click="changeToInput1()" id="serialEdit" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
                     <a ng-click="saveNewSerial()" id="serialSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
                     <a ng-click="backToEdit1()" id="serialCancel" style="margin-left: 35%" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
 
-                    <!-- <span style="display: block">{{serNumber}}</span> -->
+
 
                     <p id="serialName" class="text-muted" style="display: block">
                       {{devInfo.serial_number}}
@@ -89,10 +93,10 @@
 
                     <input id="editSerialInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="devInfo.serial_number"> </input>
 
-                  </li>
+                  </li> -->
 
                   <!-- Location -->
-                  <li class="list-group-item">
+                  <!-- <li class="list-group-item">
                     <b>Location</b>
                     <a ng-show="isMyDevice" id="locationEdit" ng-click="changeToInput2()" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
                     <a ng-click="saveNewLocation()" id="locationSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
@@ -104,12 +108,14 @@
 
                     <input id="editLocationInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="devInfo.location"></input>
 
-                  </li>
+                  </li> -->
+
                   <!-- Delete Temporary button to create device -->
                   <!-- <li class="list-group-item">
                     <b>Temp button</b>
                     <a ng-click="makeItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Create Item</a>
                   </li> -->
+
               </ul>
 
             </div>
@@ -123,7 +129,7 @@
             <ul class="nav nav-tabs">
               <li ui-sref-active="active"><a ui-sref="root.main.deviceProfile.whoSee"><i class="fa fa-eye"></i>&nbsp;Who see</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.deviceProfile.history"><i class="fa fa-clock-o"></i>&nbsp;History</a></li>
-              <li ng-show="isMyDevice" ui-sref-active="active"><a ui-sref="root.main.deviceProfile.description"><i class="fa fa-cube"></i>&nbsp;Description</a></li>
+              <li ui-sref-active="active"><a ui-sref="root.main.deviceProfile.description"><i class="fa fa-cube"></i>&nbsp;Description</a></li>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content" ui-view="tabPanel">

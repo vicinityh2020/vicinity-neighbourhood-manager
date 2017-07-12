@@ -1,219 +1,151 @@
-module.exports.getOne = getOne;
-module.exports.getAll = getAll;
-module.exports.getItemWithAdd = getItemWithAdd;
+
+// Global objects and variables
 
 var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
-var winston = require('winston');
+var logger = require("../../middlewares/logger");
+var itemProperties = require("../../helpers/items/additionalItemProperties");
 
-winston.level='debug';
+/* Public functions
+This module supports modules which require a set items based on a CID
+*/
 
-function getOne(req, res, next) {
+function getMyDevices(req, res) {
 //TODO: User authentic - Role check
-  winston.log('debug','Start getOne');
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  itemOp.findById(o_id, function(err, data){
+  var query = {};
+
+  query = {hasAdministrator: o_id};
+
+  itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').sort({name:1}).exec(function(err, data){
+    var dataWithAdditional = itemProperties.getAdditional(data,o_id,[]); // Not necessary to know friends because I am always owner
     if (err) {
-      response = {"error": true, "message": "Error fetching data"};
+      logger.debug('error','Find Items Error: ' + err.message);
+      response =  {"error": true, "message": "Error fetching data"};
     } else {
-      response = {"error": false, "message": data};
+      response = {"error": false, "message": dataWithAdditional};
     }
-    winston.log('debug','End getOne');
     res.json(response);
   });
 }
 
-function getAll(req, res, next) {
-//TODO: User authentic - Role check
+//
+// function getNeighbourhood(req, res) {
+//   var response = {};
+//   var o_id = mongoose.Types.ObjectId(req.params.id);
+//   var query = {};
+//
+//   userAccountOp.find({_id: o_id}, function(err, data){
+//     if (err){
+//       logger.debug('error','UserAccount Items Error: ' + err.message);
+//       response =  {"error": true, "message": "Error fetching data"};
+//       res.json(response);
+//     } else {
+//       if (data && data.length === 1){
+//
+//         query = {
+//           hasAdministrator: { $in: data[0].knows },
+//           accessLevel: { $gt:2 }
+//         };
+//
+//       var friends = data[0].knows;
+//
+//       itemOp.find(query).populate('hasAdministrator','organisation').sort({name:1}).exec(function(err, data){
+//
+//         var dataWithAdditional = itemProperties.getAdditional(data,o_id, friends);
+//
+//         if (err) {
+//           logger.debug('error','Find Items Error: ' + err.message);
+//           response =  {"error": true, "message": "Error fetching data"};
+//         } else {
+//           response = {"error": false, "message": dataWithAdditional};
+//         }
+//
+//         res.json(response);
+//
+//         });
+//       }
+//     }
+//   });
+// }
+
+
+function getAllDevices(req, res) {
   var response = {};
+  var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+  var query = {};
 
-  itemOp.find({}, function(err, data) {
-    if (err) {
-      response = {"error": true, "message": "Error fetching data"};
-    } else {
-      response = {"error": false, "message": data};
+  userAccountOp.find({_id: o_id}, function(err, data){
+    if (err){
+      logger.debug('error','UserAccount Items Error: ' + err.message);
     }
-    res.json(response);
-  });
-}
 
-function getItemWithAdd(req, res, next) {
-    winston.log('debug','Start: getItemWithAdd');
-    var response = {};
+    query = {
+      $or :[
+      {$and: [ { hasAdministrator: {$in: data[0].knows}}, { accessLevel: {$in: [2, 3, 4]} } ] },
+      { accessLevel: { $gt:4 } },
+      {$and: [ { hasAdministrator: o_id}, {accessLevel: 1} ] }
+      ]
+    };
 
-    var o_id = mongoose.Types.ObjectId(req.params.id);          //dev_id
+    var friends = data[0].knows;
 
-    var isNeighbour = false;
-    var canSendNeighbourRequest = true;
-    var canCancelNeighbourRequest = false;
-    var canAnswerNeighbourRequest = false;
-    //TODO: Issue #6 Update userAcount profile wheather the autenticated user is friend with :id
-    //TODO: Remove foreing users;
+    itemOp.find(query).populate('hasAdministrator','organisation').sort({name:1}).exec(function(err, data){
+      var dataWithAdditional = itemProperties.getAdditional(data,o_id,friends);
 
-    var dev_id = mongoose.Types.ObjectId(req.params.id);
-    var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-    var device = {};
-    var isOwner = false;
-    var canAnswer = false;
-    var isPrivate = false;
-    var isPublic = false;
-    var isMeta = false;
-    var isFriendData = false;
-    var cancelAccess2 = false;
-    var cancelRequest2 = false;
-    var interruptConnection2 = false;
-    var isMetaCanReq = -5;
-    var isMetaNotReq = -5;
-    var isMetaInter = -5;
-
-    itemOp.find({_id: dev_id}).populate('hasAdministrator','organisation')
-        .exec(function(err, data){
-
-      if (err || data === null) {
-          response = {"error": true, "message": "Processing data failed!"};
+      if (err) {
+        logger.debug('error','Find Items Error: ' + err.message);
+        response =  {"error": true, "message": "Error fetching data"};
       } else {
-          if (data.length == 1) {
-              var device = data[0];
-              var activeCompanyStr = activeCompany_id.toString();
+        response = {"error": false, "message": dataWithAdditional};
+      }
 
-              if (activeCompanyStr === device.hasAdministrator[0]._id.toString()){
-                isOwner = true;
-              } else {
-                isOwner = false;
-              }
-
-              if (device.accessRequestFrom.length > 0 && isOwner===true){
-                canAnswer = true;
-              }
-
-              if (isOwner===false && device.accessLevel===1){
-                isPrivate = true;
-              }
-
-              if (isOwner===false && device.accessLevel===2){
-                isMeta = true;
-              }
-
-            var index1;
-            var a = 0;
-            for (index1 = 0; index1 < device.accessRequestFrom.length; index1++){
-              if (device.accessRequestFrom[index1].toString() === activeCompanyStr){
-                a++;
-              }
-            }
-
-  //TODO POSSIBLE ERROR HERE, CHECK IMPORTANT
-              var index2;
-              var c = 0;
-              for (index2 = 0; index2 < device.hasAccess.length; index2++){
-                if(device.hasAccess[index2]){
-                  if (device.hasAccess[index2].toString() === activeCompanyStr){
-                    c++;
-                  }
-                }
-              }
-
-
-               if (isMeta===true && (a+c)===0){
-                cancelRequest2=false;
-              }
-
-               if (isMeta===true && a>0){
-                cancelRequest2=true;
-              }
-
-               if (isMeta===true && c>0){
-                interruptConnection2=true;
-              }
-
-
-              if (isOwner===false && device.accessLevel===3){
-                isFriendData = true;
-              }
-
-  //TODO POSSIBLE ERROR HERE, CHECK IMPORTANT
-              var index3;
-              var b = 0;
-
-              for (index3 = 0; index3 < device.hasAccess.length; index3++){
-                if(device.hasAccess[index3]){
-                  if (device.hasAccess[index3].toString() === activeCompanyStr){
-                    b++;
-                  }
-                }
-              }
-
-               if (isFriendData===true && b>0){
-                cancelAccess2=true;
-              }
-
-               if (isFriendData===true && b===0){
-                 cancelAccess2=false;
-               }
-
-              if (isOwner===false && device.accessLevel==4){
-                isPublic = true;
-              }
-
-              if (isMeta && cancelRequest2){
-                isMetaCanReq = 100;
-                isMetaNotReq = -5;
-                isMetaInter = -5;
-              }
-
-              if (isMeta && !cancelRequest2 && !interruptConnection2){
-                isMetaCanReq = -5;
-                isMetaInter = -5;
-                isMetaNotReq = 100;
-              }
-
-              if (isMeta && interruptConnection2){
-                isMetaCanReq = -5;
-                isMetaInter = 100;
-                isMetaNotReq = -5;
-              }
-
-
-              // var company = {};
-              var plain_data = {};
-              // var comp_id = device.hasAdministrator[0];
-
-              // if (device.hasAdministrator.length >=1){
-              //   userAccountOp.find({_id: comp_id}, function (err, data2) {
-              //       company = data2;
-              //   });
-              // };
-
-              plain_data = device.toObject();
-              plain_data.isOwner = isOwner;
-
-              // plain_data.organisation = company.organisation;
-
-              plain_data.canAnswer = canAnswer;
-              plain_data.isPrivate = isPrivate;
-              plain_data.isMeta = isMeta;
-              plain_data.isFriendData = isFriendData;
-              plain_data.isPublic = isPublic;
-              plain_data.cancelAccess2 = cancelAccess2;
-              plain_data.cancelRequest2 = cancelRequest2;
-              plain_data.interruptConnection2 = interruptConnection2;
-
-              plain_data.isMetaCanReq = isMetaCanReq;
-              plain_data.isMetaNotReq = isMetaNotReq;
-              plain_data.isMetaInter = isMetaInter;
-
-
-              response = {"error": false, "message": plain_data};
-
-
-        } else {
-              response = {"error": true, "message": "Processing data failed!"};
-          }
-        }
-      winston.log('debug','End: getItemWithAdd');
       res.json(response);
     });
-
+  });
 }
+
+
+function getItemWithAdd(req, res, next) {
+
+    logger.debug('Start: getItemWithAdd');
+
+    var response = {};
+    var dev_id = mongoose.Types.ObjectId(req.params.id);
+    var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+    userAccountOp.find({_id: activeCompany_id}, function (err, data) {
+      if(err){
+        response = {"error": true, "message": "Processing data failed!"};
+        res.json(response);
+      } else {
+        var friends = data[0].knows;
+        itemOp.find({_id: dev_id}).populate('hasAdministrator','organisation')
+            .exec(
+              function(err, data){
+                if (err || data === null) {
+                  response = {"error": true, "message": "Processing data failed!"};
+                } else {
+                  if (data.length === 1) {
+                    var dataWithAdditional = itemProperties.getAdditional(data,activeCompany_id, friends); // Not necessary to know friends because I process only devices underRequest!
+                    response = {"error": false, "message": dataWithAdditional};
+                  } else {
+                    response = {"error": true, "message": "Processing data failed!"};
+                  }
+                }
+                logger.debug('End: getItemWithAdd');
+                res.json(response);
+              }
+            );
+          }
+        }
+      );
+    }
+
+// Function exports ================================
+
+module.exports.getAllDevices = getAllDevices;
+module.exports.getMyDevices = getMyDevices;
+// module.exports.getNeighbourhood = getNeighbourhood;
+module.exports.getItemWithAdd = getItemWithAdd;

@@ -1,3 +1,4 @@
+'use strict';
 var services = angular.module('VicinityManagerApp.services').
 factory('userAccountAPIService', ['$http', 'configuration', function($http, configuration){
 
@@ -35,20 +36,8 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.delete(configuration.apiUrl +'/useraccounts/' + id + '/friendship');
   };
 
-  userAccountAPI.getMyDevices = function(id) {
-    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/devices?sort=ASC');
-  };
-
   userAccountAPI.getFriends = function(id) {
-    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/friends?sort=ASC');
-  };
-
-  userAccountAPI.getNeighbourhood = function(id) {
-    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/neighbourhood?sort=ASC');
-  };
-
-  userAccountAPI.getAllDevices = function(id) {
-    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/allDevices?sort=ASC');
+    return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/friendship/myFriends');
   };
 
   userAccountAPI.getNotificationsOfUser = function(id) {

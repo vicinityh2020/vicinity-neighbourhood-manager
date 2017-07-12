@@ -67,10 +67,6 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
           $timeout.cancel(promise);
       });
 
-      // $scope.$on('$locationChangeStart', function(){
-      //     $timeout.cancel(promise);
-      // });
-
       // Refresh scope data every 5 sec
         $scope.intervalFunction = function(){
           promise = $timeout(function() {
@@ -94,7 +90,7 @@ userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
   function errorCallback(response){}
 );
 
-userAccountAPIService.getMyDevices($stateParams.companyAccountId)
+itemsAPIService.getMyDevices($stateParams.companyAccountId)
   .then(
     function successCallback(response){
       $scope.devices=response.data.message;
@@ -171,7 +167,7 @@ $scope.uploadPic = function(){
     );
 };
 
-// Functions Neighbors ==================
+// Functions Neighbours ==================
 
     $scope.sendNeighbourRequest = function () {
         var result = userAccountAPIService

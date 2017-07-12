@@ -5,44 +5,17 @@
 <div class="active tab-pane" id="activity" >
   <div class="row" ng-show="loaded">
 
-    <div ng-repeat="device in devices | custom:isFriend:cid" ng-show="device.info.status==='On'" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
+    <div ng-repeat="device in devices | custom:isFriend:cid" class="col-md-6 col-lg-4">
       <div class="box box-widget widget-user-2">
         <div style="z-index: -2" class="widget-user-header2 bg-yellow">
           <div class="round">
             <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Company Avatar">
           </div>
-          <span class="pull-right" id="circle_green" ><a style="cursor:default" title="Online" alt="Online"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span ng-show="device.seeData" class="pull-right" id="circle_green" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span ng-show="!device.seeData" class="pull-right" id="circle_red" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
           <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile({deviceId: device._id})">{{device.name}}</a></h3>
           <h5 class="widget-user-desc2">{{device.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
-        </div>
-      </div>
-    </div>
-
-    <div ng-repeat="device in devices | custom:isFriend:cid" ng-show="device.info.status==='Off'" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
-      <div class="box box-widget widget-user-2">
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-          <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Company Avatar">
-          </div>
-          <span class="pull-right" id="circle_red" ><a style="cursor:default" title="Offline" alt="Offline"> &nbsp; &nbsp; &nbsp;</a></span>
-          <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile({deviceId: device._id})">{{device.name}}</a></h3>
-          <h5 class="widget-user-desc2">{{device.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
-        </div>
-      </div>
-    </div>
-
-    <div ng-repeat="device in devices | custom:isFriend:cid" ng-show="device.info.status!=='Off' && device.info.status!=='On'" class="col-md-6 col-lg-4">      <!--  ng-show="loaded" -->
-      <div class="box box-widget widget-user-2">
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-          <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Company Avatar">
-          </div>
-          <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
-          <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile({deviceId: device._id})">{{device.name}}</a></h3>
-          <h5 class="widget-user-desc2">{{device.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{device.info.serial_number}}</h5>
+          <h5 class="widget-user-desc2">{{device.accessLevelCaption}}</h5>
         </div>
       </div>
     </div>

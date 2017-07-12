@@ -1,18 +1,20 @@
 var mongoose = require('mongoose');
+var itemAPI = require('../items/put');
+var notificationAPI = require('../../routes/notifications/notifications');             //my_id should be .cid everywhere
+var logger = require("../../middlewares/logger");
 
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
 var itemOp = require('../../models/vicinityManager').item;
 
-var itemAPI = require('../items/put');
-var notificationAPI = require('../../routes/notifications/notifications');             //my_id should be .cid everywhere
 //TODO: Issue #6  check that only :id can make friends.
 //TODO: Issue #6 Send friendship notification to :id.
 //TODO: Issue #6 check double requests;
 //TODO: Issue #6 check transactions;
+
 function processFriendRequest(req, res, next) {
-    console.log("POST /:id/friendship");
-    console.log(":id " + req.params.id);
+    // console.log("POST /:id/friendship");
+    // console.log(":id " + req.params.id);
     friend_id = mongoose.Types.ObjectId(req.params.id);
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     var friend = {};
@@ -64,19 +66,20 @@ function acceptFriendRequest(req, res, next) {
     //TODO: Issue #6 update knows list on :id and authenticated user side.
     //TODO: Issue #6 create new friendship story.
     //TODO: Issue #6 update friendship counts.
-    var index;
-    console.log("Running accept friend request");
+
+    // console.log("Running accept friend request");
     friend_id = mongoose.Types.ObjectId(req.params.id);
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
     companyAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
+        var index;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
                 var me = {};
                 var friend = {};
-                for (var index in data) {
+                for (index in data) {
                     if (data[index]._id.toString() === friend_id.toString()) {
                         friend = data[index];
                     } else {
@@ -130,19 +133,20 @@ function rejectFriendRequest(req, res, next) {
     //TODO: Issue #6 remove :id from authenitcated user knows list
     //TODO: Issue #6 remove :autenticated user from :id's knows list
     //TODO: Issue #6 update friendship counts.
-    var index;
-    console.log("Running reject friend request");
+
+    // console.log("Running reject friend request");
     friend_id = mongoose.Types.ObjectId(req.params.id);
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
     companyAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
+        var index;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
                 var me = {};
                 var friend = {};
-                for (var index in data) {
+                for (index in data) {
                     if (data[index]._id.toString() === friend_id.toString()) {
                         friend = data[index];
                     } else {
@@ -190,19 +194,20 @@ function rejectFriendRequest(req, res, next) {
 }
 
 function cancelFriendRequest(req, res, next){
-    var index;
-    console.log("Running cancelation of friend request!");
+
+    // console.log("Running cancelation of friend request!");
     friend_id = mongoose.Types.ObjectId(req.params.id);
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
     companyAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
+        var index;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
             if (data.length == 2) {
                 var me = {};
                 var friend = {};
-                for (var index in data) {
+                for (index in data) {
                     if (data[index]._id.toString() === friend_id.toString()) {
                         friend = data[index];
                     } else {
@@ -234,18 +239,19 @@ function cancelFriendRequest(req, res, next){
         }
 
         res.json(response);
-    });
+    }
+  );
 }
 
 
 function cancelFriendship(req, res, next){
-    var index;
-    console.log("Running cancelation of friendship!");
+
+    // console.log("Running cancelation of friendship!");
     friend_id = mongoose.Types.ObjectId(req.params.id);
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);             //wtf, not cid??
 
     companyAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-
+        var index;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
@@ -253,7 +259,7 @@ function cancelFriendship(req, res, next){
 
                 var me = {};
                 var friend = {};
-                for (var index in data) {
+                for (index in data) {
                     if (data[index]._id.toString() === friend_id.toString()) {
                         friend = data[index];
                     } else {
@@ -294,29 +300,82 @@ function cancelFriendship(req, res, next){
         }
 
         res.json(response);
-    });
-}
-
-function getFriends(req, res, next) {
-    console.log("GET /:id/friends");
-    console.log(":id " + req.params.id);
-    var response = {};
-    var o_id = mongoose.Types.ObjectId(req.params.id);
-    companyAccountOp.findById(o_id).
-      populate('knows').exec(function(err, user){
-      if (err) {
-        response = {"error": true, "message": "Error fetching data"};
-      } else {
-        response = {"error": false, "message": user.knows};
-      }
-      res.json(response);
     }
   );
 }
+
+function findFriends(req, res, next){
+
+  logger.debug("GET /:id/friends");
+  logger.debug(":id " + req.params.id);
+
+  var response = {};
+  var o_id = mongoose.Types.ObjectId(req.params.id);
+
+  companyAccountOp.findById(o_id).
+    populate('knows').exec(function(err, data){
+
+    // if (req.query.sort){
+    //   if (req.query.sort == 'ASC') {
+    //       data.knows.sort(sortListOfFriendsASC);
+    //   } else if (req.query.sort == 'DESC') {
+    //       data.knows.sort(sortListOfFriendsDESC);
+    //   }
+    // }
+
+    if (err) {
+      response = {"error": true, "message": "Error fetching data"};
+    } else {
+      response = {"error": false, "message": data.knows};
+    }
+
+    res.json(response);
+
+    }
+  );
+}
+
+  // function sortListOfFriendsASC(a,b){
+  //   if (a.organisation < b.organisation) {
+  //     return -1;
+  //   } else if (a.organisation > b.organisation){
+  //     return 1;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
+  //
+  // function sortListOfFriendsDESC(a,b){
+  //   if (a.organisation < b.organisation) {
+  //     return 1;
+  //   } else if (a.organisation > b.organisation){
+  //     return -1;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
+
+  // function getFriends(req, res, next) {
+  //     console.log("GET /:id/friends");
+  //     console.log(":id " + req.params.id);
+  //     var response = {};
+  //     var o_id = mongoose.Types.ObjectId(req.params.id);
+  //     companyAccountOp.findById(o_id).
+  //       populate('knows').exec(function(err, user){
+  //       if (err) {
+  //         response = {"error": true, "message": "Error fetching data"};
+  //       } else {
+  //         response = {"error": false, "message": user.knows};
+  //       }
+  //       res.json(response);
+  //     }
+  //   );
+  // }
 
 module.exports.processFriendRequest = processFriendRequest;
 module.exports.acceptFriendRequest = acceptFriendRequest;
 module.exports.rejectFriendRequest = rejectFriendRequest;
 module.exports.cancelFriendRequest = cancelFriendRequest;
 module.exports.cancelFriendship = cancelFriendship;
-module.exports.getFriends = getFriends;
+module.exports.findFriends = findFriends;
+// module.exports.getFriends = getFriends;

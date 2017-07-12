@@ -11,7 +11,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   itemsAPIService.getItemWithAdd($stateParams.deviceId)
     .then(
       function successCallback(response){
-        $scope.device = response.data.message;
+        $scope.device = response.data.message[0];
 
         userAccountAPIService.getUserAccountProfile($scope.device.hasAdministrator[0]._id)
           .then(

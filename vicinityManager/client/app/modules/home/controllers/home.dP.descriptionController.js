@@ -25,10 +25,10 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
     }
 
     function updateScopeAttributes(response){
-        $scope.device = response.data.message;
-        $scope.devInfo = response.data.message.info;
+        $scope.device = response.data.message[0];
+        $scope.devInfo = $scope.device.info;
         $scope.devEnabled = ($scope.device.status === 'enabled');
-        $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === response.data.message.hasAdministrator[0]._id.toString());
+        $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === $scope.device.hasAdministrator[0]._id.toString());
         loopObj($scope.devInfo);
     }
 

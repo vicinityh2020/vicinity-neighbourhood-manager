@@ -1,10 +1,10 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('deviceProfileController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
+function ($scope, $window, $stateParams, $location, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
-  console.log("location:" + $location.path());
+  // console.log("location:" + $location.path());
 
 // Initialize variables and data =====================
 
@@ -12,7 +12,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.showInput = false;
   $scope.isMyDevice = false;
   $scope.loaded = false;
-
+  $scope.canSeeData = false;
   $scope.device = {};
   $scope.devInfo = {};
   $scope.AL = 0;
@@ -32,14 +32,15 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
     }
 
     function updateScopeAttributes(response){
-        $scope.device = response.data.message;
-        $scope.devInfo = response.data.message.info;
-        $scope.owner = response.data.message.hasAdministrator[0].organisation;
-        $scope.owner_id = response.data.message.hasAdministrator[0]._id;
-        $scope.AL = response.data.message.accessLevel;
+        $scope.device = response.data.message[0];
+        $scope.devInfo = $scope.device.info;
+        $scope.owner = $scope.device.hasAdministrator[0].organisation;
+        $scope.owner_id = $scope.device.hasAdministrator[0]._id;
+        $scope.AL = $scope.device.accessLevel;
         $scope.devEnabled = ($scope.device.status === 'enabled');
+        $scope.canSeeData = $scope.device.seeData;
 
-        var aux = ["Private", "Metadata access", "Shared with partners", "Public"];
+        var aux = ["Private", "Metadata Only", "Data Under Request", "Shared with partners", "Public Metadata Only", "Public Data Under Request", "Public Shared with partners", "Public"];
         $scope.ALcaption = aux[$scope.AL - 1];
 
         $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
@@ -49,7 +50,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
       var query = {};
       if($scope.device.status === 'enabled'){
         query = {
-          "public":$scope.AL===4,
+          "public":$scope.AL===8,
           "modifyCommServer":true,
           "status":'disabled',
           "name":$scope.device.name,
@@ -59,7 +60,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
         };
       }else{
         query = {
-          "public":$scope.AL===4,
+          "public":$scope.AL===8,
           "modifyCommServer":true,
           "status":'enabled',
           "name":$scope.device.name,
@@ -283,7 +284,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
     if ($('select#editAccessName').val() !== 0){
         itemsAPIService.putOne($stateParams.deviceId, {accessLevel: $('select#editAccessName').val() })
           .then(
-            function successCallback(){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
+            function successCallback(response){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
               initData();
               $scope.backToEdit();
             }

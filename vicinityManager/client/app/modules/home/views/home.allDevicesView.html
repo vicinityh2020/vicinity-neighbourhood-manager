@@ -3,500 +3,94 @@
 </section>
 
 <section class="content">
+
   <div class="row" style="width: 100%">
+
     <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
       <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
     </div>
 
-    <div id="ramik"class="input-group bvr2-navbar-form navbar-right col-md-2 " ng-show="loaded">
-      <input id="bvr-search-input" type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm2">
+    <div id="ramik" class="input-group bvr2-navbar-form navbar-right col-md-2 " ng-show="loaded">
+      <input id="bvr-search-input" type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm">
       <span class="input-group-btn">
-        <button  type="submit" name="search" id="search-btn" class="btn btn-flat" ><i class="fa fa-search"></i>      <!-- ui-sref="root.main.neighbourhood({searchTerm: searchTerm})" -->
-        </button>
+        <button  type="submit" name="search" id="search-btn" class="btn btn-flat" ><i class="fa fa-search"></i></button>      <!-- ui-sref="root.main.neighbourhood({searchTerm: searchTerm})" -->
       </span>
     </div>
+
   </div>
-  <div class="row" >
+
+<!-- Start -->
+  <div class="row">
 
     <!-- onlyPrivateDevices -->
     <div ng-show="onlyPrivateDevices" >
        <span style="margin-left:20px;" class="info-box-description">There is no shared device with you.</span>
    </div>
 
-
-    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: searchFilterOnline">
+    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | customAllDevs:searchTerm">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
         <div style="z-index: -2" class="widget-user-header2 bg-yellow">
 
-          <!-- <div class="widget-user-image">
-            <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
-          </div> -->
           <div class="round">
             <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
           </div>
-
-          <!-- /.widget-user-image -->
-          <div class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class=" tooltiptext2" > Online</span>             <!-- <p style="cursor:default">  </p> title="Online"   -->
+          <div ng-show="!dev.seeData" class="tooltip2" id="circle_red" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+            <span class=" tooltiptext2" > No Data Access</span>
+          </div>
+          <div ng-show="dev.seeData" class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+            <span class=" tooltiptext2" > Data Access</span>
           </div>
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2">{{dev.accessLevelCaption}}</h5>
           <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
+
 
         </div>
 
-        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2">
-          <a href=""  ng-click="getAccess1(dev._id)" class=" btn-xs btn-success btn-block" >
+        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isUnderRequest && !dev.cancelRequest && !dev.interruptConnection">
+          <a href=""  ng-click="processMyAccess(dev._id)" class=" btn-xs btn-success btn-block" >
              <i class="fa fa-bar-chart fa-lg"></i>
              <i class="fa fa-plus fa-lg"></i>
               &nbsp;<b>Get access!</b>
          </a>
         </div>
 
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.cancelRequest2">
-         <a href=""  ng-click="cancelRequest1(dev._id)"  class="btn-xs btn-default btn-block" >
+        <div class="widget-user-footer-moreinfo2" ng-show="dev.isUnderRequest && dev.cancelRequest">
+         <a href=""  ng-click="cancelMyRequest(dev._id)"  class="btn-xs btn-default btn-block" >
             <i class="fa fa-bar-chart fa-lg"></i>
             <i class="fa fa-times fa-lg"></i>
              &nbsp;Cancel request
         </a>
         </div>
 
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.interruptConnection2">
-         <a href=""  ng-click="cancelAccess1(dev._id)"  class="btn-xs btn-default btn-block" >
+        <div class="widget-user-footer-moreinfo2" ng-show="dev.isUnderRequest && dev.interruptConnection">
+         <a href=""  ng-click="cancelMyAccess(dev._id)"  class="btn-xs btn-default btn-block" >
             <i class="fa fa-chain-broken fa-lg"></i>
              &nbsp;Interrupt connection
         </a>
         </div>
 
-        <!-- <div  ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 widget-user-footer-moreinfo2">
-        <div  class="btn-group-sm btn-block loc_a " >
-          <button  type="button" class="btn col-lg-10 btn-default ">
-
-             <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-          <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-             <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-          </ul>
-          </div>
-        </div> -->
 
         <div class="widget-user-footer-moreinfo3" ng-show="dev.isPublic" >
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
+        <span><i href="/#" class="fa fa-bar-chart fa-1x"></i> <strong> Device is public </strong> </span>
         </div>
 
         <div class="widget-user-footer-moreinfo3" ng-show="dev.isFriendData">
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
         </div>
 
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.hasAdministrator[0]._id.toString() === myId.toString()">
-        <span  ><strong>My device</strong></span>
+        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPrivate">
+        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Private data</strong></span>
+        </div>
+
+        <div class="widget-user-footer-moreinfo3" ng-show="dev.isOwner">
+        <span><strong>My device</strong></span>
         </div>
 
         <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-
-    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: searchFilterOffline">
-      <!-- Widget: user widget style 1 -->
-      <div class="box box-widget widget-user-2">
-        <!-- Add the bg color to the header using any of the bg-* classes -->
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-
-          <!-- <div class="widget-user-image">
-            <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
-          </div> -->
-          <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
-          </div>
-
-          <!-- /.widget-user-image -->
-          <div class="tooltip2" id="circle_red" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class=" tooltiptext2" > Offline</span>             <!-- <p style="cursor:default">  </p> title="Online"   -->
-          </div>
-          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
-          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
-
-        </div>
-
-        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2">
-          <a href=""  ng-click="getAccess1(dev._id)" class=" btn-xs btn-success btn-block" >
-             <i class="fa fa-bar-chart fa-lg"></i>
-             <i class="fa fa-plus fa-lg"></i>
-              &nbsp;<b>Get access!</b>
-         </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.cancelRequest2">
-         <a href=""  ng-click="cancelRequest1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-bar-chart fa-lg"></i>
-            <i class="fa fa-times fa-lg"></i>
-             &nbsp;Cancel request
-        </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.interruptConnection2">
-         <a href=""  ng-click="cancelAccess1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-chain-broken fa-lg"></i>
-             &nbsp;Interrupt connection
-        </a>
-        </div>
-
-        <!-- <div  ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 widget-user-footer-moreinfo2">
-        <div  class="btn-group-sm btn-block loc_a " >
-          <button  type="button" class="btn col-lg-10 btn-default ">
-
-             <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-          <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-             <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-          </ul>
-          </div>
-        </div> -->
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPublic" >
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isFriendData">
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.hasAdministrator[0]._id.toString() === myId.toString()">
-        <span  ><strong>My device</strong></span>
-        </div>
-        <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-
-    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: searchFilterUnknown">
-      <!-- Widget: user widget style 1 -->
-      <div class="box box-widget widget-user-2">
-        <!-- Add the bg color to the header using any of the bg-* classes -->
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-
-          <!-- <div class="widget-user-image">
-            <img class="img-circle" ng-src="{{dev.avatar}}" alt="Comapany Avatar">
-          </div> -->
-          <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
-          </div>
-
-          <!-- /.widget-user-image -->
-          <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class=" tooltiptext2" > Unknown</span>             <!-- <p style="cursor:default">  </p> title="Online"   -->
-          </div>
-          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
-          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
-
-        </div>
-
-        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2">
-          <a href=""  ng-click="getAccess1(dev._id)" class=" btn-xs btn-success btn-block" >
-             <i class="fa fa-bar-chart fa-lg"></i>
-             <i class="fa fa-plus fa-lg"></i>
-              &nbsp;<b>Get access!</b>
-         </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.cancelRequest2">
-         <a href=""  ng-click="cancelRequest1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-bar-chart fa-lg"></i>
-            <i class="fa fa-times fa-lg"></i>
-             &nbsp;Cancel request
-        </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.interruptConnection2">
-         <a href=""  ng-click="cancelAccess1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-chain-broken fa-lg"></i>
-             &nbsp;Interrupt connection
-        </a>
-        </div>
-
-        <!-- <div  ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 widget-user-footer-moreinfo2">
-        <div  class="btn-group-sm btn-block loc_a" >
-          <button  type="button" class="btn col-lg-10 btn-default ">
-
-             <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-          <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-             <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-          </ul>
-          </div>
-        </div> -->
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPublic" >
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isFriendData">
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.hasAdministrator[0]._id.toString() === myId.toString()">
-        <span  ><strong>My device</strong></span>
-        </div>
-
-        <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-
-
-    <!-- online devices, neaplikovany searchFilter-->
-
-    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: online2">
-
-      <div class="box box-widget widget-user-2">
-
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-
-          <row>
-            <div class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-              <span class=" tooltiptext2" > Online</span>             <!-- <p style="cursor:default">  </p> title="Online"   -->
-            </div>
-          </row>
-
-          <row>
-            <div class="round">
-              <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
-            </div>
-            <ul class="list-unstyled">
-              <li><h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3></li>
-              <li><h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5></li>
-              <li><h5 class="widget-user-desc2">{{dev.info.location}}</h5></li>
-              <li><h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5></li>
-            </ul>
-          </row>
-
-        </div>
-
-        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2">
-          <a href=""  ng-click="getAccess1(dev._id)" class=" btn-xs btn-success btn-block" >
-             <i class="fa fa-bar-chart fa-lg"></i>
-             <i class="fa fa-plus fa-lg"></i>
-              &nbsp;<b>Get access!</b>
-         </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.cancelRequest2">
-         <a href=""  ng-click="cancelRequest1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-bar-chart fa-lg"></i>
-            <i class="fa fa-times fa-lg"></i>
-             &nbsp;Cancel request
-        </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.interruptConnection2">
-         <a href=""  ng-click="cancelAccess1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-chain-broken fa-lg"></i>
-             &nbsp;Interrupt connection
-        </a>
-        </div>
-
-        <!-- <div  ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 widget-user-footer-moreinfo2">
-        <div  class="btn-group-sm btn-block loc_a " >
-          <button  type="button" class="btn col-lg-10 btn-default ">
-
-             <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-          <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-             <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-          </ul>
-          </div>
-        </div> -->
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPublic" >
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isFriendData">
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.hasAdministrator[0]._id.toString() === myId.toString()">
-        <span  ><strong>My device</strong></span>
-        </div>
-
-        <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
-
-      </div>
-    </div>
-
-    <!-- offline devices, neaplikovany searchFilter-->
-    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: offline2">
-      <!-- Widget: user widget style 1 -->
-      <div class="box box-widget widget-user-2">
-        <!-- Add the bg color to the header using any of the bg-* classes -->
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-
-          <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
-          </div>
-
-          <div class="tooltip2" id="circle_red" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class=" tooltiptext2" > Offline</span>             <!-- <p style="cursor:default">  </p> title="Online"   -->
-          </div>
-          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
-          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
-
-        </div>
-
-        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2">
-          <a href=""  ng-click="getAccess1(dev._id)" class=" btn-xs btn-success btn-block" >
-             <i class="fa fa-bar-chart fa-lg"></i>
-             <i class="fa fa-plus fa-lg"></i>
-              &nbsp;<b>Get access!</b>
-         </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.cancelRequest2">
-         <a href=""  ng-click="cancelAccess1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-bar-chart fa-lg"></i>
-            <i class="fa fa-times fa-lg"></i>
-             &nbsp;Cancel request
-        </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.interruptConnection2">
-         <a href=""  ng-click="cancelRequest1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-chain-broken fa-lg"></i>
-             &nbsp;Interrupt connection
-        </a>
-        </div>
-
-        <!-- <div  ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 widget-user-footer-moreinfo2">
-        <div  class="btn-group-sm btn-block loc_a " >
-          <button  type="button" class="btn col-lg-10 btn-default ">
-
-             <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-          <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-             <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-          </ul>
-          </div>
-        </div> -->
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPublic" >
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isFriendData">
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.hasAdministrator[0]._id.toString() === myId.toString()">
-        <span  > <strong>My device</strong></span>
-        </div>
-
-        <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
-
-
-      </div>
-    </div>
-
-    <!-- unknown devices, neaplikovany searchFilter-->
-    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="dev in devs | filter: unknown2">
-      <!-- Widget: user widget style 1 -->
-      <div class="box box-widget widget-user-2">
-        <!-- Add the bg color to the header using any of the bg-* classes -->
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-
-          <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
-          </div>
-
-          <!-- /.widget-user-image -->
-          <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class=" tooltiptext2" > Unknown</span>             <!-- <p style="cursor:default">  </p> title="Online"   -->
-          </div>
-          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
-          <h5 class="widget-user-desc2">{{dev.info.location}}</h5>
-          <h5 class="widget-user-desc2">{{dev.info.serial_number}}</h5>
-
-        </div>
-
-        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && !dev.cancelRequest2 && !dev.interruptConnection2">
-          <a href="" ng-click="getAccess1(dev._id)" class=" btn-xs btn-success btn-block" >
-             <i class="fa fa-bar-chart fa-lg"></i>
-             <i class="fa fa-plus fa-lg"></i>
-              &nbsp;<b>Get access!</b>
-         </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.cancelRequest2">
-         <a href=""  ng-click="cancelRequest1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-bar-chart fa-lg"></i>
-            <i class="fa fa-times fa-lg"></i>
-             &nbsp;Cancel request
-        </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isMeta && dev.interruptConnection2">
-         <a href=""  ng-click="cancelAccess1(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-chain-broken fa-lg"></i>
-             &nbsp;Interrupt connection
-        </a>
-        </div>
-
-        <!-- <div  ng-show="dev.isMeta && dev.interruptConnection2" class="btn-group-justified2 widget-user-footer-moreinfo2">
-        <div  class="btn-group-sm btn-block loc_a " >
-          <button  type="button" class="btn col-lg-10 btn-default ">
-
-             <i style= class="fa fa-bar-chart fa-lg"></i><i class="fa fa-check fa-lg"></i>&nbsp;Active connection</button>
-
-          <button  type="button" class="btn col-lg-2 btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right" role="menu">
-             <li><a ng-click="cancelAccess1(dev._id)"><i class="fa fa-chain-broken fa-lg"></i>&nbsp;Interrupt connection</a></li>
-          </ul>
-          </div>
-        </div> -->
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPublic" >
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong> Device is public </strong> </span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isFriendData">
-        <span  ><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.hasAdministrator[0]._id.toString() === myId.toString()">
-        <span  > <strong>My device</strong></span>
-        </div>
-
-        <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo">More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
 

@@ -77,16 +77,16 @@ angular.module('VicinityManagerApp', [
 
 // ======== Side menu list views
 
-        .state('root.main.neighbourhood', {
-          url: '/neighbourhood/:searchTerm',
-          views: {
-            'mainContentView@root':
-              {
-                templateUrl: 'modules/home/views/home.neighbourhoodView.html',
-                controller: 'neighbourhoodController'
-              }
-          }
-        })
+        // .state('root.main.neighbourhood', {
+        //   url: '/neighbourhood/:searchTerm',
+        //   views: {
+        //     'mainContentView@root':
+        //       {
+        //         templateUrl: 'modules/home/views/home.neighbourhoodView.html',
+        //         controller: 'neighbourhoodController'
+        //       }
+        //   }
+        // })
         .state('root.main.allDevices', {
           url: '/allDevices/:searchTerm',
           views: {

@@ -1,18 +1,23 @@
 "use strict";
 angular.module('VicinityManagerApp.controllers')
+/*
+Filters the items based on the following rules:
+- If it is my company profile I see all the items which belong to me
+- If it is other company profile I see all its items which:
+  . are flagged as public
+  . if I am partner of the company, also items flagged for friends
+*/
 .filter('custom',
  function() {
   return function(input, isFriend, cid) {
 
     var out = [];
     var keyword = new RegExp(cid);
-    var keyword2 = new RegExp("2");
-    var keyword3 = new RegExp("3");
-    var keyword4 = new RegExp("4");
 
     angular.forEach(input,
       function(device) {
-       if (keyword.test(device.hasAdministrator[0]._id) || keyword.test(device.hasAccess) || keyword4.test(device.accessLevel) || ((keyword3.test(device.accessLevel) || keyword2.test(device.accessLevel)) && isFriend)) {
+      var keyLevel = new RegExp(device.accessLevel);
+       if (keyword.test(device.hasAdministrator[0]._id) || keyLevel.test("5678") || (keyLevel.test("234") && isFriend) ) {
           out.push(device);
        }
       }
@@ -28,7 +33,7 @@ function ($scope, $window, $stateParams, $location, userAccountAPIService, items
   $scope.isFriend = false;
   $scope.loaded = false;
 
-  userAccountAPIService.getMyDevices($stateParams.companyAccountId)
+  itemsAPIService.getMyDevices($stateParams.companyAccountId)
     .then(successCallback1, errorCallback)
     .then(successCallback2, errorCallback);
 
