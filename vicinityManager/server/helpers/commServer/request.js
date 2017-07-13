@@ -31,8 +31,7 @@ function callCommServer(data, endPoint, myMethod){
     uri: config.commServerUrl + '/' + endPoint,
     body: payload,
     // simple: true
-  }
-    , function(err, response, body) {
+  }, function(err, response, body) {
         logger.debug('REQUEST RESULTS:', err, response.statusCode, body);
     }
   );

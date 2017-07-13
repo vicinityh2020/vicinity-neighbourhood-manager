@@ -80,11 +80,6 @@ var invitation = {
 };
 
 var registration = {
-    // invitationId: String,
-    // invitation: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'invitation'
-    // },
     userName: String,
     email: String,
     password: String,
@@ -99,14 +94,6 @@ var registration = {
     businessId: String,
     status: {type: String, enum: ['open','verified','declined','pending']},
     type: {type: String, enum: ['newCompany','newUser']}
-    // nameTo: String,
-    // sentBy: {
-    //     name: String,
-    //     organisation: String,
-    //     email: String
-    // },
-    // // sentBy: String,
-    // type: {type: String, enum: ['newCompany','newUser']}
 };
 
 var notification = {
@@ -171,21 +158,6 @@ var item = new Schema({
   info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
   type: String,
   status: String // Enabled or disabled
-  // consistsOf: {type: String, id: [ObjectId], required: false}, // Item has items.
-  // color: String,
-  // info: Object{
-  //   serial_number: String,
-  //   location: String,
-  //   id_tag: String,
-  //   id_value: String,
-  //   status: String,
-  //   datasources: [{
-  //     name: String,
-  //     typeOf: String,
-  //     format: String,
-  //     unitOfMeasurement: String
-  //   }]
-  // },
 });
 
 var remember = {

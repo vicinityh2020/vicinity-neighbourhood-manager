@@ -49,7 +49,7 @@ function createCollection(aid, credentialsArray, objectsArray, documents){
   db.avatar = config.avatarItem; // Default avatar provided by VCNT
   db.info = objects; // Thing description obj, might have different structures each time
   db.markModified('info'); // Required when modifying schema of object, case of flexible object
-  db.status = 'disabled'; // TODO Change in future stages of the project
+  db.status = 'enabled'; // TODO Change in future stages of the project
   db.type = 'device'; // TODO Change once we have services available
 
   documents.push(db);

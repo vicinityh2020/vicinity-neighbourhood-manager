@@ -1,10 +1,20 @@
+// Global objects and variables
+
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var commServer = require('../../helpers/commServer/request');
+var commServerSharing = require('../../helpers/commServer/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
 
+// Public function 1
 
+/*
+Controls any possible object modification
+- Change of status Enable/Disable
+- Change of other properties
+- Change of accessLevel
+*/
 function putOne(req, res) {
 //TODO: User authentic - Role check
 
@@ -19,54 +29,60 @@ function putOne(req, res) {
     password: updates.password,
     };
 
-  if(updates.status === 'enabled' && updates.modifyCommServer && updates.public){
-    commServer.callCommServer(payload, 'users', 'POST', req.headers.authorization)
-      .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + updates.cid + '_ownDevices', 'POST'),callbackError) // Add to company group
-      .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + aid, 'POST')) // Add to agent group
-      .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + 'publicDevices', 'POST'),callbackError) // Add to public devices group
-      .then(deviceActivityNotif(uid, updates.cid, 'Enabled'),callbackError)
-      .then(itemStatusUpdate(uid,updates),callbackError);
-
-  }else if(updates.status === 'enabled' && updates.modifyCommServer && !updates.public){
+  if(updates.status === 'enabled'){
     commServer.callCommServer(payload, 'users', 'POST')
       .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + updates.cid + '_ownDevices', 'POST'),callbackError) // Add to company group
       .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + aid, 'POST')) // Add to agent group
       .then(deviceActivityNotif(uid, updates.cid, 'Enabled'),callbackError)
-      .then(itemStatusUpdate(uid,updates),callbackError);
+      .then(itemStatusUpdate(uid,updates,res),callbackError);
 
-  }else if(updates.status === 'disabled' && updates.modifyCommServer){
+  }else if(updates.status === 'disabled'){
     commServer.callCommServer({}, 'users/' + oid , 'DELETE')
       .then(deviceActivityNotif(uid, updates.cid, 'Disabled'),callbackError)
-      .then(itemStatusUpdate(uid,updates),callbackError);
+      .then(itemStatusUpdate(uid,updates,res),callbackError);
 
   }else{
-    if(updates.accessLevel === '8'){ // Add/removes devices from commServer shared public group
-      commServer.callCommServer({}, 'users/' + oid + '/groups/' + 'publicDevices', 'POST')
-      .then(itemAccessLevelUpdate(uid,updates),callbackError);
-    }else if(updates.accessLevel !== '8'){
-      commServer.callCommServer({}, 'users/' + oid + '/groups/' + 'publicDevices', 'DELETE')
-      .then(itemAccessLevelUpdate(uid,updates),callbackError);
-    }
+
+    itemUpdate(uid,updates,res);
+
   }
+}
 
-function itemStatusUpdate(uid,updates){
-  return itemOp.update({ "_id": uid}, {$set: {status: updates.status}}, function(err, raw){
+/*
+Handles the status update in MONGO
+*/
+function itemStatusUpdate(uid,updates,res){
+  return itemOp.update({ "_id": uid}, {$set: {status: updates.status, accessLevel: 1}}, function(err, raw){
     response = {"error": err, "message": raw};
     res.json(response);
     }
   );
 }
 
-function itemAccessLevelUpdate(uid,updates){
-  var aL = Number(updates.accessLevel);
-  var query = { 'accessLevel' : aL };
-  return itemOp.findOneAndUpdate({ _id : uid}, {$set: query }, function(err, raw){
-    response = {"error": err, "message": raw};
-    res.json(response);
-    }
-  );
+/*
+Handles the accessLevel and other properties modifications
+*/
+function itemUpdate(uid,updates,res){
+  if(updates.accessLevel && updates.accessLevel !== 0){
+    query = { accessLevel: updates.accessLevel };
+    itemOp.findOneAndUpdate({ _id : uid}, {$set: query }, function(err, raw){
+      commServerSharing.changePrivacy(updates);
+      response = {"error": err, "message": raw};
+      res.json(response);
+      }
+    );
+  } else {
+    itemOp.findOneAndUpdate({ _id : uid}, { $set: updates }, function(err, raw){
+      response = {"error": err, "message": raw};
+      res.json(response);
+      }
+    );
+  }
 }
 
+/*
+Sends a notification on change of status
+*/
 function deviceActivityNotif(did,cid,state){
   var dbNotif = new notificationOp();
   dbNotif.addressedTo = cid;
@@ -84,18 +100,18 @@ function deviceActivityNotif(did,cid,state){
   );
 }
 
-  function callbackError(err){
-    logger.debug('Error updating item: ' + err);
-    // TODO some error handling ...
-    // commServer.callCommServer({}, 'users/' + oid , 'DELETE')
-  }
-
+/*
+Handles errors
+*/
+function callbackError(err){
+  logger.debug('Error updating item: ' + err);
+  // TODO some error handling ...
+  // commServer.callCommServer({}, 'users/' + oid , 'DELETE')
 }
 
-
+// Public function 2
 
 function delIdFromHasAccessAndAccessRequestFrom(adminId, friendId){
-
     itemOp.find({ hasAdministrator: {$in : [adminId]}, accessRequestFrom: {$in : [friendId]}},function(err, data){
         var dev = {};
         var index;
@@ -107,11 +123,9 @@ function delIdFromHasAccessAndAccessRequestFrom(adminId, friendId){
                   dev.accessRequestFrom.splice(index2, 1);
               }
           }
-
           dev.save();
         }
     });
-
     itemOp.find({ hasAdministrator: {$in : [adminId]}, hasAccess: {$in : [friendId]}},function(err, data){
         var dev = {};
         var index;
@@ -128,6 +142,9 @@ function delIdFromHasAccessAndAccessRequestFrom(adminId, friendId){
       }
     );
   }
+
+
+// Module exports
 
 module.exports.putOne = putOne;
 module.exports.delIdFromHasAccessAndAccessRequestFrom = delIdFromHasAccessAndAccessRequestFrom;

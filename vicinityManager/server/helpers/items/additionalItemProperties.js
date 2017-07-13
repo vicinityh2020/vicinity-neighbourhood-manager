@@ -62,11 +62,11 @@ function getAdditional(data,activeCompany_id,friends){
             deviceWithAdd = device.toObject();
             deviceWithAdd.isOwner = isOwner;
             deviceWithAdd.isPrivate = isPrivate;
-            deviceWithAdd.isFriendData = isFriendData;
+            deviceWithAdd.isFriendData = (isFriendData === true && isOwner === false);
             deviceWithAdd.isPublic = isPublic;
             deviceWithAdd.isUnderRequest = isUnderRequest;
-            deviceWithAdd.imFriend = imFriend;
-            // deviceWithAdd.isRequested = cancelRequest; TODO Decide if necessary
+            deviceWithAdd.imFriend = (imFriend === true && isOwner === false);
+            deviceWithAdd.myFriends = friends;
             deviceWithAdd.accessLevelCaption = accessLevelCaption;
             deviceWithAdd.cancelRequest = cancelRequest;
             deviceWithAdd.interruptConnection = interruptConnection;

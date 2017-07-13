@@ -42,7 +42,7 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
 
   // TODO test purpuses, remove in final versions
   // itemsAPI.postBulk = function(data) {
-  //   return $http.post(configuration.apiUrl +'/commServer/search', data);
+  //   return $http.post(configuration.apiUrl +'/commServer/registration', data);
   // };
 
   itemsAPI.getMyDevices = function(id) {

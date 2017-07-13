@@ -4,7 +4,7 @@ var commServer = require('../../helpers/commServer/request');
 var itemOp = require('../../models/vicinityManager').item;
 
 function cancelAccess(req, res, next){
-    console.log("Running cancelation of data access (interruption of data access)!");
+
     dev_id = mongoose.Types.ObjectId(req.params.id);
     activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     var device = {};
@@ -27,7 +27,7 @@ function cancelAccess(req, res, next){
                   }
                 }
 
-                commServer.callCommServer({}, 'users/' + dev_id + '/groups/' + activeCompany_id + '_foreignDevices', 'DELETE');
+                commServer.callCommServer({}, 'users/' + device.oid + '/groups/' + activeCompany_id + '_foreignDevices', 'DELETE');
                 device.save();
                 response = {"error": false, "message": "Processing data success!"};
             } else {

@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var itemAPI = require('../items/put');
 var notificationAPI = require('../../routes/notifications/notifications');             //my_id should be .cid everywhere
 var logger = require("../../middlewares/logger");
-
+var commServer = require('../../helpers/commServer/sharingRules');
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
 var itemOp = require('../../models/vicinityManager').item;
@@ -102,6 +102,8 @@ function acceptFriendRequest(req, res, next) {
                     }
                 }
 
+                commServer.newFriend(my_id, friend_id); // Adds all my items flagged for friends to my friend foreign group and viceversa
+
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 
                 notificationAPI.changeStatusToResponded(friend_id, my_id, 'friendRequest','waiting');
@@ -119,6 +121,7 @@ function acceptFriendRequest(req, res, next) {
 
                 friend.save();
                 me.save();
+
                 response = {"error": false, "message": "Processing data success!"};
             } else {
                 response = {"error": true, "message": "Processing data failed!"};
@@ -279,6 +282,8 @@ function cancelFriendship(req, res, next){
                     }
                 }
 
+                commServer.removeFriend(my_id, friend_id);  // Removes all my items from my friend foreign group and viceversa
+
                 notificationAPI.deleteNot(my_id, friend_id, 'friendRequest', 'accepted');
                 notificationAPI.deleteNot(friend_id, my_id, 'friendRequest', 'accepted');
 
@@ -293,6 +298,7 @@ function cancelFriendship(req, res, next){
 
                 friend.save();
                 me.save();
+
                 response = {"error": false, "message": "Processing data success!"};
             } else {
                 response = {"error": true, "message": "Processing data failed!"};
@@ -315,14 +321,6 @@ function findFriends(req, res, next){
   companyAccountOp.findById(o_id).
     populate('knows').exec(function(err, data){
 
-    // if (req.query.sort){
-    //   if (req.query.sort == 'ASC') {
-    //       data.knows.sort(sortListOfFriendsASC);
-    //   } else if (req.query.sort == 'DESC') {
-    //       data.knows.sort(sortListOfFriendsDESC);
-    //   }
-    // }
-
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
     } else {
@@ -334,6 +332,15 @@ function findFriends(req, res, next){
     }
   );
 }
+
+// var pos = objectsArray.findIndex(matchOid, variableToMatch); // Find right object by matching oid of credentials in objects
+// objectsArray.splice(pos,1); // Delete matched object of objectsArray
+// /*
+// Find index containing same oid and return it
+// */
+// function matchOid(elements){
+//   return elements.oid === this.oid;
+// }
 
   // function sortListOfFriendsASC(a,b){
   //   if (a.organisation < b.organisation) {
