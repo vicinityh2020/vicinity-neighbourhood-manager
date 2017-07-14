@@ -163,20 +163,36 @@ function findCase(oldA, newA, updates){
   } else if(oldA === "request" && newA === "public") {
     processCommServerManyOrgs(updates.myFriends, updates.oid, 'DELETE');
     commServer.callCommServer({}, 'users/' + updates.oid + '/groups/' + 'publicDevices', 'POST');
-    itemOp.update({oid:updates.oid},{$pullAll :{accessRequestFrom: 1, hasAccess: 1}});
+    removeHasAccess(updates.oid);
 
   } else if(oldA === "request" && newA === "friend") {
     processCommServerManyOrgs(updates.myFriends, updates.oid, 'POST');
-    itemOp.update({oid:updates.oid},{$pullAll :{accessRequestFrom: [], hasAccess: []}});
+    removeHasAccess(updates.oid);
 
   } else if(oldA === "request" && newA === "private") {
     processCommServerManyOrgs(updates.myFriends, updates.oid, 'DELETE');
-    itemOp.update({oid:updates.oid},{$pullAll :{accessRequestFrom: [], hasAccess: []}});
+    removeHasAccess(updates.oid);
 
   } else {
     logger.debug("No action required!");
   }
 }
+
+function removeHasAccess(id){
+  itemOp.find({oid:id},
+    function (err, data) {
+      if (err || data === null) {
+          response = {"error": true, "message": "Processing data failed!"};
+      } else {
+          if (data.length === 1) {
+              var device = data[0];
+              device.accessRequestFrom = device.hasAccess = [];
+              device.save();
+            }
+          }
+        }
+      );
+    }
 
 /*
 Handles errors
