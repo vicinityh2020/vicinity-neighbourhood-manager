@@ -12,13 +12,13 @@ Find in Mongo dB all objects contained in the req.
 Return the thingDescriptions
 */
 function postSearch(req, res, next){
-  var oidArray = req.body;
-
-  itemOp.find({oid: { $in: oidArray } }, {aid:1, oid:1, name:1, info:1}, {$hint: { oid : 1 } })
+  var oidArray = req.body.oids;
+  logger.debug("Request info:  " + JSON.stringify(req.body) + "    " + JSON.stringify(req.headers));
+  itemOp.find({oid: {$in: oidArray } }, {aid:1, oid:1, name:1, info:1} )
     .exec(
       function(err,data){
         if(err || !data){
-          res.json({"error" : true, "message" : "No match found"});
+         res.json({"error" : true, "message" : "No match found"});
         } else {
           res.json({"error": false, "message" : data });
         }
