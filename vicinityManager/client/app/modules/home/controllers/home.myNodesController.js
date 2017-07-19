@@ -1,3 +1,4 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers').
   controller('myNodesController',
   function ($scope,
@@ -22,7 +23,7 @@ angular.module('VicinityManagerApp.controllers').
       },
       function errorCallback(response){}
     );
-  }
+  };
 
   myInit();
 
@@ -48,14 +49,12 @@ angular.module('VicinityManagerApp.controllers').
                   Notification.success("Node successfully removed!!");
                   myInit();
                 },
-                function errorCallback(response){
-                  Notification.error("Error");
-                }
+                errorCallback
               );
             },
-            function errorCallback(response){}
+            errorCallback
           );
-        }
+        };
 
 
     $scope.createGroup = function(){  // Debug only -- TODO Remove
@@ -68,23 +67,28 @@ angular.module('VicinityManagerApp.controllers').
       nodeAPIService.postResource('groups',payload)
         .then(
           function successCallback(response){
-            $window.alert("Success");
+            Notification.success("Success");
           },
-          function errorCallback(response){
-              $window.alert("Error");
-          }
+          errorCallback
         );
+    };
+
+
+    function errorCallback(err){
+      Notification.error("Something went wrong: " + err);
     }
 
 // ==== Navigation functions =====
 
     $scope.goToEdit = function(i){
         $state.go("root.main.nodeDetail",{nodeId: i});
-    }
+    };
 
     $scope.orderByMe = function(x) {
-      if($scope.myOrderBy === x){$scope.rev=!($scope.rev)}
-        $scope.myOrderBy = x;
+      if($scope.myOrderBy === x){
+        $scope.rev=!($scope.rev);
       }
+      $scope.myOrderBy = x;
+    };
 
 });

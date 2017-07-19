@@ -1,3 +1,4 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers').
   controller('nodeDetailController',
   function ($scope,
@@ -32,6 +33,7 @@ angular.module('VicinityManagerApp.controllers').
                   $scope.nUri = response.data.message.eventUri;
                   $scope.nAgent = response.data.message.agent;
                   $scope.nType = response.data.message.type[0];
+                  $scope.nId = response.data.message._id;
                   $scope.myNode = $scope.nName + " profile view";
                 },
                 function errorCallback(response){}
@@ -74,9 +76,9 @@ angular.module('VicinityManagerApp.controllers').
                 }
               }else{
                 $window.alert("The passwords do not match!!");
-                $scope.nPass = $scope.nPass2 = ""
+                $scope.nPass = $scope.nPass2 = "";
               }
-            }
+            };
 
 
 
@@ -84,11 +86,11 @@ angular.module('VicinityManagerApp.controllers').
 
             $scope.backToList = function(){
                 $state.go("root.main.myNodes");
-            }
+            };
 
             $scope.toModify= function(){
               $scope.modify = true;
               $scope.myNode = "Modifying node: " + $scope.nName;
-            }
+            };
 
   });
