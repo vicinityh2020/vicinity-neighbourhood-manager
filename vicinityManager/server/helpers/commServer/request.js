@@ -20,7 +20,8 @@ function callCommServer(data, endPoint, myMethod){
   var head = {
     'authorization' : config.commServerToken,
     'Content-Type' : 'application/json',
-    'Accept' : 'application/json'
+    'Accept' : 'application/json',
+    'simple': false
   };
 
   payload = JSON.stringify(data);

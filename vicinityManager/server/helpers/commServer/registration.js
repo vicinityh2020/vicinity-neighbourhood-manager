@@ -18,7 +18,6 @@ Message producing the req is sent by the agent with thingDescriptions
 function postRegistration(req, res, next){
   var objectsArray = req.body.thingDescriptions;
   var aid = req.body.aid;
-  var cont = 0; // Stores num of upserted documents
 
   nodeOp.findById(aid,{organisation:1},
     function(err,data){
@@ -26,35 +25,25 @@ function postRegistration(req, res, next){
           res.json({"error": true, "message" : "Something went wrong..."});
         } else {
           var cid = data.organisation;
-          cont = saveDocuments(aid, cid, objectsArray, cont);
-          // deviceActivityNotif(cid);
+          saveDocuments(aid, cid, objectsArray);
+          deviceActivityNotif(cid);
 
-          res.json({"error": false, "message" : cont + " documents were saved!"});
+          res.json({"error": false, "message" : "Documents were saved!"});
 
         }
     }
   );
-
 }
-
-
-
-
-
-
-
-
-
 
 /*
 Create collection of item documents
 */
-function saveDocuments(aid, cid, objectsArray, cont){
-  var db = new itemOp();
+function saveDocuments(aid, cid, objectsArray){
+
   var obj = {};
 
-  var creds = objectsArray[0].credentials; // Select first credentials object
-  delete objectsArray[0].credentials;
+  var creds = objectsArray[0].credentials; // Select credentials object
+  delete objectsArray[0].credentials; // Delete credentials, not to be stored in MONGO
 
   // Create one item document
   obj.aid = aid;
@@ -64,10 +53,9 @@ function saveDocuments(aid, cid, objectsArray, cont){
   obj.accessLevel = 1; // private by default
   obj.avatar = config.avatarItem; // Default avatar provided by VCNT
   obj.info = objectsArray[0]; // Thing description obj, might have different structures each time
-  obj.markModified('info'); // Required when modifying schema of object, case of flexible object
   obj.status = 'enabled'; // TODO Change in future stages of the project
 
-  db.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
+  itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
     function(err, data){
       if(err || !data){
         logger.debug("Item " + obj.name + " was not saved...");
@@ -80,11 +68,9 @@ function saveDocuments(aid, cid, objectsArray, cont){
   objectsArray.splice(0,1); // Delete matched object of objectsArray
 
   if (objectsArray.length > 0 ){ // If credentials not empty, call recursively until all objects saved
-    saveDocuments(aid, cid, objectsArray, cont);
+    saveDocuments(aid, cid, objectsArray);
   }
 
-  return cont;
-  
 }
 
 /*
@@ -97,9 +83,34 @@ function commServerProcess(docOid, docAid, docName, docPassword, docOwner){
     name: docName,
     password: docPassword,
     };
-  commServer.callCommServer(payload, 'users', 'POST')
-    .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST'),callbackError) // Add to company group
-    .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAid, 'POST'), callbackError); // Add to agent group
+
+    commServer.callCommServer({}, 'users/' +  docOid, 'GET')
+      .then(
+        function(response){
+          commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
+            .then(
+              function(response){
+                commServer.callCommServer(payload, 'users', 'POST')
+                .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST'), callbackError) // Add to company group
+                .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAid, 'POST'), callbackError) // Add to agent group
+                .catch(callbackError);
+            },
+            function(error){
+              callbackError(error);
+            }
+          );
+        },
+        function(error){
+          if(error.statusCode !== 404){
+          callbackError(error);
+        } else {
+          commServer.callCommServer(payload, 'users', 'POST')
+            .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST'),callbackError) // Add to company group
+            .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAid, 'POST'), callbackError) // Add to agent group
+            .catch(callbackError);
+        }
+      }
+    );
 }
 
 /*
@@ -122,13 +133,6 @@ function callbackError(err){
   logger.debug('Error updating item: ' + err);
   // TODO some error handling ...
   // commServer.callCommServer({}, 'users/' + o_id , 'DELETE')
-}
-
-/*
-Find index containing same oid and return it
-*/
-function matchOid(elements){
-  return elements.oid === this.oid;
 }
 
 // Export Functions
