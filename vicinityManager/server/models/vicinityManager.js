@@ -167,6 +167,10 @@ var remember = {
 var node = {
   name: {type: String, required: true},
   eventUri: String,
+  organisation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'userAccount'
+  },
   type: [String],
   agent: String,
   status: String,

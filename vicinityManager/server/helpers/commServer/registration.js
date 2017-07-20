@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var ce = require('cloneextend');
 var itemOp = require('../../models/vicinityManager').item;
 var notifOp = require('../../models/vicinityManager').notification;
+var nodeOp = require('../../models/vicinityManager').node;
 var logger = require('../../middlewares/logger');
 var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
@@ -15,69 +16,75 @@ Save in Mongo dB all objects contained in the req.
 Message producing the req is sent by the agent with thingDescriptions
 */
 function postRegistration(req, res, next){
-  var documents = [];
-  var credentialsArray = req.body.creds;
   var objectsArray = req.body.thingDescriptions;
-  var cid = req.body.thingDescriptions[0].owner;
   var aid = req.body.aid;
+  var cont = 0; // Stores num of upserted documents
 
-  documents = createCollection(aid, credentialsArray, objectsArray, documents);
-  var numItemsSaved = saveDocument(documents);
-  deviceActivityNotif(cid);
+  nodeOp.findById(aid,{organisation:1},
+    function(err,data){
+        if(err || !data){
+          res.json({"error": true, "message" : "Something went wrong..."});
+        } else {
+          var cid = data.organisation;
+          cont = saveDocuments(aid, cid, objectsArray, cont);
+          // deviceActivityNotif(cid);
 
-  res.json({"error": false, "message" : numItemsSaved + " documents were saved!"});
+          res.json({"error": false, "message" : cont + " documents were saved!"});
+
+        }
+    }
+  );
+
 }
+
+
+
+
+
+
+
+
+
 
 /*
 Create collection of item documents
 */
-function createCollection(aid, credentialsArray, objectsArray, documents){
+function saveDocuments(aid, cid, objectsArray, cont){
   var db = new itemOp();
-  var objects = {};
-  var creds = credentialsArray[0]; // Select first credentials object
-  credentialsArray.splice(0,1); // Remove first element of credentials
-  var pos = objectsArray.findIndex(matchOid, creds); // Find right object by matching oid of credentials in objects
-  objects = objectsArray[pos];
-  objectsArray.splice(pos,1); // Delete matched object of objectsArray
+  var obj = {};
+
+  var creds = objectsArray[0].credentials; // Select first credentials object
+  delete objectsArray[0].credentials;
 
   // Create one item document
-  db.aid = aid;
-  db.oid = creds.oid;
-  db.name = creds.credentials.name; // Name goes in TD!!!
-  db.hasAdministrator = objects.owner; // CID -- goes in message?
-  db.accessLevel = 1; // private by default
-  db.avatar = config.avatarItem; // Default avatar provided by VCNT
-  db.info = objects; // Thing description obj, might have different structures each time
-  db.markModified('info'); // Required when modifying schema of object, case of flexible object
-  db.status = 'enabled'; // TODO Change in future stages of the project
-  db.type = 'device'; // TODO Change once we have services available
+  obj.aid = aid;
+  obj.oid = objectsArray[0].oid;
+  obj.name = creds.name; // Name goes in TD!!!
+  obj.hasAdministrator = cid; // CID -- goes in message?
+  obj.accessLevel = 1; // private by default
+  obj.avatar = config.avatarItem; // Default avatar provided by VCNT
+  obj.info = objectsArray[0]; // Thing description obj, might have different structures each time
+  obj.markModified('info'); // Required when modifying schema of object, case of flexible object
+  obj.status = 'enabled'; // TODO Change in future stages of the project
 
-  documents.push(db);
-  commServerProcess(creds.oid, aid, creds.credentials.name, creds.credentials.password, objects.owner);
-
-  if (credentialsArray.length > 0 ){ // If credentials not empty, call recursively until all objects saved
-    createCollection(aid, credentialsArray, objectsArray, documents);
-  }
-  return documents;
-}
-
-/*
-Save documents in one bulk operation
-On success, return an array with the successful operations
-*/
-function saveDocument(documents){
-    var db = new itemOp();
-    db.collection.insert(documents,
-      function(err, docs) {
-        if (err) {
-        // TODO: handle error
-        res.json({"error":true});
+  db.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
+    function(err, data){
+      if(err || !data){
+        logger.debug("Item " + obj.name + " was not saved...");
       } else {
-        logger.debug(docs.result.n + ' documents were saved!');
-        return docs.result.n;
+        commServerProcess(obj.oid, aid, creds.name, creds.password, cid);
       }
     }
   );
+
+  objectsArray.splice(0,1); // Delete matched object of objectsArray
+
+  if (objectsArray.length > 0 ){ // If credentials not empty, call recursively until all objects saved
+    saveDocuments(aid, cid, objectsArray, cont);
+  }
+
+  return cont;
+  
 }
 
 /*

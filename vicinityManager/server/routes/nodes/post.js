@@ -23,6 +23,7 @@ function postOne(req, res, next) {
   db.agent = req.body.agent;
   db.type = req.body.type;
   db.status = "active";
+  db.organisation = cid;
 
   db.save(function(err,data){
     if(err){
