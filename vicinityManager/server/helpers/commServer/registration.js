@@ -18,27 +18,28 @@ Message producing the req is sent by the agent with thingDescriptions
 function postRegistration(req, res, next){
   var objectsArray = req.body.thingDescriptions;
   var aid = req.body.aid;
+  var oidArray = [];
 
-  nodeOp.findById(aid,{organisation:1},
+  nodeOp.findById(aid,{organisation:1, hasItems: 1},
     function(err,data){
         if(err || !data){
-          res.json({"error": true, "message" : "Something went wrong..."});
+          res.json({"error": true, "message" : "Something went wrong: " + err});
         } else {
           var cid = data.organisation;
-          saveDocuments(aid, cid, objectsArray);
+          oidArray = saveDocuments(aid, cid, objectsArray, oidArray);
+          data.hasItems = updateItemsList(data.hasItems, oidArray);
+          data.save();
           deviceActivityNotif(cid);
-
           res.json({"error": false, "message" : "Documents were saved!"});
-
         }
     }
   );
 }
 
 /*
-Create collection of item documents
+Inserts or updates all oids in the request, depending on their previous existance
 */
-function saveDocuments(aid, cid, objectsArray){
+function saveDocuments(aid, cid, objectsArray, oidArray){
 
   var obj = {};
 
@@ -49,7 +50,7 @@ function saveDocuments(aid, cid, objectsArray){
   obj.aid = aid;
   obj.oid = objectsArray[0].oid;
   obj.name = creds.name; // Name goes in TD!!!
-  obj.hasAdministrator = cid; // CID -- goes in message?
+  obj.hasAdministrator = cid; // CID, obtained from mongo
   obj.accessLevel = 1; // private by default
   obj.avatar = config.avatarItem; // Default avatar provided by VCNT
   obj.info = objectsArray[0]; // Thing description obj, might have different structures each time
@@ -65,17 +66,21 @@ function saveDocuments(aid, cid, objectsArray){
     }
   );
 
-  objectsArray.splice(0,1); // Delete matched object of objectsArray
+  oidArray.push(obj.oid);
+  objectsArray.splice(0,1); // Delete first object of objectsArray
 
-  if (objectsArray.length > 0 ){ // If credentials not empty, call recursively until all objects saved
-    saveDocuments(aid, cid, objectsArray);
+  if (objectsArray.length > 0 ){ // If objectsArray not empty, call recursively until all objects saved
+    saveDocuments(aid, cid, objectsArray, oidArray);
   }
+
+  return oidArray;
 
 }
 
 /*
 Creates user in commServer
 Adds user to company and agent groups
+If the oid exists in the commServer is deleted and created anew
 */
 function commServerProcess(docOid, docAid, docName, docPassword, docOwner){
   var payload = {
@@ -111,6 +116,22 @@ function commServerProcess(docOid, docAid, docName, docPassword, docOwner){
         }
       }
     );
+}
+
+/*
+Adds all new oids to the node hasItems
+If the oid is already in there skip it
+*/
+function updateItemsList(items, oidArray){
+  var flag = items.indexOf(oidArray[0]);
+  if(flag === -1){
+    items.push(oidArray[0]);
+  }
+  oidArray.splice(0,1);
+  if(oidArray.length > 0){
+    updateItemsList(items, oidArray);
+  }
+  return items;
 }
 
 /*

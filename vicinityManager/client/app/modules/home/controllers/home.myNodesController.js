@@ -57,21 +57,21 @@ angular.module('VicinityManagerApp.controllers').
         };
 
 
-    $scope.createGroup = function(){  // Debug only -- TODO Remove
-
-      var payload = {
-        name: $window.sessionStorage.companyAccountId,
-        description: "Reagon"
-      };
-
-      nodeAPIService.postResource('groups',payload)
-        .then(
-          function successCallback(response){
-            Notification.success("Success");
-          },
-          errorCallback
-        );
-    };
+    // $scope.createGroup = function(){  // Debug only -- TODO Remove
+    //
+    //   var payload = {
+    //     name: $window.sessionStorage.companyAccountId,
+    //     description: "Reagon"
+    //   };
+    //
+    //   nodeAPIService.postResource('groups',payload)
+    //     .then(
+    //       function successCallback(response){
+    //         Notification.success("Success");
+    //       },
+    //       errorCallback
+    //     );
+    // };
 
 
     function errorCallback(err){

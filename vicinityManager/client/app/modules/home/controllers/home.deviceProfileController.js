@@ -226,11 +226,11 @@ function ($scope, $window, $stateParams, $location, itemsAPIService, Notificatio
   //       ];
   //
   //     var query = {
-  //         aid: "595ca32220469e0306d59db9", // test with unikl agent
+  //         aid: "5971f370b897ce061c19fb03", // test with unikl agent
   //         thingDescriptions: thingDescr
   //     };
   //
-  //     itemsAPIService.postBulk(query)
+  //     itemsAPIService.postBulk("5971fdf892a44d06daf19a40")
   //       .then(
   //         function successCallback(response){
   //           $window.alert('done');

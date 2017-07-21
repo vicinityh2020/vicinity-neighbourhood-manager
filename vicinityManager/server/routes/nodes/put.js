@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
-var commServer = require('../../helpers/commServer/request');
+var myNode = require('../../helpers/nodes/processNode');
 
 // Function 1
 
@@ -24,65 +24,14 @@ var commServer = require('../../helpers/commServer/request');
           logger.debug("Error updating the node");
       }else{
         if(req.body.status === 'deleted'){
-          successDelete(data);
+          myNode.deleteNode(o_id, data.hasItems, res);
         }else{
-          successUpdate(data);
+          data.pass = req.body.pass;
+          myNode.updateNode(data, res);
         }
       }
     });
-
-  /*
-  On node saved successfully in MONGO,
-  the update process continues in the commServer
-  */
-  function successUpdate(data){
-    var payload = {
-      name: data.name,
-      password: req.body.pass,
-      properties: { property:
-                  [
-                    {'@key':'agent', '@value': data.agent},
-                    {'@key':'uri', '@value': data.eventUri}
-                        ]}
-    };
-    commServer.callCommServer(payload, 'users/' + data._id, 'PUT') // Update node in commServer
-    .then(callBackCommServer(data),callbackError);
   }
-
-  /*
-  On node status active in MONGO,
-  the update process continues in the commServer
-  */
-  function successDelete(data){ // Change node status to deleted in MONGO then...
-    commServer.callCommServer({}, 'users/' + data._id, 'DELETE') // Update node in commServer
-    .then(callBackCommServerDelete(data),callbackError)
-    .then(callBackCommServer(data),callbackError);
-  }
-
-// Callbacks
-
-  /*
-  On node status changed to deleted in MONGO,
-  the update process continues in the commServer
-  */
-  function callBackCommServerDelete(data){
-    return commServer.callCommServer({}, 'groups/' + data._id, 'DELETE');
-  }
-
-  /*
-  Sends response when process completed
-  */
-  function callBackCommServer(data){
-    var response = {"error": false, "message": data};
-    res.json(response);
-  }
-
-  function callbackError(err){
-    //TODO delete the node on error
-    logger.debug("Error updating the node: " + err);
-  }
-
-}
 
 // Function 2 - DELETE
 

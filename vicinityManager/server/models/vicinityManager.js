@@ -174,10 +174,7 @@ var node = {
   type: [String],
   agent: String,
   status: String,
-  hasItems: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'item'
-  }]
+  hasItems: [String]
 };
 
 // Indexes to perform text search ======
