@@ -1,14 +1,10 @@
-// var mongoose = require('mongoose');
-//
-// var itemOp = require('../../models/vicinityManager').item;
-//
-// function deleteOne(req, res, next){
-//   //TODO: User authentic - Role check
-//     var response = {};
-//     var o_id = mongoose.Types.ObjectId(req.params.id);
-//     itemOp.remove({ "_id" : o_id}, function(err) {
-//       res.json({"error" : err});
-//     });
-// }
-//
-// module.exports.deleteOne = deleteOne;
+var mongoose = require('mongoose');
+var myItems = require('../../helpers/items/deleteItems');
+var logger = require("../../middlewares/logger");
+
+function deleteOne(req, res, next){
+  var oid = req.params.id;
+  myItems.deleteItems([oid], res);
+}
+
+module.exports.deleteOne = deleteOne;

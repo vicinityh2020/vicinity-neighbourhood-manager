@@ -20,6 +20,7 @@ angular.module('VicinityManagerApp.controllers').
     .then(
       function successCallback(response){
         $scope.nodes = response.data.message.hasNodes;
+        countItems();
       },
       function errorCallback(response){}
     );
@@ -30,6 +31,7 @@ angular.module('VicinityManagerApp.controllers').
 // ======== Main functions =========
 
     $scope.deleteNode = function(id){
+      //TODO instead of pushing all adid except the one which needs to be removed, used the $pull method!!
       var newNodes = [];
       for(var i = 0; i < $scope.nodes.length; i++){
         if($scope.nodes[i]._id !== id){
@@ -76,6 +78,12 @@ angular.module('VicinityManagerApp.controllers').
 
     function errorCallback(err){
       Notification.error("Something went wrong: " + err);
+    }
+
+    function countItems(){
+      for(var i = 0; i < $scope.nodes.length; i++){
+        $scope.nodes[i].numItems = $scope.nodes[i].hasItems.length;
+      }
     }
 
 // ==== Navigation functions =====

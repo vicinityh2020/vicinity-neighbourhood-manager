@@ -45,6 +45,11 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
   //   return $http.delete(configuration.apiUrl +'/commServer/deleteAgent/' + data);
   // };
 
+  // TODO test purpuses, remove in final versions
+  itemsAPI.deleteItem = function(id) {
+    return $http.delete(configuration.apiUrl + '/items/' + id);
+  };
+
   itemsAPI.getMyDevices = function(id) {
     return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/devices');
   };

@@ -11,7 +11,7 @@ var cancelAccess = require('./items/cancelAccess.js');
 // var getAccess = require('./items/getAccess.js');
 // var addHasAccess = require('./items/addHasAccess.js');
 // var postHelper = require('./items/post.js');
-// var deleteHelper = require('./items/delete.js');
+var deleteHelper = require('./items/delete.js');
 
 router
   .get('/:id', getHelper.getItemWithAdd)
@@ -24,8 +24,8 @@ router
 // When userAccount requires devices
   .get('/:id/organisation/devices', getHelper.getMyDevices)
   // .get('/:id/organisation/neighbourhood', getHelper.getNeighbourhood)
-  .get('/:id/organisation/allDevices', getHelper.getAllDevices);
-  // .delete('/:id', deleteHelper.deleteOne)
+  .get('/:id/organisation/allDevices', getHelper.getAllDevices)
+  .delete('/:id', deleteHelper.deleteOne);
   // .post('/', postHelper.postOne)
   // .put('/:id/access/get', getAccess.getAccess)
   // .get('/', getHelper.getAll)

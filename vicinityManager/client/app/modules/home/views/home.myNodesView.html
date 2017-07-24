@@ -22,6 +22,7 @@
           <th>Name<i ng-click="orderByMe('name')" class="fa fa-fw fa-sort"/></th>
           <th>ADID<i ng-click="orderByMe('adid')" class="fa fa-fw fa-sort"/></th>
           <th>Types<i ng-click="orderByMe('types')" class="fa fa-fw fa-sort"/></th>
+          <th># Items<i ng-click="orderByMe('# Items')" class="fa fa-fw fa-sort"/></th>
         </tr>
       </thead>
       <tbody>
@@ -34,6 +35,9 @@
           </td>
           <td class="col-sm-3">
             <span>{{nod.type[0]}}</span>
+          </td>
+          <td class="col-sm-1">
+            <span>{{nod.numItems}}</span>
           </td>
           <!-- <td class="col-sm-2" >
             <div ng-repeat="typ in nod.type">

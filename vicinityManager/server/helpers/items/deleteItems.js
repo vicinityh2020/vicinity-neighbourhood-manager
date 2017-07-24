@@ -18,7 +18,7 @@ function deleteItems(oids, res){
     flag = deleting(oids, flag);
   }
   if(flag === 1){
-    res.json({"error": false, "message": "Something went wrong..."});
+    res.json({"error": true, "message": "Something went wrong..."});
   } else {
     res.json({"error": false, "message": "Success!"});
   }
@@ -39,24 +39,19 @@ function deleting(oids, flag){
     hasAdministrator: [],
     status: 'deleted'
   };
-  itemOp.findOneAndUpdate({oid:oids[0]}, {$set: obj }, {new: true},
+  itemOp.findOneAndUpdate({oid:oids[0]}, { $set: obj }, {new: true},
     function(err,data){
-      if(err){
+      if( err || !data ){
         logger.debug("Something went wrong: " + err);
         flag = 1;
       } else {
-        nodeOp.findById(data.aid, function(err,agent){
+        nodeOp.update({_id: data.aid}, {$pull: {hasItems: oids[0]}}, function(err,agent){
           if(err){
             logger.debug("Something went wrong: " + err);
             flag = 1;
           } else {
-            var ind = agent.hasItems.indexOf(oids[0]);
-            logger.debug(ind);
-            if(ind !== -1){
-              agent.hasItems.splice(ind,1);
-              agent.save();
-            }
-            commServer.callCommServer({}, 'users/' + oids[0], 'DELETE');
+            commServer.callCommServer({}, 'users/' + oids[0], 'DELETE')
+              .catch(errorCallback);
             oids.splice(0,1);
             if(oids.length > 0){
               deleting(oids, flag);
@@ -64,12 +59,15 @@ function deleting(oids, flag){
           }
         });
       }
-    }
-  );
-  return flag;
-}
+    });
+    return flag;
+  }
 
 // Private Functions
+
+function errorCallback(err){
+  logger.debug('Error deleting item in commServer: ' + err);
+}
 
 // Export modules
 

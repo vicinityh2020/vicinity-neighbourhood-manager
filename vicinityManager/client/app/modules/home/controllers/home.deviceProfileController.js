@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('deviceProfileController',
-function ($scope, $window, $stateParams, $location, itemsAPIService, Notification) {
+function ($scope, $window, $state, $stateParams, $location, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
   // console.log("location:" + $location.path());
@@ -125,7 +125,7 @@ function ($scope, $window, $stateParams, $location, itemsAPIService, Notificatio
   //           }
   //         ],
   //         credentials:{
-  //           name:"obj_UNIKL_2",
+  //           name:"obj_2",
   //           password:"1111"
   //         },
   //         "type": "PowerMeter"
@@ -174,7 +174,7 @@ function ($scope, $window, $stateParams, $location, itemsAPIService, Notificatio
   //           }
   //         ],
   //         credentials:{
-  //           name:"obj_UNIKL_3",
+  //           name:"obj_3",
   //           password:"1111"
   //         },
   //         "type": "PowerMeter"
@@ -218,7 +218,7 @@ function ($scope, $window, $stateParams, $location, itemsAPIService, Notificatio
   //           }
   //         ],
   //         credentials:{
-  //           name:"obj_UNIKL_1",
+  //           name:"obj_1",
   //           password:"1111"
   //         },
   //         "type": "Thermometer"
@@ -226,17 +226,27 @@ function ($scope, $window, $stateParams, $location, itemsAPIService, Notificatio
   //       ];
   //
   //     var query = {
-  //         aid: "5971f370b897ce061c19fb03", // test with unikl agent
+  //         aid: "59759ff581ee7f03580da306", // test with unikl agent
   //         thingDescriptions: thingDescr
   //     };
   //
-  //     itemsAPIService.postBulk("5971fdf892a44d06daf19a40")
+  //     itemsAPIService.postBulk("59759ff581ee7f03580da306")
   //       .then(
   //         function successCallback(response){
   //           $window.alert('done');
   //         }
   //       );
   // };
+
+  $scope.deleteItem = function(){
+    itemsAPIService.deleteItem($scope.device.oid)
+      .then(
+        function successCallback(response){
+          Notification.success('Device deleted');
+          $state.go("root.main.mydevices");
+        }
+      );
+  };
 
 // HIDE && SHOW DOM =========================
 

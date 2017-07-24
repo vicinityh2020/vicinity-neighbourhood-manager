@@ -38,7 +38,7 @@ function getAll(req, res, next) {
   var response = {};
   var cid = mongoose.Types.ObjectId(req.params.id);
 
-  userAccountOp.findById(cid).populate('hasNodes','name eventUri type').exec(function(err, data){
+  userAccountOp.findById(cid).populate('hasNodes','name eventUri type hasItems').exec(function(err, data){
     if (err) {
       response =  {"error": true, "message": "Error fetching data"};
     } else {
