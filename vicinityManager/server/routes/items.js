@@ -3,33 +3,27 @@ var router = express.Router();
 
 var putHelper = require('./items/put.js');
 var getHelper = require('./items/get.js');
-var deviceAccess = require('./items/processDeviceAccess.js');
-var cancelRequest = require('./items/cancelDeviceRequest.js');
-var acceptRequest = require('./items/acceptDeviceRequest.js');
-var rejectRequest = require('./items/rejectDeviceRequest.js');
-var cancelAccess = require('./items/cancelAccess.js');
-// var getAccess = require('./items/getAccess.js');
-// var addHasAccess = require('./items/addHasAccess.js');
-// var postHelper = require('./items/post.js');
+var itemAccess = require('./items/processItemAccess.js');
+var cancelRequest = require('./items/cancelItemRequest.js');
+var acceptRequest = require('./items/acceptItemRequest.js');
+var rejectRequest = require('./items/rejectItemRequest.js');
+var cancelAccess = require('./items/cancelItemAccess.js');
 var deleteHelper = require('./items/delete.js');
 
 router
+
+// When we receive item id to process some action over it
   .get('/:id', getHelper.getItemWithAdd)
   .put('/:id', putHelper.putOne)
-  .put('/:id/access', deviceAccess.processDeviceAccess)
-  .put('/:id/access/cancelRequest', cancelRequest.cancelDeviceRequest)
-  .put('/:id/access/accept', acceptRequest.acceptDeviceRequest)
-  .put('/:id/access/reject', rejectRequest.rejectDeviceRequest)
-  .put('/:id/access/cancel', cancelAccess.cancelAccess)
-// When userAccount requires devices
-  .get('/:id/organisation/devices', getHelper.getMyDevices)
-  // .get('/:id/organisation/neighbourhood', getHelper.getNeighbourhood)
-  .get('/:id/organisation/allDevices', getHelper.getAllDevices)
-  .delete('/:id', deleteHelper.deleteOne);
-  // .post('/', postHelper.postOne)
-  // .put('/:id/access/get', getAccess.getAccess)
-  // .get('/', getHelper.getAll)
-  // .get('/:id', getHelper.getOne)
-  // .put('/:id/hasAccess',addHasAccess.addFriendToHasAccess);
+  .put('/:id/access', itemAccess.processItemAccess)
+  .put('/:id/access/cancelRequest', cancelRequest.cancelItemRequest)
+  .put('/:id/access/accept', acceptRequest.acceptItemRequest)
+  .put('/:id/access/reject', rejectRequest.rejectItemRequest)
+  .put('/:id/access/cancel', cancelAccess.cancelItemAccess)
+  .delete('/:id', deleteHelper.deleteOne)
+
+// When userAccount requires devices/services
+  .get('/:cid/organisation/myItems', getHelper.getMyItems)
+  .get('/:cid/organisation/allItems', getHelper.getAllItems);
 
 module.exports = router;

@@ -53,21 +53,21 @@ angular.module('VicinityManagerApp.controllers').
 
          $scope.processMyAccess = function(dev_id) {
            $scope.tempId = dev_id;
-           itemsAPIService.processDeviceAccess(dev_id)
+           itemsAPIService.processItemAccess(dev_id)
            .then(processingAccess,errorCallback2)
            .then(getItem,errorCallback2);
           };
 
          $scope.cancelMyRequest = function(dev_id) {
            $scope.tempId = dev_id;
-           itemsAPIService.cancelDeviceRequest(dev_id)
+           itemsAPIService.cancelItemRequest(dev_id)
            .then(cancellingRequest,errorCallback2)
            .then(getItem,errorCallback2);
           };
 
          $scope.cancelMyAccess = function(dev_id) {
            $scope.tempId = dev_id;
-           itemsAPIService.cancelAccess(dev_id)
+           itemsAPIService.cancelItemAccess(dev_id)
            .then(cancellingAccess,errorCallback2)
            .then(getItem,errorCallback2);
          };

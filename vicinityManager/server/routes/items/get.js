@@ -8,16 +8,18 @@ var logger = require("../../middlewares/logger");
 var itemProperties = require("../../helpers/items/additionalItemProperties");
 
 /* Public functions
-This module supports modules which require a set items based on a CID
+This module supports item data retrieval. Several items with CID or just one with OID
 */
 
-function getMyDevices(req, res) {
+function getMyItems(req, res) {
 //TODO: User authentic - Role check
   var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-  var query = {};
-
-  query = {hasAdministrator: o_id};
+  var o_id = mongoose.Types.ObjectId(req.params.cid);
+  var type = req.query.type;
+  var query = {
+                typeOfItem: type,
+                hasAdministrator: o_id
+              };
 
   itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').sort({name:1}).exec(function(err, data){
     var dataWithAdditional = itemProperties.getAdditional(data,o_id,[]); // Not necessary to know friends because I am always owner
@@ -31,58 +33,19 @@ function getMyDevices(req, res) {
   });
 }
 
-//
-// function getNeighbourhood(req, res) {
-//   var response = {};
-//   var o_id = mongoose.Types.ObjectId(req.params.id);
-//   var query = {};
-//
-//   userAccountOp.find({_id: o_id}, function(err, data){
-//     if (err){
-//       logger.debug('error','UserAccount Items Error: ' + err.message);
-//       response =  {"error": true, "message": "Error fetching data"};
-//       res.json(response);
-//     } else {
-//       if (data && data.length === 1){
-//
-//         query = {
-//           hasAdministrator: { $in: data[0].knows },
-//           accessLevel: { $gt:2 }
-//         };
-//
-//       var friends = data[0].knows;
-//
-//       itemOp.find(query).populate('hasAdministrator','organisation').sort({name:1}).exec(function(err, data){
-//
-//         var dataWithAdditional = itemProperties.getAdditional(data,o_id, friends);
-//
-//         if (err) {
-//           logger.debug('error','Find Items Error: ' + err.message);
-//           response =  {"error": true, "message": "Error fetching data"};
-//         } else {
-//           response = {"error": false, "message": dataWithAdditional};
-//         }
-//
-//         res.json(response);
-//
-//         });
-//       }
-//     }
-//   });
-// }
 
-
-function getAllDevices(req, res) {
+function getAllItems(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-  var query = {};
+  var type = req.query.type;
 
   userAccountOp.find({_id: o_id}, function(err, data){
     if (err){
       logger.debug('error','UserAccount Items Error: ' + err.message);
     }
 
-    query = {
+    var query = {
+      typeOfItem: type,
       $or :[
       {$and: [ { hasAdministrator: {$in: data[0].knows}}, { accessLevel: {$in: [2, 3, 4]} } ] },
       { accessLevel: { $gt:4 } },
@@ -106,6 +69,8 @@ function getAllDevices(req, res) {
     });
   });
 }
+
+
 
 
 function getItemWithAdd(req, res, next) {
@@ -145,7 +110,6 @@ function getItemWithAdd(req, res, next) {
 
 // Function exports ================================
 
-module.exports.getAllDevices = getAllDevices;
-module.exports.getMyDevices = getMyDevices;
-// module.exports.getNeighbourhood = getNeighbourhood;
+module.exports.getAllItems = getAllItems;
+module.exports.getMyItems = getMyItems;
 module.exports.getItemWithAdd = getItemWithAdd;

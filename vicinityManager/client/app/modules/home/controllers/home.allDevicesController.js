@@ -35,7 +35,7 @@ angular.module('VicinityManagerApp.controllers')
        $scope.myId = $window.sessionStorage.companyAccountId;
        $scope.tempId = "";
 
-      itemsAPIService.getAllDevices($window.sessionStorage.companyAccountId)
+      itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, "device")
       .then(
         function successCallback(response){
         $scope.devs = response.data.message;
@@ -60,14 +60,14 @@ angular.module('VicinityManagerApp.controllers')
 
    $scope.processMyAccess = function(dev_id) {
      $scope.tempId = dev_id;
-     itemsAPIService.processDeviceAccess(dev_id)
+     itemsAPIService.processItemAccess(dev_id)
      .then(processingAccess,errorCallback)
      .then(getItem,errorCallback);
     };
 
    $scope.cancelMyRequest = function(dev_id) {
      $scope.tempId = dev_id;
-     itemsAPIService.cancelDeviceRequest(dev_id)
+     itemsAPIService.cancelItemRequest(dev_id)
      .then(cancellingRequest,errorCallback)
      .then(getItem,errorCallback);
     };
@@ -75,7 +75,7 @@ angular.module('VicinityManagerApp.controllers')
    $scope.cancelMyAccess = function(dev_id) {
      $scope.tempId = dev_id;
      $scope.note = "";
-     itemsAPIService.cancelAccess(dev_id)
+     itemsAPIService.cancelItemAccess(dev_id)
      .then(cancellingAccess,errorCallback)
      .then(getItem,errorCallback);
    };

@@ -17,13 +17,17 @@ Message producing the req is sent by the agent with thingDescriptions
 */
 function postRegistration(req, res, next){
   var objectsArray = req.body.thingDescriptions;
-  var aid = req.body.aid;
+  var aid = req.body.adid;
   var oidArray = [];
 
   nodeOp.findById(aid,{organisation:1, hasItems: 1},
     function(err,data){
         if(err || !data){
-          res.json({"error": true, "message" : "Something went wrong: " + err});
+          if(err){
+            res.json({"error": true, "message" : "Something went wrong: " + err});
+          }else{
+            res.json({"error": true, "message" : "Invalid adid identificator"});
+          }
         } else {
           var cid = data.organisation;
           oidArray = saveDocuments(aid, cid, objectsArray, oidArray);

@@ -184,7 +184,7 @@ $scope.isDev = keyword.test(payload.roles);
     $scope.acceptDataRequest = function (dev_id, notifId) {
       // $scope.interruptConnection= true;
      //  Notification.success("Access request sent!");
-      itemsAPIService.acceptDeviceRequest(dev_id)
+      itemsAPIService.acceptItemRequest(dev_id)
         .then(
           function successCallback(response) {
         if (response.error) {
@@ -201,7 +201,7 @@ $scope.isDev = keyword.test(payload.roles);
 
     $scope.rejectDataRequest = function (dev_id, notifId) {
        //  Notification.success("Access request sent!");
-        itemsAPIService.rejectDeviceRequest(dev_id)
+        itemsAPIService.rejectItemRequest(dev_id)
           .then(
             function successCallback(response) {
           if (response.error) {

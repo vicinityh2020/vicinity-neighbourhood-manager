@@ -4,7 +4,7 @@ var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 
-function processDeviceAccess(req, res, next) {
+function processItemAccess(req, res, next) {
     console.log("PUT /:id/access");
     console.log(":id " + req.params.id);
     dev_id = mongoose.Types.ObjectId(req.params.id);
@@ -48,4 +48,4 @@ function processDeviceAccess(req, res, next) {
     });
 }
 
-module.exports.processDeviceAccess = processDeviceAccess;
+module.exports.processItemAccess = processItemAccess;

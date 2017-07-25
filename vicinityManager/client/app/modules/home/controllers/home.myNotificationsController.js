@@ -190,7 +190,7 @@ $scope.acceptNeighbourRequest = function (notifId, friendId){
   $scope.acceptDataRequest = function (dev_id, notifId) {
     // $scope.interruptConnection= true;
    //  Notification.success("Access request sent!");
-    itemsAPIService.acceptDeviceRequest(dev_id)
+    itemsAPIService.acceptItemRequest(dev_id)
       .then(
         function successCallback(response) {
       if (response.error) {
@@ -207,7 +207,7 @@ $scope.acceptNeighbourRequest = function (notifId, friendId){
 
   $scope.rejectDataRequest = function (dev_id, notifId) {
      //  Notification.success("Access request sent!");
-      itemsAPIService.rejectDeviceRequest(dev_id)
+      itemsAPIService.rejectItemRequest(dev_id)
         .then(
           function successCallback(response) {
         if (response.error) {
@@ -243,38 +243,4 @@ $scope.acceptNeighbourRequest = function (notifId, friendId){
     $scope.notifResponded(notifId,'responded');
   }
 
-  // Custom filters ============
-  //
-  // $scope.searchFilter1 = function (result) {
-  //
-  //   return (result.type.toString() === 'deviceRequest' && result.status.toString() === 'waiting');
-  // };
-  //
-  // $scope.searchFilter2 = function (result) {
-  //
-  //   return (result.type.toString() === 'friendRequest' && result.status.toString() === 'waiting');
-  // };
-  //
-  // $scope.searchFilter3 = function (result) {
-  //
-  //   return (result.type.toString() === 'deviceRequest' && result.status.toString() === 'accepted');
-  // };
-  //
-  // $scope.searchFilter4 = function (result) {
-  //
-  //   return (result.type.toString() === 'friendRequest' && result.status.toString() === 'accepted');
-  // };
-  //
-  // $scope.searchFilter5 = function (result) {
-  //
-  //   return (result.type.toString() === 'deviceRequest' && result.status.toString() === 'rejected');
-  // };
-  //
-  // $scope.searchFilter6 = function (result) {
-  //
-  //   return (result.type.toString() === 'friendRequest' && result.status.toString() === 'rejected');
-  // };
-
-
-}
-);
+});

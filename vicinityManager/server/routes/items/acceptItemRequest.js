@@ -5,7 +5,7 @@ var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
 var notificationOp = require('../../models/vicinityManager').notification;
 
-function acceptDeviceRequest(req, res, next) {
+function acceptItemRequest(req, res, next) {
 
     console.log("Running accept data access request");
     dev_id = mongoose.Types.ObjectId(req.params.id);
@@ -61,4 +61,4 @@ function acceptDeviceRequest(req, res, next) {
     });
 }
 
-module.exports.acceptDeviceRequest = acceptDeviceRequest;
+module.exports.acceptItemRequest = acceptItemRequest;

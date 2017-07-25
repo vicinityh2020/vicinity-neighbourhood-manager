@@ -4,7 +4,7 @@ var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
 var notificationOp = require('../../models/vicinityManager').notification;
 
-function rejectDeviceRequest(req, res, next) {
+function rejectItemRequest(req, res, next) {
     var index;
     console.log("Running accept data access request");
     dev_id = mongoose.Types.ObjectId(req.params.id);
@@ -60,4 +60,4 @@ function rejectDeviceRequest(req, res, next) {
     });
 }
 
-module.exports.rejectDeviceRequest = rejectDeviceRequest;
+module.exports.rejectItemRequest = rejectItemRequest;

@@ -156,7 +156,7 @@ var item = new Schema({
   accessLevel: Number,
   avatar: String,
   info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
-  type: String,
+  typeOfItem: {type: String, enum: ['device','service']},
   status: String // Enabled or disabled
 });
 

@@ -1,0 +1,146 @@
+<section class="content-header">
+  <h1>Service profile</h1>
+</section>
+
+
+<section class="content">
+      <div class="row" >
+        <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+          <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+        </div>
+
+        <div class="col-md-3" ng-show="loaded">
+
+          <div class="box box-primary">
+            <div class="box-body box-profile">
+
+              <!-- Profile Image -->
+              <!--  IMAGE -->
+              <div ng-show="!isMyItem" style="width: 200px; text-align: center; margin: 0 auto">                 <!--      class="profile-user-img img-responsive img-circle" -->
+                <img ng-src="{{item.avatar}}" class="img-circle" alt="Service profile picture" style="height:120px; width:120px; text-align: center; border: 3px solid; border-color: #d2d6de">
+              </div>
+
+              <div ng-show="isMyItem" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
+                <span style="position: absolute">+ Change avatar</span>
+                <a href="" ng-click="showLoadPic()">
+                  <img id="pic" class="img-circle" ng-src="{{item.avatar}}" alt="Service profile picture" style="height:120px; width:120px;  text-align: center; border: 3px solid; border-color: #d2d6de">
+                </a>
+              </div>
+
+              <input ng-show="showInput" style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" type="file" />
+              <a ng-show="showInput" ng-click="cancelLoadPic()" style="margin-left: 35%" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+              <a ng-show="showInput" ng-click="uploadPic()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
+
+              <!-- Item Name -->
+              <h3 class="profile-username text-center" style="margin-top: 15px">{{item.name}}</h3>
+
+              <!-- Enable/Disable item -->
+              <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px">
+              <a ng-click="changeStatus()" class="btn btn-primary btn-block" ng-show="!devEnabled && isMyItem"><i class="fa fa-plus-square"></i><b> Enable service</b></a>
+              <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="devEnabled && isMyItem"><i class="fa fa-minus-square"></i><b> Disable service</b></a>
+              </div>
+
+
+              <!-- Item info -->
+              <ul class="list-group list-group-unbordered">
+
+                <!-- Access Level -->
+                <li class="list-group-item">
+
+                  <b>Access level</b>
+                     <a ng-show="isMyItem" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInput()">Edit</a>
+                     <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                     <a ng-click="backToEdit()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+
+                    <p id="accessName" class="text-muted" style="display: block">
+                      {{ALcaption}}
+                    </p>
+
+                    <select id="editAccessName" name="menu">
+                      <option value="0" selected>Change status to:</option>
+                      <option value="1">Private</option>
+                      <option value="2">Metadata Only</option>
+                      <option value="3">Data Under Request</option>
+                      <option value="4">Data Shared With Partners</option>
+                      <option value="5">Public Metadata Only</option>
+                      <option value="6">Public Data Under Request</option>
+                      <option value="7">Public Data Shared With Partners</option>
+                      <option value="8">Public</option>
+                    </select>
+
+                  </li>
+
+                  <!-- Ownership -->
+                  <li class="list-group-item">
+                    <p ng-show="!isMyItem" ui-sref="root.main.companyProfile.items({companyAccountId: owner_id})"> <b>Owner</b></p>
+                    <a ng-show="!isMyItem" ui-sref="root.main.companyProfile.items({companyAccountId: owner_id})"> <span  style="display: block">{{owner}}</span></a>
+                    <p ng-show="isMyItem" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> <b>Owner</b></p>
+                    <a ng-show="isMyItem" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"><span ng-show="isMyItem" style="display: block">Me</span></a>
+                  </li>
+
+                  <!-- Serial Number -->
+                  <!-- <li class="list-group-item">
+                    <b>Serial number</b>
+                    <a ng-show="isMyItem" ng-click="changeToInput1()" id="serialEdit" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                    <a ng-click="saveNewSerial()" id="serialSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                    <a ng-click="backToEdit1()" id="serialCancel" style="margin-left: 35%" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+
+
+
+                    <p id="serialName" class="text-muted" style="display: block">
+                      {{devInfo.serial_number}}
+                    </p>
+
+                    <input id="editSerialInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="devInfo.serial_number"> </input>
+
+                  </li> -->
+
+                  <!-- Location -->
+                  <!-- <li class="list-group-item">
+                    <b>Location</b>
+                    <a ng-show="isMyItem" id="locationEdit" ng-click="changeToInput2()" class="pull-right btn-sm btn-primary-bvr edit_profile">Edit</a>
+                    <a ng-click="saveNewLocation()" id="locationSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                    <a ng-click="backToEdit2()" style="margin-left: 35%" id="locationCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+
+                    <p id="locationName" class="text-muted" style="display: block">
+                      {{devInfo.location}}
+                    </p>
+
+                    <input id="editLocationInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="devInfo.location"></input>
+
+                  </li> -->
+
+                  <!-- Delete Temporary button to create service -->
+                  <!-- <li class="list-group-item">
+                    <b>Temp button</b>
+                    <a ng-click="makeItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Create Item</a>
+                  </li> -->
+
+                  <!-- Delete Temporary button to delete service -->
+                  <li class="list-group-item">
+                    <b>Temp button</b>
+                    <a ng-click="deleteItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Delete Item</a>
+                  </li>
+
+              </ul>
+
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <div class="col-md-9" ng-show="loaded">
+          <div class="nav-tabs-custom">
+          <!-- Nav tabs -->
+            <ul class="nav nav-tabs">
+              <li ui-sref-active="active"><a ui-sref="root.main.serviceProfile.whoSee"><i class="fa fa-eye"></i>&nbsp;Who see</a></li>
+              <li ui-sref-active="active"><a ui-sref="root.main.serviceProfile.history"><i class="fa fa-clock-o"></i>&nbsp;History</a></li>
+              <li ui-sref-active="active"><a ui-sref="root.main.serviceProfile.description"><i class="fa fa-cube"></i>&nbsp;Description</a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content" ui-view="tabPanel">
+            </div>
+          </div>
+        </div>
+      </div>
+</section>

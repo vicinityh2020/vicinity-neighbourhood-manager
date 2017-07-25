@@ -4,29 +4,25 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
 
   var itemsAPI = {};
 
-  itemsAPI.processDeviceAccess = function(id) {
+  itemsAPI.processItemAccess = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access');
   };
 
-  itemsAPI.cancelDeviceRequest = function(id) {
+  itemsAPI.cancelItemRequest = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancelRequest');
   };
 
-  itemsAPI.acceptDeviceRequest = function(id) {
+  itemsAPI.acceptItemRequest = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/accept');
   };
 
-  itemsAPI.rejectDeviceRequest = function(id) {
+  itemsAPI.rejectItemRequest = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/reject');
   };
 
-  itemsAPI.cancelAccess = function(id) {
+  itemsAPI.cancelItemAccess = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancel');
   };
-
-  // itemsAPI.getAccess = function(id) {
-  //   return $http.put(configuration.apiUrl +'/items/' + id + '/access/get');
-  // };
 
   itemsAPI.getItemWithAdd = function(id){
     return $http.get(configuration.apiUrl +'/items/' + id );
@@ -34,10 +30,6 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
 
   itemsAPI.putOne = function(id, data) {
     return $http.put(configuration.apiUrl +'/items/' + id, data);
-  };
-
-  itemsAPI.postOne = function(data) {
-    return $http.post(configuration.apiUrl +'/items/', data);
   };
 
   // TODO test purpuses, remove in final versions
@@ -50,21 +42,13 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.delete(configuration.apiUrl + '/items/' + id);
   };
 
-  itemsAPI.getMyDevices = function(id) {
-    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/devices');
+  itemsAPI.getMyItems = function(id, filter) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/myItems?type=' + filter);
   };
 
-  itemsAPI.getNeighbourhood = function(id) {
-    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/neighbourhood');
+  itemsAPI.getAllItems = function(id, filter) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allItems?type=' + filter);
   };
-
-  itemsAPI.getAllDevices = function(id) {
-    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allDevices');
-  };
-
-  // itemsAPI.addFriendToHasAccess = function(id){
-  //   return $http.put('http://localhost:3000/items/' + id '/hasAccess');
-  // };
 
   return itemsAPI;
 

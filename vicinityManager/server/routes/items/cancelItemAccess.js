@@ -3,7 +3,7 @@ var logger = require("../../middlewares/logger");
 var commServer = require('../../helpers/commServer/request');
 var itemOp = require('../../models/vicinityManager').item;
 
-function cancelAccess(req, res, next){
+function cancelItemAccess(req, res, next){
 
     dev_id = mongoose.Types.ObjectId(req.params.id);
     activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
@@ -38,4 +38,4 @@ function cancelAccess(req, res, next){
         res.json(response);
     });
 }
-module.exports.cancelAccess = cancelAccess;
+module.exports.cancelItemAccess = cancelItemAccess;

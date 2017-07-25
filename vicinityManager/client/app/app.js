@@ -143,7 +143,7 @@ angular.module('VicinityManagerApp', [
             'mainContentView@root':
               {
                 templateUrl: 'modules/home/views/home.myServices.html',
-                controller: 'myServices'
+                controller: 'myServicesController'
               }
           }
         })
@@ -153,7 +153,7 @@ angular.module('VicinityManagerApp', [
             'mainContentView@root':
               {
                 templateUrl: 'modules/home/views/home.allServices.html',
-                controller: 'allServices'
+                controller: 'allServicesController'
               }
           }
         })
@@ -199,95 +199,6 @@ angular.module('VicinityManagerApp', [
                   controller: 'searchController'
                 }
           }
-        })
-        .state('root.main.serviceProfile1', {
-          url: '/serviceProfileEnergy',
-          views: {
-            'mainContentView@root':
-            {
-              templateUrl: 'modules/home/views/home.serviceProfileView1.html'
-            }
-          }
-        })
-
-        .state('root.main.serviceProfile1.consumers', {
-            url: '/consumers',
-            views: {
-                'tabPanel@root.main.serviceProfile1':
-                    {
-                        templateUrl: 'modules/home/views/home.SPView.consumers.html'
-                    }
-            }
-        })
-
-        .state('root.main.serviceProfile1.configuration', {
-            url: '/configuration',
-            views: {
-                'tabPanel@root.main.serviceProfile1':
-                    {
-                        templateUrl: 'modules/home/views/home.SPView.configuration.html'
-                    }
-            }
-        })
-
-        .state('root.main.serviceProfile2', {
-          url: '/serviceProfileHealth',
-          views: {
-            'mainContentView@root':
-            {
-              templateUrl: 'modules/home/views/home.serviceProfileView2.html'
-            }
-          }
-        })
-
-        .state('root.main.serviceProfile2.consumers', {
-            url: '/consumers',
-            views: {
-                'tabPanel@root.main.serviceProfile2':
-                    {
-                        templateUrl: 'modules/home/views/home.SPView.consumers.html'
-                    }
-            }
-        })
-
-        .state('root.main.serviceProfile2.configuration', {
-            url: '/configuration',
-            views: {
-                'tabPanel@root.main.serviceProfile2':
-                    {
-                        templateUrl: 'modules/home/views/home.SPView.configuration.html'
-                    }
-            }
-        })
-
-        .state('root.main.serviceProfile3', {
-          url: '/serviceProfileCars',
-          views: {
-            'mainContentView@root':
-            {
-              templateUrl: 'modules/home/views/home.serviceProfileView3.html'
-            }
-          }
-        })
-
-        .state('root.main.serviceProfile3.consumers', {
-            url: '/consumers',
-            views: {
-                'tabPanel@root.main.serviceProfile3':
-                    {
-                        templateUrl: 'modules/home/views/home.SPView.consumers.html'
-                    }
-            }
-        })
-
-        .state('root.main.serviceProfile3.configuration', {
-            url: '/configuration',
-            views: {
-                'tabPanel@root.main.serviceProfile3':
-                    {
-                        templateUrl: 'modules/home/views/home.SPView.configuration.html'
-                    }
-            }
         })
 
         .state('root.main.companyProfile', {
@@ -355,6 +266,52 @@ angular.module('VicinityManagerApp', [
             }
         })
 
+        // TODO add services
+
+        .state('root.main.serviceProfile', {
+          url: '/profile/service/:serviceId',
+          views: {
+            'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.serviceProfileView.html',
+              controller:  'serviceProfileController'
+            }
+          }
+        })
+
+        .state('root.main.serviceProfile.history', {
+          url: '/history',
+          views: {
+            'tabPanel@root.main.serviceProfile':
+            {
+              templateUrl: 'modules/home/views/home.serviceProfile.historyView.html',
+              controller:  'sPhistoryController'
+            }
+          }
+        })
+
+        .state('root.main.serviceProfile.whoSee', {
+          url: '/whoSee',
+          views: {
+            'tabPanel@root.main.serviceProfile':
+            {
+              templateUrl: 'modules/home/views/home.serviceProfile.whoSeeView.html',
+              controller:  'sPwhoSeeController'
+            }
+          }
+        })
+
+        .state('root.main.serviceProfile.description', {
+          url: '/description',
+          views: {
+            'tabPanel@root.main.serviceProfile':
+            {
+              templateUrl: 'modules/home/views/home.serviceProfile.description.html',
+              controller:  'sPdescriptionController'
+            }
+          }
+        })
+
         .state('root.main.deviceProfile', {
           url: '/profile/device/:deviceId',
           views: {
@@ -398,38 +355,6 @@ angular.module('VicinityManagerApp', [
             }
           }
         })
-
-
-        // .state('root.main.deviceProfile.devices', {
-        //     url: '/devices',
-        //     views: {
-        //         'tabPanel@root.main.deviceProfile':
-        //             {
-        //                 templateUrl: 'modules/home/views/home.deviceProfile.devicesView.html',
-        //                 controller: 'cPdevicesController'
-        //             }
-        //     }
-        // })
-        // .state('root.main.deviceProfile.friends', {
-        //     url: '/friends',
-        //     views: {
-        //         'tabPanel@root.main.deviceProfile':
-        //             {
-        //                 templateUrl: 'modules/home/views/home.deviceProfile.friendsView.html',
-        //                 controller: 'cPfriendsController'
-        //             }
-        //     }
-        // })
-        // .state('root.main.deviceProfile.history', {
-        //     url: '/history',
-        //     views: {
-        //         'tabPanel@root.main.deviceProfile':
-        //             {
-        //                 templateUrl: 'modules/home/views/home.deviceProfile.historyView.html',
-        //                 controller: 'cPhistoryController'
-        //             }
-        //     }
-        // })
 
         .state('root.main.userProfile', {
           url: '/profile/user/:companyAccountId/:userAccountId',
