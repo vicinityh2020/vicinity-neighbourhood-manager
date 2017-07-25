@@ -41,26 +41,28 @@
                    <div id="collapseThree" class="panel-collapse collapse in">
 
 
+                     <!-- Start -->
                        <div class="row">
 
-                         <div ng-show="noItems" >
-                            <h2 style="margin-left:20px;" >No services to show.</h2>
-                         </div>
+                         <!-- onlyPrivateDevices -->
+                         <div ng-show="onlyPrivateItems" >
+                            <span style="margin-left:20px;" class="info-box-description">There is no shared service with you.</span>
+                        </div>
 
-                       <div ng-repeat="item in items | customMyServs:filterTerm" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                         <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="item in items | customAllServs:searchTerm">
+                           <!-- Widget: user widget style 1 -->
+                           <div class="box box-widget widget-user-2">
+                             <!-- Add the bg color to the header using any of the bg-* classes -->
+                             <div style="z-index: -2" class="widget-user-header3 bg-service">
 
-                         <div class="box box-widget widget-user-2">
+                               <div class="round">
+                                 <img style="cursor: pointer" onmouseover="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})" ng-src="{{item.avatar}}" alt="Company Avatar">
+                               </div>
 
-                           <div style="z-index: -2" class="widget-user-header3 bg-service">
-
-                             <div class="round">
-                               <img style="cursor: pointer" onmouseover="" ui-sref="root.main.serviceProfile.whoSee({serviceId: item._id})" ng-src="{{item.avatar}}" alt="item Avatar">
-                            </div>
-
-                           <div class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-                             <span class=" tooltiptext2" > Data Access </span>
-                           </div>
-                           <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: item._id})">{{item.name}}</a></h3>
+                               <div class="tooltip2" id="circle_green" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+                                 <span class=" tooltiptext2" > Data Access</span>
+                               </div>
+                               <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})">{{item.name}}</a></h3>
                            <h5 class="widget-user-desc2">{{item.accessLevelCaption}}</h5>
                            <h5 class="widget-user-desc2">{{item.info.location}}</h5>
 

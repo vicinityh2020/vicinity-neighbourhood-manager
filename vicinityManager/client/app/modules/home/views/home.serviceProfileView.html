@@ -27,9 +27,9 @@
                 </a>
               </div>
 
-              <input ng-show="showInput" style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" type="file" />
-              <a ng-show="showInput" ng-click="cancelLoadPic()" style="margin-left: 35%" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-              <a ng-show="showInput" ng-click="uploadPic()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
+              <input id="input1" ng-show="showInput" style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" type="file" />
+              <a id="editCancel1" ng-show="showInput" ng-click="cancelLoadPic()" style="margin-left: 35%" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+              <a id="editUpload2" ng-show="showInput" ng-click="uploadPic()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
 
               <!-- Item Name -->
               <h3 class="profile-username text-center" style="margin-top: 15px">{{item.name}}</h3>

@@ -42,9 +42,9 @@ angular.module('VicinityManagerApp.controllers')
            $scope.items = response.data.message;
 
            if ($scope.items.length === 0){
-             $scope.noitems = true;
+             $scope.noItems = true;
            }else{
-             $scope.noitems = false;
+             $scope.noItems = false;
            }
 
            $scope.loaded = true;

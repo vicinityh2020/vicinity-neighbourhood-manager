@@ -389,10 +389,15 @@ $("input#input1").on('change',function(evt) {
 
 $scope.showLoadPic = function(){
   $scope.showInput = true;
+  $('#editCancel1').fadeIn('slow');
+  $('#editUpload2').fadeIn('slow');
+  $('#input1').fadeIn('slow');
 };
 
 $scope.cancelLoadPic = function(){
-  $scope.showInput = false;
+  $('#editCancel1').fadeOut('slow');
+  $('#editUpload2').fadeOut('slow');
+  $('#input1').fadeOut('slow');
   $('img#pic').fadeOut('slow');
   setTimeout(function() {
     $("img#pic").prop("src",$scope.item.avatar);
@@ -401,16 +406,24 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne($stateParams.serviceId, {avatar: base64String}).success(function (){
-    itemsAPIService.getItemWithAdd($stateParams.serviceId).success(function (response) {
-      $scope.item = response.data.message;
-      $('img#pic').fadeOut('slow');
-      setTimeout(function() {
-        $("img#pic").prop("src",$scope.item.avatar);
-        $('img#pic').fadeIn('slow');
-     }, 600);
-    });
-  });
-};
-
+  itemsAPIService.putOne($stateParams.deviceId, {avatar: base64String})
+    .then(
+      function successCallback(response){
+        itemsAPIService.getItemWithAdd($stateParams.deviceId)
+          .then(
+            function successCallback(response) {
+              $scope.device = response.data.message;
+              $('#editCancel1').fadeOut('slow');
+              $('#editUpload2').fadeOut('slow');
+              $('#input1').fadeOut('slow');
+              $('img#pic').fadeOut('slow');
+              setTimeout(function() {
+                $("img#pic").prop("src",$scope.device.avatar);
+                $('img#pic').fadeIn('slow');
+             }, 600);
+           }
+         );
+      }
+    );
+  };
 });

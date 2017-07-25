@@ -15,30 +15,30 @@ Filters the items based on the following rules:
     var keyword = new RegExp(cid);
 
     angular.forEach(input,
-      function(device) {
-      var keyLevel = new RegExp(device.accessLevel);
-       if (keyword.test(device.hasAdministrator[0]._id) || keyLevel.test("5678") || (keyLevel.test("234") && isFriend) ) {
-          out.push(device);
+      function(service) {
+      var keyLevel = new RegExp(service.accessLevel);
+       if (keyword.test(service.hasAdministrator[0]._id) || keyLevel.test("5678") || (keyLevel.test("234") && isFriend) ) {
+          out.push(service);
        }
       }
     );
     return out;
   };
 })
-.controller('cPdevicesController', ['$scope', '$window', '$stateParams', '$location', 'userAccountAPIService', 'itemsAPIService', 'AuthenticationService', 'Notification', 'customFilter',
+.controller('cPservicesController', ['$scope', '$window', '$stateParams', '$location', 'userAccountAPIService', 'itemsAPIService', 'AuthenticationService', 'Notification', 'customFilter',
 function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
   $scope.cid = $window.sessionStorage.companyAccountId.toString();
-  $scope.devices = [];
+  $scope.services = [];
   $scope.friends = [];
   $scope.isFriend = false;
   $scope.loaded = false;
 
-  itemsAPIService.getMyItems($stateParams.companyAccountId,'device')
+  itemsAPIService.getMyItems($stateParams.companyAccountId,'service')
     .then(successCallback1, errorCallback)
     .then(successCallback2, errorCallback);
 
   function successCallback1(response) {
-    $scope.devices = response.data.message;
+    $scope.services = response.data.message;
     return userAccountAPIService.getFriends($stateParams.companyAccountId);
   }
 

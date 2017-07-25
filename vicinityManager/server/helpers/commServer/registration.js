@@ -57,6 +57,7 @@ function saveDocuments(aid, cid, objectsArray, oidArray){
   obj.hasAdministrator = cid; // CID, obtained from mongo
   obj.accessLevel = 1; // private by default
   obj.avatar = config.avatarItem; // Default avatar provided by VCNT
+  obj.typeOfItem = 'device';
   obj.info = objectsArray[0]; // Thing description obj, might have different structures each time
   obj.status = 'enabled'; // TODO Change in future stages of the project
 

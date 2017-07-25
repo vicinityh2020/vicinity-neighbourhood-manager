@@ -21,11 +21,9 @@ function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIServ
   $scope.badges = {};
   $scope.notes = {};
   $scope.friends = [];
-  $scope.following = [];
-  $scope.followers = [];
-  $scope.gateways = [];
   $scope.users = [];
   $scope.devices = [];
+  $scope.services = [];
   $scope.loaded = false;
   $scope.showInput = false;
 
@@ -90,13 +88,21 @@ userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
   function errorCallback(response){}
 );
 
-itemsAPIService.getMyDevices($stateParams.companyAccountId)
+itemsAPIService.getMyItems($stateParams.companyAccountId, 'device')
   .then(
     function successCallback(response){
-      $scope.devices=response.data.message;
+      $scope.devices = response.data.message;
     },
     function errorCallback(response){}
   );
+
+  itemsAPIService.getMyItems($stateParams.companyAccountId, 'service')
+    .then(
+      function successCallback(response){
+        $scope.services = response.data.message;
+      },
+      function errorCallback(response){}
+    );
 };
 
 $scope.myInit();
@@ -195,7 +201,6 @@ $scope.uploadPic = function(){
                     Notification.success("Partnership request accepted!");
                 }
                 $scope.onlyRefreshAccount();
-                // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);
             },
             function errorCallback(response){}
           );

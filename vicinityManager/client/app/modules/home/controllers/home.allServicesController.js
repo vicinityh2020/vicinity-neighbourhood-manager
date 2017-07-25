@@ -35,17 +35,13 @@ angular.module('VicinityManagerApp.controllers')
       .then(
         function successCallback(response){
         $scope.items = response.data.message;
-        var i=0;
-        for (var it in $scope.items){
-          if ($scope.items[it].accessLevel > 1){
-            i++;
-          }
-        }
-        if (i === 0){
+
+        if ($scope.items.length === 0){
           $scope.onlyPrivateItems = true;
         }else{
           $scope.onlyPrivateItems = false;
         }
+
         $scope.loaded = true;
       },
       function errorCallback(response){
