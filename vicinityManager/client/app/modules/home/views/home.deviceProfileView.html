@@ -73,9 +73,9 @@
                   <!-- Ownership -->
                   <li class="list-group-item">
                     <p ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <b>Owner</b></p>
-                    <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <span  style="display: block">{{owner}}</span></a>
+                    <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> {{owner}} </a>
                     <p ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> <b>Owner</b></p>
-                    <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"><span ng-show="isMyDevice" style="display: block">Me</span></a>
+                    <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> Me </a>
                   </li>
 
                   <!-- Serial Number -->

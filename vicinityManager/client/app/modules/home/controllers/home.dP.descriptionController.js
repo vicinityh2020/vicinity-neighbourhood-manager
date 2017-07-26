@@ -1,7 +1,9 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPdescriptionController',
-function ($scope, $window, $stateParams, itemsAPIService, Notification) {
+function ($scope, $window, $stateParams, itemsAPIService) {
+
+// Variables and initData
 
   $scope.loaded = false;
   $scope.isMyDevice = false;
@@ -24,6 +26,11 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
       );
     }
 
+// Functions and helpers
+
+  /*
+  Refreshes/loads data into $scope
+  */
     function updateScopeAttributes(response){
         $scope.device = response.data.message[0];
         $scope.devInfo = $scope.device.info;
@@ -32,6 +39,12 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
         loopObj($scope.devInfo);
     }
 
+    /*
+    Builds HTML based on item thing description
+    Builds the first level
+    Nested objects are considered as inner levels
+    Stores in the var txt an HTML string
+    */
     function loopObj(arr){
       var cont = 0;
       var ind = 10;
@@ -55,9 +68,12 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
         }
       }
       txt += '</div>';
-      $(".rootElem").append(txt);
+      $(".rootElem").append(txt);  // Appends HTML string in the VIEW
     }
 
+    /*
+    Handles iteratively inner levels
+    */
     function innerObj(arr,txt,ind,cont){
       var ans = {};
       ind += 10;
@@ -68,7 +84,7 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
           txt += '<p class="panel-body" style="margin: ' + ind + 'px"><b>' + i + ':   </b>' + arr[i] + '</p>';
         }
         else{
-          txt += '<div class="panel panel-info" style="margin: ' + ind + 'px"><p class="panel-heading" style="margin: 10px"><b>' + i + '</b>';
+          txt += '<div class="panel panel-info" style="margin: ' + ind + 'px"><p class="panel-heading" style="margin: 10px"><b>' + findElement(arr, i, ind) + '</b>';
           txt += '<a data-toggle="collapse" data-target="#lvl' + cont + '"><i style="color: white" class="fa fa-plus-square pull-right"></i></a></p>';
           txt += '<div id="lvl' + cont + '" class="collapse">';
           ans = innerObj(arr[i],txt,ind,cont);
@@ -80,6 +96,26 @@ function ($scope, $window, $stateParams, itemsAPIService, Notification) {
       }
       if(ind>0){ind -= 10;}
       return {key1: txt, key2: cont};
+    }
+
+    /*
+    Renames lvl headers when coming from array
+    Depending on the level gives a different name
+    If it is a property/action gives the pid or aid as a name (If there is no pid/aid gives a number)
+    For lower levels gives the key of the array as the name
+    */
+    function findElement(obj, pos, lvl){
+      if(lvl === 20){
+        if(obj[pos].pid){
+          return obj[pos].pid;
+        } else if(obj[pos].aid) {
+          return obj[pos].aid;
+        } else {
+          return 'Attribute ' + Number( pos + 1 );
+        }
+      } else {
+        return pos;
+      }
     }
 
 });
