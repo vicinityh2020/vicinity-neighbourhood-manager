@@ -11,8 +11,7 @@
           <div class="round">
             <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device._id})" ng-src="{{device.avatar}}" alt="Company Avatar">
           </div>
-          <span ng-show="device.seeData" class="pull-right" id="circle_green" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
-          <span ng-show="!device.seeData" class="pull-right" id="circle_red" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+          <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
           <h3 class="widget-user-username2"><a style="color: #FFF" href="" ui-sref="root.main.deviceProfile({deviceId: device._id})">{{device.name}}</a></h3>
           <h5 class="widget-user-desc2">{{device.info.location}}</h5>
           <h5 class="widget-user-desc2">{{device.accessLevelCaption}}</h5>
