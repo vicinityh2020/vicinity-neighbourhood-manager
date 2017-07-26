@@ -49,7 +49,7 @@ function getAllItems(req, res) {
       $or :[
       {$and: [ { hasAdministrator: {$in: data[0].knows}}, { accessLevel: {$in: [2, 3, 4]} } ] },
       { accessLevel: { $gt:4 } },
-      {$and: [ { hasAdministrator: o_id}, {accessLevel: 1} ] }
+      { hasAdministrator: o_id }
       ]
     };
 

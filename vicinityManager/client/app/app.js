@@ -33,10 +33,6 @@ angular.module('VicinityManagerApp', [
           url: '',
           abstract:true,
           views: {
-            'messagesMenuView':
-              {
-                templateUrl: 'modules/home/views/home.messagesMenuView.html'
-              },
             'notificationsMenuView':
               {
                 templateUrl: 'modules/home/views/home.notificationsMenuView.html',
@@ -47,46 +43,36 @@ angular.module('VicinityManagerApp', [
                   templateUrl: 'modules/home/views/home.searchUpView.html',
                   controller: 'searchUpController'
                 },
-            'settingsMenuView':
-              {
-                templateUrl: 'modules/home/views/home.settingsMenuView.html',
-                controller: 'settingsController'
-              },
-            'userAccountView':
-              {
-                templateUrl: 'modules/home/views/home.userAccountView.html',
-                controller: 'userAccountController'
-              },
-            'companyAccountView':
-              {
-                templateUrl: 'modules/home/views/home.companyAccountView.html',
-                controller: 'companyAccountController'
-              }
-          }
-        })
-        .state('root.main.home', {
-          url: '/home',
-          views: {
-            'mainContentView@root':
-              {
-                templateUrl: 'modules/home/views/home.allDevicesView.html',
-                controller: 'allDevicesController'
-              }
-          }
-        })
+              'settingsMenuView':
+                {
+                  templateUrl: 'modules/home/views/home.settingsMenuView.html',
+                  controller: 'settingsController'
+                },
+              'userAccountView':
+                {
+                  templateUrl: 'modules/home/views/home.userAccountView.html',
+                  controller: 'userAccountController'
+                },
+              'companyAccountView':
+                {
+                  templateUrl: 'modules/home/views/home.companyAccountView.html',
+                  controller: 'companyAccountController'
+                }
+            }
+          })
+          .state('root.main.home', {
+            url: '/home',
+            views: {
+              'mainContentView@root':
+                {
+                  templateUrl: 'modules/home/views/home.allDevicesView.html',
+                  controller: 'allDevicesController'
+                }
+            }
+          })
 
 // ======== Side menu list views
 
-        // .state('root.main.neighbourhood', {
-        //   url: '/neighbourhood/:searchTerm',
-        //   views: {
-        //     'mainContentView@root':
-        //       {
-        //         templateUrl: 'modules/home/views/home.neighbourhoodView.html',
-        //         controller: 'neighbourhoodController'
-        //       }
-        //   }
-        // })
         .state('root.main.allDevices', {
           url: '/allDevices/:searchTerm',
           views: {
@@ -97,16 +83,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
-        // .state('root.main.neighbourhoodSearch', {
-        //   url: '/neighbourhoodSearch',
-        //   views: {
-        //     'mainContentView@root':
-        //       {
-        //         templateUrl: 'modules/home/views/home.neighbourhoodSearchView.html',
-        //         controller: 'neighbourhoodSearchController'
-        //       }
-        //   }
-        // })
+
         .state('root.main.mydevices', {
           url: '/mydevices',
           views: {
@@ -117,6 +94,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
         .state('root.main.partneredEntities', {
           url: '/partneredEntities',
           views: {
@@ -127,6 +105,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
         .state('root.main.allEntities', {
           url: '/allEntities',
           views: {
@@ -137,6 +116,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
         .state('root.main.myServices', {
           url: '/myServices',
           views: {
@@ -147,6 +127,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
         .state('root.main.allServices', {
           url: '/allServices',
           views: {
@@ -157,6 +138,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
         .state('root.main.allRegistrations', {
           url: '/allRegistrations',
           views: {
@@ -167,6 +149,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
         .state('root.main.myNodes', {
           url: '/myNodes',
           views: {
@@ -177,6 +160,7 @@ angular.module('VicinityManagerApp', [
               }
           }
         })
+
         .state('root.main.myNotifications', {
           url: '/myNotifications',
           views: {
@@ -422,17 +406,6 @@ angular.module('VicinityManagerApp', [
           }
         })
 
-        // .state('invitation.newUser', {
-        //   url: '/invitation/newUser/:invitationId',
-        //   views: {
-        //     'invitationNewUser':
-        //       {
-        //         templateUrl: 'modules/registration/views/invitation.newUser.html',
-        //         controller: 'invitationNewUserController'
-        //       }
-        //   }
-        // })
-
         .state('invitationOfNewCompany', {
           url: '/invitation/newCompany/:invitationId',
           templateUrl: 'modules/registration/views/invitation.newCompany.html',
@@ -481,11 +454,13 @@ angular.module('VicinityManagerApp', [
 })
 
 // Request pre-processing -- Sends JWT in every request
+
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.interceptors.push('jwtTokenHttpInterceptor');
 }])
 
 //Angular UI Notification configuration;
+
 .config(function (NotificationProvider) {
     NotificationProvider.setOptions({
         delay: 10000,
@@ -502,6 +477,7 @@ angular.module('VicinityManagerApp', [
       function($rootScope, $location, $cookies, $http, $window){
 
           FastClick.attach(document.body);
+
 //        $rootScope.globals = $cookies.get('globals') || {};
 //        if ($rootScope.globals.currentUser) {
 //          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
@@ -557,7 +533,7 @@ angular.module('VicinityManagerApp', [
               $location.path('/authentication/recoverPassword/' + strId);
             }else{
               $location.path('/login');
-            };
+            }
           }
         });
       }]);
