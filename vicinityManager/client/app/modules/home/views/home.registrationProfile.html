@@ -29,10 +29,10 @@
                     <p id="namePnew" class="text-muted" style="display: block">
                       {{status}}
                     </p>
-                    <button ng-click="f()" ng-if="status === 'verified' ">verified action</button>
+                    <!-- <button ng-click="f()" ng-if="status === 'verified' ">verified action</button> -->
                     <button ng-click="verifyAction()" ng-if="status === 'open' ">Verify user</button>
                     <button ng-click="declineAction()" ng-if="status === 'open' ">Decline user</button>
-                    <button ng-click="f()" ng-if="status === 'declined' ">declined action</button>
+                    <!-- <button ng-click="f()" ng-if="status === 'declined' ">declined action</button> -->
                     <p ng-if="status === 'pending' ">Waiting an answer</p>
                 </li>
 
