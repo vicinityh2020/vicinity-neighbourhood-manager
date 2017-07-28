@@ -22,12 +22,12 @@ function postOne(req, res, next) {
       response = {"error": false, "message": "Data added!"};
 
       if(product.type === 'newUser'){
-        var thisLink = "http://localhost:8000/app/#/invitation/newUser/" ;
+        var thisLink = "http://vicinity.bavenir.eu/#/invitation/newUser/" ;
         var thisTmp = "inviteUser";
         var thisName = product.sentBy.name;
         var thisOrg = false;
       }else{
-        var thisLink = "http://localhost:8000/app/#/invitation/newCompany/";
+        var thisLink = "http://vicinity.bavenir.eu/#/invitation/newCompany/";
         var thisTmp = "inviteCompany";
         var thisName = product.sentBy.name;
         var thisOrg = product.sentBy.organisation;

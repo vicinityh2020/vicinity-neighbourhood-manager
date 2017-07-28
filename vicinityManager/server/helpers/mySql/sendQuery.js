@@ -8,7 +8,10 @@ var logger = require('../../middlewares/logger');
 
 function sendQuery(org){
 
-  var connection = mysql.createConnection(
+ orgForeign = org.toString() + '_foreignDevices';
+ orgOwn = org.toString() + '_ownDevices';
+ 
+ var connection = mysql.createConnection(
       {
         host     : '138.201.156.73',
         user     : 'openfireRemote',
@@ -17,22 +20,23 @@ function sendQuery(org){
       }
   );
 
-  var qryString = "UPDATE ofGroupProp SET propValue=? WHERE groupName LIKE ? AND name LIKE sharedRoster.groupList";
-
+  var qryString = "UPDATE ofGroupProp SET propValue=? WHERE groupName LIKE ? AND name LIKE 'sharedRoster.groupList'";
+	
   connection.connect(ifError);
 
   /* Begin transaction */
   connection.beginTransaction(function(err) {
     if (err) { throw err; }
-    connection.query( qryString , [ org + '_foreignDevices', org + '_ownDevices' ] , function(err, result) {
+    connection.query( qryString , [ orgForeign, orgOwn ] , function(err, result) {
       if (err) {
         connection.rollback(function() {
           throw err;
         });
       }
 
-      connection.query(qryString , [ org + '_ownDevices', org + '_foreignDevices' ], function(err, result) {
-        if (err) {
+      connection.query(qryString , [ orgOwn, orgForeign ], function(err, result) {
+        logger.debug("UPDATE ofGroupProp SET propValue=" + orgOwn + " WHERE groupName LIKE " + orgForeign + " AND name LIKE 'sharedRoster.groupList'");
+	if (err) {
           connection.rollback(function() {
             throw err;
           });
@@ -51,7 +55,6 @@ function sendQuery(org){
   });
   /* End transaction */
 
-  connection.end();
 }
 
 // Private functions

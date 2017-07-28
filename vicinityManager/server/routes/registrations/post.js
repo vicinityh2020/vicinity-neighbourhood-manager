@@ -72,11 +72,11 @@ if(!req.body.status || req.body.status !== 'pending'){
         var thisTmp;
         var thisName;
         if(product.type === 'newUser'){
-          thisLink = "http://localhost:8000/app/#/registration/newUser/" ;
+          thisLink = "http://vicinity.bavenir.eu/#/registration/newUser/" ;
           thisTmp = "activateUser";
           thisName = product.userName;
         }else{
-          thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+          thisLink = "http://vicinity.bavenir.eu/#/registration/newCompany/";
           thisTmp = "activateCompany";
           thisName = product.companyName;
         }

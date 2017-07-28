@@ -22,9 +22,9 @@ function sendMail(mailInfo){
 
   var transporter = nodemailer.createTransport(smtpConfig);
 
-    fs.exists( "./helpers/mail/" + mailInfo.tmpName + ".html", function(isFile){
+    fs.exists( __dirname + "/" + mailInfo.tmpName + ".html", function(isFile){
       if(isFile){
-        fs.readFile( "./helpers/mail/" + mailInfo.tmpName + ".html", function(error, data) {
+        fs.readFile( __dirname + "/" + mailInfo.tmpName + ".html", function(error, data) {
 
           var mailContent = String(data);
           if(mailInfo.name){mailContent = mailContent.replace("#name", mailInfo.name);}
@@ -42,15 +42,15 @@ function sendMail(mailInfo){
           transporter.sendMail(mailOptions, function(error, info){
             if(error){
               logger.debug(error);
-            }
+            } else {
             logger.debug('Message sent: ' + info.response);
-          });
-
-        });
-
-      }
-      else logger.debug("file not found");
-    });
+            }  
+	  }	
+	);
+      });
+    }
+    else logger.debug("file not found");
+  });
 }
 
 module.exports.sendMail = sendMail;

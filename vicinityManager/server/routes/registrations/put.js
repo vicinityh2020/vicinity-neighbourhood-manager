@@ -63,11 +63,9 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
             userData.organisation = orgData._id; // Adding the company id to the new user
             userData.save();
 
-            mySql.sendQuery(orgData._id); // Updates sharedRoster groups in mySql db of the commServer
-
             createOrganisationGroups(orgData); // Creates necessary groups in comm server
-
-            logger.debug('New userAccount was successfuly saved!');
+            
+	    logger.debug('New userAccount was successfuly saved!');
             response = {"error": false, "message": "New userAccount was successfuly saved!"};
             res.json(response);
           }
@@ -147,24 +145,30 @@ function createOrganisationGroups(data){
     description: data.organisation
   };
   commServer.callCommServer(payload, 'groups', 'POST')
-    .then(callbackNext(data, payload, names[1]),errorCallback1)
-    .then(callbackNext(data, payload, names[2]),errorCallback1);
+    .then(
+      function(response){
+        payload.name = data._id + names[1];
+        commServer.callCommServer(payload, 'groups', 'POST')
+          .then(
+              function(response){
+                payload.name = data._id + names[2];
+                commServer.callCommServer(payload, 'groups', 'POST')
+                  .then(
+                    function(response){
+                      mySql.sendQuery(data._id); // Updates sharedRoster groups in mySql db of the commServer
+                    },
+                    errorCallback1
+                  );
+              },
+              errorCallback1
+          );
+      },
+      errorCallback1
+    );  
 }
 
-/*
-Creates new organisation groups in the comm server
-*/
-function callbackNext(data, payload, n){
-  payload.name = data._id + n;
-  return commServer.callCommServer(payload, 'groups', 'POST');
-}
-
-/*
-Error handling
-*/
 function errorCallback1(err){
-  //TODO delete org on error
-  logger.debug('error: ' + err);
+   logger.debug(err);
 }
 
 /*
@@ -177,7 +181,7 @@ function send_mail(id, emailTo, companyName, status){
   var thisSubject;
 
   if(status === 'pending'){
-    thisLink = "http://localhost:8000/app/#/registration/newCompany/";
+    thisLink = "http://vicinity.bavenir.eu/#/registration/newCompany/";
     thisTmp = "activateCompany";
     thisSubject = 'Verification email to join VICINITY';
   }else{
