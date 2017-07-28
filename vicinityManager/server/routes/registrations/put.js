@@ -10,6 +10,7 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
+var mySql = require('../../helpers/mySql/sendQuery');
 
 // Functions
 
@@ -61,6 +62,8 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
           } else {
             userData.organisation = orgData._id; // Adding the company id to the new user
             userData.save();
+
+            mySql.sendQuery(orgData._id); // Updates sharedRoster groups in mySql db of the commServer
 
             createOrganisationGroups(orgData); // Creates necessary groups in comm server
 
