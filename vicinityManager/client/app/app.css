@@ -3,39 +3,143 @@ App css stylesheet
 *******************/
 
 /*
+Common
+*/
+
+.centered{
+  text-align: center;
+}
+
+.padded{
+  padding: 20px;
+}
+
+.placeThird{
+  padding-left: 10%;
+  width: 30%;
+}
+
+.placeCenter{
+  /*margin: auto;*/
+  padding-left: 40%;
+  /*width: 50%;*/
+}
+
+.fontGreen{
+  color: green;
+}
+
+.fontRed{
+  color: red;
+}
+
+/*
 Notifications
 */
 
 span.ciara {
     content: "";
     display: block;
-    height: 1px;
+    height: 3px;
     width: 90%;
-    margin: 10px;
-    background: #000;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-left: 10px;
+    background: steelblue;
+    /*margin-top: 10px;*/
+    margin-bottom: 20px;
+}
+
+.footNotif{
+  background: steelblue;
+}
+
+.footNotif b{
+  color: #FFF;
+}
+
+.footNotif a{
+  text-align: center;
+}
+
+img.imgNotif{
+  cursor: pointer;
+  width: 25px;
+  height: 25px;
+}
+
+div.readNot{
+  /*background-color: #d2d6de;*/
+  background-color: #eee;
+}
+
+li.notifications-menu ul.menu > li > div {
+  padding: 5px;
+
+}
+
+li.notifications-menu ul.menu > li div.notification-avatar {
+  float: left;
+  /*width:30%;*/
+  /*margin-bottom: 5%;*/
+  height: 65px;
+
+  border-radius: 50%;
+  width: 65px;
+
+}
+
+li.notifications-menu ul.menu > li div.notification-avatar img {
+  /*border-radius: 50%;*/
+  width: 75%;
+  height: 75%;
+  display: block;
+  margin: auto;
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
 }
 
 
+li.notifications-menu ul.menu > li div.notification-description {
+  display: block;
+  padding-left: 30%;
+  white-space: pre-line;
+  word-wrap: break-word;
+  /*-ms-word-break: break-all;*/
+  /*word-break: break-all;*/
+  padding-top: 10px;
+  /*padding-left: 5px;*/
+  padding-right: 5px;
+  padding-bottom: 5px;
+  /*margin-bottom: 5%;*/
+  /*float: left;*/
+}
+
+li.notifications-menu ul.menu > li div.notification-actions {
+  padding-left: 30%;
+  clear: left;
+  /*margin-top: -14px;*/
+  padding-bottom: 5%;
+}
+
+li.notifications-menu ul.menu > li div.notification-actions button {
+  width: 45%;
+}
+
+ul.outerMenu{
+  border-left: 5px solid steelblue;
+  margin-top: 2px;
+  box-shadow: 0px 10px 20px 0px rgba(0,0,0,0.4);
+}
+
+ul.innerMenu{
+  max-height: 300px;
+  overflow: auto
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+NON Classified CSS
+*/
 
 .menu {
   list-style: none;
@@ -1135,97 +1239,7 @@ li.notifications-menu ul.menu > li:hover {
   background-color: green
 }*/
 
-li.notifications-menu ul.menu > li > div {
-  padding: 5px;
 
-}
-
-/*li.notifications-menu ul.menu li.hr {
-  border-bottom: 1px solid black;
-}*/
-
-
-div.readNot{
-  /*background-color: #d2d6de;*/
-  background-color: #eee;
-}
-
-/*#readNotImg{
-  padding-left: : 5px;
-  padding-right: 5px;
-  padding-top: 5px;
-  background-color: #eee;
-  /*padding-bottom: 13px;
-}*/
-
-/*gray division line between notifications*/
-
-/*li.notifications-menu ul.menu > li:after {
-
-    content: "";
-    display: block;
-    height: 1px;
-    width: 94%;
-    margin: 10px;
-    background: #222d32; */
-    /*background: #d2d6de;*/
-    /* margin-top: 0px;
-    margin-bottom: 0px;
-
-}*/
-
-
-li.notifications-menu ul.menu > li div.notification-avatar {
-  float: left;
-  /*width:30%;*/
-  /*margin-bottom: 5%;*/
-  height: 65px;
-
-  border-radius: 50%;
-  width: 65px;
-
-}
-
-li.notifications-menu ul.menu > li div.notification-avatar img {
-  /*border-radius: 50%;*/
-  width: 75%;
-  height: 75%;
-  display: block;
-  margin: auto;
-  position: relative;
-
-  min-width: 100%;
-  min-height: 100%;
-}
-
-
-li.notifications-menu ul.menu > li div.notification-description {
-  display: block;
-  padding-left: 30%;
-  white-space: pre-line;
-  word-wrap: break-word;
-  /*-ms-word-break: break-all;*/
-  /*word-break: break-all;*/
-  padding-top: 10px;
-  /*padding-left: 5px;*/
-  padding-right: 5px;
-  padding-bottom: 5px;
-  /*margin-bottom: 5%;*/
-
-
-  /*float: left;*/
-}
-
-li.notifications-menu ul.menu > li div.notification-actions {
-  padding-left: 30%;
-  clear: left;
-  margin-top: -14px;
-  padding-bottom: 5%;
-}
-
-li.notifications-menu ul.menu > li div.notification-actions button {
-  width: 45%;
-}
 
 div.widget-user-footer-moreinfo2 button {
   width: 49.3%;

@@ -18,23 +18,23 @@ angular.module('VicinityManagerApp.controllers').
   $scope.notifs = [];
   $scope.notifs2 = [];
 
-// ====== Look for new notifications every 5s =======
+// ====== Look for new notifications every 60s =======
 
-var promise = {};
-
-$scope.intervalFunction = function(){
-  promise = $timeout(function(){
-    init();
-    $scope.intervalFunction();
-  }, 60000);
-};
-
-$scope.intervalFunction();
-
-$scope.$on('$destroy', function(){
-  $timeout.cancel(promise);
-  }
-);
+// var promise = {};
+//
+// $scope.intervalFunction = function(){
+//   promise = $timeout(function(){
+//     init();
+//     $scope.intervalFunction();
+//   }, 60000);
+// };
+//
+// $scope.intervalFunction();
+//
+// $scope.$on('$destroy', function(){
+//   $timeout.cancel(promise);
+//   }
+// );
 
 // Checking if user is devOps =========================
 
