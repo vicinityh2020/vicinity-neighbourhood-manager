@@ -11,7 +11,7 @@ function sendQuery(org){
   var connection = mysql.createConnection(
       {
         host     : '138.201.156.73',
-        user     : 'openfire',
+        user     : 'openfireRemote',
         password : 'VicinityOpenfireXMPP0',
         database : 'openfire',
       }
