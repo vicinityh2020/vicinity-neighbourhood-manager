@@ -27,6 +27,7 @@
     "moment": "^2.11.2",
     "mongoose": "^4.3.7",
     "morgan": "~1.6.1",
+    "mysql": "^2.14.0",
     "nan": "2.0.9",
     "nodemailer": "^2.5.0",
     "nodemon": "^1.9.2",
