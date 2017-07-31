@@ -13,20 +13,20 @@ Change node status to deleted in MONGO
 Remove node from commServer
 Remove all oids under node from commServer AND MONGO
 */
-function deleteNode(id, items, res){
+function deleteNode(adid, items, res){
 
-    commServer.callCommServer({}, 'users/' + id, 'DELETE') // Update node in commServer
+    commServer.callCommServer({}, 'users/' + adid, 'DELETE') // Update node in commServer
     .then(
       function(response){
-        commServer.callCommServer({}, 'groups/' + id, 'DELETE')
+        commServer.callCommServer({}, 'groups/' + adid, 'DELETE')
         .then(
           function(response){
             // logger.debug(items);
             var query = {
               'status': 'deleted',
               'name': 'empty'
-            }
-            nodeOp.update({_id: id}, { $set: query });
+            };
+            nodeOp.update({adid: adid}, { $set: query });
             myItems.deleteItems(items, res);
           },
           errorCallback
@@ -45,10 +45,20 @@ the update process continues in the commServer
       name: data.name,
       password: data.pass,
     };
-    commServer.callCommServer(payload, 'users/' + data._id, 'PUT') // Update node in commServer
+    commServer.callCommServer(payload, 'users/' + data.adid, 'PUT') // Update node in commServer
     .then(
       function(response){
-        res.json({"error": false, "message": data});
+        var payload2 = {
+          name: data.adid,
+          description: data.name
+        };
+        commServer.callCommServer(payload2, 'groups/' + data.adid, 'PUT')
+        .then(
+          function(response){
+            res.json({"error": false, "message": data});
+          },
+          errorCallback
+        );
       },
       errorCallback
     );
@@ -57,7 +67,7 @@ the update process continues in the commServer
 // Private Functions
 
 function errorCallback(error){
-  res.json({"error": true, "message": "Something went wrong: " + error.statusCode});
+  logger.debug({"error": true, "message": "Something went wrong: " + error.statusCode});
 }
 
 // Export Functions

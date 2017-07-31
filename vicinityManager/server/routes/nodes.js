@@ -10,7 +10,7 @@ router
   .get('/:id', getHelper.getAll)
   .get('/node/:id', getHelper.getOne)
   .post('/:id', postHelper.postOne)
-  .put('/node/:id', putHelper.deleteOne)
-  .put('/:id', putHelper.putOne)
+  .put('/node/:id', putHelper.pullIdFromOrganisation)
+  .put('/:id', putHelper.putOne);
 
 module.exports = router;

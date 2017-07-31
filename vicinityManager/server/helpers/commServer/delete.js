@@ -21,7 +21,7 @@ Removes node and all oids under it
 */
 function deleteAgent(req, res, next){
   var adid = mongoose.Types.ObjectId(req.params.adid);
-  nodeOp.findById(adid, function(err, data){
+  nodeOp.findOne({adid: adid}, function(err, data){
     if(err || !data){
       res.json({"error": true, "message": "Something went wrong: " + err});
     } else {

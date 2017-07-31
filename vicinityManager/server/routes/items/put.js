@@ -21,7 +21,7 @@ function putOne(req, res) {
   var response = {};
   var uid = mongoose.Types.ObjectId(req.params.id); // Unique mongo ID
   var oid = req.body.oid; // Object ID - Generated out of mongo
-  var aid = req.body.aid; // Agent ID - Generated ?? Not sure yet
+  var adid = req.body.adid; // Agent ID - Generated ?? Not sure yet
   var updates = req.body;
   var payload = {
     username : oid,
@@ -32,7 +32,7 @@ function putOne(req, res) {
   if(updates.status === 'enabled'){
     commServer.callCommServer(payload, 'users', 'POST')
       .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + updates.cid + '_ownDevices', 'POST'),callbackError) // Add to company group
-      .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + aid, 'POST')) // Add to agent group
+      .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + adid, 'POST')) // Add to agent group
       .then(deviceActivityNotif(uid, updates.cid, 'Enabled'),callbackError)
       .then(itemStatusUpdate(uid,updates,res),callbackError);
 

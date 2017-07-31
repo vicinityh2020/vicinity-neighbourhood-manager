@@ -16,15 +16,15 @@ var myNode = require('../../helpers/nodes/processNode');
   */
   function putOne(req, res) {
     var response = {};
-    var o_id = mongoose.Types.ObjectId(req.params.id);
+    var adid = req.params.id;
     var updates = req.body;
 
-    nodeOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function(err, data){
+    nodeOp.findOneAndUpdate({adid: adid}, {$set: updates}, { new: true }, function(err, data){
       if(err){
           logger.debug("Error updating the node");
       }else{
         if(req.body.status === 'deleted'){
-          myNode.deleteNode(o_id, data.hasItems, res);
+          myNode.deleteNode(adid, data.hasItems, res);
         }else{
           data.pass = req.body.pass;
           myNode.updateNode(data, res);
@@ -33,26 +33,30 @@ var myNode = require('../../helpers/nodes/processNode');
     });
   }
 
-// Function 2 - DELETE
+// Function 2
 
 /*
+Update organisation nodes list
 Deletes node reference in useraccounts
 Breaks connection with organisation in MONGO
 */
-function deleteOne(req, res) {
+function pullIdFromOrganisation(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  var updates = req.body;
+  var adid = req.body.adid;
 
-    userAccountOp.update({_id: o_id}, {$set: updates}, function(err, data){
+  userAccountOp.update({_id: o_id}, { $pull: {hasNodes: adid} },
+    function(err, data){
       if(!err){
-          var response = {"error": err};
-          res.json(response);
+        res.json({"error":false, 'message': 'Node ID removed from organisation list.' });
+      } else {
+        res.json({"error": true, 'message': 'Something went wrong ' + err });
       }
-  });
+    }
+  );
 }
 
 // Export Functions
 
 module.exports.putOne = putOne;
-module.exports.deleteOne = deleteOne;
+module.exports.pullIdFromOrganisation = pullIdFromOrganisation;

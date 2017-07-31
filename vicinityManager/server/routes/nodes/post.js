@@ -2,6 +2,7 @@
 // Global objects
 
 var mongoose = require('mongoose');
+var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
@@ -24,65 +25,64 @@ function postOne(req, res, next) {
   db.type = req.body.type;
   db.status = "active";
   db.organisation = cid;
+  db.adid = uuid();
 
   db.save(function(err,data){
     if(err){
       logger.debug("Error creating the node");
     }else{
-      successSave(data);
+      successSave(data, req, res);
     }
   });
+}
 
-  function successSave(data){ // Saves node in MONGO
-    var payload = {
-      username : data._id,
-      name: data.name,
-      password: req.body.pass,
-      properties: { property:
-                  [
-                    {'@key':'agent', '@value': data.agent},
-                    {'@key':'uri', '@value': data.eventUri}
-                        ]}
-    };
-    commServer.callCommServer(payload, 'users', 'POST') // Saves node in commServer
-    .then(callBackCommServer1(data),callbackError)
-    .then(callBackCommServer2(data),callbackError)
-    .then(callBackCommServer3(data),callbackError);
-  }
+function successSave(data, req, res){ // Saves node in MONGO
 
-  // Callbacks
+  var payload = {
+    username : data.adid,
+    name: data.name,
+    password: req.body.pass
+    // properties: { property:
+    //             [
+    //               {'@key':'agent', '@value': data.agent},
+    //               {'@key':'uri', '@value': data.eventUri}
+    //                   ]}
+  };
 
-/*
-Add node to company group in commServer
-*/
-  function callBackCommServer1(data){
-    return commServer.callCommServer({}, 'users/' + data._id + '/groups/' + cid + '_agents', 'POST');
-  }
+  var groupData = {
+    name: data.adid,
+    description: data.name
+  };
 
-/*
-Create node group in commServer
-*/
-  function callBackCommServer2(data){
-    var groupData = {
-      name: data._id,
-      description: data.name
-    };
-    return commServer.callCommServer(groupData, 'groups/', 'POST');
-  }
+  commServer.callCommServer(payload, 'users', 'POST') // Saves node in commServer
+  .then(
+    function(response){
+      commServer.callCommServer({}, 'users/' + data.adid + '/groups/' + data.organisation.toString() + '_agents', 'POST')  //Add node to company group in commServer
+      .then(
+        function(response){
+          commServer.callCommServer(groupData, 'groups/', 'POST') // Create node group in commServer
+          .then(
+            function(response){
+              userAccountOp.update( { _id: data.organisation}, {$push: {hasNodes: data.adid}}, function(err,data){ // Add node to company in MONGO
+                if(err){
+                  logger.debug("Error creating the node " + err);
+                }else{
+                  response = {"error": false, "message": "Node created!"};
+                  res.json(response);
+                }
+              });
+            },
+            callbackError
+          );
+        },
+          callbackError
+        );
+      },
+    callbackError)
+  .catch(callbackError);
+}
 
-/*
-Add node to company in MONGO
-*/
-  function callBackCommServer3(data){
-    userAccountOp.update({ "_id": cid}, {$push: {hasNodes:data._id}}, function(err,data){
-      if(err){
-        logger.debug("Error creating the node");
-      }else{
-        response = {"error": false};
-        res.json(response);
-      }
-    });
-  }
+  // Private functions
 
   /*
   Handles errors
@@ -92,7 +92,6 @@ Add node to company in MONGO
     logger.debug("Error creating the node: " + err);
   }
 
-}
 
 // Export Functions
 

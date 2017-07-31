@@ -19,7 +19,7 @@ angular.module('VicinityManagerApp.controllers').
   nodeAPIService.getAll($window.sessionStorage.companyAccountId)
     .then(
       function successCallback(response){
-        $scope.nodes = response.data.message.hasNodes;
+        $scope.nodes = response.data.message;
         countItems();
       },
       function errorCallback(response){}
@@ -30,51 +30,23 @@ angular.module('VicinityManagerApp.controllers').
 
 // ======== Main functions =========
 
-    $scope.deleteNode = function(id){
-      //TODO instead of pushing all adid except the one which needs to be removed, used the $pull method!!
-      var newNodes = [];
-      for(var i = 0; i < $scope.nodes.length; i++){
-        if($scope.nodes[i]._id !== id){
-          newNodes.push($scope.nodes[i]._id);
-        }
-      }
-      var query = {hasNodes: newNodes};
-      nodeAPIService.deleteOne($window.sessionStorage.companyAccountId,query) // Delete node ref in useraccounts
-        .then(
-          function successCallback(response){
-            var query2 = {
-              status : "deleted"
-            };
-            nodeAPIService.updateOne(id, query2) // upd status to removed of node in MONGO
-              .then(
-                function successCallback(response){
-                  Notification.success("Node successfully removed!!");
-                  myInit();
-                },
-                errorCallback
-              );
-            },
-            errorCallback
-          );
-        };
-
-
-    // $scope.createGroup = function(){  // Debug only -- TODO Remove
-    //
-    //   var payload = {
-    //     name: $window.sessionStorage.companyAccountId,
-    //     description: "Reagon"
-    //   };
-    //
-    //   nodeAPIService.postResource('groups',payload)
-    //     .then(
-    //       function successCallback(response){
-    //         Notification.success("Success");
-    //       },
-    //       errorCallback
-    //     );
-    // };
-
+  $scope.deleteNode = function(id){
+    var nodeId = {adid: id};
+    nodeAPIService.pullIdFromOrganisation($window.sessionStorage.companyAccountId,nodeId) // Delete node ref in useraccounts
+      .then(
+        function successCallback(response){
+          nodeAPIService.updateOne(id, {status : "deleted"}) // upd status to removed of node in MONGO
+            .then(
+              function successCallback(response){
+                Notification.success("Node successfully removed!!");
+                myInit();
+              },
+              errorCallback
+            );
+          },
+          errorCallback
+        );
+      };
 
     function errorCallback(err){
       Notification.error("Something went wrong: " + err);

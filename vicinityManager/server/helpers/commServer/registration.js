@@ -17,10 +17,10 @@ Message producing the req is sent by the agent with thingDescriptions
 */
 function postRegistration(req, res, next){
   var objectsArray = req.body.thingDescriptions;
-  var aid = req.body.adid;
+  var adid = req.body.adid;
   var oidArray = [];
 
-  nodeOp.findById(aid,{organisation:1, hasItems: 1},
+  nodeOp.findOne({adid: adid}, {organisation:1, hasItems: 1},
     function(err,data){
         if(err || !data){
           if(err){
@@ -30,7 +30,7 @@ function postRegistration(req, res, next){
           }
         } else {
           var cid = data.organisation;
-          oidArray = saveDocuments(aid, cid, objectsArray, oidArray);
+          oidArray = saveDocuments(adid, cid, objectsArray, oidArray);
           data.hasItems = updateItemsList(data.hasItems, oidArray);
           data.save();
           deviceActivityNotif(cid);
@@ -43,7 +43,7 @@ function postRegistration(req, res, next){
 /*
 Inserts or updates all oids in the request, depending on their previous existance
 */
-function saveDocuments(aid, cid, objectsArray, oidArray){
+function saveDocuments(adid, cid, objectsArray, oidArray){
 
   var obj = {};
 
@@ -51,7 +51,7 @@ function saveDocuments(aid, cid, objectsArray, oidArray){
   delete objectsArray[0].credentials; // Delete credentials, not to be stored in MONGO
 
   // Create one item document
-  obj.aid = aid;
+  obj.adid = adid;
   obj.oid = objectsArray[0].oid;
   obj.name = creds.name; // Name goes in TD!!!
   obj.hasAdministrator = cid; // CID, obtained from mongo
@@ -66,7 +66,7 @@ function saveDocuments(aid, cid, objectsArray, oidArray){
       if(err || !data){
         logger.debug("Item " + obj.name + " was not saved...");
       } else {
-        commServerProcess(obj.oid, aid, creds.name, creds.password, cid);
+        commServerProcess(obj.oid, adid, creds.name, creds.password, cid);
       }
     }
   );
@@ -75,7 +75,7 @@ function saveDocuments(aid, cid, objectsArray, oidArray){
   objectsArray.splice(0,1); // Delete first object of objectsArray
 
   if (objectsArray.length > 0 ){ // If objectsArray not empty, call recursively until all objects saved
-    saveDocuments(aid, cid, objectsArray, oidArray);
+    saveDocuments(adid, cid, objectsArray, oidArray);
   }
 
   return oidArray;
@@ -87,7 +87,7 @@ Creates user in commServer
 Adds user to company and agent groups
 If the oid exists in the commServer is deleted and created anew
 */
-function commServerProcess(docOid, docAid, docName, docPassword, docOwner){
+function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
   var payload = {
     username : docOid,
     name: docName,
@@ -102,7 +102,7 @@ function commServerProcess(docOid, docAid, docName, docPassword, docOwner){
               function(response){
                 commServer.callCommServer(payload, 'users', 'POST')
                 .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST'), callbackError) // Add to company group
-                .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAid, 'POST'), callbackError) // Add to agent group
+                .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST'), callbackError) // Add to agent group
                 .catch(callbackError);
             },
             function(error){
@@ -116,7 +116,7 @@ function commServerProcess(docOid, docAid, docName, docPassword, docOwner){
         } else {
           commServer.callCommServer(payload, 'users', 'POST')
             .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST'),callbackError) // Add to company group
-            .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAid, 'POST'), callbackError) // Add to agent group
+            .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST'), callbackError) // Add to agent group
             .catch(callbackError);
         }
       }

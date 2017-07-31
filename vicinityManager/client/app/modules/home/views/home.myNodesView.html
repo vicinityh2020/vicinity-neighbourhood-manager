@@ -31,7 +31,7 @@
             <a ui-sref="root.main.nodeDetail({nodeId: nod._id})"><span>{{nod.name}}</span></a>
           </td>
           <td class="col-sm-3">
-            <span>{{nod._id}}</span>
+            <span>{{nod.adid}}</span>
           </td>
           <td class="col-sm-3">
             <span>{{nod.type[0]}}</span>
@@ -46,8 +46,8 @@
           </td> -->
           <td class="col-sm-2">
               <span>
-                <i ng-click="goToEdit(nod._id)" style="color: black; padding-left:10%" class="fa fa-pencil fa-lg col-sm-6"></i>
-                <i ng-click="deleteNode(nod._id)" style="color: red; padding-left:10%" class="fa fa-close fa-lg col-sm-6"></i>
+                <i ng-click="goToEdit(nod.adid)" style="color: black; padding-left:10%" class="fa fa-pencil fa-lg col-sm-6"></i>
+                <i ng-click="deleteNode(nod.adid)" style="color: red; padding-left:10%" class="fa fa-close fa-lg col-sm-6"></i>
                 <!-- <a ui-sref="root.main.nodeDetail({nodeId: nod._id})"><i style="padding-left:10%" class="fa fa-search fa-lg col-sm-6"></i></a> -->
               </span>
           </td>

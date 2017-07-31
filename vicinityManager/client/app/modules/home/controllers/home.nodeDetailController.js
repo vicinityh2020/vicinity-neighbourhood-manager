@@ -33,7 +33,7 @@ angular.module('VicinityManagerApp.controllers').
                   $scope.nUri = response.data.message.eventUri;
                   $scope.nAgent = response.data.message.agent;
                   $scope.nType = response.data.message.type[0];
-                  $scope.nId = response.data.message._id;
+                  $scope.nId = response.data.message.adid;
                   $scope.myNode = $scope.nName + " profile view";
                 },
                 function errorCallback(response){}

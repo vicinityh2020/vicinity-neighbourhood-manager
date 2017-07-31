@@ -45,7 +45,7 @@ function deleting(oids, flag){
         logger.debug("Something went wrong: " + err);
         flag = 1;
       } else {
-        nodeOp.update({_id: data.aid}, {$pull: {hasItems: oids[0]}}, function(err,agent){
+        nodeOp.update({adid: data.adid}, {$pull: {hasItems: oids[0]}}, function(err,agent){
           if(err){
             logger.debug("Something went wrong: " + err);
             flag = 1;

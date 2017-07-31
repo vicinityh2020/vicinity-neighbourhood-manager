@@ -6,13 +6,13 @@ var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 
-// Function 1
+// Public functions
 
 function getOne(req, res, next) {
 
   var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-  nodeOp.findById(o_id, function(err, data){
+  var adid = req.params.id;
+  nodeOp.findOne({adid: adid}, function(err, data){
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
     } else {
@@ -20,14 +20,6 @@ function getOne(req, res, next) {
     }
     res.json(response);
   });
-
-  // EXAMPLE GET BODY
-  // commServer.callCommServer({}, 'users/' + o_id, 'GET', req.headers.authorization)
-  // .then(function (response) { // Example how to GET body
-  //     logger.debug(response.body);
-  //   },
-  //   callbackError
-  // )
 
 }
 
@@ -38,15 +30,19 @@ function getAll(req, res, next) {
   var response = {};
   var cid = mongoose.Types.ObjectId(req.params.id);
 
-  userAccountOp.findById(cid).populate('hasNodes','name eventUri type hasItems').exec(function(err, data){
-    if (err) {
-      response =  {"error": true, "message": "Error fetching data"};
-    } else {
-      response = {"error": false, "message": data};
-    }
-
-    res.json(response);
-  });
+  userAccountOp.findById(cid, {hasNodes: 1},
+    function(err, data){
+      nodeOp.find({adid: { $in: data.hasNodes } }, {adid:1, name:1, eventUri:1, type:1, hasItems:1}, function(err,data){
+        if (err) {
+          response =  {"error": true, "message": "Error fetching data: " + err};
+        } else {
+          response = {"error": false, "message": data};
+        }
+        res.json(response);
+      }
+    );
+  }
+);
 
 }
 
