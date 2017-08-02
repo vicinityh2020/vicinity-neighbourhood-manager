@@ -2,7 +2,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('sPwhoSeeController',
 function ($scope, $stateParams, userAccountAPIService, itemsAPIService, Notification) {
-
+  $(window).trigger('resize');
   $scope.friends=[];
   $scope.note = "";
   $scope.item = {};

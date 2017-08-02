@@ -3,7 +3,7 @@ angular.module('VicinityManagerApp.controllers').
   controller('searchController', function ($scope, searchAPIService, userAccountAPIService, itemsAPIService, $stateParams, $window, Notification) {
 
 // OnLoad functions &&  Initialize variables
-
+    $(window).trigger('resize');
     $scope.resultsOrganisations = [];
     $scope.resultsUsers = [];
     $scope.resultsItems = [];

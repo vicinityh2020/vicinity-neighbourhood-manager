@@ -4,6 +4,7 @@ angular.module('VicinityManagerApp.controllers').
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
 
+    $(window).trigger('resize');
 
     // $scope.searchFilter = function (result) {
     //   var keyword = new RegExp($stateParams.searchTerm, 'i');

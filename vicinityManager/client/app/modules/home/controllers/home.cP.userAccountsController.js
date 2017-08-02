@@ -1,7 +1,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cPuserAccountsController',
 function ($scope, $stateParams, userAccountAPIService) {
-
+  $(window).trigger('resize');
   $scope.userAccounts=[];
   $scope.companyId = $stateParams.companyAccountId;
   $scope.loaded = false;

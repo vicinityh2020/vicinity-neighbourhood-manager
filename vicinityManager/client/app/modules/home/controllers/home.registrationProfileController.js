@@ -10,6 +10,7 @@ function ($scope,
           Notification) {
 
   $scope.loaded = false;
+  $(window).trigger('resize');
 
   registrationsAPIService.getOne($stateParams.registrationId)
     .then(

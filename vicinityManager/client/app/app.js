@@ -487,6 +487,10 @@ angular.module('VicinityManagerApp', [
           $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
         }
 
+        $rootScope.$on('$stateChangeStart', function(){
+          $(window).trigger('resize');
+        });
+
         $rootScope.$on('$locationChangeStart', function(evetn, next, current) {
 
           if(($location.url() !== '/login') && !$window.sessionStorage.token){

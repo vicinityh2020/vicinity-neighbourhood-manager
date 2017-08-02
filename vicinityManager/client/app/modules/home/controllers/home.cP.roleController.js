@@ -1,9 +1,9 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cProleController',
-function ($scope, $stateParams, userAccountAPIService, userAPIService, Notification) {
+function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, Notification) {
 
 // Initialize variables ========
-
+  $(window).trigger('resize');
   $scope.userAccounts = [];
   $scope.loaded = false;
   $scope.loadedPage = false;

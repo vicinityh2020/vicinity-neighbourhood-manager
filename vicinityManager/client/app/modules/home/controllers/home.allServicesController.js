@@ -24,6 +24,7 @@ angular.module('VicinityManagerApp.controllers')
             Notification){
 
 // Initialize variables and get initial data =============
+      $(window).trigger('resize');
 
        $scope.items=[];
        $scope.onlyPrivateItems = false;

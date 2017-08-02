@@ -1,5 +1,7 @@
 angular.module('VicinityManagerApp.controllers').
 controller('companyAccountController', function($scope, $window, userAccountAPIService, AuthenticationService) {
+
+  $(window).trigger('resize');
   $scope.name = {};
   $scope.avatar = {};
   // $scope.occupation = {};

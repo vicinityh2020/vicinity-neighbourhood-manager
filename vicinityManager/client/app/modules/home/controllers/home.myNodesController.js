@@ -12,6 +12,7 @@ angular.module('VicinityManagerApp.controllers').
 
 // ======== Set initial variables ==========
 
+  $(window).trigger('resize');
   $scope.rev = false;
   $scope.myOrderBy = 'name';
 

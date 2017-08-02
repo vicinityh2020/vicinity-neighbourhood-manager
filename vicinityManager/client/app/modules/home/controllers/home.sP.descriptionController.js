@@ -4,7 +4,7 @@ angular.module('VicinityManagerApp.controllers')
 function ($scope, $window, $stateParams, itemsAPIService, Notification) {
 
   // Variables and initData
-
+    $(window).trigger('resize');
     $scope.loaded = false;
     $scope.isMyItem = false;
     $scope.device = {};

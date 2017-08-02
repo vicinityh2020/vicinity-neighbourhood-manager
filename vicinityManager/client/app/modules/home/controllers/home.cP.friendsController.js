@@ -1,7 +1,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cPfriendsController',
-function ($scope, $stateParams, userAccountAPIService) {
-
+function ($scope, $stateParams, userAccountAPIService, $window) {
+  $(window).trigger('resize');
   $scope.friends = [];
   $scope.loaded = false;
 

@@ -1,6 +1,24 @@
 /******************
 App css stylesheet
 *******************/
+/*html, body{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+div.ng-scope{
+  height: 100%;
+}
+
+#lower div.ng-scope{
+  overflow-y: auto;
+}
+
+.main-footer{
+  max-height: 100px;
+  width: 100%;
+}*/
 
 /*
 Common

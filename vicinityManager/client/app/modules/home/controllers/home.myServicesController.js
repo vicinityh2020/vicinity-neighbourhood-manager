@@ -29,7 +29,7 @@ angular.module('VicinityManagerApp.controllers')
                Notification){
 
 // Initialize variables and retrieve initial data -----------------
-
+    $(window).trigger('resize');
     $scope.items=[];
     $scope.tempId = "";
     $scope.loaded = false;

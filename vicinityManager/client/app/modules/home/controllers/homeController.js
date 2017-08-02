@@ -3,6 +3,7 @@ angular.module('VicinityManagerApp.controllers')
             ['$scope', '$window', 'Base64','tokenDecoder',
 
             function ($scope, $window, Base64, tokenDecoder) {
+              $(window).trigger('resize');
 
               $scope.isDev = false;
               $scope.isInfOp = false;

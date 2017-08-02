@@ -11,6 +11,7 @@ angular.module('VicinityManagerApp.controllers').
             Notification) {
 
 // ======== Set initial variables ==========
+            $(window).trigger('resize');
 
             $scope.nName = "";
             $scope.nUri = "";

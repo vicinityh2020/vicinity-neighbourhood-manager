@@ -1,6 +1,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('userProfileController',
 function ($scope, $window, $stateParams, $location, userAccountAPIService, userAPIService, AuthenticationService, Notification  , FileUploader) {
+  $(window).trigger('resize');
 
   $scope.loaded = false;
 

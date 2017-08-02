@@ -2,6 +2,8 @@ angular.module('VicinityManagerApp.controllers')
 .controller('settingsController',
 function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
 
+  $(window).trigger('resize');
+
   $scope.notifs = [];
   $scope.notifs2 = [];
   $scope.oneNotif = false;

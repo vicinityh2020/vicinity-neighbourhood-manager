@@ -2,12 +2,15 @@
 angular.module('VicinityManagerApp.controllers').
   controller('allRegistrationsController',
   function ($scope,
+            $window,
             registrationsAPIService,
             registrationsListService,
             notificationsAPIService,
             Notification) {
 
 // Initialize variables
+    $(window).trigger('resize');
+
     $scope.regisList = [];
     $scope.rev = false;
     $scope.myOrderBy = 'companyName';

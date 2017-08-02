@@ -1,7 +1,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('dPhistoryController',
 function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
-
+  $(window).trigger('resize');
   $scope.userAccounts = [];
   $scope.companyAccounts = [];
   $scope.thisCompany = {};

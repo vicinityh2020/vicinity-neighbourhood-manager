@@ -7,7 +7,7 @@ function ($scope, $window, $state, $stateParams, $location, itemsAPIService, Not
   // console.log("location:" + $location.path());
 
 // Initialize variables and data =====================
-
+  $(window).trigger('resize');
   $scope.devEnabled = false;
   $scope.showInput = false;
   $scope.isMyDevice = false;

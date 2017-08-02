@@ -2,7 +2,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('dPwhoSeeController',
 function ($scope, $stateParams, userAccountAPIService, itemsAPIService, Notification) {
-
+  $(window).trigger('resize');
   $scope.friends=[];
   $scope.note = "";
   $scope.device = {};
@@ -16,7 +16,7 @@ function ($scope, $stateParams, userAccountAPIService, itemsAPIService, Notifica
         if ($scope.device.accessLevel === 8){
           userAccountAPIService.getUserAccounts()
             .then(
-              function successCallback(response){                                    
+              function successCallback(response){
                 $scope.friends = response.data.message;
               },
               errorCallback

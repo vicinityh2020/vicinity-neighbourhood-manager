@@ -37,6 +37,8 @@ angular.module('VicinityManagerApp.controllers')
     $scope.noDevices = true;
     $scope.filterTerm = "0";
 
+    $(window).trigger('resize');
+
     itemsAPIService.getMyItems($window.sessionStorage.companyAccountId, "device")
       .then(
         function successCallback(response) {

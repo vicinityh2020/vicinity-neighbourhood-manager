@@ -20,11 +20,20 @@ angular.module('VicinityManagerApp.controllers')
 .controller('allDevicesController',
    function ($scope,
      $window,
+     $interval,
      itemsAPIService,
      Notification)
      {
 
-// Initialize variables and get initial data =============
+
+// ====== Trigger for the first time window resize to avoid bug =======
+    $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
+
+  // Initialize variables and get initial data =============
 
        $scope.comps=[];
        $scope.devs=[];

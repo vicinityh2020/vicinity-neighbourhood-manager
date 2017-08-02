@@ -1,6 +1,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('rPregAdminController',
 function ($scope, $window, $stateParams, $location, registrationsAPIService, Notification) {
+  $(window).trigger('resize');
 
   $scope.loaded = false;
 
