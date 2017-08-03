@@ -106,10 +106,12 @@
   </span>
   <hr>
   <div class="box-body box" ng-repeat="notif in notifs2 | orderBy:'timestamp':rev">
-    <div class="col-sm-2">
+    <div>
+      <label>Date: </label>
       <span>{{notif.timestamp}}</span>
     </div>
-    <div style="padding:5%" class="col-sm-4">
+    <div>
+      <label>Detail: </label>
       <span ng-show="notif.type.lastIndexOf('Request') === -1"><b>{{notif.sentBy.organisation}}</b> changes status of <b>{{notif.deviceId.name}}</b></span>
       <span ng-show="notif.type === 'deviceRequest' && (notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> requests using <b>{{notif.deviceId.name}}</b></span>
       <span ng-show="notif.type === 'friendRequest' && (notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> wants to partner with you</span>
@@ -117,52 +119,60 @@
       <span ng-show="notif.type === 'deviceRequest' && !(notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> responded our request to use <b>{{notif.deviceId.name}}</b></span>
       <span ng-show="notif.type === 'friendRequest' && !(notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> responded our partnership request</span>
     </div>
-    <div class="col-sm-3">
+    <div>
+      <label>Type: </label>
       <span>{{notif.type}}</span>
     </div>
-    <div class="centered">
-        <span ng-show="notif.status==='waiting'"><span class="label label-warning">Waiting</span></span>
-        <span ng-show="notif.status==='responded'"><span class="label label-primary">Responded</span></span>
-        <span ng-show="notif.status==='rejected'"><span class="label label-danger">Declined</span></span>
-        <span ng-show="notif.status==='accepted'"><span class="label label-success">Accepted</span></span>
+    <div>
+        <span ng-show="notif.status==='waiting'"><b>Status: </b>Waiting</span>
+        <span ng-show="notif.status==='responded'"><b>Status: </b>Responded</span>
+        <span ng-show="notif.status==='rejected'"><b>Status: </b>Declined</span>
+        <span ng-show="notif.status==='accepted'"><b>Status: </b>Accepted</span>
     </div>
-    <div class="centered" style="padding:5%">
+    <div class="centered">
+
       <div ng-show="notif.type === 'deviceRequest'">
         <span ng-if="notif.status === 'waiting'">
-          <i ng-click="acceptDataRequest(notif.deviceId._id, notif._id)" class="fa fa-check fa-lg  fontGreen"></i>
-          <i ng-click="rejectDataRequest(notif.deviceId._id, notif._id)" class="fa fa-close fa-lg  fontRed"></i>
-          <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})"><i class="fa fa-search fa-lg "></i></a>
+          <button ng-click="acceptDataRequest(notif.deviceId._id, notif._id)" class="btn btn-default btn-block pull-right">Accept</button>
+          <hr>
+          <button ng-click="rejectDataRequest(notif.deviceId._id, notif._id)" class="btn btn-default btn-block pull-right">Reject</button>
+          <hr>
+          <button ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})" class="btn btn-default btn-block pull-right">View</button>
         </span>
         <span ng-if="notif.status !== 'waiting'">
-          <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})"><i class="fa fa-search fa-lg "></i></a>
+          <button ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})" class="btn btn-default btn-block pull-right">View</button>
         </span>
       </div>
 
       <div ng-show="notif.type === 'friendRequest'">
         <span ng-if="notif.status === 'waiting'">
-          <i ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" class="fa fa-check fa-lg  fontGreen"></i>
-          <i ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" class="fa fa-close fa-lg  fontRed"></i>
-          <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})"><i class="fa fa-search fa-lg "></i></a>
+          <button ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" class="btn btn-default btn-block pull-right">Accept</button>
+          <hr>
+          <button ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" class="btn btn-default btn-block pull-right">Reject</button>
+          <hr>
+          <button ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})" class="btn btn-default btn-block pull-right">View</button>
         </span>
         <span ng-if="notif.status !== 'waiting'">
-          <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})"><i class="fa fa-search fa-lg "></i></a>
+          <button ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})" class="btn btn-default btn-block pull-right">View</button>
         </span>
       </div>
 
       <div ng-show="notif.type === 'registrationRequest'">
         <span ng-if="notif.status === 'waiting'">
-          <i ng-click="acceptRegistration(notif.sentByReg._id, notif._id)" class="fa fa-check fa-lg  fontGreen"></i>
-          <i ng-click="rejectRegistration(notif.sentByReg._id, notif._id)" class="fa fa-close fa-lg  fontRed"></i>
-          <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><i class="fa fa-search fa-lg "></i></a>
+          <button ng-click="acceptRegistration(notif.sentByReg._id, notif._id)" class="btn btn-default btn-block pull-right">Accept</button>
+          <hr>
+          <button ng-click="rejectRegistration(notif.sentByReg._id, notif._id)" class="btn btn-default btn-block pull-right">Reject</button>
+          <hr>
+          <button ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})" class="btn btn-default btn-block pull-right">View</button>
         </span>
         <span ng-if="notif.status !== 'waiting'">
-          <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><i class="fa fa-search fa-lg "></i></a>
+          <button ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})" class="btn btn-default btn-block pull-right">View</button>
         </span>
       </div>
 
       <div ng-show="notif.type.lastIndexOf('Request') === -1">
         <span>
-          <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})"><i class="fa fa-search fa-lg "></i></a>
+          <button ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})" class="btn btn-default btn-block pull-right">View</button>
         </span>
       </div>
   </div>
