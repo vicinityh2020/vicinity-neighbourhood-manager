@@ -12,29 +12,18 @@ angular.module('VicinityManagerApp.controllers').
             Notification) {
 
 // ======== Set initial variables ==========
+
   $(window).trigger('resize');
+  $scope.imMobile = Number($window.innerWidth) < 768;
+  $(window).on('resize',function(){
+    $scope.imMobile = Number($window.innerWidth) < 768;
+  });
+
+  $scope.loadedPage = false;
   $scope.rev = true;
   $scope.myOrderBy = 'date';
   $scope.notifs = [];
   $scope.notifs2 = [];
-
-// ====== Look for new notifications every 60s =======
-
-// var promise = {};
-//
-// $scope.intervalFunction = function(){
-//   promise = $timeout(function(){
-//     init();
-//     $scope.intervalFunction();
-//   }, 60000);
-// };
-//
-// $scope.intervalFunction();
-//
-// $scope.$on('$destroy', function(){
-//   $timeout.cancel(promise);
-//   }
-// );
 
 // Checking if user is devOps =========================
 
@@ -55,6 +44,7 @@ $scope.isDev = keyword.test(payload.roles);
 
   function getNotifs(response){
       $scope.notifs = response.data.message;
+      $scope.loadedPage = true;
       if($scope.isDev){
         notificationsAPIService.getAllRegistrations()
         .then(
@@ -89,13 +79,6 @@ $scope.isDev = keyword.test(payload.roles);
          }
       );
     }
-
-    $scope.orderByMe = function(x) {
-      if($scope.myOrderBy === x){
-        $scope.rev=!($scope.rev);
-      }
-        $scope.myOrderBy = x;
-    };
 
     function numberOfUnreadNotifs(){ // Need to be hoisted
       $scope.oneNotif = ($scope.notifs.length + $scope.registrations.length) === 1;
@@ -242,5 +225,18 @@ $scope.acceptNeighbourRequest = function (notifId, friendId){
     Notification.success("Company was rejected!");
     $scope.notifResponded(notifId,'responded');
   }
+
+  // Sorting
+
+  $scope.orderByMe = function(x) {
+    if($scope.myOrderBy === x){
+      $scope.rev=!($scope.rev);
+    }
+      $scope.myOrderBy = x;
+  };
+  
+  $scope.onSort = function(order){
+    $scope.rev = order;
+  };
 
 });

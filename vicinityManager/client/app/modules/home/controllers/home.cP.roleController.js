@@ -1,3 +1,4 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cProleController',
 function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, Notification) {
@@ -22,7 +23,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
       },
       function errorCallback(response){}
     );
-  }
+  };
 
   $scope.myInit();
 
@@ -33,7 +34,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
         .then(
           function successCallback(response){
             var aux = [];
-            for (i = 0; i < $scope.userAccounts.length; i++){
+            for (var i = 0; i < $scope.userAccounts.length; i++){
               if($scope.selectedUser._id !== $scope.userAccounts[i]._id){
                 aux.push($scope.userAccounts[i]);
               }
@@ -41,7 +42,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
             userAccountAPIService.updateUserAccounts($stateParams.companyAccountId,{accountOf:aux})
               .then(
                 function successCallback(response){
-                  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+                  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId);
                     $scope.myInit();
                   },
                   function errorCallback(response){}
@@ -49,7 +50,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
               },
               function errorCallback(){Notification.error("Problem updating user profile");}
             );
-          }
+          };
 
     //Initialize & onChange Select2 Elements ==============
 
@@ -66,7 +67,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
         $scope.newRoles = ['user'];
       }
       if (this.selectedOptions && this.selectedOptions[0]){
-        for(i = 0; i < this.selectedOptions.length; i++){
+        for(var i = 0; i < this.selectedOptions.length; i++){
           $scope.newRoles.push(this.selectedOptions[i].innerHTML.toString());
         }
       }
@@ -80,7 +81,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
       $(".select2").trigger('change');
       $scope.editing = true;
       $scope.loaded = true;
-    }
+    };
 
     $scope.updateRoles = function(){
       if($scope.oneAdmin()){
@@ -92,17 +93,17 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
         Notification.warning("There must be at least one administrator");
         $scope.cancelChanges();
       }
-    }
+    };
 
     $scope.cancelChanges = function(){
       $scope.newRoles = [];
       $scope.selectedUser = {};
       $scope.editing = false;
       $scope.loaded = false;
-    }
+    };
 
     $scope.deleteUser = function(i){
-      if(confirm('Are you sure?')){
+      if(confirm('Are you sure?')){  // TODO
         $scope.selectedUser = i;
         var query = {
           avatar: "",
@@ -121,7 +122,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
         $scope.updateUserInfo(query);
         Notification.success("User removed");
       }
-    }
+    };
 
     // Ensure at least one admin in company
     $scope.oneAdmin = function(){
@@ -129,7 +130,7 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
       var cont = 0;
       // Find out if removing admin role
       if(keyword.test($scope.selectedUser.authentication.principalRoles) && !keyword.test($scope.newRoles)){
-        for(i = 0; i < $scope.userAccounts.length; i++){
+        for(var i = 0; i < $scope.userAccounts.length; i++){
           if(keyword.test($scope.userAccounts[i].authentication.principalRoles)){
             cont++;
           }
@@ -142,13 +143,13 @@ function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, 
       } else {
         return true;
       }
-    }
+    };
 
     // Sorting
 
     $scope.onSort = function(order){
       $scope.rev = order;
-    }
+    };
 
 
 });

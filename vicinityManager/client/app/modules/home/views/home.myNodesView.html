@@ -2,12 +2,15 @@
     <h1>Organisation nodes</h1>
 </section>
 
+<div class="coll-md-1" ng-hide="loadedPage" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
 
   <!-- /.box-header -->
-<section class="content">
+<section class="content" ng-show="loadedPage && !imMobile">
   <span class="col-xs-2 pull-right">
   <div>
-    <button class="btn btn-default btn-block" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>Create node</button>
+    <button class="btn btn-default" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>Create node</button>
   </div>
   <!-- <div class="col-xs-6">
     <button class="btn btn-default btn-block" ng-click="createGroup()" ng-disabled="true"><span class="glyphicon glyphicon-plus"></span>Create group</button>
@@ -59,3 +62,39 @@
 <!-- /.box-body -->
 </section>
 <!-- /.box -->
+
+<!-- MOBILE VERSION -->
+<section ng-show="loadedPage && imMobile" style="margin: auto; width:80%">
+  <hr>
+  <span>
+    <div>
+      <button class="btn btn-default btn-block" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>Create node</button>
+    </div>
+  </span>
+  <hr>
+  <span>
+    <i ng-click="onSort(false)"  class="fa fa-sort-alpha-asc btn btn-default" aria-hidden="true"></i>
+    <i ng-click="onSort(true)"  class="fa fa-sort-alpha-desc btn btn-default" aria-hidden="true"></i>
+  </span>
+  <hr>
+  <div style="padding:5%" class="box-body box" ng-repeat="nod in nodes | orderBy:'name':rev">
+      <div class="col-sm-2">
+        <a ui-sref="root.main.nodeDetail({nodeId: nod._id})"><span>{{nod.name}}</span></a>
+      </div>
+      <div style="padding:5%" class="col-sm-4">
+        <span>{{nod.adid}}</span>
+      </div>
+      <div style="padding:5%" class="col-sm-3">
+        <span>{{nod.type[0]}}</span>
+      </div>
+      <div style="padding:5%"class="col-sm-3">
+        <div class="col-sm-6">
+          <button class="btn btn-default btn-block pull-right" ng-click="goToEdit(nod.adid)">Edit</button>
+        </div>
+        <div class="col-sm-6">
+          <button class="btn btn-default btn-block pull-right" ng-click="deleteNode(nod.adid)">Delete</button>
+        </div>
+    </div>
+    </div>
+  </div>
+</section>

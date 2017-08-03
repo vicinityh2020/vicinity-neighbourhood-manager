@@ -13,8 +13,14 @@ angular.module('VicinityManagerApp.controllers').
 // ======== Set initial variables ==========
 
   $(window).trigger('resize');
+  $scope.imMobile = Number($window.innerWidth) < 768;
+  $(window).on('resize',function(){
+    $scope.imMobile = Number($window.innerWidth) < 768;
+  });
+
   $scope.rev = false;
   $scope.myOrderBy = 'name';
+  $scope.loadedPage = false;
 
   var myInit = function(){
   nodeAPIService.getAll($window.sessionStorage.companyAccountId)
@@ -22,6 +28,7 @@ angular.module('VicinityManagerApp.controllers').
       function successCallback(response){
         $scope.nodes = response.data.message;
         countItems();
+        $scope.loadedPage = true;
       },
       function errorCallback(response){}
     );
@@ -32,6 +39,7 @@ angular.module('VicinityManagerApp.controllers').
 // ======== Main functions =========
 
   $scope.deleteNode = function(id){
+    if(confirm('Are you sure?')){
     var nodeId = {adid: id};
     nodeAPIService.pullIdFromOrganisation($window.sessionStorage.companyAccountId,nodeId) // Delete node ref in useraccounts
       .then(
@@ -47,7 +55,8 @@ angular.module('VicinityManagerApp.controllers').
           },
           errorCallback
         );
-      };
+      }
+    };
 
     function errorCallback(err){
       Notification.error("Something went wrong: " + err);
@@ -70,6 +79,10 @@ angular.module('VicinityManagerApp.controllers').
         $scope.rev=!($scope.rev);
       }
       $scope.myOrderBy = x;
+    };
+
+    $scope.onSort = function(order){
+      $scope.rev = order;
     };
 
 });

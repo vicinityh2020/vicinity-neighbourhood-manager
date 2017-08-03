@@ -9,8 +9,15 @@ angular.module('VicinityManagerApp.controllers').
             Notification) {
 
 // Initialize variables
+
     $(window).trigger('resize');
 
+    $scope.imMobile = Number($window.innerWidth) < 768;
+    $(window).on('resize',function(){
+      $scope.imMobile = Number($window.innerWidth) < 768;
+    });
+
+    $scope.loadedPage = false;
     $scope.regisList = [];
     $scope.rev = false;
     $scope.myOrderBy = 'companyName';
@@ -20,6 +27,7 @@ angular.module('VicinityManagerApp.controllers').
       .then(
         function successCallback(response){
           $scope.regisList = response.data.message;
+          $scope.loadedPage = true;
         },
         function errorCallback(response){}
       );
@@ -62,8 +70,8 @@ angular.module('VicinityManagerApp.controllers').
         $scope.myOrderBy = x;
       };
 
-      $scope.f = function(){ // Dummy function until we define new ones
-        Notification.warning("do something");
+      $scope.onSort = function(order){
+        $scope.rev = order;
       };
 
   });
