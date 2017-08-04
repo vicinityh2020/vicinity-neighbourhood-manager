@@ -3,25 +3,25 @@
 angular.module('Authentication')
 
 .factory('AuthenticationService',
-        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window', '$location', 'configuration', 'tokenDecoder',
-        function(Base64, $http, $cookies, $rootScope, $timeout, $window, $location, configuration, tokenDecoder){
+        ['Base64', '$http', '$cookies', '$rootScope', '$timeout', '$window', '$location', 'configuration', 'tokenDecoder', 'Notification',
+        function(Base64, $http, $cookies, $rootScope, $timeout, $window, $location, configuration, tokenDecoder, Notification){
 
           var service = {};
 
           service.recover = function(data) {
-            return $http.post(configuration.apiUrl + '/api/recovery',data)
+            return $http.post(configuration.apiUrl + '/api/recovery',data);
           };
 
           service.resetPwd = function(id, data) {
-            return $http.put(configuration.apiUrl + '/api/recovery/' + id ,data)
+            return $http.put(configuration.apiUrl + '/api/recovery/' + id ,data);
           };
 
           service.Login = function(username, password) {
-            return $http.post(configuration.apiUrl + '/api/authenticate',{ username: username, password: password})
+            return $http.post(configuration.apiUrl + '/api/authenticate',{ username: username, password: password});
           };
 
           service.signout = function(path){
-            console.log(path);
+            // console.log(path);
             service.ClearCredentialsAndInvalidateToken();
             $location.path(path);
             // $cookies.remove("rM_V"); Implemented in userAccountController
@@ -63,10 +63,12 @@ angular.module('Authentication')
                         service.SetCredentials(response.data.message);
                         $location.path("/home");
                       }else{
-                        alert('Token expired');
+                        Notification.error('Token expired');
                       }
                     },
-                    function errorCallback(response){alert("Error");}
+                    function errorCallback(response){
+                      Notification.error('Error processing token');
+                    }
                 );
               }
               return false;
@@ -184,7 +186,7 @@ angular.module('Authentication')
     request: function(config) {
       var auth = Base64.encode('vicinity-nm:VredesteinLatexMliekoNaDefekt500ml');
       // config.headers['Authorization'] = 'Basic d2VudHdvcnRobWFuOkNoYW5nZV9tZQ==';
-      config.headers['Authorization'] = 'Basic ' + auth;
+      config.headers.Authorization = 'Basic ' + auth;
       return config;
     }
   };
@@ -214,7 +216,7 @@ angular.module('Authentication')
           var decodedPayload2 = decodedPayload.split('}')[0] + '}';
 
           // var headerObj = JSON.parse(decodedHeader);
-          var payloadObj = JSON.parse(decodedPayload2, (key, value) => {
+          var payloadObj = JSON.parse(decodedPayload2, function(key, value){
             //console.log(key);
             return value;
           });

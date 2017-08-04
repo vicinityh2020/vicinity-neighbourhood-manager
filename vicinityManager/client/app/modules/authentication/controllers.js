@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 angular.module('Authentication')
 
@@ -22,7 +22,7 @@ angular.module('Authentication')
                $scope.number = 1;
                $scope.note ="Register new company";
                $scope.note2 = "Log in to start your session";
-               $scope.error = ""
+               $scope.error = "";
                $scope.termsAccepted = false;
                $scope.rememberMe = false;
 
@@ -39,7 +39,7 @@ angular.module('Authentication')
 
 // Look for rememberMe cookie ==================================
 
-             AuthenticationService.wasCookie()
+             AuthenticationService.wasCookie();
 
 // LOGIN function ===============================================
              $scope.login = function() {
@@ -76,7 +76,7 @@ angular.module('Authentication')
                   },
                   function errorCallback(response){}
                   );
-                }
+                };
 
 
 
@@ -104,7 +104,7 @@ angular.module('Authentication')
                     loopArray($scope.duplicities);
                     Notification.warning('There are duplicated values!!!');
                     $scope.duplicities = [];
-                  };
+                  }
                 }else{
                   Notification.warning("Passwords do not match...");
                   $pass1.addClass("invalid");
@@ -113,8 +113,8 @@ angular.module('Authentication')
                     $pass1.removeClass("invalid");
                     $pass2.removeClass("invalid");
                    }, 2000);
-                };
-              }
+                }
+              };
 
                 $scope.findMeDuplicates = function(){
                   registrationsAPIService.findDuplicatesUser({email: $scope.emailReg})
@@ -136,7 +136,7 @@ angular.module('Authentication')
                       },
                       function errorCallback(reponse){}
                     );
-                  }
+                  };
 
                   $scope.recoverPwd = function(){
                     AuthenticationService.recover({username : $scope.emailRecover})
@@ -154,7 +154,7 @@ angular.module('Authentication')
                         },
                         function errorCallback(response){}
                       );
-                    }
+                    };
 
                   var loopArray = function(arr) {
                     if ( typeof(arr) == "object") {
@@ -162,32 +162,32 @@ angular.module('Authentication')
                           // console.log(arr[i]);
                           if($scope.companynameReg === arr[i].organisation){
                             $scope.companynameReg = "";
-                          };
+                          }
                           if($scope.emailReg === arr[i].email){
                             $scope.emailReg = "";
-                          };
+                          }
                           if($scope.bidReg === arr[i].businessID){
                             $scope.bidReg = "";
-                          };
+                          }
                           loopArray(arr[i]);
                         }
                     }
-                }
+                };
 
 // Handling modals
 
               $scope.alertPopUp1 = function () {
                 $('div#myModal1').show();
-              }
+              };
 
               $scope.closeNow1 = function () {
                 $('div#myModal1').hide();
-              }
+              };
 
               $scope.acceptTerms = function(){
                 $scope.termsAccepted = true;
                 $('div#myModal1').hide();
-              }
+              };
 
 // Switching views
 
@@ -207,7 +207,7 @@ angular.module('Authentication')
             setTimeout(function() {
              $('div#forgot1').fadeIn('slow');
              }, 1000);
-          }
+          };
 
           $scope.registerNew = function(){
             $('div#allTemplates').show();
@@ -225,7 +225,7 @@ angular.module('Authentication')
             setTimeout(function() {
              $('div#newOrganisationInfo').fadeIn('slow');
              }, 1000);
-          }
+          };
 
           $scope.backToLogin = function(){
             $('div#allTemplates').show();
@@ -255,7 +255,7 @@ angular.module('Authentication')
                       }, options);
 
                       var control = $(settings.control);
-                      var field = $(settings.field)
+                      var field = $(settings.field);
 
                       control.bind('click', function () {
                           if (control.is(':checked')) {
@@ -264,7 +264,7 @@ angular.module('Authentication')
                           } else {
                               field.prop('type', 'password');
                           }
-                      })
+                      });
                   };
               }(jQuery));
 
@@ -304,6 +304,6 @@ angular.module('Authentication')
                     $scope.password1 = "";
                     $scope.password2 = "";
                   }
-                }
+                };
 
 }]);

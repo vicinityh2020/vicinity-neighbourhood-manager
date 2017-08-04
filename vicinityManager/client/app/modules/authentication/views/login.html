@@ -1,3 +1,5 @@
+<section class="content" style="background: #fff;">
+
 <div class="login-box">
 
   <!-- // LOGIN LOGO ========================== -->
@@ -15,8 +17,8 @@
     <p class="login-box-msg">{{note2}}</p>      <!-- Log in to start your session -->
 
   <!-- // LOGIN form template ================ -->
-  <div id="login-wrap">
-    <form name="form" role="form" ng-submit="login()">
+    <div id="login-wrap">
+      <form name="form" role="form" ng-submit="login()">
 
       <!-- username -->
       <div class="form-group has-feedback">
@@ -49,10 +51,10 @@
           </div>
         </div>
 
-      </div style="margin-top: 20px">
+      <div style="margin-top: 20px">
         <button type="submit" class="btn btn-primary btn-block btn-flat" ng-disabled="form.$invalid || dataLoading">Log In</button>
         <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
-      <div>
+      </div>
 
       </div>
 
@@ -79,7 +81,7 @@
       <div>
         <div  class="form-group has-feedback">
           <span > Name </span><span style="color: red">*</span>
-          <input style="width: 60%" type="text" ng-model="companynameReg" value='{{companynameReg}}' class="pull-right" placeholder="Name of your organisation" required/>
+          <input style="width: 60%" type="text" ng-model="companynameReg" value="{{companynameReg}}" class="pull-right" placeholder="Name of your organisation" required/>
         </div>
 
         <div  class="form-group has-feedback">
@@ -130,7 +132,7 @@
         <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>      <!-- Register new member-->
       </div>
       <div class="col-xs-6" style="padding-right: 0px">
-          <input type="checkbox" href="" ng-model="termsAccepted"></input>
+          <input type="checkbox" ng-model="termsAccepted"></input>
           <a href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
       </div>
       <div style="margin-top: 50px">
@@ -139,55 +141,6 @@
 
     </form>
   </div>
-
-<!-- // REGISTER user form template ================ -->
-
-    <!-- <div id="newUserInfo">
-
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> User </span>
-      <form  name="formUser" role="form" ng-submit="registerUser()">
-      <div>
-        <div  class="form-group has-feedback">
-          <span > Company </span>
-          <span ng-model="companynameUs" style="width: 60%" class="pull-right">ABC/ACME/whatever</span>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Email </span><span style="color: red">*</span>
-          <input ng-model="emailUs" style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Password </span><span style="color: red">*</span>
-          <input id="pwUs1" ng-model="password1Us" style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Repeat password </span><span style="color: red">*</span>
-          <input id="pwUs2" ng-model="password2Us" style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Name </span>
-          <input ng-model="nameUs" style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of user" />
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Occupation</span>
-          <input ng-model="occupationUs" style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of user" />
-        </div>
-      </div>
-
-      <div class="col-xs-6">
-        <a id="zmiz" href="" ng-click="backToLogin()" class="text-center">{{note}}</a>
-      </div>
-      <div class="col-xs-6" style="padding-right: 0px">
-        <button type="submit"  class="btn btn-primary btn-block btn-flat" >Register me</button>
-      </div>
-    </form>
-    </div>
-
-    </div> -->
 
  <!-- Terms and conditions -->
 
@@ -219,7 +172,7 @@
   <div id="forgot1">
     <h3 style="color: black" class="login-box-msg"> Dear user, please introduce your email address.</h3>
     <form role="form" ng-submit="recoverPwd()">
-      <div  class="well" style="padding: 10px">
+      <div  class="well centered">
         <span> User email </span><span style="color: red">*</span>
         <input ng-model="emailRecover" style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
       </div>
@@ -227,7 +180,7 @@
         <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>
       </div>
       <div class="col-xs-6">
-        <button type="submit"  class="btn btn-primary btn-block btn-flat" >Reset password</button>
+        <button type="submit"  class="btn btn-primary btn-block btn-flat">Reset password</button>
       </div>
     </form>
     </div>
@@ -236,19 +189,21 @@
 
   <!-- Confirmation mail sent registration and pwd -->
 
-      <div id="verEmailSent">
-        <div>
-          <h3 style="color: green" class="login-box-msg"> Dear user thanks for registering, you will receive a mail with further instructions. <i class="fa fa-check fa-3x" style="color: green"></i></h3>
-      </div>
+  <div id="verEmailSent">
+    <div>
+      <h3 style="color: green" class="login-box-msg"> Dear user thanks for registering, you will receive a mail with further instructions. <i class="fa fa-check fa-3x" style="color: green"></i></h3>
     </div>
+  </div>
 
-      <div id="forgot2">
-        <div>
-          <h3 style="color: green" class="login-box-msg"> Dear user, follow the instructions sent by mail in order to reset the password. <i class="fa fa-check fa-3x" style="color: green"></i></h3>
-      </div>
+  <div id="forgot2">
+    <div>
+      <h3 style="color: green" class="login-box-msg"> Dear user, follow the instructions sent by mail in order to reset the password. <i class="fa fa-check fa-3x" style="color: green"></i></h3>
     </div>
+  </div>
 
 </div>
+
+</section>
 
 <footer class="main-footer2">
   <!-- To the right -->

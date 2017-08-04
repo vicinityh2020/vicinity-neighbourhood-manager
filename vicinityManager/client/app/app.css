@@ -1312,9 +1312,13 @@ div.widget-user-footer-moreinfo2 button {
 .main-footer2 {
   background: #fff;
   padding: 15px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   color: #444;
   border-top: 1px solid #d2d6de;
   margin-top: 37%;
+  z-index: -1 // Ensure it never covers login-box
 }
 
 body.hold-transition .main-footer2
