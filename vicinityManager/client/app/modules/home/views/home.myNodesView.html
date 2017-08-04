@@ -31,7 +31,7 @@
       <tbody>
         <tr ng-repeat="nod in nodes | orderBy:myOrderBy:rev">
           <td class="col-sm-3">
-            <a ui-sref="root.main.nodeDetail({nodeId: nod._id})"><span>{{nod.name}}</span></a>
+            <a ui-sref="root.main.nodeDetail({nodeId: nod.adid})"><span>{{nod.name}}</span></a>
           </td>
           <td class="col-sm-3">
             <span>{{nod.adid}}</span>
@@ -80,7 +80,7 @@
   <div class="box-body box" ng-repeat="nod in nodes | orderBy:'name':rev">
       <div class="col-sm-2">
         <label>Name: </label>
-        <a ui-sref="root.main.nodeDetail({nodeId: nod._id})"><span>{{nod.name}}</span></a>
+        <a ui-sref="root.main.nodeDetail({nodeId: nod.adid})"><span>{{nod.name}}</span></a>
       </div>
       <div class="col-sm-4">
         <label>ADID: </label>
