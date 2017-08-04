@@ -68,7 +68,7 @@ function findMail(req, res, next) {
       res.json(response);
 
       var mailInfo = {
-        link : "http://localhost:8000/app/#/authentication/recoverPassword/" + result[0]._id,
+        link : "http://vicinity.bavenir.eu/#/authentication/recoverPassword/" + result[0]._id,
         emailTo : result[0].email,
         subject : 'Password recovery email VICINITY',
         tmpName :'recoverPwd',
