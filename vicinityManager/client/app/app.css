@@ -1290,7 +1290,7 @@ div.widget-user-footer-moreinfo2 button {
   -o-transition: -o-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
   transition: transform 0.3s ease-in-out, margin 0.3s ease-in-out;
   margin-left: 0px;
-  z-index: 820;
+  z-index: -1;
 }
 
 .layout-top-nav .main-footer2 {
@@ -1317,57 +1317,15 @@ div.widget-user-footer-moreinfo2 button {
 
 .main-footer2 {
   background: #fff;
-  padding: 15px;
-  color: #444;
-  bottom: 0;
   position: absolute;
-  width: 100%;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+  color: #444;
+  height: 15%;
   border-top: 1px solid #d2d6de;
 }
-
-  /* main footer 3 */
-
-  .main-footer3 {
-    -webkit-transition: -webkit-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
-    -moz-transition: -moz-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
-    -o-transition: -o-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
-    transition: transform 0.3s ease-in-out, margin 0.3s ease-in-out;
-    margin-left: 0px;
-    z-index: 820;
-  }
-
-  .layout-top-nav .main-footer3 {
-    margin-left: 0;
-  }
-
-  @media (max-width: 767px) {
-    .main-footer3 {
-      margin-left: 0;
-    }
-  }
-  @media (min-width: 768px) {
-    .sidebar-collapse .main-footer3 {
-      margin-left: 0;
-    }
-  }
-  @media (max-width: 767px) {
-    .sidebar-open .main-footer3 {
-      -webkit-transform: translate(230px, 0);
-      -ms-transform: translate(230px, 0);
-      -o-transform: translate(230px, 0);
-      transform: translate(230px, 0);
-    }
-  }
-
-  .main-footer3 {
-    background: #fff;
-    padding: 25px;
-    position: relative;
-    max-height: 15px;
-    color: #444;
-    border-top: 1px solid #d2d6de;
-  }
-
 
 
 
