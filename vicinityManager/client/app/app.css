@@ -29,7 +29,12 @@ Common
 }
 
 .padded{
-  padding: 20px;
+  padding: 10px;
+}
+
+.paddedSides{
+  padding-left: 10%;
+  padding-right: 10%;
 }
 
 .placeThird{

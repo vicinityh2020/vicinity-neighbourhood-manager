@@ -9,7 +9,9 @@ var logger = require("../../middlewares/logger");
 var notificationOp = require('../../models/vicinityManager').notification;
 
 // FUNCTIONS to get notifications
-
+/*
+Read and unread separately
+*/
 function getNotificationsOfUser(req,res){
 
   var response = {};
@@ -45,25 +47,6 @@ function getNotificationsOfRegistration(req,res){
  });
 }
 
-function getAllUserNotifications(req,res){
-
-  var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-  notificationOp.find({addressedTo: {$in : [o_id]}}).populate('sentBy','avatar organisation').populate('deviceId','avatar name').exec(function(err,data){
-     response = {"error": false, "message": data};
-     res.json(response);
-  });
-}
-
-function getAllRegistrations(req,res){
-
-  var response = {};
-  notificationOp.find({type:"registrationRequest"}).populate('sentByReg','companyName').exec(function(err,data){
-    response = {"error": false, "message": data};
-    res.json(response);
-  });
-}
-
 function getNotificationsOfRegistrationRead(req,res){
 
   var response = {};
@@ -72,6 +55,30 @@ function getNotificationsOfRegistrationRead(req,res){
    response = {"error": false, "message": data};
    res.json(response);
  });
+}
+
+/*
+Read and unread together
+*/
+function getAllUserNotifications(req,res){
+
+  var response = {};
+  var dateFrom = objectIdWithTimestamp(req.query.searchDate);
+  var o_id = mongoose.Types.ObjectId(req.params.id);
+  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('deviceId','avatar name').exec(function(err,data){
+     response = {"error": false, "message": data};
+     res.json(response);
+  });
+}
+
+function getAllRegistrations(req,res){
+
+  var dateFrom = objectIdWithTimestamp(req.query.searchDate);
+  var response = {};
+  notificationOp.find({type:"registrationRequest", _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
+    response = {"error": false, "message": data};
+    res.json(response);
+  });
 }
 
 
@@ -159,6 +166,21 @@ function processFoundUnreadNotifications(err, data){
         item.save();
     }
 }
+
+// Private functions
+
+function objectIdWithTimestamp(timestamp) {
+
+    // Convert date object to hex seconds since Unix epoch
+    var hexSeconds = Math.floor(timestamp/1000).toString(16);
+
+    // Create an ObjectId with that hex timestamp
+    var constructedObjectId = mongoose.Types.ObjectId(hexSeconds + "0000000000000000");
+
+    return constructedObjectId;
+}
+
+// Export functions
 
 module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.getNotificationsOfUser = getNotificationsOfUser;

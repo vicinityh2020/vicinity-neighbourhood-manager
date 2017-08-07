@@ -63,6 +63,34 @@ var user = new Schema({
   }
 });
 
+var node = new Schema({
+  adid: {type: String, required: true},
+  name: {type: String, required: true},
+  eventUri: String,
+  organisation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'userAccount'
+  },
+  type: [String],
+  agent: String,
+  status: String,
+  hasItems: [String]
+});
+
+var item = new Schema({
+  name: String,
+  oid: String, // Object id -- different to Mongo uid
+  adid: String, // Agent id
+  hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  accessRequestFrom: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  accessLevel: Number,
+  avatar: String,
+  info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
+  typeOfItem: {type: String, enum: ['device','service']},
+  status: String // Enabled or disabled
+});
+
 var invitation = new Schema({
     emailTo: String,
     nameTo: String,
@@ -96,18 +124,11 @@ var registration = new Schema({
 });
 
 var notification = new Schema({
-    addressedTo: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'userAccount'
-    }],
-    sentBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'userAccount'
-    },
-    sentByReg: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'registration'
-    },
+    addressedTo: [{ type: ObjectId, ref: 'userAccount' }],
+    sentBy: { type: ObjectId, ref: 'userAccount' },
+    sentByUser: { type: ObjectId, ref: 'userAccount' },
+    sentByReg: { type: ObjectId, ref: 'registration' },
+    deviceId: { type: ObjectId, ref: 'item' },
     type: {type: String,
       enum: ['friendRequest',
             'deviceRequest',
@@ -115,13 +136,14 @@ var notification = new Schema({
             'deviceEnabled',
             'deviceDisabled',
             'deviceDiscovered']
-            },
-    deviceId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'item'
-    },
+            // add userCreated, userDeleted, partnershipCancelled, devRequestAccepted, devConnCancelled ...
+        },
     status: {type: String, enum: ['waiting','responded','accepted','rejected']},
     isUnread: Boolean
+});
+
+var remember = new Schema({
+  token: {type: String, required: true},
 });
 
 var userGroup = new Schema({
@@ -143,38 +165,6 @@ var gateway = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'item'
   }] // Gateway has Items.
-});
-
-var item = new Schema({
-  name: String,
-  oid: String, // Object id -- different to Mongo uid
-  adid: String, // Agent id
-  hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
-  hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
-  accessRequestFrom: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
-  accessLevel: Number,
-  avatar: String,
-  info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
-  typeOfItem: {type: String, enum: ['device','service']},
-  status: String // Enabled or disabled
-});
-
-var remember = new Schema({
-  token: {type: String, required: true},
-});
-
-var node = new Schema({
-  adid: {type: String, required: true},
-  name: {type: String, required: true},
-  eventUri: String,
-  organisation: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'userAccount'
-  },
-  type: [String],
-  agent: String,
-  status: String,
-  hasItems: [String]
 });
 
 // Set schema options ==================================

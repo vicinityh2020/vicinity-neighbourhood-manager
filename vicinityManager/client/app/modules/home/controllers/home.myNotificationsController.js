@@ -32,21 +32,46 @@ var payload = tokenDecoder.deToken();
 var keyword = new RegExp('devOps');
 $scope.isDev = keyword.test(payload.roles);
 
-// ====== Getting notifications onLoad (read and unread)
+// ===== Sets from which date we retrieve notifications =====
+
+$scope.dateFrom =  moment().subtract(7, 'days'); // Initialized to one week ago
+$scope.period = 'week';
+
+$scope.notificationsDays = function(period){
+  $scope.period = period;
+  switch(period){
+    case 'today':
+      $scope.dateFrom =  moment().subtract(1, 'days');
+      break;
+    case 'week':
+      $scope.dateFrom =  moment().subtract(7, 'days');
+      break;
+    case 'month':
+      $scope.dateFrom =  moment().subtract(1, 'months');
+      break;
+    case 'year':
+      $scope.dateFrom =  moment().subtract(1, 'years');
+      break;
+  }
+  init();
+};
+
+// ====== Getting notifications onLoad (read and unread) ====
 
   init();
 
   function init(){
+    $scope.loadedPage = false;
+    $scope.dates = [];
     $scope.notifs2 = [];
-    notificationsAPIService.getAllUserNotifications($window.sessionStorage.companyAccountId)
+    notificationsAPIService.getAllUserNotifications($window.sessionStorage.companyAccountId, $scope.dateFrom)
     .then(getNotifs,errorCallback);
   }
 
   function getNotifs(response){
       $scope.notifs = response.data.message;
-      $scope.loadedPage = true;
       if($scope.isDev){
-        notificationsAPIService.getAllRegistrations()
+        notificationsAPIService.getAllRegistrations($scope.dateFrom)
         .then(
           function successCallback(response){
             for(var index in response.data.message){
@@ -73,11 +98,21 @@ $scope.isDev = keyword.test(payload.roles);
           if(n._id){
             var timestamp = n._id.toString().substring(0,8);
             var date = new Date(parseInt( timestamp, 16 ) * 1000 );
-            n.timestamp = moment(date).format("Do MMM YYYY, hh:mm a");
+            n.timestamp = moment(date);
+            n.dateCaption = n.timestamp.format("Do MMM YYYY");
+            n.timeCaption = n.timestamp.format("hh:mm a");
           }
           $scope.notifs2.push(n);
+          findUnique(n.dateCaption);
          }
       );
+        $scope.loadedPage = true;
+    }
+
+    function findUnique(a){
+      if ($scope.dates.indexOf(a) === -1){
+        $scope.dates.push(a);
+      }
     }
 
     function numberOfUnreadNotifs(){ // Need to be hoisted
@@ -234,7 +269,7 @@ $scope.acceptNeighbourRequest = function (notifId, friendId){
     }
       $scope.myOrderBy = x;
   };
-  
+
   $scope.onSort = function(order){
     $scope.rev = order;
   };
