@@ -1282,6 +1282,8 @@ div.widget-user-footer-moreinfo2 button {
   font-size: 24px;
 }
 
+/* main footer 2 */
+
 .main-footer2 {
   -webkit-transition: -webkit-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
   -moz-transition: -moz-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
@@ -1294,13 +1296,11 @@ div.widget-user-footer-moreinfo2 button {
 .layout-top-nav .main-footer2 {
   margin-left: 0;
 }
-
 @media (max-width: 767px) {
   .main-footer2 {
     margin-left: 0;
   }
 }
-
 @media (min-width: 768px) {
   .sidebar-collapse .main-footer2 {
     margin-left: 0;
@@ -1314,31 +1314,63 @@ div.widget-user-footer-moreinfo2 button {
     transform: translate(230px, 0);
   }
 }
+
 .main-footer2 {
   background: #fff;
   padding: 15px;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
   color: #444;
+  bottom: 0;
+  position: absolute;
+  width: 100%;
   border-top: 1px solid #d2d6de;
-  margin-top: 37%;
-  z-index: -1 // Ensure it never covers login-box
 }
 
-body.hold-transition .main-footer2
-{
-  /* Fix for IE */
-  -webkit-transition: none;
-  -o-transition: none;
-  transition: none;
-}
+  /* main footer 3 */
 
-@media (min-width: 768px) {
-  .sidebar-mini.sidebar-collapse .main-footer2 {
-    margin-left: 50px !important;
-    z-index: 840;
+  .main-footer3 {
+    -webkit-transition: -webkit-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+    -moz-transition: -moz-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+    -o-transition: -o-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+    margin-left: 0px;
+    z-index: 820;
   }
+
+  .layout-top-nav .main-footer3 {
+    margin-left: 0;
+  }
+
+  @media (max-width: 767px) {
+    .main-footer3 {
+      margin-left: 0;
+    }
+  }
+  @media (min-width: 768px) {
+    .sidebar-collapse .main-footer3 {
+      margin-left: 0;
+    }
+  }
+  @media (max-width: 767px) {
+    .sidebar-open .main-footer3 {
+      -webkit-transform: translate(230px, 0);
+      -ms-transform: translate(230px, 0);
+      -o-transform: translate(230px, 0);
+      transform: translate(230px, 0);
+    }
+  }
+
+  .main-footer3 {
+    background: #fff;
+    padding: 25px;
+    position: relative;
+    max-height: 15px;
+    color: #444;
+    border-top: 1px solid #d2d6de;
+  }
+
+
+
+
   .sidebar-mini.sidebar-collapse .main-sidebar {
     -webkit-transform: translate(0, 0);
     -ms-transform: translate(0, 0);

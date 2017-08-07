@@ -37,6 +37,13 @@ angular.module('Authentication')
                $('div#forgot1').hide();
                $('div#forgot2').hide();
 
+// Check screen resolution
+
+$scope.imMobile = Number($window.innerWidth) < 768;
+$(window).on('resize',function(){
+  $scope.imMobile = Number($window.innerWidth) < 768;
+});
+
 // Look for rememberMe cookie ==================================
 
              AuthenticationService.wasCookie();
