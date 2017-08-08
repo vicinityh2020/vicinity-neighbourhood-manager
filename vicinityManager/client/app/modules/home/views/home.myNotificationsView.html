@@ -10,7 +10,8 @@
 <section class="content" ng-show="loadedPage">
 
   <div class="box-body">
-    <div class="box-group" id="accordion">
+
+    <div class="box-group" id="accordion" style="max-width:1000px">
       <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
       <div class="panel box-bg-dark-grey box-warning">
         <div class="box-header with-border">
@@ -48,7 +49,7 @@
               <span class="bg-gray">
                 {{ d }}
               </span>
-              <div class="timeline-item well" style="width:80%; margin-top:10px" ng-repeat="notif in notifs2" ng-if="notif.dateCaption === d">
+              <div class="timeline-item well" style="max-width:750px; margin-top:10px" ng-repeat="notif in notifs2" ng-if="notif.dateCaption === d">
                 <span class="ciara"></span>
                   <span class="padded" > <i class="fa fa-clock-o"></i> {{notif.timeCaption}}</span>
                 <hr>

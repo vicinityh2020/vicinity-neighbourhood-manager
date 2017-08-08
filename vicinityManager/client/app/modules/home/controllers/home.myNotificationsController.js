@@ -41,16 +41,16 @@ $scope.notificationsDays = function(period){
   $scope.period = period;
   switch(period){
     case 'today':
-      $scope.dateFrom =  moment().subtract(1, 'days');
+      $scope.dateFrom =  moment().endOf('day').subtract(1, 'days');
       break;
     case 'week':
-      $scope.dateFrom =  moment().subtract(7, 'days');
+      $scope.dateFrom =  moment().endOf('day').subtract(7, 'days');
       break;
     case 'month':
-      $scope.dateFrom =  moment().subtract(1, 'months');
+      $scope.dateFrom =  moment().endOf('day').subtract(1, 'months');
       break;
     case 'year':
-      $scope.dateFrom =  moment().subtract(1, 'years');
+      $scope.dateFrom =  moment().endOf('day').subtract(1, 'years');
       break;
   }
   init();
