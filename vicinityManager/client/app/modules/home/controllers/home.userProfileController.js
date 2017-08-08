@@ -85,6 +85,7 @@ function updateScopeAttributes(response){
     $scope.pass += "*";
   }
   $scope.organisation = response.data.message.organisation;
+  $scope.orgId = response.data.message._id;
   $scope.loaded = true;
 }
 
