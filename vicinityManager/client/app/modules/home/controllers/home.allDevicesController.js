@@ -149,12 +149,6 @@ angular.module('VicinityManagerApp.controllers')
       init();
   };
 
-  // Scroll to top
-  //
-  // $scope.goToTop = function(){
-  //     $window.scrollTo(0, 0);
-  // };
-
   // Detects if end of the scroll and loads more items (24 at a time)
 
   // $(window).scroll(
