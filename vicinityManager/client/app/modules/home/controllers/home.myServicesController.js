@@ -50,14 +50,8 @@ angular.module('VicinityManagerApp.controllers')
             for(var i = 0; i < response.data.message.length; i++){
                 $scope.items.push(response.data.message[i]);
             }
-
            $scope.allItemsLoaded = response.data.message.length < 12;
-
-           if ($scope.items.length === 0){
-             $scope.noItems = true;
-           }else{
-             $scope.noItems = false;
-           }
+           $scope.noItems = ($scope.items.length === 0);
            $scope.loaded = true;
            $scope.loadedPage = true;
          },

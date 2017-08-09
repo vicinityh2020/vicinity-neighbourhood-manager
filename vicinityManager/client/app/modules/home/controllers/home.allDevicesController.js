@@ -50,7 +50,7 @@ angular.module('VicinityManagerApp.controllers')
                   $scope.devs.push(response.data.message[i]);
               }
 
-              $scope.noItems = (response.data.message.length === 0);
+              $scope.noItems = ($scope.devs.length === 0);
               $scope.allItemsLoaded = response.data.message.length < 12;
 
               var j = 0;
