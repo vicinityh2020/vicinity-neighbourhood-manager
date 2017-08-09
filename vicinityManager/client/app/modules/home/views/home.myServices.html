@@ -4,12 +4,8 @@
 
 
 <section class="content">
-      <div class="row" style="width: 100%">
-        <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
-          <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
-        </div>
 
-        <div class="col-md-12" ng-show="loaded">
+        <div class="col-md-12" ng-show="loadedPage">
 
              <!-- /.box-header -->
              <div class="box-body">
@@ -41,7 +37,7 @@
                        <div class="row">
 
                          <!-- onlyPrivateDevices -->
-                         <div ng-show="noItems" >
+                         <div ng-show="noItems">
                             <h2 style="margin-left:20px;" >No services to show.</h2>
                         </div>
 
@@ -107,6 +103,16 @@
 
            </div>
 
+         <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+           <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+         </div>
+
+         <div class="centered" ng-show="!allItemsLoaded && loaded">
+           <h3 ng-click="loadMore()" class="well" style="cursor: pointer">Load more items</h3>
+         </div>
+
+         <div class="centered" ng-show="allItemsLoaded && !noItems">
+           <h3 class="well">All items loaded!</h3>
          </div>
 
 </section>

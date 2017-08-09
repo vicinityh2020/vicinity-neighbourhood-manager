@@ -18,13 +18,7 @@ angular.module('VicinityManagerApp.controllers')
   };
 })
 .controller('allDevicesController',
-   function ($scope,
-     $window,
-     $interval,
-     itemsAPIService,
-     Notification)
-     {
-
+   function ($scope, $window, $interval, itemsAPIService, Notification){
 
 // ====== Trigger for the first time window resize to avoid bug =======
     $(window).trigger('resize');
@@ -35,35 +29,47 @@ angular.module('VicinityManagerApp.controllers')
 
   // Initialize variables and get initial data =============
 
-       $scope.comps=[];
        $scope.devs=[];
        $scope.onlyPrivateDevices = false;
        $scope.note="Access for friends";
-       $scope.isF = 0;
+       $scope.noItems = true;
        $scope.loaded = false;
+       $scope.loadedPage = false;
        $scope.myId = $window.sessionStorage.companyAccountId;
        $scope.tempId = "";
+       $scope.offset = 0;
+       $scope.allItemsLoaded = false;
 
-      itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, "device")
-      .then(
-        function successCallback(response){
-        $scope.devs = response.data.message;
-        var i=0;
-        for (var dev in $scope.devs){
-          if ($scope.devs[dev].accessLevel > 1){
-            i++;
-          }
+       init();
+
+       function init(){
+          itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, "device", $scope.offset)
+          .then(
+            function successCallback(response){
+              for(var i = 0; i < response.data.message.length; i++){
+                  $scope.devs.push(response.data.message[i]);
+              }
+
+              $scope.noItems = (response.data.message.length === 0);
+              $scope.allItemsLoaded = response.data.message.length < 12;
+
+              var j = 0;
+              for (var dev in $scope.devs){
+                if ($scope.devs[dev].accessLevel > 1){
+                  j++;
+                }
+              }
+              if (j === 0){
+                $scope.onlyPrivateDevices = true;
+              }else{
+                $scope.onlyPrivateDevices = false;
+              }
+              $scope.loaded = true;
+              $scope.loadedPage = true;
+            },
+             errorCallback
+          );
         }
-        if (i === 0){
-          $scope.onlyPrivateDevices = true;
-        }else{
-          $scope.onlyPrivateDevices = false;
-        }
-        $scope.loaded = true;
-      },
-      function errorCallback(response){
-      }
-    );
 
 // Manage access request functions =====================
 
@@ -134,5 +140,73 @@ angular.module('VicinityManagerApp.controllers')
       }
     }
   }
+
+  // Trigers load of more items
+
+  $scope.loadMore = function(){
+      $scope.loaded = false;
+      $scope.offset += 12;
+      init();
+  };
+
+  // Scroll to top
+  //
+  // $scope.goToTop = function(){
+  //     $window.scrollTo(0, 0);
+  // };
+
+  // Detects if end of the scroll and loads more items (24 at a time)
+
+  // $(window).scroll(
+  //   function() {
+  //     if( ( $(window).scrollTop() + $(window).height() === $(document).height() ) && !$scope.allItemsLoaded) {
+  //       $scope.loaded = false;
+  //       $scope.offset += 24;
+  //       disableScroll(); // disables all scroll event triggers while loading new items
+  //       init();
+  //     }
+  //   }
+  // );
+
+
+  // Handling enable/disable scroll
+
+// left: 37, up: 38, right: 39, down: 40,
+// spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+// var keys = {37: 1, 38: 1, 39: 1, 40: 1};
+//
+// function preventDefault(e) {
+//   e = e || window.event;
+//   if (e.preventDefault)
+//       e.preventDefault();
+//   e.returnValue = false;
+// }
+//
+// function preventDefaultForScrollKeys(e) {
+//     if (keys[e.keyCode]) {
+//         preventDefault(e);
+//         return false;
+//     }
+// }
+//
+// function disableScroll() {
+//   if (window.addEventListener){ // older FF
+//       window.addEventListener('DOMMouseScroll', preventDefault, false);
+//   }
+//   window.onwheel = preventDefault; // modern standard
+//   window.onmousewheel = document.onmousewheel = preventDefault; // older browsers, IE
+//   window.ontouchmove  = preventDefault; // mobile
+//   document.onkeydown  = preventDefaultForScrollKeys;
+// }
+//
+// function enableScroll() {
+//     if (window.removeEventListener){
+//         window.removeEventListener('DOMMouseScroll', preventDefault, false);
+//     }
+//     window.onmousewheel = document.onmousewheel = null;
+//     window.onwheel = null;
+//     window.ontouchmove = null;
+//     document.onkeydown = null;
+// }
 
 });

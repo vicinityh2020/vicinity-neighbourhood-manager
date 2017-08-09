@@ -16,12 +16,14 @@ function getMyItems(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.cid);
   var type = req.query.type;
+  var offset = req.query.offset;
+
   var query = {
                 typeOfItem: type,
                 hasAdministrator: o_id
               };
 
-  itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').sort({name:1}).exec(function(err, data){
+  itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
     var dataWithAdditional = itemProperties.getAdditional(data,o_id,[]); // Not necessary to know friends because I am always owner
     if (err) {
       logger.debug('error','Find Items Error: ' + err.message);
@@ -38,6 +40,7 @@ function getAllItems(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
   var type = req.query.type;
+  var offset = req.query.offset;
 
   userAccountOp.find({_id: o_id}, function(err, data){
     if (err){
@@ -55,13 +58,13 @@ function getAllItems(req, res) {
 
     var friends = data[0].knows;
 
-    itemOp.find(query).populate('hasAdministrator','organisation').sort({name:1}).exec(function(err, data){
-      var dataWithAdditional = itemProperties.getAdditional(data,o_id,friends);
-
+    itemOp.find(query).populate('hasAdministrator','organisation').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
+      logger.debug(JSON.stringify(data));
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
         response =  {"error": true, "message": "Error fetching data"};
       } else {
+        var dataWithAdditional = itemProperties.getAdditional(data,o_id,friends);
         response = {"error": false, "message": dataWithAdditional};
       }
 
@@ -71,14 +74,12 @@ function getAllItems(req, res) {
 }
 
 
-
-
 function getItemWithAdd(req, res, next) {
 
     logger.debug('Start: getItemWithAdd');
 
     var response = {};
-    var dev_id = mongoose.Types.ObjectId(req.params.id);
+    var o_id = mongoose.Types.ObjectId(req.params.id);
     var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     userAccountOp.find({_id: activeCompany_id}, function (err, data) {
       if(err){
@@ -86,7 +87,7 @@ function getItemWithAdd(req, res, next) {
         res.json(response);
       } else {
         var friends = data[0].knows;
-        itemOp.find({_id: dev_id}).populate('hasAdministrator','organisation')
+        itemOp.find({_id: o_id}).populate('hasAdministrator','organisation')
             .exec(
               function(err, data){
                 if (err || data === null) {

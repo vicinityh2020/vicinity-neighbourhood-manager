@@ -29,25 +29,44 @@ angular.module('VicinityManagerApp.controllers')
        $scope.items=[];
        $scope.onlyPrivateItems = false;
        $scope.loaded = false;
+       $scope.loadedPage = false;
+       $scope.noItems = true;
        $scope.myId = $window.sessionStorage.companyAccountId;
        $scope.tempId = "";
+       $scope.offset = 0;
+       $scope.allItemsLoaded = false;
 
+       init();
+
+      function init(){
       itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, 'service')
       .then(
         function successCallback(response){
-        $scope.items = response.data.message;
+          for(var i = 0; i < response.data.message.length; i++){
+              $scope.items.push(response.data.message[i]);
+          }
+          $scope.noItems = (response.data.message.length === 0);
+          $scope.allItemsLoaded = response.data.message.length < 12;
 
         if ($scope.items.length === 0){
           $scope.onlyPrivateItems = true;
         }else{
           $scope.onlyPrivateItems = false;
         }
-
         $scope.loaded = true;
+        $scope.loadedPage = true;
       },
-      function errorCallback(response){
-      }
+      errorCallback
     );
+  }
+
+// Trigers load of more items
+
+  $scope.loadMore = function(){
+      $scope.loaded = false;
+      $scope.offset += 12;
+      init();
+  };
 
 // Manage access request functions =====================
 

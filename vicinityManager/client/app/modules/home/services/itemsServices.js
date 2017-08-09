@@ -42,12 +42,12 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.delete(configuration.apiUrl + '/items/' + id);
   };
 
-  itemsAPI.getMyItems = function(id, filter) {
-    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/myItems?type=' + filter);
+  itemsAPI.getMyItems = function(id, filter, offset) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/myItems?type=' + filter + '&offset=' + offset);
   };
 
-  itemsAPI.getAllItems = function(id, filter) {
-    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allItems?type=' + filter);
+  itemsAPI.getAllItems = function(id, filter, offset) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allItems?type=' + filter + '&offset=' + offset);
   };
 
   return itemsAPI;

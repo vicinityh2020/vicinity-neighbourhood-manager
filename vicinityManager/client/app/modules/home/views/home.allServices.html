@@ -7,10 +7,6 @@
 
   <div class="row" style="width: 100%">
 
-    <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
-      <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
-    </div>
-
     <div id="ramik" class="input-group bvr2-navbar-form navbar-right col-md-2 " ng-show="loaded">
       <input id="bvr-search-input" type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm">
       <span class="input-group-btn">
@@ -25,10 +21,10 @@
 
     <!-- onlyPrivateDevices -->
     <div ng-show="onlyPrivateItems" >
-       <span style="margin-left:20px;" class="info-box-description">There is no shared service with you.</span>
+       <h2 style="margin-left:20px;">There is no shared service with you.</h2>
    </div>
 
-    <div ng-show="loaded" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="it in items | customAllServs:searchTerm">
+    <div ng-show="loadedPage" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="it in items | customAllServs:searchTerm">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -41,7 +37,7 @@
           <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
             <span class=" tooltiptext2" > Unknown </span>
           </div>
-          
+
           <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})">{{it.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.services({companyAccountId: it.hasAdministrator[0]._id})">{{it.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{it.accessLevelCaption}}</h5>
@@ -94,4 +90,17 @@
     </div>
 
   </div>
+
+  <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+    <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+  </div>
+
+  <div class="centered" ng-show="!allItemsLoaded && loaded">
+    <h3 ng-click="loadMore()" class="well" style="cursor: pointer">Load more items</h3>
+  </div>
+
+  <div class="centered" ng-show="allItemsLoaded && !noItems">
+    <h3 class="well">All items loaded!</h3>
+  </div>
+
 </section>
