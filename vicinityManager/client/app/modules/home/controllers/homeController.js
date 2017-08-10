@@ -4,7 +4,12 @@ angular.module('VicinityManagerApp.controllers')
             ['$scope', '$window', 'Base64','tokenDecoder', '$interval',
             function ($scope, $window, Base64, tokenDecoder, $interval) {
 
-              $(window).trigger('resize');
+              // ====== Triggers window resize to avoid bug =======
+                  $(window).trigger('resize');
+                    $interval(waitTillLoad, 100, 1);
+                    function waitTillLoad(){
+                      $(window).trigger('resize');
+                    }
 
               $interval(checkScroll, 1000); // Checks if it is necessary to display goToTop
 

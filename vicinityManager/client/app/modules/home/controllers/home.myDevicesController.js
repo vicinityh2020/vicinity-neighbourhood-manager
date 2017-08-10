@@ -41,7 +41,12 @@ angular.module('VicinityManagerApp.controllers')
     $scope.allItemsLoaded = false;
     $scope.noItems = true;
 
-    $(window).trigger('resize');
+    // ====== Triggers window resize to avoid bug =======
+        $(window).trigger('resize');
+          $interval(waitTillLoad, 100, 1);
+          function waitTillLoad(){
+            $(window).trigger('resize');
+          }
 
     init();
 

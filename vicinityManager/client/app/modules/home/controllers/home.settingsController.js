@@ -2,7 +2,12 @@ angular.module('VicinityManagerApp.controllers')
 .controller('settingsController',
 function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
 
-  $(window).trigger('resize');
+  // ====== Triggers window resize to avoid bug =======
+      $(window).trigger('resize');
+        $interval(waitTillLoad, 100, 1);
+        function waitTillLoad(){
+          $(window).trigger('resize');
+        }
 
   $scope.notifs = [];
   $scope.notifs2 = [];

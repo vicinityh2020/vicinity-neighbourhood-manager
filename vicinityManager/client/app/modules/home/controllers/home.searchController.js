@@ -3,7 +3,14 @@ angular.module('VicinityManagerApp.controllers').
   controller('searchController', function ($scope, searchAPIService, userAccountAPIService, itemsAPIService, $stateParams, $window, Notification) {
 
 // OnLoad functions &&  Initialize variables
+
+// ====== Triggers window resize to avoid bug =======
     $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
+
     $scope.resultsOrganisations = [];
     $scope.resultsUsers = [];
     $scope.resultsItems = [];

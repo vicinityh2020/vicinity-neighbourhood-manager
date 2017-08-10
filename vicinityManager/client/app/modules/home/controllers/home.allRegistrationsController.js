@@ -10,7 +10,12 @@ angular.module('VicinityManagerApp.controllers').
 
 // Initialize variables
 
+// ====== Triggers window resize to avoid bug =======
     $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
 
     $scope.imMobile = Number($window.innerWidth) < 768;
     $(window).on('resize',function(){

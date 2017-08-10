@@ -7,7 +7,12 @@ function ($scope, $window, $state, $stateParams, $location, itemsAPIService, Not
   // console.log("location:" + $location.path());
 
 // Initialize variables and data =====================
-  $(window).trigger('resize');
+// ====== Triggers window resize to avoid bug =======
+    $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
   $scope.devEnabled = false;
   $scope.showInput = false;
   $scope.isMyDevice = false;

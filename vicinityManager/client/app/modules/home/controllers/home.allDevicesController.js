@@ -20,7 +20,7 @@ angular.module('VicinityManagerApp.controllers')
 .controller('allDevicesController',
    function ($scope, $window, $interval, itemsAPIService, Notification){
 
-// ====== Trigger for the first time window resize to avoid bug =======
+// ====== Triggers window resize to avoid bug =======
     $(window).trigger('resize');
       $interval(waitTillLoad, 100, 1);
       function waitTillLoad(){

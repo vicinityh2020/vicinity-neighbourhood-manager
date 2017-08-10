@@ -27,7 +27,12 @@ Filters the items based on the following rules:
 })
 .controller('cPdevicesController', ['$scope', '$window', '$stateParams', '$location', 'userAccountAPIService', 'itemsAPIService', 'AuthenticationService', 'Notification', 'customFilter',
 function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
-  $(window).trigger('resize');
+  // ====== Triggers window resize to avoid bug =======
+      $(window).trigger('resize');
+        $interval(waitTillLoad, 100, 1);
+        function waitTillLoad(){
+          $(window).trigger('resize');
+        }
   $scope.cid = $window.sessionStorage.companyAccountId.toString();
   $scope.devices = [];
   $scope.friends = [];

@@ -4,7 +4,12 @@ angular.module('VicinityManagerApp.controllers')
 function ($scope, $window, $stateParams, itemsAPIService) {
 
 // Variables and initData
-  $(window).trigger('resize');
+// ====== Triggers window resize to avoid bug =======
+    $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
   $scope.loaded = false;
   $scope.isMyDevice = false;
   $scope.device = {};

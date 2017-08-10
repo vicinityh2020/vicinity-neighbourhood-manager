@@ -3,8 +3,13 @@ angular.module('VicinityManagerApp.controllers').
     $scope.resultsList = [];
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
-    $(window).trigger('resize');
 
+    // ====== Triggers window resize to avoid bug =======
+        $(window).trigger('resize');
+          $interval(waitTillLoad, 100, 1);
+          function waitTillLoad(){
+            $(window).trigger('resize');
+          }
 
     // $scope.searchFilter = function (result) {
     //   var keyword = new RegExp($stateParams.searchTerm, 'i');

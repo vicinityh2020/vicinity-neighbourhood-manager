@@ -7,7 +7,13 @@ controller('userAccountController', function($scope, $window, $cookies, userAcco
   $scope.userAccountId = {};
   $scope.companyAccountId = {};
   $scope.loaded = false;
-  $(window).trigger('resize');
+  
+  // ====== Triggers window resize to avoid bug =======
+      $(window).trigger('resize');
+        $interval(waitTillLoad, 100, 1);
+        function waitTillLoad(){
+          $(window).trigger('resize');
+        }
 
   $scope.signout = function(){
     console.log("Begin: Signout");

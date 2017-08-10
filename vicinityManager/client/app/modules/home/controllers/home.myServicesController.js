@@ -30,7 +30,12 @@ angular.module('VicinityManagerApp.controllers')
 
 // Initialize variables and retrieve initial data -----------------
 
+// ====== Triggers window resize to avoid bug =======
     $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
 
     $scope.items=[];
     $scope.tempId = "";

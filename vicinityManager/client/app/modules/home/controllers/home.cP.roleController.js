@@ -4,7 +4,12 @@ angular.module('VicinityManagerApp.controllers')
 function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, Notification) {
 
 // Initialize variables ========
-  $(window).trigger('resize');
+// ====== Triggers window resize to avoid bug =======
+    $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
   $scope.userAccounts = [];
   $scope.loaded = false;
   $scope.loadedPage = false;

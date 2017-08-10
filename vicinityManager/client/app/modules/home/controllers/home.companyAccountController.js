@@ -1,7 +1,13 @@
 angular.module('VicinityManagerApp.controllers').
 controller('companyAccountController', function($scope, $window, userAccountAPIService, AuthenticationService) {
 
-  $(window).trigger('resize');
+  // ====== Triggers window resize to avoid bug =======
+      $(window).trigger('resize');
+        $interval(waitTillLoad, 100, 1);
+        function waitTillLoad(){
+          $(window).trigger('resize');
+        }
+        
   $scope.name = {};
   $scope.avatar = {};
   // $scope.occupation = {};

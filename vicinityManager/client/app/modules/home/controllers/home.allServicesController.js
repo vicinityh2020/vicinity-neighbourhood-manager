@@ -24,7 +24,12 @@ angular.module('VicinityManagerApp.controllers')
             Notification){
 
 // Initialize variables and get initial data =============
-      $(window).trigger('resize');
+// ====== Triggers window resize to avoid bug =======
+    $(window).trigger('resize');
+      $interval(waitTillLoad, 100, 1);
+      function waitTillLoad(){
+        $(window).trigger('resize');
+      }
 
        $scope.items=[];
        $scope.onlyPrivateItems = false;
