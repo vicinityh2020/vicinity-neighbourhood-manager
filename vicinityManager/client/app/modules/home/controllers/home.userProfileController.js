@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('userProfileController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, userAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, $interval, userAccountAPIService, userAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');

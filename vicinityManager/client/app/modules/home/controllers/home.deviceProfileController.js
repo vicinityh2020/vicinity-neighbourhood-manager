@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('deviceProfileController',
-function ($scope, $window, $state, $stateParams, $location, itemsAPIService, Notification) {
+function ($scope, $window, $state, $interval, $stateParams, $location, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
   // console.log("location:" + $location.path());

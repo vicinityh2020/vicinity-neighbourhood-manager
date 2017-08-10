@@ -5,6 +5,7 @@ function ($scope,
           $window,
           $stateParams,
           $location,
+          $interval,
           registrationsAPIService,
           notificationsAPIService,
           Notification) {

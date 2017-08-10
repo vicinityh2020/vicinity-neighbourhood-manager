@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('rPregAdminController',
-function ($scope, $window, $stateParams, $location, registrationsAPIService, Notification) {
+function ($scope, $window, $stateParams, $interval, $location, registrationsAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');

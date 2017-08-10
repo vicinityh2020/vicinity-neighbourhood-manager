@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cPhistoryController',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
+function ($scope, $window, $stateParams, $interval, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');
         $interval(waitTillLoad, 100, 1);

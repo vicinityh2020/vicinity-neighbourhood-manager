@@ -7,6 +7,7 @@ angular.module('VicinityManagerApp.controllers').
             $window,
             $location,
             $http,
+            $interval,
             nodeAPIService,
             Notification) {
 

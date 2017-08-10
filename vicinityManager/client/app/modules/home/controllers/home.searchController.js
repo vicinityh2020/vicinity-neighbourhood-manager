@@ -1,6 +1,6 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers').
-  controller('searchController', function ($scope, searchAPIService, userAccountAPIService, itemsAPIService, $stateParams, $window, Notification) {
+  controller('searchController', function ($scope, $interval, searchAPIService, userAccountAPIService, itemsAPIService, $stateParams, $window, Notification) {
 
 // OnLoad functions &&  Initialize variables
 

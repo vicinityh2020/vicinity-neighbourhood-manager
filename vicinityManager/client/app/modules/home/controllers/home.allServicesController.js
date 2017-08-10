@@ -19,6 +19,7 @@ angular.module('VicinityManagerApp.controllers')
 })
 .controller('allServicesController',
    function ($scope,
+            $interval,
             $window,
             itemsAPIService,
             Notification){

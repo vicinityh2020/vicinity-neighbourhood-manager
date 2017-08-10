@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cPuserAccountsController',
-function ($scope, $stateParams, userAccountAPIService) {
+function ($scope, $stateParams, $interval, userAccountAPIService) {
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');
         $interval(waitTillLoad, 100, 1);

@@ -25,8 +25,8 @@ Filters the items based on the following rules:
     return out;
   };
 })
-.controller('cPdevicesController', ['$scope', '$window', '$stateParams', '$location', 'userAccountAPIService', 'itemsAPIService', 'AuthenticationService', 'Notification', 'customFilter',
-function ($scope, $window, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
+.controller('cPdevicesController', ['$scope', '$window', '$interval', '$stateParams', '$location', 'userAccountAPIService', 'itemsAPIService', 'AuthenticationService', 'Notification', 'customFilter',
+function ($scope, $window, $interval, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');
         $interval(waitTillLoad, 100, 1);

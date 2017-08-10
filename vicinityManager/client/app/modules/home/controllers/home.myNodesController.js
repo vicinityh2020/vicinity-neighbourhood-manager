@@ -7,6 +7,7 @@ angular.module('VicinityManagerApp.controllers').
             $window,
             $location,
             $http,
+            $interval,
             nodeAPIService,
             Notification) {
 
@@ -18,7 +19,7 @@ angular.module('VicinityManagerApp.controllers').
       function waitTillLoad(){
         $(window).trigger('resize');
       }
-      
+
   $scope.imMobile = Number($window.innerWidth) < 768;
   $(window).on('resize',function(){
     $scope.imMobile = Number($window.innerWidth) < 768;

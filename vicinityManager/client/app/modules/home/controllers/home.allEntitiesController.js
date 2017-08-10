@@ -1,5 +1,5 @@
 angular.module('VicinityManagerApp.controllers').
-  controller('allEntities', function ($scope, searchAPIService, userAccountAPIService, $stateParams, $window) {
+  controller('allEntities', function ($scope, $interval, searchAPIService, userAccountAPIService, $stateParams, $window) {
     $scope.resultsList = [];
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;

@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cPfriendsController',
-function ($scope, $stateParams, userAccountAPIService, $window) {
+function ($scope, $stateParams, $interval, userAccountAPIService, $window) {
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');
         $interval(waitTillLoad, 100, 1);

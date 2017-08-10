@@ -2,6 +2,7 @@
 angular.module('VicinityManagerApp.controllers').
   controller('allRegistrationsController',
   function ($scope,
+            $interval,
             $window,
             registrationsAPIService,
             registrationsListService,

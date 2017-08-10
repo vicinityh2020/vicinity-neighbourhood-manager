@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cProleController',
-function ($scope, $window, $stateParams, userAccountAPIService, userAPIService, Notification) {
+function ($scope, $window, $interval, $stateParams, userAccountAPIService, userAPIService, Notification) {
 
 // Initialize variables ========
 // ====== Triggers window resize to avoid bug =======

@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('serviceProfileController',
-function ($scope, $window, $state, $stateParams, $location, itemsAPIService, Notification) {
+function ($scope, $window, $state, $stateParams, $location, $interval, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
   // console.log("location:" + $location.path());
@@ -13,7 +13,7 @@ function ($scope, $window, $state, $stateParams, $location, itemsAPIService, Not
       function waitTillLoad(){
         $(window).trigger('resize');
       }
-      
+
   $scope.devEnabled = false;
   $scope.showInput = false;
   $scope.isMyItem = false;

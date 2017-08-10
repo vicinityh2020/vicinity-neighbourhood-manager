@@ -1,6 +1,6 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('settingsController',
-function ($scope, $window, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, $timeout, $interval, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');

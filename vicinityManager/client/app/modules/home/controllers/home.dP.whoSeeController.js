@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPwhoSeeController',
-function ($scope, $stateParams, userAccountAPIService, itemsAPIService, Notification) {
+function ($scope, $stateParams, $interval, userAccountAPIService, itemsAPIService, Notification) {
   // ====== Triggers window resize to avoid bug =======
       $(window).trigger('resize');
         $interval(waitTillLoad, 100, 1);

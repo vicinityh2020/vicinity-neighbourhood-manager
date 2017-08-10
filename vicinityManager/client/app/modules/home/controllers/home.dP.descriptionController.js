@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPdescriptionController',
-function ($scope, $window, $stateParams, itemsAPIService) {
+function ($scope, $window, $stateParams, $interval, itemsAPIService) {
 
 // Variables and initData
 // ====== Triggers window resize to avoid bug =======
