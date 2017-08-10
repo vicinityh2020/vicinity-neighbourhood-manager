@@ -212,13 +212,13 @@ item.index({name: 'text'}); */
 
 
 // Indexes for common field searchUser  =================
-
-userAccount.index({organisation: 1}, { unique: true });
-user.index({name: 1}, { unique: true });
+// TODO set the index as unique once server side is prepared
+userAccount.index({organisation: 1}, { unique: false });
+user.index({name: 1}, { unique: false });
 // item.index({name: 1, oid: 1}); // Compound indexes cannot be created in the schema definition!
-item.index({oid: 1}, { unique: true });
+item.index({oid: 1}, { unique: false });
 item.index({name: 1}, { unique: false });
-node.index({adid: 1}, { unique: true });
+node.index({adid: 1}, { unique: false });
 
 
 // Exports models  ===============================
