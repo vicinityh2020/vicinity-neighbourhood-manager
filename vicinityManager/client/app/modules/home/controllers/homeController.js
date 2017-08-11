@@ -1,37 +1,33 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('homeController',
-            ['$scope', '$window', 'Base64','tokenDecoder', '$interval',
-            function ($scope, $window, Base64, tokenDecoder, $interval) {
+            ['$scope', '$window', 'Base64','tokenDecoder', 'commonHelpers', '$interval',
+            function ($scope, $window, Base64, tokenDecoder, commonHelpers, $interval) {
 
-              // ====== Triggers window resize to avoid bug =======
-                  $(window).trigger('resize');
-                    $interval(waitTillLoad, 100, 1);
-                    function waitTillLoad(){
-                      $(window).trigger('resize');
-                    }
+      // ====== Triggers window resize to avoid bug =======
+        commonHelpers.triggerResize();
 
-              $interval(checkScroll, 1000); // Checks if it is necessary to display goToTop
+      $interval(checkScroll, 1000); // Checks if it is necessary to display goToTop
 
-              $scope.isDev = false;
-              $scope.isInfOp = false;
-              $scope.isScrollable = false;
+      $scope.isDev = false;
+      $scope.isInfOp = false;
+      $scope.isScrollable = false;
 
-              var myInit = function(){
-                var payload = tokenDecoder.deToken();
+      var myInit = function(){
+        var payload = tokenDecoder.deToken();
 
-                for(var i in payload.roles){
-                  if(payload.roles[i] === 'devOps'){
-                    $scope.isDev = true;
-                  }
-                  if(payload.roles[i] === 'infrastructure operator'){
+        for(var i in payload.roles){
+          if(payload.roles[i] === 'devOps'){
+            $scope.isDev = true;
+          }
+          if(payload.roles[i] === 'infrastructure operator'){
 
-                    $scope.isInfOp = true;
-                  }
-                }
-              };
+            $scope.isInfOp = true;
+          }
+        }
+      };
 
-              myInit();
+      myInit();
 
     // Scroll to top
     $scope.goToTop = function(){

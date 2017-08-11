@@ -1,12 +1,10 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cPuserAccountsController',
-function ($scope, $stateParams, $interval, userAccountAPIService) {
+function ($scope, $stateParams, commonHelpers, userAccountAPIService) {
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
+
   $scope.userAccounts=[];
   $scope.companyId = $stateParams.companyAccountId;
   $scope.loaded = false;

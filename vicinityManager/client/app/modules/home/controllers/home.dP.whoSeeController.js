@@ -1,13 +1,10 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPwhoSeeController',
-function ($scope, $stateParams, $interval, userAccountAPIService, itemsAPIService, Notification) {
+function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPIService, Notification) {
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
+
   $scope.friends=[];
   $scope.note = "";
   $scope.device = {};

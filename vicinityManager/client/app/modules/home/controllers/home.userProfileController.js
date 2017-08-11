@@ -1,14 +1,10 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('userProfileController',
-function ($scope, $window, $stateParams, $location, $interval, userAccountAPIService, userAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAPIService, userAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
 
   $scope.locationPrefix = $location.path();
   console.log("location:" + $location.path());
@@ -69,8 +65,8 @@ userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
 
 function updateScopeAttributes(response){
 
-  i=0;
-  j=0;
+  var i=0;
+  var j=0;
   while (i === 0){
     if (response.data.message.accountOf[j]._id.toString() === $stateParams.userAccountId.toString()){
       $scope.name =response.data.message.accountOf[j].name;

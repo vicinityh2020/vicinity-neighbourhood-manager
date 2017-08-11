@@ -25,9 +25,9 @@ angular.module('VicinityManagerApp.controllers')
     function ( $scope,
                $window,
                $stateParams,
-               $interval,
+               commonHelpers,
                itemsAPIService,
-               Notification){
+               itemsHelpers){
 
 // Initialize variables and retrieve initial data -----------------
 
@@ -43,11 +43,7 @@ angular.module('VicinityManagerApp.controllers')
     $scope.noItems = true;
 
     // ====== Triggers window resize to avoid bug =======
-        $(window).trigger('resize');
-          $interval(waitTillLoad, 100, 1);
-          function waitTillLoad(){
-            $(window).trigger('resize');
-          }
+      commonHelpers.triggerResize();
 
     init();
 
@@ -63,14 +59,8 @@ angular.module('VicinityManagerApp.controllers')
           $scope.loaded = true;
           $scope.loadedPage = true;
          },
-         errorCallback
+         itemsHelpers.errorCallback
        );
-     }
-
-// Handles errors
-
-     function errorCallback(err){
-       Notification.error("Something went wrong: " + err);
      }
 
 // Trigers load of more items

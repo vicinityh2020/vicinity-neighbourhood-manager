@@ -1,7 +1,17 @@
 "use strict";
 angular.module('VicinityManagerApp.controllers')
 .controller('notifications',
-function ($scope, $window,  $timeout, userAccountAPIService, itemsAPIService, notificationsAPIService, tokenDecoder, registrationsAPIService, Notification) {
+function ($scope,
+          $window,
+          $timeout,
+          userAccountAPIService,
+          notificationsAPIService,
+          tokenDecoder,
+          itemsHelpers,
+          userAccountsHelpers,
+          commonHelpers,
+          registrationsHelpers,
+          Notification) {
 
   // $scope.me = {};
   $scope.notifs = [];
@@ -18,7 +28,7 @@ var promise = {};
 
 $scope.intervalFunction = function(){
   promise = $timeout(function(){
-    getNotifsAndNotifs();
+    getNotifsAndNotifs2();
     $scope.intervalFunction();
   }, 5000);
 };
@@ -43,8 +53,8 @@ $scope.isDev = keyword.test(payload.roles);
 
   function init(){
   userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
-    .then(getNotifs1,errorCallback)
-    .then(getNotifs2,errorCallback);
+    .then(getNotifs1, commonHelpers.errorCallback)
+    .then(getNotifs2, commonHelpers.errorCallback);
   }
 
     function getNotifs1(response){
@@ -57,7 +67,7 @@ $scope.isDev = keyword.test(payload.roles);
       numberOfUnreadNotifs();
       if($scope.isDev){
         notificationsAPIService.getNotificationsOfRegistration()
-          .then(getNotifs3,errorCallback);
+          .then(getNotifs3,commonHelpers.errorCallback);
       }else{
         if($scope.notifs.length + $scope.registrations.length !== 0){
           Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
@@ -76,13 +86,18 @@ $scope.isDev = keyword.test(payload.roles);
           function successCallback(response){
             $scope.registrationsRead = response.data.message;
           },
-          errorCallback
+          commonHelpers.errorCallback
         );
       }
 
-    function errorCallback(err){
-      Notification.error('Error with notifications  ' + err);
-    }
+      function updateScopeAttributes(response){ // Need to be hoisted
+        var index = 0;
+        for (index in $scope.notifs){
+          if ($scope.notifs[index]._id.toString() === response.data.message._id.toString()){        //updatne len tu notif., ktory potrebujeme
+              $scope.notifs[index]=response.data.message;
+          }
+        }
+      }
 
     // ========= Other Functions ===============
 
@@ -91,10 +106,10 @@ $scope.isDev = keyword.test(payload.roles);
       $scope.zeroNotif = ($scope.notifs.length + $scope.registrations.length) === 0;
     }
 
-    function getNotifsAndNotifs(){ // Need to be hoisted
+    function getNotifsAndNotifs2(){ // Need to be hoisted
       userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
-        .then(getRegistrationNotifications,errorCallback)
-        .then(saveNewRegistrations,errorCallback);
+        .then(getRegistrationNotifications, commonHelpers.errorCallback)
+        .then(saveNewRegistrations, commonHelpers.errorCallback);
     }
 
     function getRegistrationNotifications(response){
@@ -107,168 +122,61 @@ $scope.isDev = keyword.test(payload.roles);
       numberOfUnreadNotifs();
     }
 
-    $scope.notifResponded =  function(notifID,answer){   // Need to be call external, no need for hoisting
-      notificationsAPIService.changeStatusToResponded(notifID,answer)
-        .then(
-          function successCallback(response){
-            // updateScopeAttributes(response);
-            init();
-          },
-          errorCallback
-        );
-      };
-
-      $scope.changeIsUnreadAndResponded =  function(notifID){   // Need to be call external, no need for hoisting
-        notificationsAPIService.changeIsUnreadToFalse(notifID)
-          .then($scope.notifResponded(notifID,'responded'), errorCallback);
-        };
+    $scope.changeIsUnreadAndResponded =  function(notifID){   // Need to be call external, no need for hoisting
+      notificationsAPIService.changeIsUnreadToFalse(notifID)
+        .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'), commonHelpers.errorCallback)
+        .then(init(), commonHelpers.errorCallback);
+    };
 
       $scope.changeIsUnread =  function(notifID){
         notificationsAPIService.changeIsUnreadToFalse(notifID)
-          .then(
-            function successCallback(response){
-              init();
-              // updateScopeAttributes(response);
-            },
-            errorCallback
-          );
+          .then(init(),commonHelpers.errorCallback);
       };
-
-      function updateScopeAttributes(response){ // Need to be hoisted
-        var index = 0;
-        for (index in $scope.notifs){
-          if ($scope.notifs[index]._id.toString() === response.data.message._id.toString()){        //updatne len tu notif., ktory potrebujeme
-              $scope.notifs[index]=response.data.message;
-          }
-        }
-      }
 
   // Accept / Reject requests ======================
 
   $scope.acceptNeighbourRequest = function (notifId, friendId){
-    userAccountAPIService.acceptNeighbourRequest(friendId)
-        .then(
-          function successCallback(response){
-            if (response.error) {
-                Notification.error("Partnership request acceptation failed :(");
-            } else {
-                Notification.success("Partnership request accepted!");
-            }
-
-            $scope.notifResponded(notifId,'responded');
-
-            // userAccountAPIService.getUserAccountProfile(friendId).success(updateScopeAttributes2);
-            // itemsAPIService.addFriendToHasAccess($stateParams.companyAccountId);
-        },
-        errorCallback
-      );
-    };
+    userAccountsHelpers.acceptNeighbourRequest(friendId)
+    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
+    .then(init(), userAccountsHelpers.errorCallback)
+    .catch(userAccountsHelpers.errorCallback);
+  };
 
     $scope.rejectNeighbourRequest = function(notifId, friendId) {
-      userAccountAPIService.rejectNeighbourRequest(friendId)
-          .then(
-            function successCallback(response){
-              if (response.error) {
-                  Notification.error("Partnership request rejection failed :(");
-              } else {
-                  Notification.success("Partnership request rejected!");
-              }
-
-              $scope.notifResponded(notifId,'responded');
-              // userAccountAPIService.getUserAccountProfile(friendId).success(updateScopeAttributes2);
-          },
-          errorCallback
-        );
-      };
+      userAccountsHelpers.rejectNeighbourRequest(friendId)
+      .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
+      .then(init(),userAccountsHelpers.errorCallback)
+      .catch(userAccountsHelpers.errorCallback);
+    };
 
     $scope.acceptDataRequest = function (dev_id, notifId) {
-      // $scope.interruptConnection= true;
-     //  Notification.success("Access request sent!");
-      itemsAPIService.acceptItemRequest(dev_id)
-        .then(
-          function successCallback(response) {
-        if (response.error) {
-            Notification.error("Sending data access request failed!");
-        } else {
-            Notification.success("Data access approved!");
-        }
-        $scope.notifResponded(notifId,'responded');
-        // itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-        },
-        errorCallback
-      );
+      itemsHelpers.acceptDataRequest(dev_id, notifId)
+      .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
+      .then(init(),itemsHelpers.errorCallback)
+      .catch(itemsHelpers.errorCallback);
     };
 
     $scope.rejectDataRequest = function (dev_id, notifId) {
-       //  Notification.success("Access request sent!");
-        itemsAPIService.rejectItemRequest(dev_id)
-          .then(
-            function successCallback(response) {
-          if (response.error) {
-              Notification.error("Sending data access request failed!");
-          } else {
-              Notification.success("Data access rejected!");
-          }
-          $scope.notifResponded(notifId,'responded');
-          // itemsAPIService.getItemWithAdd(dev_id).success(updateScopeAttributes2);
-        },
-        errorCallback
-      );
+      itemsHelpers.rejectDataRequest(dev_id, notifId)
+      .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
+      .then(init(),itemsHelpers.errorCallback)
+      .catch(itemsHelpers.errorCallback);
     };
 
     $scope.acceptRegistration = function (reg_id, notifId) {
-     registrationsAPIService.putOne(reg_id, {status: "pending" })
-       .then(verifyCallback(notifId),errorCallback);
-      };
+     registrationsHelpers.acceptRegistration(reg_id)
+      .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), registrationsHelpers.errorCallback)
+      .then(init(),registrationsHelpers.errorCallback)
+      .catch(registrationsHelpers.errorCallback);
+    };
 
 
     $scope.rejectRegistration = function (reg_id, notifId) {
-      registrationsAPIService.putOne(reg_id, {status: "declined" })
-        .then(declineCallback(notifId),errorCallback);
+      registrationsHelpers.rejectRegistration(reg_id)
+        .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), registrationsHelpers.errorCallback)
+        .then(init(),registrationsHelpers.errorCallback)
+        .catch(registrationsHelpers.errorCallback);
     };
-
-    function verifyCallback(notifId){
-      Notification.success("Verification mail was sent to the company!");
-      $scope.notifResponded(notifId,'responded');
-    }
-
-    function declineCallback(notifId){
-      Notification.success("Company was rejected!");
-      $scope.notifResponded(notifId,'responded');
-    }
-
-    // Custom filters ============
-    //
-    // $scope.searchFilter1 = function (result) {
-    //
-    //   return (result.type.toString() === 'deviceRequest' && result.status.toString() === 'waiting');
-    // };
-    //
-    // $scope.searchFilter2 = function (result) {
-    //
-    //   return (result.type.toString() === 'friendRequest' && result.status.toString() === 'waiting');
-    // };
-    //
-    // $scope.searchFilter3 = function (result) {
-    //
-    //   return (result.type.toString() === 'deviceRequest' && result.status.toString() === 'accepted');
-    // };
-    //
-    // $scope.searchFilter4 = function (result) {
-    //
-    //   return (result.type.toString() === 'friendRequest' && result.status.toString() === 'accepted');
-    // };
-    //
-    // $scope.searchFilter5 = function (result) {
-    //
-    //   return (result.type.toString() === 'deviceRequest' && result.status.toString() === 'rejected');
-    // };
-    //
-    // $scope.searchFilter6 = function (result) {
-    //
-    //   return (result.type.toString() === 'friendRequest' && result.status.toString() === 'rejected');
-    // };
-
 
   }
 );

@@ -1,15 +1,11 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers').
-  controller('searchController', function ($scope, $interval, searchAPIService, userAccountAPIService, itemsAPIService, $stateParams, $window, Notification) {
+  controller('searchController', function ($scope, commonHelpers, searchAPIService, userAccountAPIService, itemsAPIService, $stateParams, $window, Notification) {
 
 // OnLoad functions &&  Initialize variables
 
 // ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
+    commonHelpers.triggerResize();
 
     $scope.resultsOrganisations = [];
     $scope.resultsUsers = [];

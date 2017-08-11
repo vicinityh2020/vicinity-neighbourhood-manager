@@ -30,7 +30,7 @@ function cancelItemRequest(req, res, next){
                 notificationAPI.deleteNot(activeCompany_id, device.hasAdministrator[0]._id, 'deviceRequest', 'waiting');
 
                 device.save();
-                response = {"error": false, "message": "Processing data success!"};
+                response = {"error": false, "message": data};
             } else {
                 response = {"error": true, "message": "Processing data failed!"};
             }

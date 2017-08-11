@@ -1,12 +1,11 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('sPhistoryController',
-function ($scope, $window, $stateParams, $location, $interval, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
+function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
+
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
+
   $scope.userAccounts = [];
   $scope.companyAccounts = [];
   $scope.thisCompany = {};

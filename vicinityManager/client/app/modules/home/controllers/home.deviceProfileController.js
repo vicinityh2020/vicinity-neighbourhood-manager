@@ -1,18 +1,15 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('deviceProfileController',
-function ($scope, $window, $state, $interval, $stateParams, $location, itemsAPIService, Notification) {
+function ($scope, $window, $state, commonHelpers, $stateParams, $location, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
   // console.log("location:" + $location.path());
 
 // Initialize variables and data =====================
 // ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
+  commonHelpers.triggerResize();
+
   $scope.devEnabled = false;
   $scope.showInput = false;
   $scope.isMyDevice = false;

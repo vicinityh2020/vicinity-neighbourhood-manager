@@ -5,7 +5,7 @@ function ($scope,
           $window,
           $stateParams,
           $location,
-          $interval,
+          commonHelpers,
           registrationsAPIService,
           notificationsAPIService,
           Notification) {
@@ -13,11 +13,7 @@ function ($scope,
   $scope.loaded = false;
 
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
 
   registrationsAPIService.getOne($stateParams.registrationId)
     .then(

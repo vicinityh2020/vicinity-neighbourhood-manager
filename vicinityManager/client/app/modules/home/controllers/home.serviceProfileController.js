@@ -1,18 +1,14 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('serviceProfileController',
-function ($scope, $window, $state, $stateParams, $location, $interval, itemsAPIService, Notification) {
+function ($scope, $window, $state, $stateParams, $location, commonHelpers, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
   // console.log("location:" + $location.path());
 
 // Initialize variables and data =====================
 // ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
+  commonHelpers.triggerResize();
 
   $scope.devEnabled = false;
   $scope.showInput = false;

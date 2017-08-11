@@ -1,15 +1,11 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('sPdescriptionController',
-function ($scope, $window, $stateParams, $interval, itemsAPIService, Notification) {
+function ($scope, $window, $stateParams, commonHelpers, itemsAPIService, Notification) {
 
   // Variables and initData
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+    commonHelpers.triggerResize();
 
     $scope.loaded = false;
     $scope.isMyItem = false;

@@ -25,14 +25,12 @@ Filters the items based on the following rules:
     return out;
   };
 })
-.controller('cPdevicesController', ['$scope', '$window', '$interval', '$stateParams', '$location', 'userAccountAPIService', 'itemsAPIService', 'AuthenticationService', 'Notification', 'customFilter',
-function ($scope, $window, $interval, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
+.controller('cPdevicesController',
+function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
+
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
+
   $scope.cid = $window.sessionStorage.companyAccountId.toString();
   $scope.devices = [];
   $scope.friends = [];
@@ -62,4 +60,4 @@ function ($scope, $window, $interval, $stateParams, $location, userAccountAPISer
     Notification.error("Problem retrieving devices: " + err);
   }
 
-}]);
+});

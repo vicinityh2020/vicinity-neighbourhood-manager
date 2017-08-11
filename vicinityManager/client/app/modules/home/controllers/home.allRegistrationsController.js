@@ -2,21 +2,17 @@
 angular.module('VicinityManagerApp.controllers').
   controller('allRegistrationsController',
   function ($scope,
-            $interval,
+            commonHelpers,
             $window,
             registrationsAPIService,
             registrationsListService,
             notificationsAPIService,
             Notification) {
 
-// Initialize variables
+// Initialize variables and get initial resources
 
 // ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
+    commonHelpers.triggerResize();
 
     $scope.imMobile = Number($window.innerWidth) < 768;
     $(window).on('resize',function(){

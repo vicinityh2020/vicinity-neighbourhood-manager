@@ -1,15 +1,12 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cProleController',
-function ($scope, $window, $interval, $stateParams, userAccountAPIService, userAPIService, Notification) {
+function ($scope, $window, commonHelpers, $stateParams, userAccountAPIService, userAPIService, Notification) {
 
 // Initialize variables ========
 // ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
+  commonHelpers.triggerResize();
+
   $scope.userAccounts = [];
   $scope.loaded = false;
   $scope.loadedPage = false;

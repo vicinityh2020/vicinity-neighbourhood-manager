@@ -1,15 +1,12 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPdescriptionController',
-function ($scope, $window, $stateParams, $interval, itemsAPIService) {
+function ($scope, $window, $stateParams, commonHelpers, itemsAPIService) {
 
 // Variables and initData
 // ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
+  commonHelpers.triggerResize();
+
   $scope.loaded = false;
   $scope.isMyDevice = false;
   $scope.device = {};

@@ -7,18 +7,14 @@ angular.module('VicinityManagerApp.controllers').
             $window,
             $location,
             $http,
-            $interval,
+            commonHelpers,
             nodeAPIService,
             Notification) {
 
 // ======== Set initial variables ==========
 
 // ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
+    commonHelpers.triggerResize();
 
             $scope.nName = "";
             $scope.nUri = "";

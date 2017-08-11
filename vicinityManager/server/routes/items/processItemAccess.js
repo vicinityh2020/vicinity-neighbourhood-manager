@@ -39,7 +39,7 @@ function processItemAccess(req, res, next) {
 
                 device.save();
 
-                response = {"error": false, "message": "Processing data success!"};
+                response = {"error": false, "message": data};
             } else {
                 response = {"error": true, "message": "Processing data failed!"};
             }

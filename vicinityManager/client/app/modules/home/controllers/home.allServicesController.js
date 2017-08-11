@@ -18,19 +18,12 @@ angular.module('VicinityManagerApp.controllers')
   };
 })
 .controller('allServicesController',
-   function ($scope,
-            $interval,
-            $window,
-            itemsAPIService,
-            Notification){
+   function ($scope, $window, itemsAPIService, commonHelpers, itemsHelpers){
+
+// ====== Triggers window resize to avoid bug =======
+     commonHelpers.triggerResize();
 
 // Initialize variables and get initial data =============
-// ====== Triggers window resize to avoid bug =======
-    $(window).trigger('resize');
-      $interval(waitTillLoad, 100, 1);
-      function waitTillLoad(){
-        $(window).trigger('resize');
-      }
 
        $scope.items=[];
        $scope.onlyPrivateItems = false;
@@ -38,7 +31,6 @@ angular.module('VicinityManagerApp.controllers')
        $scope.loadedPage = false;
        $scope.noItems = true;
        $scope.myId = $window.sessionStorage.companyAccountId;
-       $scope.tempId = "";
        $scope.offset = 0;
        $scope.allItemsLoaded = false;
 
@@ -62,79 +54,32 @@ angular.module('VicinityManagerApp.controllers')
         $scope.loaded = true;
         $scope.loadedPage = true;
       },
-      errorCallback
+      itemsHelpers.errorCallback
     );
   }
 
-// Trigers load of more items
+  // Manage access request functions =====================
 
-  $scope.loadMore = function(){
-      $scope.loaded = false;
-      $scope.offset += 12;
-      init();
-  };
+     $scope.processMyAccess = function(it_id) {
+       itemsAPIService.processItemAccess(it_id)
+       .then(itemsHelpers.processingAccess,itemsHelpers.errorCallback)
+       .then(updateScopeAttributes,itemsHelpers.errorCallback);
+      };
 
-// Manage access request functions =====================
+     $scope.cancelMyRequest = function(it_id) {
+       itemsAPIService.cancelItemRequest(it_id)
+       .then(itemsHelpers.cancellingRequest,itemsHelpers.errorCallback)
+       .then(updateScopeAttributes,itemsHelpers.errorCallback);
+      };
 
-   $scope.processMyAccess = function(it_id) {
-     $scope.tempId = it_id;
-     itemsAPIService.processItemAccess(it_id)
-     .then(processingAccess,errorCallback)
-     .then(getItem,errorCallback);
-    };
+     $scope.cancelMyAccess = function(it_id) {
+       $scope.note = "";
+       itemsAPIService.cancelItemAccess(it_id)
+       .then(itemsHelpers.cancellingAccess,itemsHelpers.errorCallback)
+       .then(updateScopeAttributes,itemsHelpers.errorCallback);
+     };
 
-   $scope.cancelMyRequest = function(it_id) {
-     $scope.tempId = it_id;
-     itemsAPIService.cancelItemRequest(it_id)
-     .then(cancellingRequest,errorCallback)
-     .then(getItem,errorCallback);
-    };
-
-   $scope.cancelMyAccess = function(it_id) {
-     $scope.tempId = it_id;
-     $scope.note = "";
-     itemsAPIService.cancelItemAccess(it_id)
-     .then(cancellingAccess,errorCallback)
-     .then(getItem,errorCallback);
-   };
-
-// Callbacks and helpers ===============
-
-   function processingAccess(response){
-     if (response.data.message.error) {
-         Notification.error("Sending data access request failed!");
-     } else {
-         Notification.success("Access request sent!");
-     }
-     return itemsAPIService.getItemWithAdd($scope.tempId);
-   }
-
-   function cancellingRequest(response){
-     if (response.data.message.error) {
-         Notification.error("Sending data access request failed!");
-     } else {
-         Notification.success("Data access request canceled!");
-     }
-     return itemsAPIService.getItemWithAdd($scope.tempId);
-   }
-
-   function cancellingAccess(response){
-     if (response.data.message.error) {
-         Notification.error("Try for interruption failed!");
-     } else {
-         Notification.success("Connection interrupted!");
-     }
-     return itemsAPIService.getItemWithAdd($scope.tempId);
-   }
-
-   function getItem(response){
-     updateScopeAttributes(response);
-     $scope.tempId = "";
-   }
-
-  function errorCallback(err){
-    Notification.error("Something went wrong: " + err);
-  }
+// Refresh scope
 
   function updateScopeAttributes(response){
     for (var it in $scope.items){
@@ -143,5 +88,13 @@ angular.module('VicinityManagerApp.controllers')
       }
     }
   }
+
+  // Trigers load of more items
+
+    $scope.loadMore = function(){
+        $scope.loaded = false;
+        $scope.offset += 12;
+        init();
+    };
 
 });

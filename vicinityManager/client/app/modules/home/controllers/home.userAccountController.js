@@ -1,5 +1,6 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers').
-controller('userAccountController', function($scope, $window, $cookies, $interval, userAccountAPIService, AuthenticationService) {
+controller('userAccountController', function($scope, $window, $cookies, commonHelpers, userAccountAPIService, AuthenticationService) {
   $scope.name = {};
   $scope.avatar = {};
   $scope.occupation = {};
@@ -9,11 +10,7 @@ controller('userAccountController', function($scope, $window, $cookies, $interva
   $scope.loaded = false;
 
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
 
   $scope.signout = function(){
     console.log("Begin: Signout");
@@ -25,8 +22,8 @@ controller('userAccountController', function($scope, $window, $cookies, $interva
   userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).then(
     function successCallback(response){
 
-    i=0;
-    j=0;
+    var i=0;
+    var j=0;
     while (i==0){
       if (response.data.message.accountOf[j].email==$window.sessionStorage.username){
         $scope.name =response.data.message.accountOf[j].name;

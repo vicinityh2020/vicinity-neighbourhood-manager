@@ -1,13 +1,10 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('settingsController',
-function ($scope, $window, $stateParams, $location, $timeout, $interval, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
-      $(window).trigger('resize');
-        $interval(waitTillLoad, 100, 1);
-        function waitTillLoad(){
-          $(window).trigger('resize');
-        }
+  commonHelpers.triggerResize();
 
   $scope.notifs = [];
   $scope.notifs2 = [];
