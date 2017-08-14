@@ -1,26 +1,5 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
-.filter('customMyServs',
- function() {
-  return function(input, filterTerm) {
-
-    var out = [];
-
-    angular.forEach(input,
-      function(item) {
-        var key = new RegExp(item.accessLevel, "i");
-        if(filterTerm !== "0"){
-          if (key.test(filterTerm)) {
-            out.push(item);
-          }
-        } else {
-          out.push(item);
-        }
-      }
-    );
-    return out;
-  };
-})
 .controller('myServicesController',
     function ( $scope,
                $window,

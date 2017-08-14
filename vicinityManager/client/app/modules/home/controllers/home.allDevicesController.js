@@ -1,22 +1,5 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
-.filter('customAllDevs',
- function() {
-  return function(input, searchTerm) {
-
-    var out = [];
-    var keyword = new RegExp(searchTerm, "i");
-
-    angular.forEach(input,
-      function(device) {
-       if (keyword.test(device.name)) {
-          out.push(device);
-       }
-      }
-    );
-    return out;
-  };
-})
 .controller('allDevicesController',
    function ($scope, $window, itemsAPIService, commonHelpers, itemsHelpers){
 

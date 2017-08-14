@@ -40,7 +40,7 @@
                             <h2 style="margin-left:20px;">No devices to show.</h2>
                          </div>
 
-                       <div ng-repeat="device in devices | customMyDevs:filterTerm" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                       <div ng-repeat="device in devices | visibilityFilter:filterTerm" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 
                          <div class="box box-widget widget-user-2">
 

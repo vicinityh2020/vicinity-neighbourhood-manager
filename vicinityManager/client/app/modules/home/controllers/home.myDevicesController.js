@@ -1,26 +1,5 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
-.filter('customMyDevs',
- function() {
-  return function(input, filterTerm) {
-
-    var out = [];
-
-    angular.forEach(input,
-      function(device) {
-        var key = new RegExp(device.accessLevel, "i");
-        if(filterTerm !== "0"){
-          if (key.test(filterTerm)) {
-            out.push(device);
-          }
-        } else {
-          out.push(device);
-        }
-      }
-    );
-    return out;
-  };
-})
 .controller('myDevicesController',
     function ( $scope,
                $window,

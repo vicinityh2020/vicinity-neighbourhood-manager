@@ -11,6 +11,7 @@ angular.module('VicinityManagerApp', [
   'ui.router',
   'VicinityManagerApp.controllers',
   'VicinityManagerApp.services',
+  'VicinityManagerApp.filters',
   'VicinityManagerApp.version',
   'ngCookies',
   'ui-notification',

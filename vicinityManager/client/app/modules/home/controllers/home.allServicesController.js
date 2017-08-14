@@ -1,22 +1,5 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
-.filter('customAllServs',
- function() {
-  return function(input, searchTerm) {
-
-    var out = [];
-    var keyword = new RegExp(searchTerm, "i");
-
-    angular.forEach(input,
-      function(item) {
-       if (keyword.test(item.name)) {
-          out.push(item);
-       }
-      }
-    );
-    return out;
-  };
-})
 .controller('allServicesController',
    function ($scope, $window, itemsAPIService, commonHelpers, itemsHelpers){
 

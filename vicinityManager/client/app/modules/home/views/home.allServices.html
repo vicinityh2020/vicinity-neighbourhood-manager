@@ -24,7 +24,7 @@
        <h2 style="margin-left:20px;">There is no shared service with you.</h2>
    </div>
 
-    <div ng-show="loadedPage" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="it in items | customAllServs:searchTerm">
+    <div ng-show="loadedPage" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="it in items | nameFilter:searchTerm">
       <!-- Widget: user widget style 1 -->
       <div class="box box-widget widget-user-2">
         <!-- Add the bg color to the header using any of the bg-* classes -->
