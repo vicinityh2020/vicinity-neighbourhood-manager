@@ -4,8 +4,8 @@ Common functions not focus on any concrete part of the app.
 */
 'use strict';
 var services = angular.module('VicinityManagerApp.services').
-factory('commonHelpers', ['$interval', 'Notification',
-  function($interval, Notification){
+factory('commonHelpers', ['$interval', 'Notification', '$window',
+  function($interval, Notification, $window){
 
   var helpers = {};
 
@@ -13,6 +13,8 @@ factory('commonHelpers', ['$interval', 'Notification',
 Triggers resize on page load.
 Needed to overcome sidebar length bar.
 Used in almost all controllers.
+Also ensures that when there is a change of
+url/state, the view is displayed at the top position
 */
   helpers.triggerResize = function() {
     $(window).trigger('resize');
@@ -20,6 +22,7 @@ Used in almost all controllers.
       function waitTillLoad(){
         $(window).trigger('resize');
       }
+    $window.scrollTo(0, 0);
   };
 
   /*
