@@ -14,6 +14,9 @@ angular.module('VicinityManagerApp.controllers').
 // ====== Triggers window resize to avoid bug =======
     commonHelpers.triggerResize();
 
+    // Ensure scroll on top onLoad
+        $window.scrollTo(0, 0);
+
     $scope.imMobile = Number($window.innerWidth) < 768;
     $(window).on('resize',function(){
       $scope.imMobile = Number($window.innerWidth) < 768;

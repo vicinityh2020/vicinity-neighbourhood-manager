@@ -8,6 +8,9 @@ angular.module('VicinityManagerApp.controllers').
     // ====== Triggers window resize to avoid bug =======
     commonHelpers.triggerResize();
 
+    // Ensure scroll on top onLoad
+        $window.scrollTo(0, 0);
+
     userAccountAPIService.getFriends($window.sessionStorage.companyAccountId)
       .then(
         function successCallback(response){

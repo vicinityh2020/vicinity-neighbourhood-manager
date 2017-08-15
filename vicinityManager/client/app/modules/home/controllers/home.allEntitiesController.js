@@ -2,6 +2,9 @@
 angular.module('VicinityManagerApp.controllers').
   controller('allEntities', function ($scope, commonHelpers, searchAPIService, userAccountAPIService, $stateParams, $window) {
 
+    // Ensure scroll on top onLoad
+        $window.scrollTo(0, 0);
+        
     // Variables
     $scope.resultsList = [];
     $scope.loaded = false;

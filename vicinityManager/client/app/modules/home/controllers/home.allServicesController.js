@@ -6,6 +6,9 @@ angular.module('VicinityManagerApp.controllers')
 // ====== Triggers window resize to avoid bug =======
      commonHelpers.triggerResize();
 
+     // Ensure scroll on top onLoad
+         $window.scrollTo(0, 0);
+
 // Initialize variables and get initial data =============
 
        $scope.items=[];

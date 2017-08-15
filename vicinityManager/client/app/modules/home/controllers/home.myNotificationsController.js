@@ -13,6 +13,9 @@ angular.module('VicinityManagerApp.controllers').
 // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
+  // Ensure scroll on top onLoad
+      $window.scrollTo(0, 0);
+
 // ======= Set initial variables ==========
   $scope.loadedPage = false;
   $scope.rev = true;

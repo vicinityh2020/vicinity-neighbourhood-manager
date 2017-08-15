@@ -22,7 +22,6 @@ url/state, the view is displayed at the top position
       function waitTillLoad(){
         $(window).trigger('resize');
       }
-    $window.scrollTo(0, 0);
   };
 
   /*
