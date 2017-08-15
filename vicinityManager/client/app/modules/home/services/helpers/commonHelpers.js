@@ -29,7 +29,7 @@ url/state, the view is displayed at the top position
   Error Callback handler
   */
   helpers.errorCallback = function(err){
-    Notification.error("Something went wrong: " + err);
+    Notification.error("Something went wrong: " + JSON.stringify(err));
   };
 
 /*

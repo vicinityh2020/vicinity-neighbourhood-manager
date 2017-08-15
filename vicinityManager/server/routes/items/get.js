@@ -59,7 +59,6 @@ function getAllItems(req, res) {
     var friends = data[0].knows;
 
     itemOp.find(query).populate('hasAdministrator','organisation').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
-      logger.debug(JSON.stringify(data));
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
         response =  {"error": true, "message": "Error fetching data"};

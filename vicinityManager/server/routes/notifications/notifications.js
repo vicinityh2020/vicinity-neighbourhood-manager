@@ -3,12 +3,11 @@
  */
 
 var mongoose = require('mongoose');
-var winston = require('winston');
 var logger = require("../../middlewares/logger");
-
 var notificationOp = require('../../models/vicinityManager').notification;
 
 // FUNCTIONS to get notifications
+
 /*
 Read and unread separately
 */
@@ -141,17 +140,38 @@ var stat = req.params.status;
   });
 }
 
+/*
+Sets the notification to read
+Accepts single string or array
+*/
 function changeIsUnreadToFalse(req, res){
+  var o_id = [];
+  if(req.params.id && req.params.id != '0'){
+    o_id.push(mongoose.Types.ObjectId(req.params.id));
+    setAsRead(o_id, res);
+  } else if(req.body.ids){
+    setAsRead(req.body.ids);
+  } else {
+    response = {"error": true, "message": "Error fetching data"};
+    res.json(response);
+  }
+  response = {"error": false, "message": "Notifications processed succesfully!"};
+  res.json(response);
+}
+
+// Recursively sets all notifs to read
+function setAsRead(ids, res){
   var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-    notificationOp.findByIdAndUpdate(o_id, { $set: { isUnread: false }}, { new: true }, function (err, notif) {
-      if (err) {
-        response = {"error": true, "message": "Error fetching data"};
-      } else {
-        response = {"error": false, "message": notif};
-      }
+  notificationOp.update({_id: ids[0]}, { $set: { isUnread: false }}, function (err, notif) {
+    if (err) {
+      response = {"error": true, "message": "Error fetching data"};
       res.json(response);
-    });
+    }
+  });
+  ids.splice(0,1);
+  if(ids.length > 0){
+    setAsRead(ids);
+  }
 }
 
 function markAsRead(sender_id, recipient_id, type, status){

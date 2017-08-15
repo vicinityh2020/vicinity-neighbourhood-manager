@@ -4,43 +4,34 @@ angular.module('VicinityManagerApp.controllers').
   function ($scope,
             $window,
             commonHelpers,
-            userAccountAPIService,
             notificationsAPIService,
             tokenDecoder,
             registrationsHelpers,
             itemsHelpers,
-            userAccountsHelpers,
-            Notification) {
-
-// ======== Set initial variables ==========
+            userAccountsHelpers) {
 
 // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
-  $scope.imMobile = Number($window.innerWidth) < 768;
-  $(window).on('resize',function(){
-    $scope.imMobile = Number($window.innerWidth) < 768;
-  });
-
+// ======= Set initial variables ==========
   $scope.loadedPage = false;
   $scope.rev = true;
   $scope.myOrderBy = 'date';
   $scope.notifs = [];
   $scope.notifs2 = [];
 
-// Checking if user is devOps =========================
-
+// ====== Checking if user is devOps =============
 $scope.isDev = false;
 var payload = tokenDecoder.deToken();
 var keyword = new RegExp('devOps');
 $scope.isDev = keyword.test(payload.roles);
 
-// ===== Sets from which date we retrieve notifications =====
+// ====== Sets from which date we retrieve notifications at init =====
 
 $scope.dateFrom =  moment().subtract(7, 'days'); // Initialized to one week ago
 $scope.period = 'week';
 
-// ====== Getting notifications onLoad (read and unread) ====
+// ====== Getting notifications ======
 
   init();
 
@@ -49,7 +40,7 @@ $scope.period = 'week';
     $scope.dates = [];
     $scope.notifs2 = [];
     notificationsAPIService.getAllUserNotifications($window.sessionStorage.companyAccountId, $scope.dateFrom)
-    .then(getNotifs,errorCallback);
+    .then(getNotifs, commonHelpers.errorCallback);
   }
 
   function getNotifs(response){
@@ -63,18 +54,14 @@ $scope.period = 'week';
             }
             addTimestamp();
           },
-          errorCallback
+          commonHelpers.errorCallback
         );
       }else{
         addTimestamp();
       }
     }
 
-    function errorCallback(err){
-      Notification.error('Error with notifications  ' + err);
-    }
-
-// ========= Other Functions ===============
+// ========= Time related functions ===============
 
     function addTimestamp(){
       angular.forEach($scope.notifs,
@@ -118,7 +105,7 @@ $scope.period = 'week';
       init();
     };
 
-// Accept / Reject requests ======================
+// ========= Accept / Reject requests ==========
 
 $scope.acceptNeighbourRequest = function (notifId, friendId){
   userAccountsHelpers.acceptNeighbourRequest(friendId)
@@ -163,7 +150,7 @@ $scope.acceptNeighbourRequest = function (notifId, friendId){
       .catch(registrationsHelpers.errorCallback);
   };
 
-  // Sorting
+  // ==== Sorting ====
 
   $scope.orderByMe = function(x) {
     if($scope.myOrderBy === x){

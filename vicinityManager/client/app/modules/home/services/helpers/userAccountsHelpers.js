@@ -36,7 +36,7 @@ factory('userAccountsHelpers', ['Notification', 'userAccountAPIService',
                if (response.error) {
                    Notification.error("Partnership request acceptation failed :(");
                } else {
-                   Notification.success("Partnership request accepted!");
+                   Notification.success("Partnership request rejected!");
                }
            },
            helpers.errorCallback

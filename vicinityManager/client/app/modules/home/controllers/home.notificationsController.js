@@ -4,6 +4,7 @@ angular.module('VicinityManagerApp.controllers')
 function ($scope,
           $window,
           $timeout,
+          $state,
           userAccountAPIService,
           notificationsAPIService,
           tokenDecoder,
@@ -20,6 +21,7 @@ function ($scope,
   $scope.registrationsRead = [];
   $scope.oneNotif = false;
   $scope.zeroNotif = false;
+  $scope.newNotifs = false;
   // $scope.numberOfUnread = 0
 
 // ====== Look for new notifications every 5s =======
@@ -28,7 +30,7 @@ var promise = {};
 
 $scope.intervalFunction = function(){
   promise = $timeout(function(){
-    getNotifsAndNotifs2();
+    init();
     $scope.intervalFunction();
   }, 5000);
 };
@@ -69,8 +71,9 @@ $scope.isDev = keyword.test(payload.roles);
         notificationsAPIService.getNotificationsOfRegistration()
           .then(getNotifs3,commonHelpers.errorCallback);
       }else{
-        if($scope.notifs.length + $scope.registrations.length !== 0){
+        if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
           Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
+          $scope.newNotifs = $scope.notifs.length + $scope.registrations.length;
         }
       }
     }
@@ -78,8 +81,9 @@ $scope.isDev = keyword.test(payload.roles);
     function getNotifs3(response){
       $scope.registrations = response.data.message;
       numberOfUnreadNotifs();
-      if($scope.notifs.length + $scope.registrations.length !== 0){
+      if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
         Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
+        $scope.newNotifs = $scope.notifs.length + $scope.registrations.length;
       }
       notificationsAPIService.getNotificationsOfRegistrationRead()
         .then(
@@ -106,32 +110,35 @@ $scope.isDev = keyword.test(payload.roles);
       $scope.zeroNotif = ($scope.notifs.length + $scope.registrations.length) === 0;
     }
 
-    function getNotifsAndNotifs2(){ // Need to be hoisted
-      userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
-        .then(getRegistrationNotifications, commonHelpers.errorCallback)
-        .then(saveNewRegistrations, commonHelpers.errorCallback);
-    }
-
-    function getRegistrationNotifications(response){
-      $scope.notifs = response.data.message;
-      return notificationsAPIService.getNotificationsOfRegistration();
-    }
-
-    function saveNewRegistrations(response){
-      $scope.registrations = response.data.message;
-      numberOfUnreadNotifs();
-    }
-
     $scope.changeIsUnreadAndResponded =  function(notifID){   // Need to be call external, no need for hoisting
       notificationsAPIService.changeIsUnreadToFalse(notifID)
         .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'), commonHelpers.errorCallback)
         .then(init(), commonHelpers.errorCallback);
     };
 
-      $scope.changeIsUnread =  function(notifID){
-        notificationsAPIService.changeIsUnreadToFalse(notifID)
-          .then(init(),commonHelpers.errorCallback);
-      };
+    $scope.changeIsUnread =  function(notifID){
+      notificationsAPIService.changeIsUnreadToFalse(notifID)
+        .then(init(),commonHelpers.errorCallback);
+    };
+
+    $scope.seeAll = function(){
+      var allNotifs = [];
+      retrieveAllNotifs($scope.notifs, allNotifs);
+      retrieveAllNotifs($scope.registrations, allNotifs);
+      notificationsAPIService.changeIsUnreadToFalse('0',{ids: allNotifs})
+        .then(
+          function successCallback(){
+            init();
+          }, commonHelpers.errorCallback
+        );
+      $state.go('root.main.myNotifications');
+    };
+
+    function retrieveAllNotifs(array, allNotifs){
+      for (var index in array){
+        allNotifs.push(array[index]._id.toString());
+      }
+    }
 
   // Accept / Reject requests ======================
 
