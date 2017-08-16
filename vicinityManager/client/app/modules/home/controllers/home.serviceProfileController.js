@@ -408,10 +408,10 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne($stateParams.deviceId, {avatar: base64String})
+  itemsAPIService.putOne($stateParams.serviceId, {avatar: base64String})
     .then(
       function successCallback(response){
-        itemsAPIService.getItemWithAdd($stateParams.deviceId)
+        itemsAPIService.getItemWithAdd($stateParams.serviceId)
           .then(
             function successCallback(response) {
               $scope.device = response.data.message;
