@@ -75,7 +75,7 @@ function getAllItems(req, res) {
 
 function getItemWithAdd(req, res, next) {
 
-    logger.debug('Start: getItemWithAdd');
+    // logger.debug('Start: getItemWithAdd');
 
     var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
@@ -99,7 +99,7 @@ function getItemWithAdd(req, res, next) {
                     response = {"error": true, "message": "Processing data failed!"};
                   }
                 }
-                logger.debug('End: getItemWithAdd');
+                // logger.debug('End: getItemWithAdd');
                 res.json(response);
               }
             );

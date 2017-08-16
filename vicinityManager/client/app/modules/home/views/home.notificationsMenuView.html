@@ -115,8 +115,10 @@
              </li>
              <!-- Unread new devices registered -->
               <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') " ng-click="changeIsUnreadAndResponded(notif._id)">  <!-- | filter: searchfilter3 -->
-                  <span class="ciara"></span>
-                  <a class="padded"><b>New devices have been activated!</b></a>
+                <span class="ciara"></span>
+                  <p>
+                    <a class="padded"><b>New devices have been activated!</b></a>
+                  </p>
               </li>
 
         <!-- Unread registration request notification -->
@@ -166,6 +168,15 @@
           <button  ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Decline</button>
         </div>
       </li>
+      <!-- Unread new devices registered -->
+       <li ng-repeat="notif in notifs2" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') " ng-click="changeIsUnreadAndResponded(notif._id)">  <!-- | filter: searchfilter3 -->
+         <span class="ciara"></span>
+         <div class="notification-description readNot">
+           <p>
+             <a class="padded"><b>New devices have been activated!</b></a>
+           </p>
+         </div>
+       </li>
 
 <!-- Read registration request notification-->
       <li ng-repeat="reg in registrationsRead" ng-show="(reg.type=='registrationRequest') && (reg.status== 'waiting') ">        <!-- | filter: searchfilter4 -->
