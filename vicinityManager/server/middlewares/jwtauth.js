@@ -3,7 +3,7 @@ var config = require('../configuration/configuration');
 var logger = require("../middlewares/logger");
 
 module.exports = function(req, res, next) {
-  logger.info('JWTAuth middleware');
+ // logger.info('JWTAuth middleware');
 
   var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
 
