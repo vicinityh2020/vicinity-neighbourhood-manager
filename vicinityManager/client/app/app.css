@@ -6,25 +6,6 @@ App css stylesheet
 Common
 */
 
-@media (min-width: 768px) {
-  #backToTop{
-    position: fixed;
-    right: 2%;
-    bottom: 12%;
-    z-index: 1000;
-  }
-}
-
-@media (max-width: 767px){
-  #backToTop{
-    position: fixed;
-    right: 3%;
-    bottom: 1%;
-    z-index: 1000;
-    cursor: pointer;
-  }
-}
-
 .centered{
   text-align: center;
 }
@@ -56,6 +37,36 @@ Common
 .fontRed{
   color: red;
 }
+
+/*
+Back to top - Arrow
+*/
+
+#backToTop{
+  color: #0080ff;
+  opacity: 0.4;
+  filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+@media (min-width: 768px) {
+  #backToTop{
+    position: fixed;
+    right: 2%;
+    bottom: 12%;
+    z-index: 1000;
+  }
+}
+
+@media (max-width: 767px){
+  #backToTop{
+    position: fixed;
+    right: 3%;
+    bottom: 1%;
+    z-index: 1000;
+    cursor: pointer;
+  }
+}
+
 
 /*
 Notifications
