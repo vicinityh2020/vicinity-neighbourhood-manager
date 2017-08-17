@@ -20,7 +20,8 @@ function postSearch(req, res, next){
         if(err || !data){
          res.json({"error" : true, "message" : "No match found"});
         } else {
-          res.json({"error": false, "message" : data });
+         logger.debug("Result search: " + JSON.stringify(data)); 
+	 res.json({"error": false, "message" : data });
         }
       }
     );
