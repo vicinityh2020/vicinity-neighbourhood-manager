@@ -52,13 +52,14 @@ function saveDocuments(adid, cid, objectsArray, oidArray){
 
   // Create one item document
   obj.adid = adid;
-  obj.oid = objectsArray[0].oid;
-  obj.name = creds.name; // Name goes in TD!!!
+  obj.oid = creds.oid; // Username in commServer
+  obj.name = objectsArray[0].name; // Name in commServer
   obj.hasAdministrator = cid; // CID, obtained from mongo
   obj.accessLevel = 1; // private by default
   obj.avatar = config.avatarItem; // Default avatar provided by VCNT
   obj.typeOfItem = 'device';
   obj.info = objectsArray[0]; // Thing description obj, might have different structures each time
+  obj.info.oid = creds.oid;
   obj.status = 'enabled'; // TODO Change in future stages of the project
 
   itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
@@ -66,7 +67,7 @@ function saveDocuments(adid, cid, objectsArray, oidArray){
       if(err || !data){
         logger.debug("Item " + obj.name + " was not saved...");
       } else {
-        commServerProcess(obj.oid, adid, creds.name, creds.password, cid);
+        commServerProcess(obj.oid, adid, obj.name, creds.password, cid);
       }
     }
   );
