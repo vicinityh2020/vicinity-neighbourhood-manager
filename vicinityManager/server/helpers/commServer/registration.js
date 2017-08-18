@@ -52,14 +52,14 @@ function saveDocuments(adid, cid, objectsArray, oidArray){
 
   // Create one item document
   obj.adid = adid;
-  obj.oid = creds.oid; // Username in commServer
+  obj.oid = creds.oid.toLowerCase(); // Username in commServer
   obj.name = objectsArray[0].name; // Name in commServer
   obj.hasAdministrator = cid; // CID, obtained from mongo
   obj.accessLevel = 1; // private by default
   obj.avatar = config.avatarItem; // Default avatar provided by VCNT
   obj.typeOfItem = 'device';
   obj.info = objectsArray[0]; // Thing description obj, might have different structures each time
-  obj.info.oid = creds.oid;
+  obj.info.oid = creds.oid.toLowerCase();
   obj.status = 'enabled'; // TODO Change in future stages of the project
 
   itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
@@ -74,7 +74,7 @@ function saveDocuments(adid, cid, objectsArray, oidArray){
 
   oidArray.push(obj.oid);
   objectsArray.splice(0,1); // Delete first object of objectsArray
-
+  
   if (objectsArray.length > 0 ){ // If objectsArray not empty, call recursively until all objects saved
     saveDocuments(adid, cid, objectsArray, oidArray);
   }
