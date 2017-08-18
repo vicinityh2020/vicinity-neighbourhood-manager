@@ -34,21 +34,10 @@ angular.module('VicinityManagerApp.controllers')
 
               $scope.noItems = ($scope.devs.length === 0);
               $scope.allItemsLoaded = response.data.message.length < 12;
-
-              var j = 0;
-              for (var dev in $scope.devs){
-                if ($scope.devs[dev].accessLevel > 1){
-                  j++;
-                }
-              }
-              if (j === 0){
-                $scope.onlyPrivateDevices = true;
-              }else{
-                $scope.onlyPrivateDevices = false;
-              }
               $scope.loaded = true;
               $scope.loadedPage = true;
-            },
+           
+	     },
              itemsHelpers.errorCallback
           );
         }
