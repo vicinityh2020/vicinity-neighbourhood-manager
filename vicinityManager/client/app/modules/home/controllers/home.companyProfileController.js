@@ -1,7 +1,7 @@
 "use strict";
 angular.module('VicinityManagerApp.controllers')
 .controller('companyProfileController',
-function ($scope, $window, commonHelpers, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, tokenDecoder, AuthenticationService, Notification) {
+function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, tokenDecoder, AuthenticationService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -29,6 +29,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, $timeout, use
   $scope.services = [];
   $scope.loaded = false;
   $scope.showInput = false;
+
 
   // $scope.organisationNew = '';
   $scope.locationNew = "";
@@ -343,6 +344,12 @@ $scope.uploadPic = function(){
    $('textarea#not3').hide();
    $scope.notesNew = "";
  };
+
+ $( "select#editThemeColor" ).change(function() {
+   // TODO save skin color in MONGO !!!
+   $rootScope.skinColor = $('select#editThemeColor').val();
+   $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+ });
 
 $scope.updateCompany = function(data){
   userAccountAPIService.updateUserAccounts($window.sessionStorage.companyAccountId,data)

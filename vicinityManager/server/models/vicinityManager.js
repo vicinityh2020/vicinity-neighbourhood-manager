@@ -16,6 +16,7 @@ var userAccount = new Schema({
   memberOf: [ObjectId], //Member of UserGroups
   location: String,
   businessId : String,
+  skinColor: {type: String, enum: ['blue','red', 'green', 'purple', 'yellow']},
   accountOf: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user'

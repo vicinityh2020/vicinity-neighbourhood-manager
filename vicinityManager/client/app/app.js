@@ -19,8 +19,8 @@ angular.module('VicinityManagerApp', [
   'Registration',
   'constants',
   'angularFileUpload'
-]).
-  config(function($stateProvider, $urlRouterProvider) {
+])
+.config(function($stateProvider, $urlRouterProvider) {
 
 // ====== HOME VIEW =======
 
@@ -479,28 +479,23 @@ angular.module('VicinityManagerApp', [
 
           FastClick.attach(document.body);
 
-//        $rootScope.globals = $cookies.get('globals') || {};
-//        if ($rootScope.globals.currentUser) {
-//          $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
-//        }
+          $rootScope.$on('$stateChangeSuccess', function(){ // In case of state change do following actions...
+            $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini']; // checks if the skinColor changed
+            $(window).trigger('resize'); // Prevents side bar bug
+          });
 
         if ($window.sessionStorage.token) {
           $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
         }
 
-        $rootScope.$on('$stateChangeStart', function(){
-          $(window).trigger('resize');
-        });
-
         $rootScope.$on('$locationChangeStart', function(evetn, next, current) {
 
           if(($location.url() !== '/login') && !$window.sessionStorage.token){
-//TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
+              //TODO: Check validy of the token, if token is invalid. Clear credentials and pass to the login page.
 
             var p = $location.url();
 
             // Instead of replacing %2F for / check: https://stackoverflow.com/questions/41272314/angular-all-slashes-in-url-changed-to-2f
-
             var lastPos = p.lastIndexOf("/");
 
             // Case url has / encoded as %2F
@@ -515,15 +510,10 @@ angular.module('VicinityManagerApp', [
             var strId = p.substring(p.length-24,p.length);
             var strBeg = p.substring(0,lastPos + 1);
 
-            // var strBeg = p.slice(0,lastPos + 1);
-
             var patt1 = /[0-9a-fA-F]+/ ;
-            // /[\da-f]/i;
 
             // /( [0-9] | [a-f] ){24}/
 
-            // var patt1 = new RegExp("( [0-9] | [a-f] ){24}","g")
-            // var result1 = strId.match(patt1);
             var result1 = patt1.test(strId);
 
             if ((strBeg.indexOf('/invitation/newCompany/')) !== -1 && result1){
@@ -541,4 +531,5 @@ angular.module('VicinityManagerApp', [
             }
           }
         });
+
       }]);

@@ -1,8 +1,8 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('homeController',
-            ['$scope', '$window', 'Base64','tokenDecoder', 'commonHelpers', '$interval',
-            function ($scope, $window, Base64, tokenDecoder, commonHelpers, $interval) {
+            ['$rootScope', '$scope', '$window', 'Base64','tokenDecoder', 'commonHelpers', '$interval', 'userAccountAPIService',
+            function ($rootScope, $scope, $window, Base64, tokenDecoder, commonHelpers, $interval, userAccountAPIService) {
 
       // ====== Triggers window resize to avoid bug =======
         commonHelpers.triggerResize();
@@ -12,6 +12,21 @@ angular.module('VicinityManagerApp.controllers')
       $scope.isDev = false;
       $scope.isInfOp = false;
       $scope.isScrollable = false;
+
+      /*
+      Initializes skin color based on skinColor field in useraccounts MONGO schema
+      */
+      userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
+        .then(
+          function successCallback(response){
+              $rootScope.skinColor = response.data.message.skinColor;
+              $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+          },
+          function errorCallback(err){
+              $rootScope.skinColor = 'blue'; //Default on error
+              $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+          }
+        );
 
       var myInit = function(){
         var payload = tokenDecoder.deToken();
