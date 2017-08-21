@@ -24,8 +24,8 @@ function put(req, res, next) {
   var response = {};
   var cid = mongoose.Types.ObjectId(req.params.id);
   var update = req.body;
-
-  companyAccountOp.update(cid, {$set: update },
+  logger.debug(JSON.stringify(update));
+  companyAccountOp.update({ _id: cid }, { $set: update },
     function(err, data){
       if (err) {
         response =  {"error": true, "message": "Error fetching data: " + err};
