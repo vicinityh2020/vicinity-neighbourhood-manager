@@ -44,28 +44,77 @@ Colours
 */
 
 .my-blue{
-    color: #0080ff;
+    color: #3c8dbc;
 }
 
 .my-red{
-    color: #FF0000;
+    color: #dd4b39;
 }
 
 .my-green{
-    color: #008000;
+    color: #00a65a;
 }
 
 .my-yellow{
-    color: #FFFF00;
+    color: #f39c12;
 }
 
 .my-purple{
-    color: #9400D3;
+    color: #605ca8;
 }
 
 .my-black{
     color: #000000;
 }
+
+.bck-blue{
+    background: #3c8dbc;
+  }
+
+.bck-blue b{
+  color: #FFF;
+}
+
+.bck-red{
+    background: #dd4b39;
+}
+
+.bck-red b{
+  color: #000;
+}
+
+.bck-green{
+    background: #00a65a;
+}
+
+.bck-green b{
+  color: #FFF;
+}
+
+.bck-yellow{
+    background: #f39c12;
+}
+
+.bck-yellow b{
+  color: #000;
+}
+
+.bck-purple{
+    background: #605ca8;
+}
+
+.bck-purple b{
+  color: #FFF;
+}
+
+.bck-black{
+    background: #000000;
+}
+
+.bck-black b{
+  color: #FFF;
+}
+
 
 /*
 Back to top - Arrow
@@ -106,17 +155,8 @@ span.ciara {
     height: 3px;
     width: 90%;
     margin-left: 10px;
-    background: steelblue;
     /*margin-top: 10px;*/
     margin-bottom: 20px;
-}
-
-.footNotif{
-  background: steelblue;
-}
-
-.footNotif b{
-  color: #FFF;
 }
 
 .footNotif a{
@@ -189,7 +229,7 @@ li.notifications-menu ul.menu > li div.notification-actions button {
 }
 
 ul.outerMenu{
-  border-left: 5px solid steelblue;
+  border-left: 5px solid;
   margin-top: 2px;
   box-shadow: 0px 10px 20px 0px rgba(0,0,0,0.4);
 }

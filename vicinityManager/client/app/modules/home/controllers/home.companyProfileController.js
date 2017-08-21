@@ -351,7 +351,8 @@ $scope.uploadPic = function(){
     .then(
       function successCallback(response){
         $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
-        $rootScope.topColor = 'my-' + $rootScope.skinColor;
+        $rootScope.myColor = 'my-' + $rootScope.skinColor;
+        $rootScope.bckColor = 'bck-' + $rootScope.skinColor;
         Notification.success('Configuration successfully updated!');
       },
       function errorCallback(err){

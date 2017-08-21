@@ -15,24 +15,28 @@ angular.module('VicinityManagerApp.controllers')
   */
   $rootScope.styles = ['hold-transition', 'skin-blue', 'sidebar-mini'];
   $rootScope.skinColor = 'blue'; //Default on error
-  $rootScope.topColor = 'my-blue';
+  $rootScope.myColor = 'my-blue';
+  $rootScope.bckColor = 'bck-blue';
   userAccountAPIService.getConfigurationParameters($window.sessionStorage.companyAccountId)
     .then(
       function successCallback(response){
         if(response.data.message.skinColor){
           $rootScope.skinColor = response.data.message.skinColor;
           $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
-          $rootScope.topColor = 'my-' + $rootScope.skinColor;
+          $rootScope.myColor = 'my-' + $rootScope.skinColor;
+          $rootScope.bckColor = 'bck-' + $rootScope.skinColor;
         } else {
           $rootScope.skinColor = 'blue'; //Default on error
           $rootScope.styles = ['hold-transition', 'skin-blue', 'sidebar-mini'];
-          $rootScope.topColor = 'my-blue';
+          $rootScope.myColor = 'my-blue';
+          $rootScope.bckColor = 'bck-blue';
         }
       },
       function errorCallback(err){
           $rootScope.skinColor = 'blue'; //Default on error
           $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
-          $rootScope.topColor = 'my-' + $rootScope.skinColor;
+          $rootScope.myColor = 'my-' + $rootScope.skinColor;
+          $rootScope.bckColor = 'bck-' + $rootScope.skinColor;
       }
     );
 
