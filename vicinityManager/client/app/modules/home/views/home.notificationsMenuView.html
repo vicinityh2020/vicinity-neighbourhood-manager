@@ -5,7 +5,7 @@
   <span ng-show="!zeroNotif" class="label label-warning">{{notifs.length + registrations.length}}</span>
 </a>
 
-<ul class="dropdown-menu animated-dropdown-menu outerMenu">
+<ul class="dropdown-menu animated-dropdown-menu outerMenu" ng-class="myColor">
   <li ng-show="!oneNotif" class="header">You have {{notifs.length}} new notifications</li>
   <li ng-show="oneNotif" class="header">You have 1 new notification</li>
 
@@ -14,7 +14,7 @@
 
  <!-- Unread device notifications !hotovo! -->
       <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'waiting') ">    <!-- | filter: searchfilter1-->
-        <span class="ciara"></span>
+        <span class="ciara" ng-class="myColor"></span>
         <div class="notification-avatar">
           <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
            <img  class="img-circle imgNotif" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
@@ -29,7 +29,7 @@
       </li>
  <!-- Unread friend notifications !hotovo!-->
      <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'waiting') " >  <!-- | filter: searchfilter2 -->
-       <span class="ciara"></span>
+       <span class="ciara" ng-class="myColor"></span>
        <div class="notification-avatar">
          <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
           <img class="img-circle imgNotif" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
@@ -45,7 +45,7 @@
 
  <!-- Unread approved device notification !hotovo! -->
       <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'accepted') ">  <!-- | filter: searchfilter3 -->
-        <span class="ciara"></span>
+        <span class="ciara" ng-class="myColor"></span>
         <div class="notification-avatar">
           <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
             <img class="img-circle imgNotif" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
@@ -57,7 +57,7 @@
       </li>
  <!-- Unread approved friend notifications !hotovo!-->
       <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'accepted')">     <!-- | filter: searchfilter4"-->
-        <span class="ciara"></span>
+        <span class="ciara" ng-class="myColor"></span>
         <div class="notification-avatar">
           <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
             <img class="img-circle imgNotif" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
@@ -68,7 +68,7 @@
       </li>
       <!-- Unread rejected device notification !hotovo! -->
            <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceRequest') && (notif.status== 'rejected') ">  <!-- | filter: searchfilter3 -->
-             <span class="ciara"></span>
+             <span class="ciara" ng-class="myColor"></span>
              <div class="notification-avatar">
                <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
                  <img class="img-circle imgNotif" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
@@ -80,7 +80,7 @@
            </li>
       <!-- Unread rejected friend notifications !hotovo!-->
            <li ng-repeat="notif in notifs" ng-show="(notif.type=='friendRequest') && (notif.status== 'rejected')">     <!-- | filter: searchfilter4"-->
-             <span class="ciara"></span>
+             <span class="ciara" ng-class="myColor"></span>
              <div class="notification-avatar">
                <a ng-click="changeIsUnread(notif._id)" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
                  <img class="img-circle imgNotif" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
@@ -91,7 +91,7 @@
            </li>
            <!-- Unread enabled device notification !hotovo! -->
             <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceEnabled') && (notif.status== 'waiting') ">  <!-- | filter: searchfilter3 -->
-              <span class="ciara"></span>
+              <span class="ciara" ng-class="myColor"></span>
               <div class="notification-avatar">
                 <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
                   <img class="img-circle imgNotif" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
@@ -103,7 +103,7 @@
             </li>
             <!-- Unread disabled device notification !hotovo! -->
              <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceDisabled') && (notif.status== 'waiting') ">  <!-- | filter: searchfilter3 -->
-              <span class="ciara"></span>
+              <span class="ciara" ng-class="myColor"></span>
                <div class="notification-avatar">
                  <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
                    <img class="img-circle imgNotif" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
@@ -115,7 +115,7 @@
              </li>
              <!-- Unread new devices registered -->
               <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') " ng-click="changeIsUnreadAndResponded(notif._id)">  <!-- | filter: searchfilter3 -->
-                <span class="ciara"></span>
+                <span class="ciara" ng-class="myColor"></span>
                   <p>
                     <a class="padded"><b>New devices have been activated!</b></a>
                   </p>
@@ -123,7 +123,7 @@
 
         <!-- Unread registration request notification -->
             <li ng-repeat="reg in registrations" ng-show="(reg.type=='registrationRequest') && (reg.status== 'waiting') ">        <!-- | filter: searchfilter4 -->
-              <span class="ciara"></span>
+              <span class="ciara" ng-class="myColor"></span>
               <div class="notification-avatar">
                 <a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
                   <img class="img-circle imgNotif" ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar">
@@ -140,7 +140,7 @@
 
 <!-- Read device notifications !hotovo! -->
       <li ng-repeat="notif in notifs2 "  ng-show="(notif.type=='deviceRequest') && (notif.status== 'waiting') " >        <!-- | filter: searchfilter1 -->
-        <span class="ciara"></span>
+        <span class="ciara" ng-class="myColor"></span>
         <div class="notification-avatar" id="readNot">
           <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">
            <img class="img-circle imgNotif" ng-src="{{notif.deviceId.avatar}}" alt="Device Avatar">
@@ -155,7 +155,7 @@
       </li>
 <!-- Read friend notifications !hotovo!-->
      <li ng-repeat="notif in notifs2 " ng-show="(notif.type=='friendRequest') && (notif.status== 'waiting') " >    <!-- | filter: searchfilter2 -->
-        <span class="ciara"></span>
+        <span class="ciara" ng-class="myColor"></span>
         <div  class="notification-avatar readNot">
           <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
             <img class="img-circle imgNotif" ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
@@ -170,7 +170,7 @@
       </li>
       <!-- Unread new devices registered -->
        <li ng-repeat="notif in notifs2" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') " ng-click="changeIsUnreadAndResponded(notif._id)">  <!-- | filter: searchfilter3 -->
-         <span class="ciara"></span>
+         <span class="ciara" ng-class="myColor"></span>
          <div class="notification-description readNot">
            <p>
              <a class="padded"><b>New devices have been activated!</b></a>
@@ -180,7 +180,7 @@
 
 <!-- Read registration request notification-->
       <li ng-repeat="reg in registrationsRead" ng-show="(reg.type=='registrationRequest') && (reg.status== 'waiting') ">        <!-- | filter: searchfilter4 -->
-        <span class="ciara"></span>
+        <span class="ciara" ng-class="myColor"></span>
         <div class="notification-avatar readNot">
           <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
             <img class="img-circle imgNotif" ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar"/>
@@ -196,5 +196,5 @@
       </li>
       <!-- end notification -->
     </ul>
-  <li class="footNotif"><a ng-click="seeAll()"><b>View all</b></a></li>
+  <li class="footNotif" ng-class="bckColor"><a ng-click="seeAll()"><b>View all</b></a></li>
 </ul>
