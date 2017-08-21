@@ -44,16 +44,16 @@
                   <b>Following</b> <a class="pull-right">{{following.length}}</a>
                 </li> -->
                 <li class="list-group-item">
-                  <a ng-href="#!/profile/company/{{companyAccountId}}/partners"> <b>Partners</b> <span class="pull-right">{{friends.length}}</span></a>
+                  <a ui-sref="root.main.companyProfile.friends"> <b>Partners</b> <span class="pull-right">{{friends.length}}</span></a>
                 </li>
                 <li class="list-group-item">
-                  <a ng-href="#!/profile/company/{{companyAccountId}}/userAccounts"> <b>User accounts</b> <span class="pull-right">{{users.length}}</span></a>
+                  <a ui-sref="root.main.companyProfile.userAccounts"> <b>User accounts</b> <span class="pull-right">{{users.length}}</span></a>
                 </li>
                 <li ng-show="!isMyProfile" class="list-group-item">
-                  <a ng-href="#!/profile/company/{{companyAccountId}}/devices"> <b>Devices</b> <span class="pull-right">{{devices.length}}</span></a>
+                  <a ui-sref="root.main.companyProfile.devices"> <b>Devices</b> <span class="pull-right">{{devices.length}}</span></a>
                 </li>
                 <li ng-show="!isMyProfile" class="list-group-item">
-                  <a ng-href="#!/profile/company/{{companyAccountId}}/services"> <b>Services</b> <span class="pull-right">{{services.length}}</span></a>
+                  <a ui-sref="root.main.companyProfile.services"> <b>Services</b> <span class="pull-right">{{services.length}}</span></a>
                 </li>
                 <li ng-show="isMyProfile" class="list-group-item">
                   <b>Devices</b> <span class="pull-right">{{devices.length}}</span>
