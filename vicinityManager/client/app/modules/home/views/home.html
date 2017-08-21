@@ -61,26 +61,6 @@
 
       <div class="sidebar-menu" ui-view="companyAccountView"></div>
 
-      <!-- sidebar: style can be found in sidebar.less -->
-
-        <!-- search form (Optional) -->
-    <!--    <form action="" method="get" class="sidebar-form">
-          <div class="input-group">
-            <input type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm">
-                <span class="input-group-btn">
-                  <button type="submit" name="search" id="search-btn" class="btn btn-flat" ui-sref="root.main.searchresults({searchTerm: searchTerm})" ><i class="fa fa-search"></i>
-                  </button>
-                </span>
-          </div>
-        </form>  -->
-        <!-- /.search form -->
-
-        <!-- Sidebar Menu -->
-
-        <!-- <input type="checkbox" id="btnControl"/>
-        <label class="btn" for="btnControl"><img src=".jpg" id="btnLeft" /></label> -->
-
-
         <ul class="sidebar-menu">
           <li onload="myInit()" class="header">MENU</li>
           <!-- Optionally, you can add icons to the links -->
@@ -98,14 +78,6 @@
           <li><a ui-sref="root.main.allServices"><i class="fa fa-link"></i> <span>All services</span></a></li>
           <li><a ng-show="isInfOp" ui-sref="root.main.myNodes"><i class="fa fa-link"></i> <span>My nodes</span></a></li>
           <li><a ng-show="isDev" ui-sref="root.main.allRegistrations"><i class="fa fa-link"></i> <span>All registrations</span></a></li>
-          <!-- <li class="treeview">
-            <a href=""><i class="fa fa-link"></i> <span>Sensors</span> <i class="fa fa-angle-left pull-right"></i></a>
-            <ul class="treeview-menu">
-              <li><a href="#/home">Temperature</a></li>
-              <li><a href="#/home">Electrometers</a></li>
-              <li><a href="#/home">Heatingmeters</a></li>
-            </ul>
-          </li> -->
         </ul>
 
         <!-- /.sidebar-menu -->
@@ -117,7 +89,7 @@
 
 
     <!-- Back to top -->
-    <i id="backToTop" class="fa fa-caret-square-o-up fa-4x" aria-hidden="true" ng-show="isScrollable" ng-click="goToTop()"></i>
+    <i id="backToTop" ng-class="topColor" class="fa fa-caret-square-o-up fa-4x" aria-hidden="true" ng-show="isScrollable" ng-click="goToTop()"></i>
 
     <footer class="main-footer">
       <!-- To the right -->

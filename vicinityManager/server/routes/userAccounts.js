@@ -4,6 +4,7 @@ var router = express.Router();
 var friending = require('./userAccounts/friending');
 var userProfile = require('./userAccounts/userprofile');
 var notifications = require('./notifications/notifications');
+var configuration = require('./userAccounts/configuration');
 
 router
   .get('/', userProfile.getAll)
@@ -32,7 +33,11 @@ router
 
   .get('/:id/notifications', notifications.getNotificationsOfUser)
 
-  .get('/:id/readNotifications', notifications.getNotificationsOfUserRead);
+  .get('/:id/readNotifications', notifications.getNotificationsOfUserRead)
+
+  .get('/:id/configuration', configuration.get)
+
+  .put('/:id/configuration', configuration.put);
 
 
 module.exports = router;

@@ -346,9 +346,18 @@ $scope.uploadPic = function(){
  };
 
  $( "select#editThemeColor" ).change(function() {
-   // TODO save skin color in MONGO !!!
    $rootScope.skinColor = $('select#editThemeColor').val();
-   $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+   userAccountAPIService.putConfigurationParameters($window.sessionStorage.companyAccountId,{skinColor: $rootScope.skinColor})
+    .then(
+      function successCallback(response){
+        $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+        $rootScope.topColor = 'my-' + $rootScope.skinColor;
+        Notification.success('Configuration successfully updated!');
+      },
+      function errorCallback(err){
+        Notification.error('Something went wrong: ' + err);
+      }
+    );
  });
 
 $scope.updateCompany = function(data){
@@ -357,6 +366,6 @@ $scope.updateCompany = function(data){
       function successCallback(response){},
       function errorCallback(response){}
     );
-};
+  };
 
 });

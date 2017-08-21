@@ -30,6 +30,7 @@ Common
   /*width: 50%;*/
 }
 
+/*TODO change these 2 classes and use the classes below for colours*/
 .fontGreen{
   color: green;
 }
@@ -39,11 +40,38 @@ Common
 }
 
 /*
+Colours
+*/
+
+.my-blue{
+    color: #0080ff;
+}
+
+.my-red{
+    color: #FF0000;
+}
+
+.my-green{
+    color: #008000;
+}
+
+.my-yellow{
+    color: #FFFF00;
+}
+
+.my-purple{
+    color: #9400D3;
+}
+
+.my-black{
+    color: #000000;
+}
+
+/*
 Back to top - Arrow
 */
 
 #backToTop{
-  color: #0080ff;
   opacity: 0.4;
   filter: alpha(opacity=50); /* For IE8 and earlier */
 }

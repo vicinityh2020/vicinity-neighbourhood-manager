@@ -402,54 +402,54 @@ angular.module('VicinityManagerApp', [
           url: '/invitation/newUser/:invitationId',
           templateUrl: 'modules/registration/views/invitation.newUser.html',
           controller: 'invitationNewUserController',
-          onEnter: function(){
-            console.log('Activating state new user');
-          }
+          // onEnter: function(){
+          //  console.log('Activating state new user');
+          // }
         })
 
         .state('invitationOfNewCompany', {
           url: '/invitation/newCompany/:invitationId',
           templateUrl: 'modules/registration/views/invitation.newCompany.html',
           controller: 'invitationNewCompanyController',
-          onEnter: function(){
-            console.log('Activating state new company');
-          }
+          // onEnter: function(){
+          //  console.log('Activating state new company');
+          // }
         })
 
         .state('registrationOfNewUser', {
           url: '/registration/newUser/:registrationId',
           templateUrl: 'modules/registration/views/registration.newUser.html',
           controller: 'registrationNewUserController',
-          onEnter: function(){
-            console.log('Activating state new user reg');
-          }
+          // onEnter: function(){
+          //  console.log('Activating state new user reg');
+          // }
         })
 
         .state('registrationOfNewCompany', {
           url: '/registration/newCompany/:registrationId',
           templateUrl: 'modules/registration/views/registration.newCompany.html',
           controller: 'registrationNewCompanyController',
-          onEnter: function(){
-            console.log('Activating state new company reg');
-          }
+          // onEnter: function(){
+          //   console.log('Activating state new company reg');
+          // }
         })
 
         .state('recoverPassword', {
           url: '/authentication/recoverPassword/:userId',
           templateUrl: 'modules/authentication/views/recoverPassword.html',
           controller: 'recoverPasswordController',
-          onEnter: function(){
-            console.log('Activating state password recovery');
-          }
+          // onEnter: function(){
+          //   console.log('Activating state password recovery');
+          // }
         })
 
         .state('login', {
           url: '/login',
           templateUrl: 'modules/authentication/views/login.html',
           controller: 'LoginController',
-          onEnter: function(){
-            console.log('Activating state home');
-          }
+          // onEnter: function(){
+          //   console.log('Activating state home');
+          // }
         });
 
 })
@@ -461,7 +461,6 @@ angular.module('VicinityManagerApp', [
 }])
 
 //Angular UI Notification configuration;
-
 .config(function (NotificationProvider) {
     NotificationProvider.setOptions({
         delay: 10000,
@@ -479,10 +478,10 @@ angular.module('VicinityManagerApp', [
 
           FastClick.attach(document.body);
 
-          $rootScope.$on('$stateChangeSuccess', function(){ // In case of state change do following actions...
-            $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini']; // checks if the skinColor changed
-            $(window).trigger('resize'); // Prevents side bar bug
-          });
+        $rootScope.$on('$stateChangeSuccess', function(){ // In case of state change do following actions...
+          $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini']; // checks if the skinColor changed
+          $(window).trigger('resize'); // Prevents side bar bug
+        });
 
         if ($window.sessionStorage.token) {
           $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
@@ -511,9 +510,6 @@ angular.module('VicinityManagerApp', [
             var strBeg = p.substring(0,lastPos + 1);
 
             var patt1 = /[0-9a-fA-F]+/ ;
-
-            // /( [0-9] | [a-f] ){24}/
-
             var result1 = patt1.test(strId);
 
             if ((strBeg.indexOf('/invitation/newCompany/')) !== -1 && result1){

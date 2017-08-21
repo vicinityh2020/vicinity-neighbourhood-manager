@@ -4,45 +4,60 @@ angular.module('VicinityManagerApp.controllers')
             ['$rootScope', '$scope', '$window', 'Base64','tokenDecoder', 'commonHelpers', '$interval', 'userAccountAPIService',
             function ($rootScope, $scope, $window, Base64, tokenDecoder, commonHelpers, $interval, userAccountAPIService) {
 
-      // ====== Triggers window resize to avoid bug =======
-        commonHelpers.triggerResize();
+  // ====== Triggers window resize to avoid bug =======
+    commonHelpers.triggerResize();
 
-      $interval(checkScroll, 1000); // Checks if it is necessary to display goToTop
+  // Checks if it is necessary to display goToTop
+  $interval(checkScroll, 1000);
 
-      $scope.isDev = false;
-      $scope.isInfOp = false;
-      $scope.isScrollable = false;
-
-      /*
-      Initializes skin color based on skinColor field in useraccounts MONGO schema
-      */
-      userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
-        .then(
-          function successCallback(response){
-              $rootScope.skinColor = response.data.message.skinColor;
-              $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
-          },
-          function errorCallback(err){
-              $rootScope.skinColor = 'blue'; //Default on error
-              $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
-          }
-        );
-
-      var myInit = function(){
-        var payload = tokenDecoder.deToken();
-
-        for(var i in payload.roles){
-          if(payload.roles[i] === 'devOps'){
-            $scope.isDev = true;
-          }
-          if(payload.roles[i] === 'infrastructure operator'){
-
-            $scope.isInfOp = true;
-          }
+  /*
+  Initializes skin color based on skinColor field in useraccounts MONGO schema
+  */
+  $rootScope.styles = ['hold-transition', 'skin-blue', 'sidebar-mini'];
+  $rootScope.skinColor = 'blue'; //Default on error
+  $rootScope.topColor = 'my-blue';
+  userAccountAPIService.getConfigurationParameters($window.sessionStorage.companyAccountId)
+    .then(
+      function successCallback(response){
+        if(response.data.message.skinColor){
+          $rootScope.skinColor = response.data.message.skinColor;
+          $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+          $rootScope.topColor = 'my-' + $rootScope.skinColor;
+        } else {
+          $rootScope.skinColor = 'blue'; //Default on error
+          $rootScope.styles = ['hold-transition', 'skin-blue', 'sidebar-mini'];
+          $rootScope.topColor = 'my-blue';
         }
-      };
+      },
+      function errorCallback(err){
+          $rootScope.skinColor = 'blue'; //Default on error
+          $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+          $rootScope.topColor = 'my-' + $rootScope.skinColor;
+      }
+    );
 
-      myInit();
+
+    // Initializes variables and resources
+
+    $scope.isDev = false;
+    $scope.isInfOp = false;
+    $scope.isScrollable = false;
+
+    var myInit = function(){
+      var payload = tokenDecoder.deToken();
+
+      for(var i in payload.roles){
+        if(payload.roles[i] === 'devOps'){
+          $scope.isDev = true;
+        }
+        if(payload.roles[i] === 'infrastructure operator'){
+
+          $scope.isInfOp = true;
+        }
+      }
+    };
+
+    myInit();
 
     // Scroll to top
     $scope.goToTop = function(){
@@ -57,5 +72,5 @@ angular.module('VicinityManagerApp.controllers')
       }
     }
 
-
-}]);
+  }
+]);

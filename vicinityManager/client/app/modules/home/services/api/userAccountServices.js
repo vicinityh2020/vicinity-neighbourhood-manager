@@ -48,5 +48,16 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/readNotifications');
   };
 
+  // Configuration endPoints (currently only schemaColor)
+
+  userAccountAPI.getConfigurationParameters = function(id) {
+    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/configuration');
+  };
+
+  userAccountAPI.putConfigurationParameters = function(id, data) {
+    return $http.put(configuration.apiUrl +'/useraccounts/' + id + '/configuration', data);
+  };
+
   return userAccountAPI;
+
 }]);
