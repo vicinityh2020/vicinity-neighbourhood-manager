@@ -78,168 +78,6 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
         );
     };
 
-  //  TODO delete when obsolete from controller and view
-
-  //   $scope.makeItem = function(){
-  //     var thingDescr =
-  //     [
-  //       {
-  //         "actions": [
-  //           {
-  //             "affects": "OnOff",
-  //             "aid": "status",
-  //             "input": {
-  //               "datatype": "",
-  //               "units": "Adimensional"
-  //             },
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/edcb20b9-c5ad-4283-bc66-c40032498fab/properties/status",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "write_links": [
-  //               {
-  //                 "href": "/objects/{oid}/actions/UCtrlOnOff",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ]
-  //           }
-  //         ],
-  //         "oid": "12345",
-  //         "owner": $scope.owner_id,
-  //         "properties": [
-  //           {
-  //             "monitors": "MeanPowerConsumption",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "W"
-  //             },
-  //             "pid": "consumption",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/edcb20b9-c5ad-4283-bc66-c40032498fab/properties/consumption",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           }
-  //         ],
-  //         credentials:{
-  //           name:"obj_2",
-  //           password:"1111"
-  //         },
-  //         "type": "PowerMeter"
-  //       },
-  //       {
-  //         "actions": [
-  //           {
-  //             "affects": "OnOff",
-  //             "aid": "status",
-  //             "input": {
-  //               "datatype": "",
-  //               "units": "Adimensional"
-  //             },
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/4971fc10-bf07-43b1-8311-d0bbdf5ca0d4/properties/status",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "write_links": [
-  //               {
-  //                 "href": "/objects/{oid}/actions/UCtrlOnOff",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ]
-  //           }
-  //         ],
-  //         "oid": "23456",
-  //         "owner": $scope.owner_id,
-  //         "properties": [
-  //           {
-  //             "monitors": "MeanPowerConsumption",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "W"
-  //             },
-  //             "pid": "consumption",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/4971fc10-bf07-43b1-8311-d0bbdf5ca0d4/properties/consumption",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           }
-  //         ],
-  //         credentials:{
-  //           name:"obj_3",
-  //           password:"1111"
-  //         },
-  //         "type": "PowerMeter"
-  //       },
-  //       {
-  //         "actions": [],
-  //         "oid": "34567",
-  //         "owner": $scope.owner_id,
-  //         "properties": [
-  //           {
-  //             "monitors": "RelativeHumidity",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "%"
-  //             },
-  //             "pid": "humidity",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/d6e5acc3-dc29-417f-aa10-ebad34bf9db3/properties/humidity",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           },
-  //           {
-  //             "monitors": "AmbientTemperature",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "Î’Â°C"
-  //             },
-  //             "pid": "temperature",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/d6e5acc3-dc29-417f-aa10-ebad34bf9db3/properties/temperature",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           }
-  //         ],
-  //         credentials:{
-  //           name:"obj_1",
-  //           password:"1111"
-  //         },
-  //         "type": "Thermometer"
-  //       }
-  //       ];
-  //
-  //     var query = {
-  //         aid: "59759ff581ee7f03580da306", // test with unikl agent
-  //         thingDescriptions: thingDescr
-  //     };
-  //
-  //     itemsAPIService.postBulk("59759ff581ee7f03580da306")
-  //       .then(
-  //         function successCallback(response){
-  //           $window.alert('done');
-  //         }
-  //       );
-  // };
-
   $scope.deleteItem = function(){
     itemsAPIService.deleteItem($scope.device.oid)
       .then(
@@ -280,11 +118,12 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
   $scope.saveNewAccess = function () {
     if ($('select#editAccessName').val() !== 0){
         itemsAPIService.putOne($stateParams.deviceId, {accessLevel: $('select#editAccessName').val(),
+                                                      cid: $scope.owner_id,
                                                       myFriends: $scope.device.myFriends,
                                                       oid: $scope.device.oid,
                                                       oldAccessLevel: $scope.device.accessLevel })
           .then(
-            function successCallback(response){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
+            function successCallback(response){
               initData();
               $scope.backToEdit();
             }
@@ -321,7 +160,7 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
     if ($('input#editSerialInput').val() !== 0){
         itemsAPIService.putOne($stateParams.deviceId, {"info.serial_number": $scope.devInfo.serial_number})
           .then(
-            function successCallback(){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
+            function successCallback(){
               initData();
               $scope.backToEdit1();
             }
@@ -358,7 +197,7 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
     if ($('input#editLocationInput').val() !== 0){
         itemsAPIService.putOne($stateParams.deviceId, {"info.location": $scope.devInfo.location})
           .then(
-            function successCallback(){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
+            function successCallback(){ 
               initData();
               $scope.backToEdit2();
             }

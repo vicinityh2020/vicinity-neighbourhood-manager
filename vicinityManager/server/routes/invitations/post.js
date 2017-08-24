@@ -21,16 +21,21 @@ function postOne(req, res, next) {
     } else {
       response = {"error": false, "message": "Data added!"};
 
+      var thisLink;
+      var thisTmp;
+      var thisName;
+      var thisOrg;
+
       if(product.type === 'newUser'){
-        var thisLink = "http://vicinity.bavenir.eu/#/invitation/newUser/" ;
-        var thisTmp = "inviteUser";
-        var thisName = product.sentBy.name;
-        var thisOrg = false;
+        thisLink = "http://vicinity.bavenir.eu/#/invitation/newUser/" ;
+        thisTmp = "inviteUser";
+        thisName = product.sentBy.name;
+        thisOrg = false;
       }else{
-        var thisLink = "http://vicinity.bavenir.eu/#/invitation/newCompany/";
-        var thisTmp = "inviteCompany";
-        var thisName = product.sentBy.name;
-        var thisOrg = product.sentBy.organisation;
+        thisLink = "http://vicinity.bavenir.eu/#/invitation/newCompany/";
+        thisTmp = "inviteCompany";
+        thisName = product.sentBy.name;
+        thisOrg = product.sentBy.organisation;
       }
 
       var mailInfo = {
@@ -41,7 +46,7 @@ function postOne(req, res, next) {
         name : product.nameTo,
         sentByName : thisName,
         sentByOrg : thisOrg
-      }
+      };
 
       mailing.sendMail(mailInfo);
     }

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
-var commServer = require('../../helpers/commServer/request');
+var commServer = require('../../helpers/commServer/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 
 function cancelItemAccess(req, res, next){
@@ -27,7 +27,7 @@ function cancelItemAccess(req, res, next){
                   }
                 }
 
-                commServer.callCommServer({}, 'users/' + device.oid + '/groups/' + activeCompany_id + '_foreignDevices', 'DELETE');
+                commServer.cancelItemAccess(device.oid, device.hasAdministrator[0], activeCompany_id);
                 device.save();
                 response = {"error": false, "message": data};
             } else {

@@ -64,7 +64,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
             userData.save();
 
             createOrganisationGroups(orgData); // Creates necessary groups in comm server
-            
+
 	    logger.debug('New userAccount was successfuly saved!');
             response = {"error": false, "message": "New userAccount was successfuly saved!"};
             res.json(response);
@@ -149,22 +149,23 @@ function createOrganisationGroups(data){
       function(response){
         payload.name = data._id + names[1];
         commServer.callCommServer(payload, 'groups', 'POST')
-          .then(
-              function(response){
-                payload.name = data._id + names[2];
-                commServer.callCommServer(payload, 'groups', 'POST')
+        // TODO remove when comm server architecture stable
+          // .then(
+          //     function(response){
+          //       payload.name = data._id + names[2];
+          //       commServer.callCommServer(payload, 'groups', 'POST')
                   .then(
                     function(response){
-                      mySql.sendQuery(data._id); // Updates sharedRoster groups in mySql db of the commServer
+                      mySql.sendQuery(data._id, 'publicDevices'); // Updates sharedRoster groups in mySql db of the commServer
                     },
                     errorCallback1
                   );
-              },
-              errorCallback1
-          );
+          //     },
+          //     errorCallback1
+          // );
       },
       errorCallback1
-    );  
+    );
 }
 
 function errorCallback1(err){
@@ -172,7 +173,7 @@ function errorCallback1(err){
 }
 
 /*
-Prepares an object with the necessary info to prepare a mail. The mail is then sent
+Prepares an object with the necessary info to send a mail. The mail is then sent
 using the mailing service created under helpers
 */
 function send_mail(id, emailTo, companyName, status){

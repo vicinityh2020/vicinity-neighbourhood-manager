@@ -137,6 +137,8 @@ function rejectFriendRequest(req, res, next) {
     //TODO: Issue #6 remove :autenticated user from :id's knows list
     //TODO: Issue #6 update friendship counts.
 
+    //TODO revise function, whole modeule in general!!
+
     // console.log("Running reject friend request");
     friend_id = mongoose.Types.ObjectId(req.params.id);
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
@@ -254,7 +256,6 @@ function cancelFriendship(req, res, next){
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);             //wtf, not cid??
 
     companyAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
-        var index;
         if (err || data === null) {
             response = {"error": true, "message": "Processing data failed!"};
         } else {
@@ -262,6 +263,8 @@ function cancelFriendship(req, res, next){
 
                 var me = {};
                 var friend = {};
+
+                var index = 0;
                 for (index in data) {
                     if (data[index]._id.toString() === friend_id.toString()) {
                         friend = data[index];
@@ -270,15 +273,17 @@ function cancelFriendship(req, res, next){
                     }
                 }
 
-                for (index = friend.knows.length - 1; index >= 0; index --) {
-                    if (friend.knows[index].toString() === my_id.toString()) {
-                        friend.knows.splice(index, 1);
+                var i = 0;
+                for (i = 0; i < friend.knows.length; i++) {
+                    if (friend.knows[i].toString() === my_id.toString()) {
+                        friend.knows.splice(i, 1);
                     }
                 }
 
-                for (index = me.knows.length - 1; index >= 0; index --) {
-                    if (me.knows[index].toString() === friend_id.toString()) {
-                        me.knows.splice(index,1);
+                var j = 0;
+                for (j = 0; j < me.knows.length; j++) {
+                    if (me.knows[j].toString() === friend_id.toString()) {
+                        me.knows.splice(j, 1);
                     }
                 }
 
@@ -292,9 +297,6 @@ function cancelFriendship(req, res, next){
 
                 notificationAPI.markAsRead(my_id, friend_id, 'deviceRequest', 'accepted');
                 notificationAPI.markAsRead(friend_id, my_id, 'deviceRequest', 'accepted');
-
-                itemAPI.delIdFromHasAccessAndAccessRequestFrom(my_id, friend_id);           //test needed!
-                itemAPI.delIdFromHasAccessAndAccessRequestFrom(friend_id, my_id);
 
                 friend.save();
                 me.save();

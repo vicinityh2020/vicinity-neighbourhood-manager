@@ -8,9 +8,16 @@ var logger = require("../../middlewares/logger");
 var itemProperties = require("../../helpers/items/additionalItemProperties");
 
 /* Public functions
-This module supports item data retrieval. Several items with CID or just one with OID
+This module supports item data retrieval.
 */
 
+/*
+Gets all items belonging to my organisation
+Receives following parameters:
+- Organisation cid
+- Type of item of interest: device or service
+- Offset: Items are retrieved in groups of XX elements at a time.
+*/
 function getMyItems(req, res) {
 //TODO: User authentic - Role check
   var response = {};
@@ -35,7 +42,13 @@ function getMyItems(req, res) {
   });
 }
 
-
+/*
+Gets all items that my organisation can see
+Receives following parameters:
+- Organisation cid
+- Type of item of interest: device or service
+- Offset: Items are retrieved in groups of XX elements at a time.
+*/
 function getAllItems(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
@@ -72,7 +85,12 @@ function getAllItems(req, res) {
   });
 }
 
-
+/*
+Gets one item based on the OID
+Receives following parameters:
+- Organisation cid
+- Item oid
+*/
 function getItemWithAdd(req, res, next) {
 
     // logger.debug('Start: getItemWithAdd');

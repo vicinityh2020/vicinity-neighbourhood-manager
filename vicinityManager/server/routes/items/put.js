@@ -109,42 +109,6 @@ function callbackError(err){
   // commServer.callCommServer({}, 'users/' + oid , 'DELETE')
 }
 
-// Public function 2
-
-function delIdFromHasAccessAndAccessRequestFrom(adminId, friendId){
-    itemOp.find({ hasAdministrator: {$in : [adminId]}, accessRequestFrom: {$in : [friendId]}},function(err, data){
-        var dev = {};
-        var index;
-        for (index in data){
-          dev = data[index];
-
-          for (var index2 = dev.accessRequestFrom.length - 1; index >= 0; index --) {
-              if (dev.accessRequestFrom[index2].toString() === friendId.toString()) {
-                  dev.accessRequestFrom.splice(index2, 1);
-              }
-          }
-          dev.save();
-        }
-    });
-    itemOp.find({ hasAdministrator: {$in : [adminId]}, hasAccess: {$in : [friendId]}},function(err, data){
-        var dev = {};
-        var index;
-        for (index in data){
-          dev = data[index];
-          var index2;
-          for (index2 = dev.hasAccess.length - 1; index >= 0; index --) {
-              if (dev.hasAccess[index2].toString() === friendId.toString()) {
-                  dev.hasAccess.splice(index2, 1);
-              }
-          }
-          dev.save();
-        }
-      }
-    );
-  }
-
-
 // Module exports
 
 module.exports.putOne = putOne;
-module.exports.delIdFromHasAccessAndAccessRequestFrom = delIdFromHasAccessAndAccessRequestFrom;
