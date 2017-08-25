@@ -17,6 +17,7 @@
             <img ng-show="activeCompanyID.toString() === result._id.toString()" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
             <img ng-show="!(activeCompanyID.toString() === result._id.toString())" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
           </div>
+          <i ng-if="myFriends.indexOf(result._id.toString()) !== -1" class="tooltip2 fa fa-users push-right" aria-hidden="true"></i>
           <!-- /.widget-user-image -->
           <h3 ng-show="activeCompanyID.toString() === result._id.toString()" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">{{result.organisation}}</a></h3>
           <h3 ng-show="!(activeCompanyID.toString() === result._id.toString())" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">{{result.organisation}}</a></h3>

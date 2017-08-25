@@ -5,17 +5,17 @@
 
 <section class="content">
 
-  <div class="row" style="width: 100%">
+  <!-- <div class="row" style="width: 100%">
 
     <div id="ramik" class="input-group bvr2-navbar-form navbar-right col-md-2 " ng-show="loaded">
       <input id="bvr-search-input" type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm">
       <span class="input-group-btn">
-        <button  type="submit" name="search" id="search-btn" class="btn btn-flat" ><i class="fa fa-search"></i></button>      <!-- ui-sref="root.main.neighbourhood({searchTerm: searchTerm})" -->
+        <button  type="submit" name="search" id="search-btn" class="btn btn-flat" ><i class="fa fa-search"></i></button>
       </span>
     </div>
     <hr>
-  </div>
-
+  </div> -->
+<hr>
 <!-- Start -->
   <div class="row">
 
@@ -41,7 +41,9 @@
           <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})">{{it.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.services({companyAccountId: it.hasAdministrator[0]._id})">{{it.hasAdministrator[0].organisation}}</a></h5>
           <h5 class="widget-user-desc2">{{it.accessLevelCaption}}</h5>
-          <h5 class="widget-user-desc2">{{it.info.location}}</h5>
+          <!-- <h5 class="widget-user-desc2">{{it.info.location}}</h5> -->
+          <h5 ng-show="it.seeData && !it.isOwner" class="widget-user-desc2 label label-success"><i class="fa fa-link" aria-hidden="true"></i>  Data Access</h5>
+          <h5 ng-show="!it.seeData && !it.isOwner" class="widget-user-desc2 label label-default"><i class="fa fa-chain-broken" aria-hidden="true"></i>  No Data Access</h5>
 
         </div>
 

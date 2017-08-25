@@ -35,11 +35,11 @@ angular.module('VicinityManagerApp.controllers').
       }
 
       function searchItems(response){
-        var payload = [];
+        $scope.myFriends = [];
         for(var elem in response.data.message){
-          payload.push(response.data.message[elem]._id);
+          $scope.myFriends.push(response.data.message[elem]._id);
         }
-        return searchAPIService.searchItem($scope.activeCompanyID, $scope.search, payload);
+        return searchAPIService.searchItem($scope.activeCompanyID, $scope.search, $scope.myFriends);
       }
 
       function searchFinish(response){

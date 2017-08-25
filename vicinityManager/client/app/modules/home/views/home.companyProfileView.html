@@ -137,11 +137,11 @@
               <textarea id="not3" rows="4" cols="40" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="notesNew"></textarea>
               <p id="not1">{{notes}}</p>
 
-              <hr>
+              <hr ng-show="isMyProfile">
 
-              <strong><i class="fa fa-cog margin-r-5"></i> Theme color</strong>
+              <strong ng-show="isMyProfile"><i class="fa fa-cog margin-r-5"></i> Theme color</strong>
 
-              <select id="editThemeColor" name="menu" class="pull-right">
+              <select ng-show="isMyProfile" id="editThemeColor" name="menu" class="pull-right">
                 <option value="none" selected>Change color to:</option>
                 <option value="red">Red</option>
                 <option value="blue">Blue</option>

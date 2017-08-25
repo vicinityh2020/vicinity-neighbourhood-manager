@@ -4,7 +4,7 @@ angular.module('VicinityManagerApp.controllers').
 
     // Ensure scroll on top onLoad
         $window.scrollTo(0, 0);
-        
+
     // Variables
     $scope.resultsList = [];
     $scope.loaded = false;
@@ -17,12 +17,22 @@ angular.module('VicinityManagerApp.controllers').
     userAccountAPIService.getUserAccounts()
       .then(
         function successCallback(response){
-          var results = response.data.message;
-          $scope.resultsList = results;
+          $scope.resultsList = response.data.message;
+          getFriends();
           $scope.loaded = true;
         },
         function errorCallback(response){
         }
       );
+
+      function getFriends(){
+        var i = 0;
+        for(i = 0; i < $scope.resultsList.length; i++){
+          if($scope.resultsList[i]._id === $window.sessionStorage.companyAccountId){
+            $scope.myFriends = $scope.resultsList[i].knows;
+            $scope.resultsList.splice(i,1);
+          }
+        }
+      }
 
   });
