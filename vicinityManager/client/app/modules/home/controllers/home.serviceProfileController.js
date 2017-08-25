@@ -42,7 +42,7 @@ function ($scope, $window, $state, $stateParams, $location, commonHelpers, items
         $scope.devEnabled = ($scope.item.status === 'enabled');
         $scope.canSeeData = $scope.item.seeData;
 
-        var aux = ["Private", "Metadata Only", "Data Under Request", "Shared with partners", "Public Metadata Only", "Public Data Under Request", "Public Shared with partners", "Public"];
+        var aux = ["Private", "Partners without Data", "Partners with Data Under Request", "Partners including Data", "Public without Data", "Public with Data Under Request", "Public including Data for Partners", "Public"];
         $scope.ALcaption = aux[$scope.AL - 1];
 
         $scope.isMyItem = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
@@ -77,168 +77,6 @@ function ($scope, $window, $state, $stateParams, $location, commonHelpers, items
           }
         );
     };
-
-  //  TODO delete when obsolete from controller and view
-
-  //   $scope.makeItem = function(){
-  //     var thingDescr =
-  //     [
-  //       {
-  //         "actions": [
-  //           {
-  //             "affects": "OnOff",
-  //             "aid": "status",
-  //             "input": {
-  //               "datatype": "",
-  //               "units": "Adimensional"
-  //             },
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/edcb20b9-c5ad-4283-bc66-c40032498fab/properties/status",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "write_links": [
-  //               {
-  //                 "href": "/objects/{oid}/actions/UCtrlOnOff",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ]
-  //           }
-  //         ],
-  //         "oid": "12345",
-  //         "owner": $scope.owner_id,
-  //         "properties": [
-  //           {
-  //             "monitors": "MeanPowerConsumption",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "W"
-  //             },
-  //             "pid": "consumption",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/edcb20b9-c5ad-4283-bc66-c40032498fab/properties/consumption",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           }
-  //         ],
-  //         credentials:{
-  //           name:"obj_2",
-  //           password:"1111"
-  //         },
-  //         "type": "PowerMeter"
-  //       },
-  //       {
-  //         "actions": [
-  //           {
-  //             "affects": "OnOff",
-  //             "aid": "status",
-  //             "input": {
-  //               "datatype": "",
-  //               "units": "Adimensional"
-  //             },
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/4971fc10-bf07-43b1-8311-d0bbdf5ca0d4/properties/status",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "write_links": [
-  //               {
-  //                 "href": "/objects/{oid}/actions/UCtrlOnOff",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ]
-  //           }
-  //         ],
-  //         "oid": "23456",
-  //         "owner": $scope.owner_id,
-  //         "properties": [
-  //           {
-  //             "monitors": "MeanPowerConsumption",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "W"
-  //             },
-  //             "pid": "consumption",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/4971fc10-bf07-43b1-8311-d0bbdf5ca0d4/properties/consumption",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           }
-  //         ],
-  //         credentials:{
-  //           name:"obj_3",
-  //           password:"1111"
-  //         },
-  //         "type": "PowerMeter"
-  //       },
-  //       {
-  //         "actions": [],
-  //         "oid": "34567",
-  //         "owner": $scope.owner_id,
-  //         "properties": [
-  //           {
-  //             "monitors": "RelativeHumidity",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "%"
-  //             },
-  //             "pid": "humidity",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/d6e5acc3-dc29-417f-aa10-ebad34bf9db3/properties/humidity",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           },
-  //           {
-  //             "monitors": "AmbientTemperature",
-  //             "output": {
-  //               "datatype": "",
-  //               "units": "Î’Â°C"
-  //             },
-  //             "pid": "temperature",
-  //             "read_links": [
-  //               {
-  //                 "href": "/objects/d6e5acc3-dc29-417f-aa10-ebad34bf9db3/properties/temperature",
-  //                 "mediaType": "application/json"
-  //               }
-  //             ],
-  //             "writable": false,
-  //             "write_links": []
-  //           }
-  //         ],
-  //         credentials:{
-  //           name:"obj_1",
-  //           password:"1111"
-  //         },
-  //         "type": "Thermometer"
-  //       }
-  //       ];
-  //
-  //     var query = {
-  //         aid: "59759ff581ee7f03580da306", // test with unikl agent
-  //         thingDescriptions: thingDescr
-  //     };
-  //
-  //     itemsAPIService.postBulk("59759ff581ee7f03580da306")
-  //       .then(
-  //         function successCallback(response){
-  //           $window.alert('done');
-  //         }
-  //       );
-  // };
 
   $scope.deleteItem = function(){
     itemsAPIService.deleteItem($scope.item.oid)
@@ -278,13 +116,13 @@ function ($scope, $window, $state, $stateParams, $location, commonHelpers, items
   };
 
   $scope.saveNewAccess = function () {
-    if ($('select#editAccessName').val() !== 0){
+    if (Number($('select#editAccessName').val()) !== 0){
         itemsAPIService.putOne($stateParams.serviceId, {accessLevel: $('select#editAccessName').val(),
                                                       myFriends: $scope.item.myFriends,
                                                       oid: $scope.item.oid,
                                                       oldAccessLevel: $scope.item.accessLevel })
           .then(
-            function successCallback(response){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
+            function successCallback(response){ 
               initData();
               $scope.backToEdit();
             }

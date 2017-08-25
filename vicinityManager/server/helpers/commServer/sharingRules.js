@@ -41,7 +41,7 @@ function newFriend(my_id, friend_id){
       function(success){
           query = { hasAdministrator: my_id, accessLevel: {$in:[4, 7]} };
           askForDevices(query, my_id + '_' + friend_id, 'POST');
-          mySql.sendQuery(friend_id, my_id + '_' + friend_id);
+          //mySql.sendQuery(friend_id, my_id + '_' + friend_id);
         },
         function(error){
           if(error.statusCode !== 409){ // If the error is that the group already existed we ignore it
@@ -59,7 +59,7 @@ function newFriend(my_id, friend_id){
       function(response){
       query = { hasAdministrator: friend_id, accessLevel: {$in:[4, 7]} };
       askForDevices(query, friend_id + '_' + my_id, 'POST');
-      mySql.sendQuery(my_id, friend_id + '_' + my_id);
+      //mySql.sendQuery(my_id, friend_id + '_' + my_id);
     },
     function(error){
       if(error.statusCode !== 409){ // If the error is that the group already existed we ignore it
@@ -78,6 +78,7 @@ A device changes its accessLevel
 I need to remove/add from/to the commServer groups accordingly
 */
 function changePrivacy(updates){
+  updates = Object(updates);
   var oldStatus = clasify(Number(updates.oldAccessLevel));
   var newStatus = clasify(Number(updates.accessLevel));
   logger.debug(oldStatus + ' to ' + newStatus);
@@ -250,18 +251,14 @@ function findCase(oldA, newA, updates){
     removeHasAccess(updates.oid);
 
   } else if(oldA === "request" && newA === "friend") {
-    // getNotFriends(updates.oid, updates.myFriends, updates.cid);
-    processCommServerManyOrgs(updates.cid, updates.myFriends, updates.oid, 'POST');
-    removeHasAccess(updates.oid);
+    getNotFriends(updates, 'POST');
 
   } else if(oldA === "request" && newA === "private") {
-    // getNotFriends(updates.oid, updates.myFriends, updates.cid);
-    processCommServerManyOrgs(updates.cid, updates.myFriends, updates.oid, 'DELETE');
-    removeHasAccess(updates.oid);
+    getNotFriends(updates, 'DELETE');
 
   } else if(oldA === "request" && newA === "request") {
     // TODO Refactor and add new features to the required items. Add to the UI as well.
-    // getNotFriends(updates.oid, updates.myFriends, updates.cid);
+    getNotFriends(updates, 'NONE');
     logger.debug('TODO Address case noted in the comments!');
 
   } else {
@@ -294,15 +291,16 @@ function removeHasAccess(id){
     delete them form commServer.
     Necessary to check when device was previously underRequest
     */
-    function getNotFriends(id, friends, cid){
+    function getNotFriends(updates, method){
       var notFriends = [];
+      var id = updates.oid;
+      var friends = updates.myFriends;
+      var cid = updates.cid;
       itemOp.find({oid:id},
         function (err, data) {
           if (err || data === null) {
               response = {"error": true, "message": "Processing data failed!"};
           } else {
-            logger.debug(friends);
-            logger.debug(data[0].hasAccess);
               if (data[0].hasAccess.length > 0) {
                   var device = data[0];
                   for(var i = 0; i < device.hasAccess.length; i++){
@@ -313,8 +311,15 @@ function removeHasAccess(id){
                       notFriends.push(device.hasAccess[i]);
                     }
                   }
+                  logger.debug(notFriends);
+                  if(notFriends.length > 0){
+                    processCommServerManyOrgs(cid, notFriends, id, 'DELETE');
+                  }
                 }
-                processCommServerManyOrgs(cid, notFriends, id, 'DELETE');
+              }
+              if(method !== 'NONE'){
+                processCommServerManyOrgs(updates.cid, updates.myFriends, updates.oid, method);
+                removeHasAccess(updates.oid);
               }
             }
           );

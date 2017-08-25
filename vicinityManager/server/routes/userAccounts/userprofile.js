@@ -1,6 +1,9 @@
 /**
  * Created by viktor on 31.03.16.
  */
+
+ // TODO Rework whole module!!
+ 
  module.exports.get = getUserAccountFacade;
  module.exports.getAll = getAllUserAccountsFacade;
  module.exports.update = updateUserAccountFacade;
@@ -87,18 +90,6 @@ function getUserAccountFacade(req, res, next) {
     //TODO: Remove foreing users;
 
       userAccountOp.findById(o_id).populate('knows').populate('accountOf', 'avatar name email occupation location authentication status').exec(function (err, data) {
-      var numNeighbors = data.knows.length;
-
-          // TEST ONLY ====
-          // var i = 0;
-          //       for (index in data) {
-          //         if (typeof data[index] !== 'function') {
-          //         console.log(index);
-          //       i++;
-          //     }
-          // }
-          // console.log(i);
-          //===============
 
         if (!data ) {
           res.status(404).send('Not found');
@@ -106,6 +97,7 @@ function getUserAccountFacade(req, res, next) {
           if (err) {
               response = {"error": true, "message": "Error fetching data"};
           } else {
+            var numNeighbors = data.knows.length;
               if (req.params.id === req.body.decoded_token.cid){
                   isNeighbour = false;
                   canSendNeighbourRequest = false;

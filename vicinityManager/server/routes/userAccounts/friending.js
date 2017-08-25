@@ -7,6 +7,7 @@ var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
 var itemOp = require('../../models/vicinityManager').item;
 
+//TODO rework whole module
 //TODO: Issue #6  check that only :id can make friends.
 //TODO: Issue #6 Send friendship notification to :id.
 //TODO: Issue #6 check double requests;
@@ -46,12 +47,25 @@ function processFriendRequest(req, res, next) {
                 notification.type = 'friendRequest';
                 notification.status = 'waiting';
                 notification.isUnread = true;
-                notification.save();
 
-                friend.hasNotifications.push(notification._id);
+                notification.save(
+                  function(err,data){
+                    if(data){
+                      friend.hasNotifications.push(notification._id);
 
-                friend.save();
-                me.save();
+                      friend.save( function(err, data){
+                        if(err || !data){logger.debug('mal  ' + err);}
+                        else{logger.debug('bien');}
+                      });
+
+                      me.save(function(err, data){
+                        if(err || !data){logger.debug('mal  ' + err);}
+                        else{logger.debug('bien');}
+                      });
+                    }
+                  }
+                );
+
                 response = {"error": false, "message": "Processing data success!"};
             } else {
                 response = {"error": true, "message": "Processing data failed!"};
@@ -137,7 +151,7 @@ function rejectFriendRequest(req, res, next) {
     //TODO: Issue #6 remove :autenticated user from :id's knows list
     //TODO: Issue #6 update friendship counts.
 
-    //TODO revise function, whole modeule in general!!
+    //TODO revise function, whole module in general!!
 
     // console.log("Running reject friend request");
     friend_id = mongoose.Types.ObjectId(req.params.id);

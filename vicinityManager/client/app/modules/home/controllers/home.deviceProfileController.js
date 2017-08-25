@@ -41,8 +41,8 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
         $scope.AL = $scope.device.accessLevel;
         $scope.devEnabled = ($scope.device.status === 'enabled');
         $scope.canSeeData = $scope.device.seeData;
-
-        var aux = ["Private", "Metadata Only", "Data Under Request", "Shared with partners", "Public Metadata Only", "Public Data Under Request", "Public Shared with partners", "Public"];
+        $scope.myFriends = $scope.device.myFriends;
+        var aux = ["Private", "Partners without Data", "Partners with Data Under Request", "Partners including Data", "Public without Data", "Public with Data Under Request", "Public including Data for Partners", "Public"];
         $scope.ALcaption = aux[$scope.AL - 1];
 
         $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
@@ -116,10 +116,10 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
   };
 
   $scope.saveNewAccess = function () {
-    if ($('select#editAccessName').val() !== 0){
+    if (Number($('select#editAccessName').val()) !== 0){
         itemsAPIService.putOne($stateParams.deviceId, {accessLevel: $('select#editAccessName').val(),
                                                       cid: $scope.owner_id,
-                                                      myFriends: $scope.device.myFriends,
+                                                      myFriends: $scope.myFriends,
                                                       oid: $scope.device.oid,
                                                       oldAccessLevel: $scope.device.accessLevel })
           .then(
@@ -197,7 +197,7 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
     if ($('input#editLocationInput').val() !== 0){
         itemsAPIService.putOne($stateParams.deviceId, {"info.location": $scope.devInfo.location})
           .then(
-            function successCallback(){ 
+            function successCallback(){
               initData();
               $scope.backToEdit2();
             }
