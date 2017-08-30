@@ -144,14 +144,14 @@ $scope.isDev = keyword.test(payload.roles);
 
   $scope.acceptNeighbourRequest = function (notifId, friendId){
     userAccountsHelpers.acceptNeighbourRequest(friendId)
-    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
+    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), userAccountsHelpers.errorCallback)
     .then(init(), userAccountsHelpers.errorCallback)
     .catch(userAccountsHelpers.errorCallback);
   };
 
     $scope.rejectNeighbourRequest = function(notifId, friendId) {
       userAccountsHelpers.rejectNeighbourRequest(friendId)
-      .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
+      .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), userAccountsHelpers.errorCallback)
       .then(init(),userAccountsHelpers.errorCallback)
       .catch(userAccountsHelpers.errorCallback);
     };
@@ -176,7 +176,6 @@ $scope.isDev = keyword.test(payload.roles);
       .then(init(),registrationsHelpers.errorCallback)
       .catch(registrationsHelpers.errorCallback);
     };
-
 
     $scope.rejectRegistration = function (reg_id, notifId) {
       registrationsHelpers.rejectRegistration(reg_id)

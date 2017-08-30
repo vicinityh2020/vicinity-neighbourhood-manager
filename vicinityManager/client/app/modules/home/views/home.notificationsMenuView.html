@@ -116,6 +116,9 @@
              <!-- Unread new devices registered -->
               <li ng-repeat="notif in notifs" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') " ng-click="changeIsUnreadAndResponded(notif._id)">  <!-- | filter: searchfilter3 -->
                 <span class="ciara" ng-class="myColor"></span>
+                <div class="notification-avatar readNot">
+                    <img class="img-circle imgNotif" ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar"/>
+                </div>
                   <p>
                     <a class="padded"><b>New devices have been activated!</b></a>
                   </p>
@@ -126,7 +129,7 @@
               <span class="ciara" ng-class="myColor"></span>
               <div class="notification-avatar">
                 <a ng-click="changeIsUnread(reg._id)" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
-                  <img class="img-circle imgNotif" ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar">
+                  <img class="img-circle imgNotif" ng-src="../../../../img/icons/data_request.png" alt="Company Avatar">
                 </a>
               </div>
                 <div class="notification-description">
@@ -164,26 +167,26 @@
         <div class="notification-description readNot"><p>You have partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
         <div class="notification-actions readNot">
-          <button  ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Accept</button>     <!-- ng-show="notif.status =='waiting'" -->
+          <button  ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Accept</button>
           <button  ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Decline</button>
         </div>
       </li>
       <!-- Unread new devices registered -->
-       <li ng-repeat="notif in notifs2" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') " ng-click="changeIsUnreadAndResponded(notif._id)">  <!-- | filter: searchfilter3 -->
+       <!-- <li ng-repeat="notif in notifs2" ng-show="(notif.type=='deviceDiscovered') && (notif.status== 'waiting') " ng-click="changeIsUnreadAndResponded(notif._id)">
          <span class="ciara" ng-class="myColor"></span>
          <div class="notification-description readNot">
            <p>
              <a class="padded"><b>New devices have been activated!</b></a>
            </p>
          </div>
-       </li>
+       </li> -->
 
 <!-- Read registration request notification-->
       <li ng-repeat="reg in registrationsRead" ng-show="(reg.type=='registrationRequest') && (reg.status== 'waiting') ">        <!-- | filter: searchfilter4 -->
         <span class="ciara" ng-class="myColor"></span>
         <div class="notification-avatar readNot">
           <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
-            <img class="img-circle imgNotif" ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar"/>
+            <img class="img-circle imgNotif" ng-src="../../../../img/icons/data_request.png" alt="Company Avatar"/>
           </a>
         </div>
           <div class="notification-description readNot">

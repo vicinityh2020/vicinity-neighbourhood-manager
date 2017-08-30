@@ -150,7 +150,7 @@ function changeIsUnreadToFalse(req, res){
     o_id.push(mongoose.Types.ObjectId(req.params.id));
     setAsRead(o_id, res);
   } else if(req.body.ids){
-    setAsRead(req.body.ids);
+    setAsRead(req.body.ids, res);
   } else {
     response = {"error": true, "message": "Error fetching data"};
     res.json(response);
