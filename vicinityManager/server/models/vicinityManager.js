@@ -16,27 +16,22 @@ var userAccount = new Schema({
   memberOf: [ObjectId], //Member of UserGroups
   location: String,
   businessId : String,
-  skinColor: {type: String, enum: ['blue','red', 'green', 'purple', 'yellow','black']},
-  accountOf: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
-  }], //UserAccount is account of Agent
-  knows: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'userAccount'
-  }],
-  knowsRequestsFrom: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'userAccount'
-  }],
-  knowsRequestsTo: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'userAccount'
-  }],
-  hasNotifications: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'notification'
-  }],
+  skinColor: {type: String, enum: ['blue', 'red', 'green', 'purple', 'yellow', 'black']},
+  accountOf: [
+    { type: ObjectId, ref: 'user'}
+  ],
+  knows: [
+    { type: ObjectId, ref: 'userAccount'}
+  ],
+  knowsRequestsFrom: [
+    { type: ObjectId, ref: 'userAccount'}
+  ],
+  knowsRequestsTo: [
+    { type: ObjectId, ref: 'userAccount'}
+  ],
+  hasNotifications: [
+    { type: ObjectId, ref: 'notification'}
+  ],
   hasNodes: [String],
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
@@ -55,10 +50,7 @@ var user = new Schema({
   location: String,
   email: String,
   status: String,
-  organisation: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'userAccount'
-  },
+  organisation: { type: ObjectId, ref: 'userAccount' },
   authentication: {
     password: String,
     principalRoles: [String]
@@ -69,10 +61,7 @@ var node = new Schema({
   adid: {type: String, required: true},
   name: {type: String, required: true},
   eventUri: String,
-  organisation: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'userAccount'
-  },
+  organisation: { type: ObjectId, ref: 'userAccount' },
   type: [String],
   agent: String,
   status: String,
@@ -83,9 +72,9 @@ var item = new Schema({
   name: String,
   oid: String, // Object id -- different to Mongo uid
   adid: String, // Agent id
-  hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
-  hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
-  accessRequestFrom: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
+  hasAdministrator: [{type: ObjectId, ref: 'userAccount'}],
+  hasAccess: [{type: ObjectId, ref: 'userAccount'}],
+  accessRequestFrom: [{type: ObjectId, ref: 'userAccount'}],
   accessLevel: Number,
   avatar: String,
   info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
@@ -98,10 +87,7 @@ var invitation = new Schema({
     nameTo: String,
     sentBy: {
         name: String,
-        companyId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'userAccount'
-        },
+        companyId: { type: ObjectId, ref: 'userAccount'},
         organisation: String,
         email: String
     },
@@ -113,10 +99,7 @@ var registration = new Schema({
     email: String,
     password: String,
     occupation: String,
-    companyId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'userAccount'
-    },
+    companyId: { type: ObjectId, ref: 'userAccount'},
     companyName: String,
     companyLocation: String,
     termsAndConditions: Boolean,
@@ -128,45 +111,28 @@ var registration = new Schema({
 var notification = new Schema({
     addressedTo: [{ type: ObjectId, ref: 'userAccount' }],
     sentBy: { type: ObjectId, ref: 'userAccount' },
-    sentByUser: { type: ObjectId, ref: 'userAccount' },
     sentByReg: { type: ObjectId, ref: 'registration' },
-    deviceId: { type: ObjectId, ref: 'item' },
-    type: {type: String,
-      enum: ['friendRequest',
-            'deviceRequest',
-            'registrationRequest',
-            'deviceEnabled',
-            'deviceDisabled',
-            'deviceDiscovered']
-            // add userCreated, userDeleted, partnershipCancelled, devRequestAccepted, devConnCancelled ...
-        },
-    status: {type: String, enum: ['waiting','responded','accepted','rejected']},
-    isUnread: Boolean
+    itemId: { type: ObjectId, ref: 'item' },
+    isUnread: Boolean,
+    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected']},
+    type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 31, 32, 33]}
+    /*
+    1 - registrationRequest - toAnswer
+    11 - itemEnabled - info
+    12 - itemDisabled - info
+    13 - itemDiscovered - info
+    21 - itemconnRequest - toAnswer
+    22 - itemconnRejected - info
+    23 - itemconnCancelled - info
+    31 - partnershipRequest  - toAnswer
+    32 - partnershipCancelled - info
+    33 - partnershipRejected - info
+    ...
+    */
 });
 
 var remember = new Schema({
   token: {type: String, required: true},
-});
-
-var userGroup = new Schema({
-  name: String,
-  avatar: String,
-  hasAdministrator: [ObjectId]
-});
-
-var organisationUnit = new Schema({
-  name: String,
-  consistsOf: [ObjectId] // OrganisationUnit consist of Gateways
-});
-
-var gateway = new Schema({
-  name: {type: String, required: true},
-  hasAdministrator: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
-  hasAccess: [{type: mongoose.Schema.Types.ObjectId, ref: 'userAccount'}],
-  consistsOf: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'item'
-  }] // Gateway has Items.
 });
 
 // Set schema options ==================================
@@ -227,9 +193,6 @@ node.index({adid: 1}, { unique: false });
 
 module.exports.userAccount = mongoose.model('userAccount', userAccount);
 module.exports.user = mongoose.model('user', user);
-module.exports.userGroup = mongoose.model('userGroup', userGroup);
-module.exports.organisationUnit = mongoose.model('organisationUnit', organisationUnit);
-module.exports.gateway = mongoose.model('gateway', gateway);
 module.exports.item = mongoose.model('item', item);
 module.exports.notification = mongoose.model('notification', notification);
 module.exports.invitation = mongoose.model('invitation', invitation);
