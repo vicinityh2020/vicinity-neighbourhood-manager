@@ -3,7 +3,6 @@ var router = express.Router();
 
 var friending = require('./userAccounts/friending');
 var userProfile = require('./userAccounts/userprofile');
-var notifications = require('./notifications/notifications');
 var configuration = require('./userAccounts/configuration');
 
 router

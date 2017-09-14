@@ -186,8 +186,8 @@ function deviceActivityNotif(cid){
   var dbNotif = new notifOp();
   dbNotif.addressedTo = cid;
   dbNotif.sentBy = cid;
-  dbNotif.type = "deviceDiscovered";
-  dbNotif.status = "waiting";
+  dbNotif.type = 13;
+  dbNotif.status = "info";
   dbNotif.isUnread = true;
   return dbNotif.save();
 }

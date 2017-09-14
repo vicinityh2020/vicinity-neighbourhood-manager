@@ -5,128 +5,75 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var notificationOp = require('../../models/vicinityManager').notification;
+var notifHelper = require('../../helpers/notifications/notificationsHelper');
 
-// FUNCTIONS to get notifications
+// FUNCTIONS accessed from frontend
 
 /*
-Read and unread separately
+Get notifications of user
 */
 function getNotificationsOfUser(req,res){
 
-  var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
 
- notificationOp.find({addressedTo: {$in : [o_id]}, isUnread: true}).populate('sentBy','avatar organisation').populate('deviceId','avatar name').exec(function(err,data){
-   response = {"error": false, "message": data};
-   res.json(response);
-
- });
-}
-
-function getNotificationsOfUserRead(req,res){
-
-  var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-
- notificationOp.find({addressedTo: {$in : [o_id]}, isUnread: false}).populate('sentBy','avatar organisation').populate('deviceId','avatar name').exec(function(err,data){
-   response = {"error": false, "message": data};
-   res.json(response);
-
- });
-
-}
-
-function getNotificationsOfRegistration(req,res){
-
-  var response = {};
-
- notificationOp.find({type:"registrationRequest", isUnread: true}).populate('sentByReg','companyName').exec(function(err,data){
-   response = {"error": false, "message": data};
-   res.json(response);
- });
-}
-
-function getNotificationsOfRegistrationRead(req,res){
-
-  var response = {};
-
- notificationOp.find({type:"registrationRequest", isUnread: false}).populate('sentByReg','companyName').exec(function(err,data){
-   response = {"error": false, "message": data};
-   res.json(response);
- });
+  notificationOp.find({addressedTo: {$in : [o_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('itemId','avatar name').exec(function(err,data){
+      if(err){
+        res.json({"error": true, "message": "Error fetching data"});
+      } else {
+        res.json({"error": false, "message": data});
+      }
+    });
 }
 
 /*
-Read and unread together
+Get notifications of registrations
+*/
+function getNotificationsOfRegistration(req,res){
+
+   notificationOp.find({type: 1, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
+     if(err){
+       res.json({"error": true, "message": "Error fetching data"});
+     } else {
+       res.json({"error": false, "message": data});
+     }
+   });
+}
+
+/*
+Get notifications of user based on date
 */
 function getAllUserNotifications(req,res){
 
-  var response = {};
-  var dateFrom = objectIdWithTimestamp(req.query.searchDate);
+  var dateFrom = notifHelper.objectIdWithTimestamp(req.query.searchDate);
+
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('deviceId','avatar name').exec(function(err,data){
-     response = {"error": false, "message": data};
-     res.json(response);
+  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('itemId','avatar name').exec(function(err,data){
+    if(err){
+      res.json({"error": true, "message": "Error fetching data"});
+    } else {
+      res.json({"error": false, "message": data});
+    }
   });
 }
 
+/*
+Get notifications of registrations based on date
+*/
 function getAllRegistrations(req,res){
 
-  var dateFrom = objectIdWithTimestamp(req.query.searchDate);
-  var response = {};
-  notificationOp.find({type:"registrationRequest", _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
-    response = {"error": false, "message": data};
-    res.json(response);
-  });
-}
+  var dateFrom = notifHelper.objectIdWithTimestamp(req.query.searchDate);
 
-
-function getAll(req, res, next) {
-//TODO: User authentic - Role check
-  var response = {};
-
-  notificationOp.find({}, function(err, data) {
-    if (err) {
-      response = {"error": true, "message": "Error fetching data"};
+  notificationOp.find({type: 1, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
+    if(err){
+      res.json({"error": true, "message": "Error fetching data"});
     } else {
-      response = {"error": false, "message": data};
+      res.json({"error": false, "message": data});
     }
-    res.json(response);
   });
 }
 
 // Functions to manipulate notifications
-
-function deleteNot(senderID, recepID, type, status){
-    notificationOp.remove({ sentBy: senderID, addressedTo: {$in : [recepID]}, type: type, status: status},function(err, removed){
-    });
-}
-
-function changeStatusToResponded(senderID, recepID, type, status){
-
-    notificationOp.findOne({ sentBy: senderID, addressedTo: {$in : [recepID]}, type: type, status: status},function(err, data){
-        var notif = data;
-        // for (index in data){
-          notif.status = 'responded';
-          notif.save();
-        // };
-    });
-}
-
-function updateNotificationOfRegistration(req,res){
-var response = {};
-var o_id = mongoose.Types.ObjectId(req.params.id);
-  notificationOp.findOneAndUpdate({sentByReg:o_id}, { $set: { status: 'responded', isUnread: false }}, { new: true }, function (err, notif) {
-    if (err) {
-      response = {"error": true, "message": "Error fetching data"};
-    } else {
-      response = {"error": false, "message": notif};
-    }
-    res.json(response);
-  });
-}
-
-function changeStatusToResponded2(req,res){
+function changeToResponded(req,res){
 var response = {};
 var o_id = mongoose.Types.ObjectId(req.params.id);
 var stat = req.params.status;
@@ -148,9 +95,9 @@ function changeIsUnreadToFalse(req, res){
   var o_id = [];
   if(req.params.id && req.params.id != '0'){
     o_id.push(mongoose.Types.ObjectId(req.params.id));
-    setAsRead(o_id, res);
+    notifHelper.setAsRead(o_id, res);
   } else if(req.body.ids){
-    setAsRead(req.body.ids, res);
+    notifHelper.setAsRead(req.body.ids, res);
   } else {
     response = {"error": true, "message": "Error fetching data"};
     res.json(response);
@@ -159,59 +106,45 @@ function changeIsUnreadToFalse(req, res){
   res.json(response);
 }
 
-// Recursively sets all notifs to read
-function setAsRead(ids, res){
-  var response = {};
-  notificationOp.update({_id: ids[0]}, { $set: { isUnread: false }}, function (err, notif) {
-    if (err) {
-      response = {"error": true, "message": "Error fetching data"};
-      res.json(response);
-    }
-  });
-  ids.splice(0,1);
-  if(ids.length > 0){
-    setAsRead(ids);
-  }
+
+
+// Functions accessed from backend
+
+function deleteNot(senderID, recepID, type, status){
+    notificationOp.remove({ sentBy: senderID, addressedTo: {$in : [recepID]}, type: type, status: status},function(err, removed){});
 }
+
+function changeStatusToResponded(senderID, recepID, type, status){
+    notificationOp.findOne({ sentBy: senderID, addressedTo: {$in : [recepID]}, type: type, status: status},
+      function(err, data){
+        var notif = data;
+        notif.status = 'responded';
+        notif.save();
+      }
+    );
+  }
 
 function markAsRead(sender_id, recipient_id, type, status){
     notificationOp.find({sentBy: sender_id, addressedTo: {$in :[recipient_id]}, type: type, isUnread: true, status: status},
-        processFoundUnreadNotifications);
-}
-
-function processFoundUnreadNotifications(err, data){
-    for (var index in data){
-        var item = data[index];
-        item.isUnread = false;
-        item.save();
-    }
-}
-
-// Private functions
-
-function objectIdWithTimestamp(timestamp) {
-
-    // Convert date object to hex seconds since Unix epoch
-    var hexSeconds = Math.floor(timestamp/1000).toString(16);
-
-    // Create an ObjectId with that hex timestamp
-    var constructedObjectId = mongoose.Types.ObjectId(hexSeconds + "0000000000000000");
-
-    return constructedObjectId;
-}
+      function(err, data){
+        for (var index in data){
+            var item = data[index];
+            item.isUnread = false;
+            item.save();
+        }
+      }
+    );
+  }
 
 // Export functions
 
-module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.getNotificationsOfUser = getNotificationsOfUser;
-module.exports.changeStatusToResponded = changeStatusToResponded;
-module.exports.changeStatusToResponded2 = changeStatusToResponded2;
-module.exports.updateNotificationOfRegistration = updateNotificationOfRegistration;
-module.exports.getAll = getAll;
-module.exports.markAsRead = markAsRead;
-module.exports.deleteNot = deleteNot;
-module.exports.getNotificationsOfUserRead = getNotificationsOfUserRead;
 module.exports.getNotificationsOfRegistration = getNotificationsOfRegistration;
-module.exports.getNotificationsOfRegistrationRead = getNotificationsOfRegistrationRead;
 module.exports.getAllUserNotifications = getAllUserNotifications;
 module.exports.getAllRegistrations = getAllRegistrations;
+module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
+module.exports.changeToResponded = changeToResponded;
+
+module.exports.changeStatusToResponded = changeStatusToResponded;
+module.exports.markAsRead = markAsRead;
+module.exports.deleteNot = deleteNot;

@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 
 var itemOp = require('../../models/vicinityManager').item;
-var notificationOp = require('../../models/vicinityManager').notification;
 var notificationAPI = require('../notifications/notifications');
+
 
 function cancelItemRequest(req, res, next){
     console.log("Running cancelation of data access request!");
@@ -29,7 +29,6 @@ function cancelItemRequest(req, res, next){
 
                 notificationAPI.deleteNot(activeCompany_id, device.hasAdministrator[0]._id, 'deviceRequest', 'waiting');
 
-                device.save();
                 response = {"error": false, "message": data};
             } else {
                 response = {"error": true, "message": "Processing data failed!"};

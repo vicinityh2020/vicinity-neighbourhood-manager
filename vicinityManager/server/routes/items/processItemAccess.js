@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-
 var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -27,9 +26,9 @@ function processItemAccess(req, res, next) {
 
                 notification.addressedTo.push(friend_id);      //friend_id     data.hasAdministrator[0]._id
                 notification.sentBy = activeCompany_id;
-                notification.type = 'deviceRequest';
+                notification.type = 21;
                 notification.status = 'waiting';
-                notification.deviceId = dev_id;
+                notification.itemId = dev_id;
                 notification.isUnread = true;
                 notification.save();
 

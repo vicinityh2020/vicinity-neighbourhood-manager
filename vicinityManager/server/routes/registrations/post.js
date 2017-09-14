@@ -40,7 +40,7 @@ if(!req.body.status || req.body.status !== 'pending'){
       response = {"error": true, "message": "Error adding data!"};
     } else {
       dbNotif.sentByReg = product._id;
-      dbNotif.type = "registrationRequest";
+      dbNotif.type = 1;
       dbNotif.status = "waiting";
       dbNotif.isUnread = true;
       dbNotif.save(function(err,data){

@@ -26,13 +26,13 @@ function putOne(req, res) {
 
   if(updates.status === 'enabled'){
     commServerProcess(oid, adid, updates.name, oid, updates.cid)
-      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Enabled');})
+      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Enabled', 11);})
       .then(function(response){ itemUpdate(uid,updates,res);})
       .catch(callbackError);
 
   }else if(updates.status === 'disabled'){
     commServer.callCommServer({}, 'users/' + oid , 'DELETE')
-      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Disabled');})
+      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Disabled', 12);})
       .then(function(response){ itemUpdate(uid,updates,res);})
       .catch(callbackError);
 
@@ -72,13 +72,13 @@ function itemUpdate(uid,updates,res){
 /*
 Sends a notification on change of status
 */
-function deviceActivityNotif(did,cid,state){
+function deviceActivityNotif(did,cid,state, typ){
   var dbNotif = new notificationOp();
   dbNotif.addressedTo = cid;
   dbNotif.sentBy = cid;
-  dbNotif.deviceId = did;
-  dbNotif.type = "device" + state;
-  dbNotif.status = "waiting";
+  dbNotif.itemId = did;
+  dbNotif.type = typ;
+  dbNotif.status = "info";
   dbNotif.isUnread = true;
   return dbNotif.save(
     function(err,data){

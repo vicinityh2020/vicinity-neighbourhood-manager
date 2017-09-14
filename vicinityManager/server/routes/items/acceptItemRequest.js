@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
-var notificationAPI = require('../notifications/notifications');
 var notificationOp = require('../../models/vicinityManager').notification;
 
 function acceptItemRequest(req, res, next) {
@@ -24,12 +23,8 @@ function acceptItemRequest(req, res, next) {
 
                 device.hasAccess.push(device.accessRequestFrom[0]);
 
-
                 for (var index = device.accessRequestFrom.length - 1; index >= 0; index --) {
-                    // if (device.accessRequestFrom[index].toString() === activeCompany_id.toString()) {
-
                     device.accessRequestFrom.splice(index, 1);
-                    // }
                 }
 
                 sharingRules.acceptUserRequest(device.oid, activeCompany_id, friend_id);
@@ -40,14 +35,11 @@ function acceptItemRequest(req, res, next) {
 
                 notification.addressedTo.push(friend_id);
                 notification.sentBy = activeCompany_id;
-                notification.type = 'deviceRequest';
+                notification.type = 24; // itemconnRequest
                 notification.status = 'accepted';
-                notification.deviceId = device._id;
+                notification.itemId = device._id;
                 notification.isUnread = true;
                 notification.save();
-
-
-                // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 
                 device.save();
 

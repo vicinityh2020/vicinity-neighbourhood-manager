@@ -8,6 +8,8 @@ var Schema = mongoose.Schema;
 
 // Vicinity neighorhood schemas ============
 
+// TODO Remove unnecesary joins between schemas (ref:)
+
 var userAccount = new Schema({
   organisation: String,
   avatar: String,
@@ -113,9 +115,10 @@ var notification = new Schema({
     sentBy: { type: ObjectId, ref: 'userAccount' },
     sentByReg: { type: ObjectId, ref: 'registration' },
     itemId: { type: ObjectId, ref: 'item' },
+    userId: { type: ObjectId, ref: 'user' },
     isUnread: Boolean,
-    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected']},
-    type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 31, 32, 33]}
+    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded']},
+    type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 24, 31, 32, 33, 34]},
     /*
     1 - registrationRequest - toAnswer
     11 - itemEnabled - info
@@ -124,9 +127,11 @@ var notification = new Schema({
     21 - itemconnRequest - toAnswer
     22 - itemconnRejected - info
     23 - itemconnCancelled - info
+    24 - itemconnAccepted - info
     31 - partnershipRequest  - toAnswer
     32 - partnershipCancelled - info
     33 - partnershipRejected - info
+    34 - partnershipAccepted - info
     ...
     */
 });

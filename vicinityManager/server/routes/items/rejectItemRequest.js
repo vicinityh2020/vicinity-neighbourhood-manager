@@ -28,25 +28,18 @@ function rejectItemRequest(req, res, next) {
                 }
 
                 for (index = device.accessRequestFrom.length - 1; index >= 0; index --) {
-                    // if (device.accessRequestFrom[index].toString() === activeCompany_id.toString()) {    neviem identifikovat od koho dosiel reques, pre demo je postacujuce ak vymazem cele pole
-                        device.accessRequestFrom.splice(index, 1);
-                    // }
+                      device.accessRequestFrom.splice(index, 1);
                 }
-
-                //notificationAPI.changeStatusToResponded(friend_id, activeCompany_id, 'deviceRequest', 'waiting');
-                notificationAPI.markAsRead(friend_id, activeCompany_id, 'deviceRequest', 'waiting');
 
                 var notification = new notificationOp();
 
                 notification.addressedTo.push(friend_id);
                 notification.sentBy = activeCompany_id;
-                notification.type = 'deviceRequest';
-                notification.status = 'rejected';
-                notification.deviceId = device._id;
+                notification.type = 22;
+                notification.status = 'info';
+                notification.itemId = device._id;
                 notification.isUnread = true;
                 notification.save();
-
-                // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 
                 device.save();
 

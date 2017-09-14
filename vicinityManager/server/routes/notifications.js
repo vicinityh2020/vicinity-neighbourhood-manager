@@ -3,15 +3,12 @@ var router = express.Router();
 
 var notifications = require('./notifications/notifications.js');
 
-
 router
-  .get('/', notifications.getAll)
+  .get('/:id/userNotifications', notifications.getNotificationsOfUser)
   .get('/registrations', notifications.getNotificationsOfRegistration)
-  .get('/registrationsRead', notifications.getNotificationsOfRegistrationRead)
-  .get('/:id/allNotifications', notifications.getAllUserNotifications)
+  .get('/:id/allUserNotifications', notifications.getAllUserNotifications)
   .get('/allRegistrations', notifications.getAllRegistrations)
   .put('/:id/changeIsUnreadToFalse', notifications.changeIsUnreadToFalse)
-  .put('/:id/:status/changeStatusToResponded', notifications.changeStatusToResponded2)
-  .put('/:id/updateNotificationOfRegistration', notifications.updateNotificationOfRegistration);
+  .put('/:id/:status/changeStatusToResponded', notifications.changeToResponded);
 
 module.exports = router;

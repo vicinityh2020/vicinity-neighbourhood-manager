@@ -54,22 +54,25 @@ $scope.isDev = keyword.test(payload.roles);
   init();
 
   function init(){
-  userAccountAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
-    .then(getNotifs1, commonHelpers.errorCallback)
-    .then(getNotifs2, commonHelpers.errorCallback);
+  notificationsAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
+    .then(getNotifs, commonHelpers.errorCallback);
   }
 
-    function getNotifs1(response){
+    function getNotifs(response){
       $scope.notifs = response.data.message;
-      return userAccountAPIService.getNotificationsOfUserRead($window.sessionStorage.companyAccountId);
-    }
-
-    function getNotifs2(response){
-      $scope.notifs2 = response.data.message;
       numberOfUnreadNotifs();
       if($scope.isDev){
         notificationsAPIService.getNotificationsOfRegistration()
-          .then(getNotifs3,commonHelpers.errorCallback);
+          .then(function successCallback(response){
+            $scope.registrations = response.data.message;
+            numberOfUnreadNotifs();
+            if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
+              Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
+              $scope.newNotifs = $scope.notifs.length + $scope.registrations.length;
+            }
+          },
+          commonHelpers.errorCallback
+        );
       }else{
         if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
           Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
@@ -77,22 +80,6 @@ $scope.isDev = keyword.test(payload.roles);
         }
       }
     }
-
-    function getNotifs3(response){
-      $scope.registrations = response.data.message;
-      numberOfUnreadNotifs();
-      if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
-        Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
-        $scope.newNotifs = $scope.notifs.length + $scope.registrations.length;
-      }
-      notificationsAPIService.getNotificationsOfRegistrationRead()
-        .then(
-          function successCallback(response){
-            $scope.registrationsRead = response.data.message;
-          },
-          commonHelpers.errorCallback
-        );
-      }
 
       function updateScopeAttributes(response){ // Need to be hoisted
         var index = 0;
@@ -110,13 +97,13 @@ $scope.isDev = keyword.test(payload.roles);
       $scope.zeroNotif = ($scope.notifs.length + $scope.registrations.length) === 0;
     }
 
-    $scope.changeIsUnreadAndResponded =  function(notifID){   // Need to be call external, no need for hoisting
+    $scope.changeIsUnreadAndResponded = function(notifID){   // Need to be call external, no need for hoisting
       notificationsAPIService.changeIsUnreadToFalse(notifID)
         .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'), commonHelpers.errorCallback)
         .then(init(), commonHelpers.errorCallback);
     };
 
-    $scope.changeIsUnread =  function(notifID){
+    $scope.changeIsUnread = function(notifID){
       notificationsAPIService.changeIsUnreadToFalse(notifID)
         .then(init(),commonHelpers.errorCallback);
     };

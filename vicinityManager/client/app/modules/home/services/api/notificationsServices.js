@@ -4,20 +4,16 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
 
   var notificationsAPI = {};
 
-  notificationsAPI.getAll = function() {
-    return $http.get(configuration.apiUrl + '/notifications');
+  notificationsAPI.getNotificationsOfUser = function(id) {
+    return $http.get(configuration.apiUrl + '/notifications/' + id + '/userNotifications');
   };
 
   notificationsAPI.getNotificationsOfRegistration = function() {
     return $http.get(configuration.apiUrl + '/notifications/registrations');
   };
 
-  notificationsAPI.getNotificationsOfRegistrationRead = function() {
-    return $http.get(configuration.apiUrl + '/notifications/registrationsRead');
-  };
-
   notificationsAPI.getAllUserNotifications = function(id, filter) {
-    return $http.get(configuration.apiUrl + '/notifications/' + id + '/allNotifications' + '?searchDate=' + filter);
+    return $http.get(configuration.apiUrl + '/notifications/' + id + '/allUserNotifications' + '?searchDate=' + filter);
   };
 
   notificationsAPI.getAllRegistrations = function(filter) {
@@ -30,10 +26,6 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
 
   notificationsAPI.changeStatusToResponded = function(id,answer) {
     return $http.put(configuration.apiUrl + '/notifications/' + id + '/' + answer + '/changeStatusToResponded');
-  };
-
-  notificationsAPI.updateNotificationOfRegistration = function(id) {
-    return $http.put(configuration.apiUrl + '/notifications/' + id + '/updateNotificationOfRegistration');
   };
 
   return notificationsAPI;

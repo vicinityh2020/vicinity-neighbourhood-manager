@@ -40,7 +40,7 @@ function processFriendRequest(req, res, next) {
 
                 notification.addressedTo.push(friend._id);
                 notification.sentBy = me._id;
-                notification.type = 'friendRequest';
+                notification.type = 31;
                 notification.status = 'waiting';
                 notification.isUnread = true;
 
@@ -107,17 +107,15 @@ function acceptFriendRequest(req, res, next) {
                 sharingRules.newFriend(my_id, friend_id); // Adds all my items flagged for friends to my friend foreign group and viceversa
 
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
-
-                notificationAPI.changeStatusToResponded(friend_id, my_id, 'friendRequest','waiting');
-                notificationAPI.markAsRead(friend_id, my_id, 'friendRequest','waiting');
+                // notificationAPI.changeStatusToResponded(friend_id, my_id, 'friendRequest','waiting');
+                // notificationAPI.markAsRead(friend_id, my_id, 'friendRequest','waiting');
 
                 var notification = new notificationOp();
 
                 notification.addressedTo.push(friend_id);
                 notification.sentBy = my_id;
-                notification.type = 'friendRequest';
+                notification.type = 34;
                 notification.status = 'accepted';
-                // notification.data.deviceId = device._id;
                 notification.isUnread = true;
                 notification.save();
 
@@ -182,9 +180,8 @@ function rejectFriendRequest(req, res, next) {
 
                 notification.addressedTo.push(friend_id);
                 notification.sentBy = my_id;
-                notification.type = 'friendRequest';
+                notification.type = 33;
                 notification.status = 'rejected';
-                // notification.data.deviceId = device._id;
                 notification.isUnread = true;
                 notification.save();
 
@@ -236,6 +233,15 @@ function cancelFriendRequest(req, res, next){
 
                 // notificationAPI.markAsRead(my_id, friend_id, "friendRequest");
                 notificationAPI.deleteNot(my_id, friend_id, 'friendRequest', 'waiting');
+
+                var notification = new notificationOp();
+
+                notification.addressedTo.push(friend_id);
+                notification.sentBy = my_id;
+                notification.type = 32;
+                notification.status = 'info';
+                notification.isUnread = true;
+                notification.save();
 
                 friend.save();
                 me.save();

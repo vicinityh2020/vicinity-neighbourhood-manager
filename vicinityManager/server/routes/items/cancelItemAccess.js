@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
+var notificationOp = require('../../models/vicinityManager').notification;
 
 function cancelItemAccess(req, res, next){
 
@@ -27,8 +28,20 @@ function cancelItemAccess(req, res, next){
                   }
                 }
 
-                sharingRules.cancelItemAccess(device.oid, device.hasAdministrator[0], activeCompany_id);
+                commServer.cancelItemAccess(device.oid, device.hasAdministrator[0], activeCompany_id);
+
+                var notification = new notificationOp();
+
+                notification.addressedTo.push(activeCompany_id);
+                notification.sentBy = activeCompany_id;
+                notification.type = 23;
+                notification.status = 'info';
+                notification.itemId = dev_id;
+                notification.isUnread = true;
+                notification.save();
+
                 device.save();
+
                 response = {"error": false, "message": data};
             } else {
                 response = {"error": true, "message": "Processing data failed!"};

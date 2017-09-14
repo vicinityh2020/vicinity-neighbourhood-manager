@@ -42,14 +42,6 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
 
   // Notification calls
 
-  userAccountAPI.getNotificationsOfUser = function(id) {
-    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/notifications');
-  };
-
-  userAccountAPI.getNotificationsOfUserRead = function(id) {
-    return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/readNotifications');
-  };
-
   // Configuration endPoints (currently only schemaColor)
 
   userAccountAPI.getConfigurationParameters = function(id) {
