@@ -24,6 +24,10 @@ Common
   width: 30%;
 }
 
+.fromTop{
+  margin-top: 0px;
+}
+
 .placeCenter{
   /*margin: auto;*/
   padding-left: 40%;
@@ -150,13 +154,14 @@ Notifications
 */
 
 span.ciara {
-    content: "";
     display: block;
     height: 3px;
-    width: 90%;
+    margin-right: 10px;
     margin-left: 10px;
-    /*margin-top: 10px;*/
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    /*background:#3c8dbc;
+    border-bottom:1px solid #3c8dbc;*/
 }
 
 .footNotif a{
@@ -165,8 +170,8 @@ span.ciara {
 
 img.imgNotif{
   cursor: pointer;
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
 }
 
 div.readNot{
@@ -181,24 +186,25 @@ li.notifications-menu ul.menu > li > div {
 
 li.notifications-menu ul.menu > li div.notification-avatar {
   float: left;
-  /*width:30%;*/
-  /*margin-bottom: 5%;*/
-  height: 65px;
-
+  width:30%;
+  margin-bottom: 5%;
+  height: 50px;
+  display: inline-block;
   border-radius: 50%;
-  width: 65px;
-
+  width: 50px;
+  margin-left: 5%;
+  margin-left: 5%;
 }
 
 li.notifications-menu ul.menu > li div.notification-avatar img {
-  /*border-radius: 50%;*/
-  width: 75%;
-  height: 75%;
+  border-radius: 50%;
+  width: 60%;
+  height: 60%;
   display: block;
   margin: auto;
   position: relative;
-  min-width: 100%;
-  min-height: 100%;
+  min-width: 80%;
+  min-height: 80%;
 }
 
 
@@ -209,19 +215,24 @@ li.notifications-menu ul.menu > li div.notification-description {
   word-wrap: break-word;
   /*-ms-word-break: break-all;*/
   /*word-break: break-all;*/
-  padding-top: 10px;
+  /*padding-top: 10px;*/
   /*padding-left: 5px;*/
-  padding-right: 5px;
-  padding-bottom: 5px;
+  /*padding-right: 5px;*/
+  /*padding-bottom: 5px;*/
   /*margin-bottom: 5%;*/
-  /*float: left;*/
+}
+
+li.notifications-menu ul.menu > li div.notification-description p {
+  padding-top: 0px;
+  margin-top: 0%;
 }
 
 li.notifications-menu ul.menu > li div.notification-actions {
   padding-left: 30%;
   clear: left;
-  /*margin-top: -14px;*/
-  padding-bottom: 5%;
+  /*margin-top: 0px;
+  padding-top: 5%;
+  padding-bottom: 5%;*/
 }
 
 li.notifications-menu ul.menu > li div.notification-actions button {
@@ -234,12 +245,6 @@ ul.outerMenu{
   box-shadow: 0px 10px 20px 0px rgba(0,0,0,0.4);
 }
 
-ul.innerMenu{
-  max-height: 300px;
-  overflow: auto
-}
-
-
 /*
 NON Classified CSS
 */
@@ -249,7 +254,20 @@ NON Classified CSS
   /*border-bottom: 0.1em solid black;*/
   margin-bottom: 2em;
   padding: 0 0 0.5em;
+  max-height: 320px;
+  overflow: auto;
 }
+
+.menu > li:nth-child(1):before {
+  content: "";
+  padding: 0;
+}
+
+.menu > li {
+  display: inline;
+}
+
+
 /*li.notifications-menu #invitations > li:hover {
   background-color: #222d32;
 }*/
@@ -302,10 +320,6 @@ NON Classified CSS
   content: "]";
 }*/
 
-.menu > li {
-  display: inline;
-}
-
 #registerInput{
   margin-top: 10px;
   margin-bottom: 10px;
@@ -354,10 +368,6 @@ NON Classified CSS
   padding-right: 0.3em;
 }*/
 
-.menu > li:nth-child(1):before {
-  content: "";
-  padding: 0;
-}
 
 .border-bottom-rounded {
   border-bottom-left-radius: 3px;

@@ -1,6 +1,3 @@
-/**
- * Created by viktor on 01.04.16.
- */
 
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");

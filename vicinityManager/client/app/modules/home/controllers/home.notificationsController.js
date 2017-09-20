@@ -16,9 +16,7 @@ function ($scope,
 
   // $scope.me = {};
   $scope.notifs = [];
-  $scope.notifs2 = [];
   $scope.registrations = [];
-  $scope.registrationsRead = [];
   $scope.oneNotif = false;
   $scope.zeroNotif = false;
   $scope.newNotifs = false;
@@ -65,6 +63,7 @@ $scope.isDev = keyword.test(payload.roles);
         notificationsAPIService.getNotificationsOfRegistration()
           .then(function successCallback(response){
             $scope.registrations = response.data.message;
+            $scope.notifs.push($scope.registrations);
             numberOfUnreadNotifs();
             if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
               Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
