@@ -15,6 +15,7 @@ function ($scope,
           Notification) {
 
   // $scope.me = {};
+  $scope.tempNotifs = [];
   $scope.notifs = [];
   $scope.registrations = [];
   $scope.oneNotif = false;
@@ -52,30 +53,34 @@ $scope.isDev = keyword.test(payload.roles);
   init();
 
   function init(){
-  notificationsAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
-    .then(getNotifs, commonHelpers.errorCallback);
-  }
+    $scope.tempNotifs = [];
+    $scope.registrations = [];
+    notificationsAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
+      .then(getNotifs, commonHelpers.errorCallback);
+    }
 
     function getNotifs(response){
-      $scope.notifs = response.data.message;
+      $scope.tempNotifs = response.data.message;
       numberOfUnreadNotifs();
       if($scope.isDev){
         notificationsAPIService.getNotificationsOfRegistration()
           .then(function successCallback(response){
             $scope.registrations = response.data.message;
-            $scope.notifs.push($scope.registrations);
+            $scope.tempNotifs = $scope.tempNotifs.concat($scope.registrations);
+            sortNotifs();
             numberOfUnreadNotifs();
-            if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
-              Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
-              $scope.newNotifs = $scope.notifs.length + $scope.registrations.length;
+            if($scope.notifs.length !== 0 && $scope.newNotifs != $scope.notifs.length){
+              Notification.success('You have ' + String($scope.notifs.length) + ' new notifications!');
+              $scope.newNotifs = $scope.notifs.length;
             }
           },
           commonHelpers.errorCallback
         );
       }else{
-        if($scope.notifs.length + $scope.registrations.length !== 0 && $scope.newNotifs != $scope.notifs.length + $scope.registrations.length){
-          Notification.success('You have ' + String($scope.notifs.length + $scope.registrations.length) + ' new notifications!');
-          $scope.newNotifs = $scope.notifs.length + $scope.registrations.length;
+        sortNotifs();
+        if($scope.notifs.length !== 0 && $scope.newNotifs != $scope.notifs.length){
+          Notification.success('You have ' + String($scope.notifs.length) + ' new notifications!');
+          $scope.newNotifs = $scope.notifs.length;
         }
       }
     }
@@ -92,8 +97,8 @@ $scope.isDev = keyword.test(payload.roles);
     // ========= Other Functions ===============
 
     function numberOfUnreadNotifs(){ // Need to be hoisted
-      $scope.oneNotif = ($scope.notifs.length + $scope.registrations.length) === 1;
-      $scope.zeroNotif = ($scope.notifs.length + $scope.registrations.length) === 0;
+      $scope.oneNotif = $scope.notifs.length === 1;
+      $scope.zeroNotif = $scope.notifs.length === 0;
     }
 
     $scope.changeIsUnreadAndResponded = function(notifID){   // Need to be call external, no need for hoisting
@@ -110,7 +115,6 @@ $scope.isDev = keyword.test(payload.roles);
     $scope.seeAll = function(){
       var allNotifs = [];
       retrieveAllNotifs($scope.notifs, allNotifs);
-      retrieveAllNotifs($scope.registrations, allNotifs);
       notificationsAPIService.changeIsUnreadToFalse('0',{ids: allNotifs})
         .then(
           function successCallback(){
@@ -169,6 +173,25 @@ $scope.isDev = keyword.test(payload.roles);
         .then(init(),registrationsHelpers.errorCallback)
         .catch(registrationsHelpers.errorCallback);
     };
+
+    // ========= Time related functions ===============
+
+    function sortNotifs(){
+      $scope.notifs = [];
+      angular.forEach($scope.tempNotifs,
+        function(n) {
+          if(n._id){
+            var timestamp = n._id.toString().substring(0,8);
+            var date = new Date(parseInt( timestamp, 16 ) * 1000 );
+            n.timestamp = moment(date);
+          }
+          $scope.notifs.push(n);
+         }
+      );
+      $scope.notifs.sort(function(a,b){
+        return b.timestamp - a.timestamp;
+      });
+    }
 
   }
 );

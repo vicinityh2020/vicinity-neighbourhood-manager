@@ -87,8 +87,8 @@
                   <!-- Description -->
                   <span class="padded" ng-show="notif.type === 1"><b>{{notif.sentByReg.companyName}}</b> wants to register in Vicinity</span>
                   <span class="padded" ng-show="notif.type === 13">New device(s) have been discovered!</span>
-                  <span class="padded" ng-show="notif.type === 11">{{notif.itemId.name}} has been enabled.</span>
-                  <span class="padded" ng-show="notif.type === 12">{{notif.itemId.name}} has been disabled.</span>
+                  <span class="padded" ng-show="notif.type === 11"><b>{{notif.itemId.name}}</b> has been enabled.</span>
+                  <span class="padded" ng-show="notif.type === 12"><b>{{notif.itemId.name}}</b> has been disabled.</span>
                   <span class="padded" ng-show="notif.type === 21 && (notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> requests using <b>{{notif.itemId.name}}</b></span>
                   <span class="padded" ng-show="[22, 24].lastIndexOf(notif.type) >= 0 && !(notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> responded our request to use <b>{{notif.itemId.name}}</b></span>
                   <span class="padded" ng-show="notif.type === 23"><b>{{notif.sentBy.organisation}}</b> interrupted the connection with <b>{{notif.itemId.name}}</b></span>
@@ -152,17 +152,6 @@
           <i class="fa fa-clock-o bg-gray"></i>
         </li>
       </ul>
-
-<!--  OPTIONS to improve layout https://bootsnipp.com/snippets/featured/single-column-responsive-timeline
-      <article class="panel panel-info panel-outline" style="width:10%">
-        <div class="panel-heading icon">
-            <i class="glyphicon glyphicon-info-sign"></i>
-        </div>
-        <div class="panel-body">
-            END
-        </div>
-      </article> -->
-
     </div>
   </div>
 </section>

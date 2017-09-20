@@ -22,6 +22,7 @@ angular.module('VicinityManagerApp.controllers').
   $scope.myOrderBy = 'date';
   $scope.notifs = [];
   $scope.notifs2 = [];
+  $scope.TempNotifs = [];
 
 // ====== Checking if user is devOps =============
 $scope.isDev = false;
@@ -47,19 +48,20 @@ $scope.period = 'week';
   }
 
   function getNotifs(response){
-      $scope.notifs = response.data.message;
+      $scope.tempNotifs = response.data.message;
       if($scope.isDev){
         notificationsAPIService.getAllRegistrations($scope.dateFrom)
         .then(
           function successCallback(response){
             for(var index in response.data.message){
-              $scope.notifs.push(response.data.message[index]);
+              $scope.notifs = $scope.tempNotifs.concat(response.data.message);
             }
             addTimestamp();
           },
           commonHelpers.errorCallback
         );
       }else{
+        $scope.notifs = $scope.tempNotifs;
         addTimestamp();
       }
     }
@@ -67,6 +69,8 @@ $scope.period = 'week';
 // ========= Time related functions ===============
 
     function addTimestamp(){
+      var t = [];
+      var aux = [];
       angular.forEach($scope.notifs,
         function(n) {
           if(n._id){
@@ -76,18 +80,31 @@ $scope.period = 'week';
             n.dateCaption = n.timestamp.format("Do MMM YYYY");
             n.timeCaption = n.timestamp.format("hh:mm a");
           }
+          t.push(n.timestamp);
           $scope.notifs2.push(n);
-          findUnique(n.dateCaption);
          }
       );
-        $scope.loadedPage = true;
+      t.sort(function(a,b){
+        return b - a;
+      });
+      angular.forEach(t,
+      function(n){
+          aux = n.format("Do MMM YYYY");
+          findUnique(aux);
+        }
+      );
+      $scope.loadedPage = true;
     }
+
+// --------------------------------------------------
 
     function findUnique(a){
       if ($scope.dates.indexOf(a) === -1){
         $scope.dates.push(a);
       }
     }
+
+// --------------------------------------------------
 
     $scope.notificationsDays = function(period){
       $scope.period = period;
@@ -110,12 +127,12 @@ $scope.period = 'week';
 
 // ========= Accept / Reject requests ==========
 
-$scope.acceptNeighbourRequest = function (notifId, friendId){
-  userAccountsHelpers.acceptNeighbourRequest(friendId)
-  .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
-  .then(init(), userAccountsHelpers.errorCallback)
-  .catch(userAccountsHelpers.errorCallback);
-};
+  $scope.acceptNeighbourRequest = function (notifId, friendId){
+    userAccountsHelpers.acceptNeighbourRequest(friendId)
+    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
+    .then(init(), userAccountsHelpers.errorCallback)
+    .catch(userAccountsHelpers.errorCallback);
+  };
 
   $scope.rejectNeighbourRequest = function(notifId, friendId) {
     userAccountsHelpers.rejectNeighbourRequest(friendId)

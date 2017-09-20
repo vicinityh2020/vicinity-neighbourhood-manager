@@ -2,7 +2,7 @@
 
 <a href="" class="dropdown-toggle" data-toggle="dropdown">
   <i class="fa fa-bell"></i>
-  <span ng-show="!zeroNotif" class="label label-warning">{{notifs.length + registrations.length}}</span>
+  <span ng-show="!zeroNotif" class="label label-warning">{{notifs.length}}</span>
 </a>
 
 <ul class="dropdown-menu animated-dropdown-menu outerMenu" ng-class="bckColor">
@@ -16,14 +16,14 @@
 
       <li ng-repeat="notif in notifs" ng-show="notif.isUnread" ng-click="changeIsUnread(notif._id)">
 
-        <span class="ciara" ng-class="bckColor"></span>
+        <!-- <span class="ciara" ng-class="bckColor"></span> -->
 
         <div class="row">
 
           <!-- Avatar -->
           <div class="notification-avatar">
-            <a ng-show="notif.type === 1" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
-              <img ng-src="../../../../img/icons/data_request.png" alt="Company Avatar"/>
+            <a ng-show="notif.type === 1" ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})">
+              <img ng-src="../../../../img/icons/data_request.png" alt="Registration Request"/>
             </a>
             <a ng-show="notif.type === 21" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})">
              <img ng-src="{{notif.itemId.avatar}}" alt="Device Avatar">
@@ -40,7 +40,7 @@
           </div>
 
           <!-- Descriptions -->
-            <p ng-show="notif.type === 1">You have received a registration request from:<a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">{{notif.sentByReg.companyName}}</a></p>
+            <p ng-show="notif.type === 1">You have received a registration request from:<a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})">{{notif.sentByReg.companyName}}</a></p>
             <p ng-show="notif.type === 11">A device has been activated:  <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
             <p ng-show="notif.type === 12">A device has been deactivated:  <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
             <p ng-show="notif.type === 13">You have discovered new device(s) </p>
@@ -56,8 +56,8 @@
 
         <!-- Actions -->
         <div class="notification-actions">
-          <button  ng-show="notif.type === 1" ng-click="acceptRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Approve</button>
-          <button  ng-show="notif.type === 1" ng-click="rejectRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Reject</button>
+          <button  ng-show="notif.type === 1" ng-click="acceptRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
+          <button  ng-show="notif.type === 1" ng-click="rejectRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
 
           <button ng-show="notif.type === 21" ng-click="acceptDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
           <button ng-show="notif.type === 21" ng-click="rejectDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
@@ -73,11 +73,12 @@
 
       <li ng-repeat="notif in notifs" ng-show="[1, 21, 31].indexOf(notif.type) !== -1 && (notif.status== 'waiting') && !(notif.isUnread)">
 
-        <span class="ciara" ng-class="bckColor"></span>
+        <!-- <span class="ciara" ng-class="bckColor"></span> -->
 
+        <div class="row readNot">
         <!-- Avatar -->
-        <div class="notification-avatar readNot" ng-click="changeIsUnread(notif._id)">
-          <a ng-show="notif.type === 1" ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})">
+        <div class="notification-avatar" ng-click="changeIsUnread(notif._id)">
+          <a ng-show="notif.type === 1" ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})">
             <img ng-src="../../../../img/icons/data_request.png" alt="Company Avatar"/>
           </a>
           <a ng-show="notif.type === 21" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})">
@@ -89,8 +90,7 @@
         </div>
 
         <!-- Description -->
-        <div class="notification-description readNot" ng-click="changeIsUnread(notif._id)">
-          <p ng-show="notif.type === 1"> You have received a registration request from: </p><a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><p> {{reg.sentByReg.companyName}} </p></a>
+          <p ng-show="notif.type === 1"> You have received a registration request from: </p><a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})"><p> {{notif.sentByReg.companyName}} </p></a>
           <p ng-show="notif.type === 21">You have device data request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
           <p ng-show="notif.type === 31">You have partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
@@ -98,8 +98,8 @@
         <!-- Actions -->
         <div class="notification-actions readNot">
 
-          <button  ng-show="notif.type === 1" ng-click="acceptRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Approve</button>
-          <button  ng-show="notif.type === 1" ng-click="rejectRegistration(reg.sentByReg._id, reg._id)" type="button" class="btn btn-default btn-xs">Reject</button>
+          <button  ng-show="notif.type === 1" ng-click="acceptRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
+          <button  ng-show="notif.type === 1" ng-click="rejectRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
 
           <button ng-show="notif.type === 21" ng-click="acceptDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
           <button ng-show="notif.type === 21" ng-click="rejectDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
@@ -110,9 +110,9 @@
         </div>
 
       </li>
-
       <!-- end notification -->
-
     </ul>
-  <li class="footNotif" ng-class="bckColor"><a ng-click="seeAll()"><b>View all</b></a></li>
+
+    <li class="footNotif" ng-class="bckColor"><a ng-click="seeAll()"><b>View all</b></a></li>
+
 </ul>
