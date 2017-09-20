@@ -41,7 +41,7 @@ function newFriend(my_id, friend_id){
       function(success){
           query = { hasAdministrator: my_id, accessLevel: {$in:[4, 7]} };
           askForDevices(query, my_id + '_' + friend_id, 'POST');
-          //mySql.sendQuery(friend_id, my_id + '_' + friend_id);
+          mySql.sendQuery(friend_id, my_id + '_' + friend_id);
         },
         function(error){
           if(error.statusCode !== 409){ // If the error is that the group already existed we ignore it
@@ -59,7 +59,7 @@ function newFriend(my_id, friend_id){
       function(response){
       query = { hasAdministrator: friend_id, accessLevel: {$in:[4, 7]} };
       askForDevices(query, friend_id + '_' + my_id, 'POST');
-      //mySql.sendQuery(my_id, friend_id + '_' + my_id);
+      mySql.sendQuery(my_id, friend_id + '_' + my_id);
     },
     function(error){
       if(error.statusCode !== 409){ // If the error is that the group already existed we ignore it
@@ -96,7 +96,7 @@ function acceptUserRequest(oid, my_id, friend_id){
     .then(
       function(success){
           commServer.callCommServer({}, 'users/' + oid + '/groups/' + my_id +  '_' + friend_id, 'POST');
-          //mySql.sendQuery(friend_id, my_id + '_' + friend_id);
+          mySql.sendQuery(friend_id, my_id + '_' + friend_id);
       },
       function(error){
         if(error.statusCode !== 409){ // If the error is that the group already existed we ignore it

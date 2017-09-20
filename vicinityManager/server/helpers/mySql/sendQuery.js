@@ -25,7 +25,9 @@ function sendQuery(org, groupName){
   );
 
   var qryString = "UPDATE ofGroupProp SET propValue=? WHERE groupName LIKE ? AND name LIKE 'sharedRoster.groupList'";
-
+logger.debug(qryString);
+logger.debug(orgOwn);
+logger.debug(groupName);
   connection.connect(ifError);
 
   /* Begin transaction */
