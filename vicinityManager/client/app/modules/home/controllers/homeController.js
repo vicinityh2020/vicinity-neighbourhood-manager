@@ -46,6 +46,7 @@ angular.module('VicinityManagerApp.controllers')
     $scope.isDev = false;
     $scope.isInfOp = false;
     $scope.isScrollable = false;
+    $scope.isAdmin = false;
 
     var myInit = function(){
       var payload = tokenDecoder.deToken();
@@ -55,8 +56,10 @@ angular.module('VicinityManagerApp.controllers')
           $scope.isDev = true;
         }
         if(payload.roles[i] === 'infrastructure operator'){
-
           $scope.isInfOp = true;
+        }
+        if(payload.roles[i] === 'administrator'){
+          $scope.isAdmin = true;
         }
       }
     };
