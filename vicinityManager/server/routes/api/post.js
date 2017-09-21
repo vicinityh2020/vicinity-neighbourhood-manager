@@ -1,3 +1,5 @@
+// Global variables
+
 var mongoose = require('mongoose');
 var userAccountsOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
@@ -8,27 +10,23 @@ var logger = require("../../middlewares/logger");
 var mailing = require('../../helpers/mail/mailing');
 
 
+// Main functions - Login process
 
-/* GET users listing. */
+/* Check user and password. */
 function authenticate(req, res, next) {
 
   var response = {};
   var userName = req.body.username;
+  var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
   var password = req.body.password;
 
   if (userName && password) {
-    userOp.find({ email: userName }, function(error, result) {
+    userOp.find({ email: { $regex: userRegex } }, function(error, result) {
       if (error || !result || result.length !== 1){
         res.json({ success: false });
       } else {
-        // var accounts = result[0].accountOf;
-        // remove unnecessary accounts from results
-        // for (var index = accounts.length - 1; index >= 0; index --) {
-        //     if (accounts[index].email !== userName){
-        //       accounts.splice(index,1);
-        //     }
-        // }
-        if ((userName === result[0].email) && (password === result[0].authentication.password)) {
+
+        if ((userName.toLowerCase() === result[0].email.toLowerCase()) && (password === result[0].authentication.password)) {
 
             var o_id = mongoose.Types.ObjectId(result[0]._id);
 
@@ -45,14 +43,14 @@ function authenticate(req, res, next) {
         } else {
           res.json({success: false});
         }
-      };
+      }
     });
   } else {
     res.json({success: false});
   }
 }
 
-
+/* Recover password - Sends link to the provided mail */
 function findMail(req, res, next) {
 
   var response = {};
@@ -73,7 +71,7 @@ function findMail(req, res, next) {
         subject : 'Password recovery email VICINITY',
         tmpName :'recoverPwd',
         name : result[0].name
-      }
+      };
 
       mailing.sendMail(mailInfo);
 
@@ -81,6 +79,7 @@ function findMail(req, res, next) {
   });
 }
 
+/* Stores cookie in MONGO for the Remember Me functionality */
 function rememberCookie(req, res, next) {
   var db = new rememberOp();
   var response = {};
@@ -96,6 +95,8 @@ function rememberCookie(req, res, next) {
     }
   });
 }
+
+// Export functions
 
 module.exports.authenticate = authenticate;
 module.exports.findMail = findMail;
