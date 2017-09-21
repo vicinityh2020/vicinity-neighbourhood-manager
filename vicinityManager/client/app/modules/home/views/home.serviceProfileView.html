@@ -116,10 +116,10 @@
                     <a ng-click="makeItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Create Item</a>
                   </li> -->
 
-                  <!-- Delete Temporary button to delete service -->
-                  <li class="list-group-item">
-                    <b>Temp button</b>
-                    <a ng-click="deleteItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Delete Item</a>
+                  <!-- Delete button -->
+                  <li class="list-group-item" ng-show="imServiceProvider">
+                    <b>Remove service</b>
+                    <a ng-click="deleteItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Delete</a>
                   </li>
 
               </ul>

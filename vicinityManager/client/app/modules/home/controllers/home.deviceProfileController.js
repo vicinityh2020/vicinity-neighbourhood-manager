@@ -1,14 +1,13 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('deviceProfileController',
-function ($scope, $window, $state, commonHelpers, $stateParams, $location, itemsAPIService, Notification) {
+function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $location, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
-  // console.log("location:" + $location.path());
 
 // Initialize variables and data =====================
-// ====== Triggers window resize to avoid bug =======
-  commonHelpers.triggerResize();
+
+  commonHelpers.triggerResize(); // Triggers window resize to avoid bug
 
   $scope.devEnabled = false;
   $scope.showInput = false;
@@ -18,6 +17,7 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
   $scope.device = {};
   $scope.devInfo = {};
   $scope.AL = 0;
+  $scope.imDeviceOwner = false;
 
   initData();
 
@@ -31,6 +31,12 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
         function errorCallback(response){
         }
       );
+      var payload = tokenDecoder.deToken();
+      for(var i in payload.roles){
+        if(payload.roles[i] === 'infrastructure operator'){
+          $scope.imDeviceOwner = true;
+        }
+      }
     }
 
     function updateScopeAttributes(response){
@@ -79,14 +85,17 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
     };
 
   $scope.deleteItem = function(){
-    itemsAPIService.deleteItem($scope.device.oid)
-      .then(
-        function successCallback(response){
-          Notification.success('Device deleted');
-          $state.go("root.main.mydevices");
-        }
-      );
+    if(confirm('Are you sure?')){
+      itemsAPIService.deleteItem($scope.device.oid)
+        .then(
+          function successCallback(response){
+            Notification.success('Device deleted');
+            $state.go("root.main.mydevices");
+          }
+        );
+      }
   };
+
 
 // HIDE && SHOW DOM =========================
 
@@ -117,11 +126,12 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
 
   $scope.saveNewAccess = function () {
     if (Number($('select#editAccessName').val()) !== 0){
-        itemsAPIService.putOne($stateParams.deviceId, {accessLevel: $('select#editAccessName').val(),
-                                                      cid: $scope.owner_id,
-                                                      myFriends: $scope.myFriends,
-                                                      oid: $scope.device.oid,
-                                                      oldAccessLevel: $scope.device.accessLevel })
+        itemsAPIService.putOne($stateParams.deviceId,
+          {accessLevel: $('select#editAccessName').val(),
+          cid: $scope.owner_id,
+          myFriends: $scope.myFriends,
+          oid: $scope.device.oid,
+          oldAccessLevel: $scope.device.accessLevel })
           .then(
             function successCallback(response){
               initData();
@@ -131,79 +141,81 @@ function ($scope, $window, $state, commonHelpers, $stateParams, $location, items
         }
       };
 
+
   // Serial Number
-  $('a#serialEdit').show();
-  $('a#serialSave').hide();
-  $('a#serialCancel').hide();
-  $('input#editSerialInput').hide();
-  $('p#serialName').show();
 
-  $scope.changeToInput1 = function () {
-    $('a#serialEdit').hide();
-    $('p#serialName').hide();
-    $('input#editSerialInput').show();
-    $('a#serialSave').fadeIn('slow');
-    $('a#serialCancel').fadeIn('slow');
-  };
-
-  $scope.backToEdit1 = function () {
-    $('a#serialCancel').fadeOut('slow');
-    $('a#serialSave').fadeOut('slow');
-    $('input#editSerialInput').fadeOut('slow');
-    setTimeout(function() {
-      $('a#serialEdit').fadeIn('fast');
-      $('p#serialName').fadeIn('fast');
-    }, 600);
-  };
-
-  $scope.saveNewSerial = function () {
-    if ($('input#editSerialInput').val() !== 0){
-        itemsAPIService.putOne($stateParams.deviceId, {"info.serial_number": $scope.devInfo.serial_number})
-          .then(
-            function successCallback(){
-              initData();
-              $scope.backToEdit1();
-            }
-          );
-        }
-      };
-
-  // Location
-  $('a#locationEdit').show();
-  $('a#locationSave').hide();
-  $('a#locationCancel').hide();
-  $('input#editLocationInput').hide();
-  $('p#locationName').show();
-
-  $scope.changeToInput2 = function () {
-    $('a#locationEdit').hide();
-    $('p#locationName').hide();
-    $('input#editLocationInput').show();
-    $('a#locationSave').fadeIn('slow');
-    $('a#locationCancel').fadeIn('slow');
-  };
-
-  $scope.backToEdit2 = function () {
-    $('a#locationCancel').fadeOut('slow');
-    $('a#locationSave').fadeOut('slow');
-    $('input#editLocationInput').fadeOut('slow');
-    setTimeout(function() {
-      $('a#locationEdit').fadeIn('fast');
-      $('p#locationName').fadeIn('fast');
-    }, 600);
-  };
-
-  $scope.saveNewLocation = function () {
-    if ($('input#editLocationInput').val() !== 0){
-        itemsAPIService.putOne($stateParams.deviceId, {"info.location": $scope.devInfo.location})
-          .then(
-            function successCallback(){
-              initData();
-              $scope.backToEdit2();
-            }
-          );
-        }
-      };
+  // $('a#serialEdit').show();
+  // $('a#serialSave').hide();
+  // $('a#serialCancel').hide();
+  // $('input#editSerialInput').hide();
+  // $('p#serialName').show();
+  //
+  // $scope.changeToInput1 = function () {
+  //   $('a#serialEdit').hide();
+  //   $('p#serialName').hide();
+  //   $('input#editSerialInput').show();
+  //   $('a#serialSave').fadeIn('slow');
+  //   $('a#serialCancel').fadeIn('slow');
+  // };
+  //
+  // $scope.backToEdit1 = function () {
+  //   $('a#serialCancel').fadeOut('slow');
+  //   $('a#serialSave').fadeOut('slow');
+  //   $('input#editSerialInput').fadeOut('slow');
+  //   setTimeout(function() {
+  //     $('a#serialEdit').fadeIn('fast');
+  //     $('p#serialName').fadeIn('fast');
+  //   }, 600);
+  // };
+  //
+  // $scope.saveNewSerial = function () {
+  //   if ($('input#editSerialInput').val() !== 0){
+  //       itemsAPIService.putOne($stateParams.deviceId, {"info.serial_number": $scope.devInfo.serial_number})
+  //         .then(
+  //           function successCallback(){
+  //             initData();
+  //             $scope.backToEdit1();
+  //           }
+  //         );
+  //       }
+  //     };
+  //
+  // // Location
+  // $('a#locationEdit').show();
+  // $('a#locationSave').hide();
+  // $('a#locationCancel').hide();
+  // $('input#editLocationInput').hide();
+  // $('p#locationName').show();
+  //
+  // $scope.changeToInput2 = function () {
+  //   $('a#locationEdit').hide();
+  //   $('p#locationName').hide();
+  //   $('input#editLocationInput').show();
+  //   $('a#locationSave').fadeIn('slow');
+  //   $('a#locationCancel').fadeIn('slow');
+  // };
+  //
+  // $scope.backToEdit2 = function () {
+  //   $('a#locationCancel').fadeOut('slow');
+  //   $('a#locationSave').fadeOut('slow');
+  //   $('input#editLocationInput').fadeOut('slow');
+  //   setTimeout(function() {
+  //     $('a#locationEdit').fadeIn('fast');
+  //     $('p#locationName').fadeIn('fast');
+  //   }, 600);
+  // };
+  //
+  // $scope.saveNewLocation = function () {
+  //   if ($('input#editLocationInput').val() !== 0){
+  //       itemsAPIService.putOne($stateParams.deviceId, {"info.location": $scope.devInfo.location})
+  //         .then(
+  //           function successCallback(){
+  //             initData();
+  //             $scope.backToEdit2();
+  //           }
+  //         );
+  //       }
+  //     };
 
 // Load picture mgmt =============================
 

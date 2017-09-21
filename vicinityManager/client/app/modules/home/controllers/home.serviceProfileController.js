@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('serviceProfileController',
-function ($scope, $window, $state, $stateParams, $location, commonHelpers, itemsAPIService, Notification) {
+function ($scope, $window, $state, $stateParams, $location, tokenDecoder, commonHelpers, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
   // console.log("location:" + $location.path());
@@ -18,6 +18,7 @@ function ($scope, $window, $state, $stateParams, $location, commonHelpers, items
   $scope.item = {};
   $scope.devInfo = {};
   $scope.AL = 0;
+  $scope.imServiceProvider = false;
 
   initData();
 
@@ -31,6 +32,12 @@ function ($scope, $window, $state, $stateParams, $location, commonHelpers, items
         function errorCallback(response){
         }
       );
+      var payload = tokenDecoder.deToken();
+      for(var i in payload.roles){
+        if(payload.roles[i] === 'service provider'){
+          $scope.imServiceProvider = true;
+        }
+      }
     }
 
     function updateScopeAttributes(response){
@@ -79,14 +86,16 @@ function ($scope, $window, $state, $stateParams, $location, commonHelpers, items
     };
 
   $scope.deleteItem = function(){
-    itemsAPIService.deleteItem($scope.item.oid)
-      .then(
-        function successCallback(response){
-          Notification.success('service deleted');
-          $state.go("root.main.myServices");
-        }
-      );
-  };
+    if(confirm('Are you sure?')){
+      itemsAPIService.deleteItem($scope.item.oid)
+        .then(
+          function successCallback(response){
+            Notification.success('service deleted');
+            $state.go("root.main.myServices");
+          }
+        );
+      }
+    };
 
 // HIDE && SHOW DOM =========================
 
@@ -122,7 +131,7 @@ function ($scope, $window, $state, $stateParams, $location, commonHelpers, items
                                                       oid: $scope.item.oid,
                                                       oldAccessLevel: $scope.item.accessLevel })
           .then(
-            function successCallback(response){ 
+            function successCallback(response){
               initData();
               $scope.backToEdit();
             }
