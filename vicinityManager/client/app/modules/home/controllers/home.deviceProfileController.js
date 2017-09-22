@@ -90,7 +90,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         .then(
           function successCallback(response){
             Notification.success('Device deleted');
-            $state.go("root.main.mydevices");
+            $state.go("root.main.alldevices");
           }
         );
       }

@@ -91,7 +91,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
         .then(
           function successCallback(response){
             Notification.success('service deleted');
-            $state.go("root.main.myServices");
+            $state.go("root.main.allServices");
           }
         );
       }
