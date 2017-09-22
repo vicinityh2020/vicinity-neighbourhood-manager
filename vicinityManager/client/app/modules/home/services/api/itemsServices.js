@@ -46,8 +46,8 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/myItems?type=' + filter + '&offset=' + offset);
   };
 
-  itemsAPI.getAllItems = function(id, filter, offset) {
-    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allItems?type=' + filter + '&offset=' + offset);
+  itemsAPI.getAllItems = function(id, filter, offset, filterNumber) {
+    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allItems?type=' + filter + '&offset=' + offset + '&filterNumber=' + filterNumber);
   };
 
   return itemsAPI;

@@ -12,18 +12,20 @@ angular.module('VicinityManagerApp.controllers')
 // Initialize variables and get initial data =============
 
        $scope.items=[];
-       $scope.onlyPrivateItems = false;
        $scope.loaded = false;
        $scope.loadedPage = false;
        $scope.noItems = true;
        $scope.myId = $window.sessionStorage.companyAccountId;
        $scope.offset = 0;
        $scope.allItemsLoaded = false;
+       $scope.filterNumber = 7;
+       $scope.typeOfItem = "services";
+       $scope.header = "All Services";
 
        init();
 
       function init(){
-      itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, 'service')
+      itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, 'service', $scope.filterNumber)
       .then(
         function successCallback(response){
           for(var i = 0; i < response.data.message.length; i++){
@@ -31,18 +33,12 @@ angular.module('VicinityManagerApp.controllers')
           }
           $scope.noItems = ($scope.items.length === 0);
           $scope.allItemsLoaded = response.data.message.length < 12;
-
-        if ($scope.items.length === 0){
-          $scope.onlyPrivateItems = true;
-        }else{
-          $scope.onlyPrivateItems = false;
-        }
-        $scope.loaded = true;
-        $scope.loadedPage = true;
-      },
-      itemsHelpers.errorCallback
-    );
-  }
+          $scope.loaded = true;
+          $scope.loadedPage = true;
+        },
+        itemsHelpers.errorCallback
+      );
+    }
 
   // Manage access request functions =====================
 
@@ -74,6 +70,44 @@ angular.module('VicinityManagerApp.controllers')
       }
     }
   }
+
+  // Filters items
+
+  $scope.filterItems = function(n){
+      $scope.filterNumber = n;
+      changeHeader(n);
+      $scope.devs=[];
+      init();
+  };
+
+  function changeHeader(n){
+    switch (n) {
+        case 0:
+            $scope.header = "My disabled " + $scope.typeOfItem;
+            break;
+        case 1:
+            $scope.header = "My private " + $scope.typeOfItem;
+            break;
+        case 2:
+            $scope.header = "My shared " + $scope.typeOfItem;
+            break;
+        case 3:
+            $scope.header = "My public " + $scope.typeOfItem;
+            break;
+        case 4:
+            $scope.header = "My " + $scope.typeOfItem;
+            break;
+        case 5:
+            $scope.header = "All shared " + $scope.typeOfItem;
+            break;
+        case 6:
+            $scope.header = "All public " + $scope.typeOfItem;
+            break;
+        case 7:
+            $scope.header = "All " + $scope.typeOfItem;
+            break;
+          }
+      }
 
   // Trigers load of more items
 

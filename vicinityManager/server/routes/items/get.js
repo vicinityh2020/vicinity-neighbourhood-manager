@@ -54,6 +54,7 @@ function getAllItems(req, res) {
   var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
   var type = req.query.type;
   var offset = req.query.offset;
+  var filterNumber = req.query.filterNumber;
 
   userAccountOp.find({_id: o_id}, function(err, data){
     if (err){
@@ -68,6 +69,8 @@ function getAllItems(req, res) {
       { hasAdministrator: o_id }
       ]
     };
+
+    query = updateQueryWithFilterNumber(query, filterNumber, o_id);
 
     var friends = data[0].knows;
 
@@ -125,6 +128,42 @@ function getItemWithAdd(req, res, next) {
         }
       );
     }
+
+// Private functions
+
+function updateQueryWithFilterNumber(q, fN, cid){
+  logger.debug(fN);
+  switch (Number(fN)) {
+      case 0:
+          q.status = "disabled";
+          break;
+      case 1:
+          q.accessLevel = 1;
+          q.status = "enabled";
+          break;
+      case 2:
+          q.accessLevel = {$in: [2, 3, 4]};
+          q.hasAdministrator = cid;
+          break;
+      case 3:
+          q.accessLevel = {$in: [5, 6, 7, 8]};
+          q.hasAdministrator = cid;
+          break;
+      case 4:
+          q.hasAdministrator = cid;
+          break;
+      case 5:
+          q.accessLevel = {$in: [2, 3, 4]};
+          break;
+      case 6:
+          q.accessLevel = {$in: [5, 6, 7, 8]};
+          break;
+      case 7:
+          break;
+        }
+        logger.debug(JSON.stringify(q));
+        return q;
+      }
 
 // Function exports ================================
 

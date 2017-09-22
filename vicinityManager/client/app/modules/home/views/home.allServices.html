@@ -5,23 +5,34 @@
 
 <section class="content">
 
-  <!-- <div class="row" style="width: 100%">
-
-    <div id="ramik" class="input-group bvr2-navbar-form navbar-right col-md-2 " ng-show="loaded">
-      <input id="bvr-search-input" type="text" name="q" class="form-control" placeholder="Search..." ng-model="searchTerm">
-      <span class="input-group-btn">
-        <button  type="submit" name="search" id="search-btn" class="btn btn-flat" ><i class="fa fa-search"></i></button>
-      </span>
+  <!-- Filter -->
+  <div class="box-header with-border" style >
+    <div class="box-tools">
+      <div class="dropdown">
+        <a ui-sref="root.main.alldevices" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Item selection
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+           <li><a ng-click="filterItems(0)" ui-sref="root.main.alldevices">My disabled {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(1)" ui-sref="root.main.alldevices">My private {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(2)" ui-sref="root.main.alldevices">My shared {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(3)" ui-sref="root.main.alldevices">My public {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(4)" ui-sref="root.main.alldevices">My {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(5)" ui-sref="root.main.alldevices">All shared {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(6)" ui-sref="root.main.alldevices">All public {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(7)" ui-sref="root.main.alldevices">All {{typeOfItem}}</a></li>
+        </ul>
+       </div>
     </div>
-    <hr>
-  </div> -->
+  </div>
+
 <hr>
 <!-- Start -->
   <div class="row">
 
     <!-- onlyPrivateDevices -->
     <div ng-show="onlyPrivateItems" >
-       <h2 style="margin-left:20px;">There is no shared service with you.</h2>
+       <h2 style="margin-left:20px;">No {{typeOfItem}} found for the current selection...</h2>
    </div>
 
     <div ng-show="loadedPage" class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="it in items | nameFilter:searchTerm">
