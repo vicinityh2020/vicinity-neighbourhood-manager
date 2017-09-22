@@ -25,7 +25,7 @@ angular.module('VicinityManagerApp.controllers')
        init();
 
       function init(){
-      itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, 'service', $scope.filterNumber)
+      itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, 'service', $scope.offset, $scope.filterNumber)
       .then(
         function successCallback(response){
           for(var i = 0; i < response.data.message.length; i++){
@@ -76,7 +76,7 @@ angular.module('VicinityManagerApp.controllers')
   $scope.filterItems = function(n){
       $scope.filterNumber = n;
       changeHeader(n);
-      $scope.devs=[];
+      $scope.items=[];
       init();
   };
 
