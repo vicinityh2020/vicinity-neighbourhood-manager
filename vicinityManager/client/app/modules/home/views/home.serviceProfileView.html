@@ -35,7 +35,7 @@
               <h3 class="profile-username text-center" style="margin-top: 15px">{{item.name}}</h3>
 
               <!-- Enable/Disable item -->
-              <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px">
+              <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" ng-show="imServiceProvider">
               <a ng-click="changeStatus()" class="btn btn-primary btn-block" ng-show="!devEnabled && isMyItem"><i class="fa fa-plus-square"></i><b> Enable service</b></a>
               <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="devEnabled && isMyItem"><i class="fa fa-minus-square"></i><b> Disable service</b></a>
               </div>
@@ -45,7 +45,7 @@
               <ul class="list-group list-group-unbordered">
 
                 <!-- Access Level -->
-                <li class="list-group-item">
+                <li class="list-group-item" ng-show="devEnabled">
 
                   <b>Access level</b>
                      <a ng-show="isMyItem" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInput()">Edit</a>
