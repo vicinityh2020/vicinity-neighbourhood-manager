@@ -76,6 +76,7 @@ angular.module('VicinityManagerApp.controllers')
 
   $scope.filterItems = function(n){
       $scope.filterNumber = n;
+      $scope.offset = 0;
       changeHeader(n);
       $scope.devs=[];
       init();
