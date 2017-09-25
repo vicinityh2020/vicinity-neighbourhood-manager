@@ -3,32 +3,61 @@
  */
 
  // TODO Rework whole module!!
- 
- module.exports.get = getUserAccountFacade;
- module.exports.getAll = getAllUserAccountsFacade;
- module.exports.update = updateUserAccountFacade;
- module.exports.delete = deleteUserAccountFacade;
- module.exports.create = createUserAccountFacade;
 
 var mongoose = require('mongoose');
 var ce = require('cloneextend');
-
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
 
-function getAllUserAccountsFacade(req, res, next) {
-  //TODO: Filter authentication info from user accounts;
+/*
+Get all organisations meeting the  user request (All, friends, no friends)
+*/
+function getAllFilteredUserAccountsFacade(req, res, next) {
 
   var response = {};
-  userAccountOp.find({}, function(err, data) {
-    if (err) {
-      response = {"error": true, "message": "Error fetching data"};
-    } else {
-      response = {"error": false, "message": data};
-    }
-    res.json(response);
-  });
+  var o_id = mongoose.Types.ObjectId(req.params.id);
+  var type = req.query.type;
+
+  if(Number(type) === 0){
+    userAccountOp.find({},
+      function(err, data) {
+        if (err) {
+          res.json({"error": true, "message": "Error fetching data"});
+        } else {
+          res.json({"error": false, "message": data});
+        }
+      }
+    );
+  } else {
+    userAccountOp.findById(o_id, {knows: 1},
+      function(err, data){
+        if (err) {
+          res.json({"error": true, "message": "Error fetching data"});
+        } else {
+          var qry;
+          if(Number(type) === 1){
+            qry = {$in: data.knows};
+          } else {
+            qry = {$not: {$in: data.knows}};
+          }
+          userAccountOp.find({_id: qry},
+            function(err, data) {
+              if (err) {
+                res.json({"error": true, "message": "Error fetching data"});
+              } else {
+                res.json({"error": false, "message": data});
+              }
+            }
+          );
+        }
+      }
+    );
+  }
 }
+
+/*
+Other
+*/
 
 function createUserAccountFacade(req, res, next) {
 
@@ -76,7 +105,7 @@ function updateUserAccountFacade(req, res, next){
     userAccountOp.update({ "_id": o_id}, updates, function(err, raw){
       response = {"error": err, "message": raw};
       res.json(response);
-    })
+    });
 }
 
 function getUserAccountFacade(req, res, next) {
@@ -147,5 +176,13 @@ function getUserAccountFacade(req, res, next) {
               }
               res.json(response);
             }
-      })
+      });
 }
+
+// Export functions
+
+module.exports.get = getUserAccountFacade;
+module.exports.getAllFiltered = getAllFilteredUserAccountsFacade;
+module.exports.update = updateUserAccountFacade;
+module.exports.delete = deleteUserAccountFacade;
+module.exports.create = createUserAccountFacade;

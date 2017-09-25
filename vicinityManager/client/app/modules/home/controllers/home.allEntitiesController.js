@@ -9,21 +9,28 @@ angular.module('VicinityManagerApp.controllers').
     $scope.resultsList = [];
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
+    $scope.filterNumber = 0;
 
     // ====== Triggers window resize to avoid bug =======
     commonHelpers.triggerResize();
 
     // Get initial resources
-    userAccountAPIService.getUserAccounts()
-      .then(
-        function successCallback(response){
-          $scope.resultsList = response.data.message;
-          getFriends();
-          $scope.loaded = true;
-        },
-        function errorCallback(response){
-        }
-      );
+    function init(){
+      userAccountAPIService.getUserAccounts($scope.activeCompanyID, $scope.filterNumber)
+        .then(
+          function successCallback(response){
+            $scope.resultsList = response.data.message;
+            getFriends();
+            $scope.loaded = true;
+          },
+          function errorCallback(response){
+          }
+        );
+      }
+
+    init();
+
+      // Private functions
 
       function getFriends(){
         var i = 0;
@@ -34,5 +41,10 @@ angular.module('VicinityManagerApp.controllers').
           }
         }
       }
+
+      $scope.filterOrganisations = function(n){
+        $scope.filterNumber = n;
+        init();
+      };
 
   });

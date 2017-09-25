@@ -7,7 +7,7 @@ var notifications = require('./notifications/notifications');
 var configuration = require('./userAccounts/configuration');
 
 router
-  .get('/', userProfile.getAll)
+  .get('/:id/organisations', userProfile.getAllFiltered)
   .post('/', userProfile.create)
   // Get the profile of the user account
   .get('/:id', userProfile.get)

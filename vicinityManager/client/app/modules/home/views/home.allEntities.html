@@ -4,6 +4,23 @@
 
 
 <section class="content" >
+
+  <!-- Filter -->
+  <div class="box-header with-border" style >
+    <div class="box-tools">
+      <div class="dropdown">
+        <a ui-sref="root.main.allEntities" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Organisation selection
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+           <li><a ng-click="filterOrganisations(0)" ui-sref="root.main.allEntities">All organisations</a></li>
+           <li><a ng-click="filterOrganisations(1)" ui-sref="root.main.allEntities">My partners</a></li>
+           <li><a ng-click="filterOrganisations(2)" ui-sref="root.main.allEntities">Other organisations</a></li>
+        </ul>
+       </div>
+    </div>
+  </div>
+
   <div class="row" style="width: 100%">
     <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
       <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
@@ -17,7 +34,9 @@
             <img ng-show="activeCompanyID.toString() === result._id.toString()" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
             <img ng-show="!(activeCompanyID.toString() === result._id.toString())" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
           </div>
+
           <i ng-if="myFriends.indexOf(result._id.toString()) !== -1" class="tooltip2 fa fa-users push-right" aria-hidden="true"></i>
+
           <!-- /.widget-user-image -->
           <h3 ng-show="activeCompanyID.toString() === result._id.toString()" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">{{result.organisation}}</a></h3>
           <h3 ng-show="!(activeCompanyID.toString() === result._id.toString())" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">{{result.organisation}}</a></h3>

@@ -4,17 +4,25 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
 
   var userAccountAPI = {};
 
+  // Main calls - retrieving userAccounts
+
   userAccountAPI.getUserAccountProfile = function(id) {
     return $http.get(configuration.apiUrl +'/useraccounts/' + id);
-  };
-
-  userAccountAPI.getUserAccounts = function(){
-    return $http.get(configuration.apiUrl +'/useraccounts');
   };
 
   userAccountAPI.updateUserAccounts = function(id,data){
     return $http.put(configuration.apiUrl +'/useraccounts/' + id, data);
   };
+
+  userAccountAPI.getUserAccounts = function(id, filter){
+    return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/organisations?type=' + filter);
+  };
+
+  // userAccountAPI.getFriends = function(id) {
+  //   return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/friendship/myFriends');
+  // };
+
+  // Neigbourhood management
 
   userAccountAPI.sendNeighbourRequest = function (id) {
     return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship');
@@ -36,9 +44,7 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.delete(configuration.apiUrl +'/useraccounts/' + id + '/friendship');
   };
 
-  userAccountAPI.getFriends = function(id) {
-    return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/friendship/myFriends');
-  };
+  // Notification calls
 
   userAccountAPI.getNotificationsOfUser = function(id) {
     return $http.get(configuration.apiUrl +'/useraccounts/' + id + '/notifications');
