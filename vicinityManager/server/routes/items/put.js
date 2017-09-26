@@ -53,7 +53,7 @@ Handles the accessLevel and other properties modifications
 */
 function itemUpdate(uid,updates,res){
   if(updates.accessLevel && updates.accessLevel !== 0){
-    if(updates.status){
+    if(!updates.status){
       query = { accessLevel: updates.accessLevel };
     } else {
       query = {status: updates.status, accessLevel: updates.accessLevel};
