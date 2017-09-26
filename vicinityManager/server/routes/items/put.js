@@ -20,8 +20,8 @@ function putOne(req, res) {
 
   var response = {};
   var uid = mongoose.Types.ObjectId(req.params.id); // Unique mongo ID
-  var oid = req.body.oid; // Object ID - Generated out of mongo
-  var adid = req.body.adid; // Agent ID - Generated ?? Not sure yet
+  var oid = req.body.oid; // Object ID - Generated out of VCNT manager
+  var adid = req.body.adid; // Agent ID - Generated in VCNT manager
   var updates = req.body;
   var payload = {
     username : oid,

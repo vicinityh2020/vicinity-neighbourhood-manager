@@ -63,8 +63,11 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "name":$scope.item.name,
           "cid": $scope.owner_id,
           "oid": $scope.item.oid,
-          "aid": $scope.item.aid,
-          "password":"test"
+          "aid": $scope.item.adid,
+          "password":"test",
+          "accessLevel": 1,
+          "oldAccessLevel" : $scope.item.accessLevel,
+          "myFriends": $scope.item.myFriends
         };
       }else{
         query = {
@@ -72,8 +75,11 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "name":$scope.item.name,
           "cid": $scope.owner_id,
           "oid": $scope.item.oid,
-          "aid": $scope.item.aid,
-          "password":"test"
+          "aid": $scope.item.adid,
+          "password":"test",
+          "accessLevel": 1,
+          "oldAccessLevel" : $scope.item.accessLevel,
+          "myFriends": $scope.item.myFriends
         };
       }
       itemsAPIService.putOne($stateParams.serviceId, query)
