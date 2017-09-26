@@ -63,7 +63,11 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "name":$scope.item.name,
           "cid": $scope.owner_id,
           "oid": $scope.item.oid,
+<<<<<<< HEAD
           "adid": $scope.item.adid,
+=======
+          "aid": $scope.item.adid,
+>>>>>>> c567b68ab0a887bad15c59014fe3396ee02b6509
           "password":"test",
           "accessLevel": 1,
           "oldAccessLevel" : $scope.item.accessLevel,
@@ -75,7 +79,11 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "name":$scope.item.name,
           "cid": $scope.owner_id,
           "oid": $scope.item.oid,
+<<<<<<< HEAD
           "adid": $scope.item.adid,
+=======
+          "aid": $scope.item.adid,
+>>>>>>> c567b68ab0a887bad15c59014fe3396ee02b6509
           "password":"test",
           "accessLevel": 1,
           "oldAccessLevel" : $scope.item.accessLevel,

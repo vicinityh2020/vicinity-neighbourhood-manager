@@ -64,7 +64,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
           "oid": $scope.device.oid,
           "adid": $scope.device.adid,
           "password":"test",
-          "accessLevel": 1,
+          "accessLevel": 1, // Always 1 when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
           "myFriends": $scope.myFriends
         };
@@ -76,7 +76,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
           "oid": $scope.device.oid,
           "adid": $scope.device.adid,
           "password":"test",
-          "accessLevel": 1,
+          "accessLevel": 1, // Always 1 when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
           "myFriends": $scope.myFriends
         };
