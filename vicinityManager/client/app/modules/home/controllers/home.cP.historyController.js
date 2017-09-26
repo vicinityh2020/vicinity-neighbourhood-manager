@@ -1,3 +1,4 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cPhistoryController',
 function ($scope, $window, $stateParams, commonHelpers, $location, userAccountAPIService, itemsAPIService, AuthenticationService, Notification) {
@@ -16,7 +17,7 @@ function ($scope, $window, $stateParams, commonHelpers, $location, userAccountAP
         $scope.userAccounts = response.data.message.accountOf;
         $scope.thisCompany = response.data.message;
 
-        userAccountAPIService.getUserAccounts()
+        userAccountAPIService.getUserAccounts("", 0)
           .then(
             function successCallback (response) {
           $scope.companyAccounts = response.data.message;
@@ -25,7 +26,7 @@ function ($scope, $window, $stateParams, commonHelpers, $location, userAccountAP
       );
 
 
-    userAccountAPIService.getFriends($stateParams.companyAccountId).then(
+    userAccountAPIService.getUserAccounts($stateParams.companyAccountId, 1).then(
       function successCallback(response) {
         $scope.friendsThisCom = response.data.message;
         $scope.loaded = true;

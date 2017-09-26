@@ -27,7 +27,7 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAP
             }
           );
 
-        userAccountAPIService.getUserAccounts()
+        userAccountAPIService.getUserAccounts("", 0)
           .then(
             function successCallback(response) {
               $scope.companyAccounts = response.data.message;
@@ -36,7 +36,7 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAP
             }
           );
 
-        userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id)
+        userAccountAPIService.getUserAccounts($scope.device.hasAdministrator[0]._id, 1)
           .then(
             function successCallback(response){
               $scope.friendsThisCom = response.data.message;

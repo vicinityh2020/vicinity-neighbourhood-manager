@@ -43,7 +43,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAP
 
   function successCallback1(response) {
     $scope.devices = response.data.message;
-    return userAccountAPIService.getFriends($stateParams.companyAccountId);
+    return userAccountAPIService.getUserAccounts($stateParams.companyAccountId, 1);
   }
 
   function successCallback2(response) {
