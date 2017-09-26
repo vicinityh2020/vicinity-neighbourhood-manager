@@ -31,7 +31,7 @@ angular.module('VicinityManagerApp.controllers').
       function searchFriends(response){
         $scope.resultsUsers = response.data.message;
         $scope.loaded2 = true;
-        return userAccountAPIService.getFriends($scope.activeCompanyID);
+        return userAccountAPIService.getUserAccounts($scope.activeCompanyID, 1);
       }
 
       function searchItems(response){
