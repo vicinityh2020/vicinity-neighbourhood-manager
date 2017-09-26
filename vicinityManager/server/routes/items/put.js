@@ -34,12 +34,12 @@ function putOne(req, res) {
       .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + updates.cid + '_ownDevices', 'POST'),callbackError) // Add to company group
       .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + adid, 'POST')) // Add to agent group
       .then(deviceActivityNotif(uid, updates.cid, 'Enabled'),callbackError)
-      .then(itemStatusUpdate(uid,updates,res),callbackError);
+      .then(itemUpdate(uid,updates,res),callbackError);
 
   }else if(updates.status === 'disabled'){
     commServer.callCommServer({}, 'users/' + oid , 'DELETE')
       .then(deviceActivityNotif(uid, updates.cid, 'Disabled'),callbackError)
-      .then(itemStatusUpdate(uid,updates,res),callbackError);
+      .then(itemUpdate(uid,updates,res),callbackError);
 
   }else{
 
@@ -49,22 +49,15 @@ function putOne(req, res) {
 }
 
 /*
-Handles the status update in MONGO
-*/
-function itemStatusUpdate(uid,updates,res){
-  return itemOp.update({ "_id": uid}, {$set: {status: updates.status, accessLevel: 1}}, function(err, raw){
-    response = {"error": err, "message": raw};
-    res.json(response);
-    }
-  );
-}
-
-/*
 Handles the accessLevel and other properties modifications
 */
 function itemUpdate(uid,updates,res){
   if(updates.accessLevel && updates.accessLevel !== 0){
-    query = { accessLevel: updates.accessLevel };
+    if(updates.status){
+      query = { accessLevel: updates.accessLevel };
+    } else {
+      query = {status: updates.status, accessLevel: updates.accessLevel};
+    }
     itemOp.findOneAndUpdate({ _id : uid}, {$set: query }, function(err, raw){
       commServerSharing.changePrivacy(updates);
       response = {"error": err, "message": raw};
