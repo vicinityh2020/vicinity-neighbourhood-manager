@@ -27,7 +27,7 @@ function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPISe
             $scope.note = "Item is private. No one can see this item.";
             $scope.giveNote = true;
           }else {
-            userAccountAPIService.getFriends($scope.item.hasAdministrator[0]._id).then(
+            userAccountAPIService.getUserAccounts($scope.item.hasAdministrator[0]._id, 1).then(
               function successCallback(response){
                 $scope.friends = response.data.message;
               },

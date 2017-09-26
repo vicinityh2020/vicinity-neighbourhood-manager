@@ -27,7 +27,7 @@ function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPISe
             $scope.note = "Device is private. No one can see this device.";
             $scope.giveNote = true;
           }else {
-            userAccountAPIService.getFriends($scope.device.hasAdministrator[0]._id).then(
+            userAccountAPIService.getUserAccounts($scope.device.hasAdministrator[0]._id, 1).then(
               function successCallback(response){
                 $scope.friends = response.data.message;
               },
