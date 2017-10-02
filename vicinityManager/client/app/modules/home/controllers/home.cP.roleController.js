@@ -105,24 +105,30 @@ function ($scope, $window, commonHelpers, $stateParams, userAccountAPIService, u
     };
 
     $scope.deleteUser = function(i){
-      if(confirm('Are you sure?')){  // TODO
-        $scope.selectedUser = i;
-        var query = {
-          avatar: "",
-          name: "",
-          firstName: "",
-          surname: "",
-          lastName: "",
-          occupation: "",
-          location: "",
-          email: $scope.selectedUser.email,
-          status: 'deleted',
-          authentication: {
-            password: "",
-            principalRoles: []
-          }};
-        $scope.updateUserInfo(query);
-        Notification.success("User removed");
+      $scope.selectedUser = i;
+      if($scope.oneAdmin()){
+        if(confirm('Are you sure?')){  // TODO
+          $scope.selectedUser = i;
+          var query = {
+            avatar: "",
+            name: "",
+            firstName: "",
+            surname: "",
+            lastName: "",
+            occupation: "",
+            location: "",
+            email: $scope.selectedUser.email,
+            status: 'deleted',
+            authentication: {
+              password: "",
+              principalRoles: []
+            }};
+          $scope.updateUserInfo(query);
+          Notification.success("User removed");
+        }
+      }else{
+        Notification.warning("There must be at least one administrator");
+        $scope.cancelChanges();
       }
     };
 
