@@ -63,7 +63,7 @@ function deleting(oid, callback){
             callback(oid, "error mongo" + err);
           } else {
             commServer.callCommServer({}, 'users/' + oid, 'DELETE')
-            .then(function(ans){callback(oid, ans);})
+            .then(function(ans){callback(oid, "Success");})
             .catch(function(err){callback(oid, 'error commServer: ' + err);});
           }
         });

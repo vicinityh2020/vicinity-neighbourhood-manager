@@ -8,6 +8,7 @@ var nodeOp = require('../../models/vicinityManager').node;
 var logger = require('../../middlewares/logger');
 var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
+var sync = require('../../helpers/asyncHandler/sync');
 
 // Functions
 
@@ -18,7 +19,6 @@ Message producing the req is sent by the agent with thingDescriptions
 function postRegistration(req, res, next){
   var objectsArray = req.body.thingDescriptions;
   var adid = req.body.adid;
-  var oidArray = [];
 
   nodeOp.findOne({adid: adid}, {organisation:1, hasItems: 1},
     function(err,data){
@@ -30,57 +30,67 @@ function postRegistration(req, res, next){
           }
         } else {
           var cid = data.organisation;
-          oidArray = saveDocuments(adid, cid, objectsArray, oidArray);
-          data.hasItems = updateItemsList(data.hasItems, oidArray);
-          data.save();
-          deviceActivityNotif(cid);
-          res.json({"error": false, "message" : "Documents were saved!"});
+          // get item types - static service
+
+          sync.forEachAll(objectsArray,
+            function(value, allresult, next, otherParams) { // Process all new items
+              saveDocuments(value, otherParams, function(value, result) {
+                  logger.debug('END execution with value =', value, 'and result =', result);
+                  allresult.push({value: value, result: result});
+                  next();
+              });
+            },
+            function(allresult) { // Final part: Return results, update node and notify
+                logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+                var oidArray = [];
+                for(var i = 0; i < allresult.length; i++) {
+                  oidArray.push(allresult[i].value);
+                }
+                data.hasItems = updateItemsList(data.hasItems, oidArray);
+                data.save();
+                deviceActivityNotif(cid);
+                res.json({"error": false, "message" : allresult});
+            },
+            true,
+            {adid: adid, cid:cid, data:data} // additional parameters
+          );
         }
-    }
-  );
-}
+      }
+    );
+  }
 
 /*
 Inserts or updates all oids in the request, depending on their previous existance
 */
-function saveDocuments(adid, cid, objectsArray, oidArray){
+function saveDocuments(objects, otherParams, callback){
 
   var obj = {};
-
-  var creds = objectsArray[0].credentials; // Select credentials object
-  delete objectsArray[0].credentials; // Delete credentials, not to be stored in MONGO
+  var creds = objects.credentials; // Select credentials object
+  delete objects.credentials; // Delete credentials, not to be stored in MONGO
+  logger.debug('START execution with value =', creds.oid.toLowerCase());
 
   // Create one item document
-  obj.adid = adid;
+  obj.adid = otherParams.adid;
   obj.oid = creds.oid.toLowerCase(); // Username in commServer
-  obj.name = objectsArray[0].name; // Name in commServer
-  obj.hasAdministrator = cid; // CID, obtained from mongo
+  obj.name = objects.name; // Name in commServer
+  obj.hasAdministrator = otherParams.cid; // CID, obtained from mongo
   obj.accessLevel = 1; // private by default
   obj.avatar = config.avatarItem; // Default avatar provided by VCNT
   obj.typeOfItem = 'device';
-  obj.info = objectsArray[0]; // Thing description obj, might have different structures each time
+  obj.info = objects; // Thing description obj, might have different structures each time
   obj.info.oid = creds.oid.toLowerCase();
-  obj.status = 'enabled'; // TODO Change in future stages of the project
+  obj.status = 'disabled'; // TODO Change in future stages of the project
 
   itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
     function(err, data){
       if(err || !data){
         logger.debug("Item " + obj.name + " was not saved...");
+        callback(obj.oid, "error mongo" + err);
       } else {
-        commServerProcess(obj.oid, adid, obj.name, creds.password, cid);
+        commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid, callback);
       }
     }
   );
-
-  oidArray.push(obj.oid);
-  objectsArray.splice(0,1); // Delete first object of objectsArray
-  
-  if (objectsArray.length > 0 ){ // If objectsArray not empty, call recursively until all objects saved
-    saveDocuments(adid, cid, objectsArray, oidArray);
-  }
-
-  return oidArray;
-
 }
 
 /*
@@ -88,47 +98,41 @@ Creates user in commServer
 Adds user to company and agent groups
 If the oid exists in the commServer is deleted and created anew
 */
-function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
+function commServerProcess(docOid, docAdid, docName, docPassword, docOwner, callback){
   var payload = {
     username : docOid,
     name: docName,
     password: docPassword,
     };
-
-    commServer.callCommServer({}, 'users/' +  docOid, 'GET')
-      .then(
-        function(response){
-          commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
-            .then(
-              function(response){
-                commServer.callCommServer(payload, 'users', 'POST')
-                .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST'), callbackError) // Add to company group
-                .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST'), callbackError) // Add to agent group
-                .catch(callbackError);
-            },
-            function(error){
-              callbackError(error);
-            }
-          );
-        },
-        function(error){
-          if(error.statusCode !== 404){
-          callbackError(error);
+    return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
+      .then(function(response){
+        return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
+        .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
+        .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+        .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+        .then(function(ans){callback(docOid, "Success");})
+        .catch(function(err){callback(docOid, 'error commServer: ' + err);} );
+      },
+        function(err){
+          if(err.statusCode !== 404){
+            callback(docOid, 'error commServer: ' + err); // return rejected promise because we got a non controlled error
         } else {
-          commServer.callCommServer(payload, 'users', 'POST')
-            .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST'),callbackError) // Add to company group
-            .then(commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST'), callbackError) // Add to agent group
-            .catch(callbackError);
+          return commServer.callCommServer(payload, 'users', 'POST')
+          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+          .then(function(ans){callback(docOid, "Success");})
+          .catch(function(err){callback(docOid, 'error commServer: ' + err);} );
         }
       }
     );
-}
+  }
 
 /*
 Adds all new oids to the node hasItems
 If the oid is already in there skip it
 */
 function updateItemsList(items, oidArray){
+  // get oids only if doc saved succesfully
   var flag = items.indexOf(oidArray[0]);
   if(flag === -1){
     items.push(oidArray[0]);
@@ -151,15 +155,6 @@ function deviceActivityNotif(cid){
   dbNotif.status = "waiting";
   dbNotif.isUnread = true;
   dbNotif.save();
-}
-
-/*
-Handle errors in the commServer
-*/
-function callbackError(err){
-  logger.debug('Error updating item: ' + err);
-  // TODO some error handling ...
-  // commServer.callCommServer({}, 'users/' + o_id , 'DELETE')
 }
 
 // Export Functions

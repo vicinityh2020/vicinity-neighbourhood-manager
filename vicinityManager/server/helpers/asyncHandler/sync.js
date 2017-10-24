@@ -6,18 +6,19 @@
 3. Finish: Function executed at the end of the sequence, returns all results.
 4. Sync: If true -> sync execution.
 */
-function forEachAll(data, each, finish, sync) {
+function forEachAll(data, each, finish, sync, otherParams) {
     var n = -1, result = [];
+    if(typeof otherParams === 'undefined'){ otherParams = {}; }
     var next = sync ?
         function () {
-            if (++n < data.length) { each(data[n], result, next); }
+            if (++n < data.length) { each(data[n], result, next, otherParams); }
             else if (finish)       { finish(result); }
         } :
         (function () {
             function completed() {
                 if (++n <= data.length && finish) { finish(result); }
             }
-            for (var i = 0; i < data.length; i++) { each(data[i], result, completed); }
+            for (var i = 0; i < data.length; i++) { each(data[i], result, completed, otherParams); }
             return completed;
         }());
     next();
