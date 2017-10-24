@@ -104,6 +104,9 @@ function giveMeCaption(n){
           break;
       case 8:
           caption = "Public";
+          break;
+      default:
+          caption = "Private";
   }
   return caption;
 }
