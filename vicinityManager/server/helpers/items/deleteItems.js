@@ -45,7 +45,6 @@ function deleting(oid, callback){
   logger.debug('START execution with value =', oid);
   var obj = {
     info: {},
-    oid: "",
     avatar: "",
     accessLevel: 0,
     hasAdministrator: [],
