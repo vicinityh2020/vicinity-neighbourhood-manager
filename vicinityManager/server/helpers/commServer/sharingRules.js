@@ -214,8 +214,8 @@ Find how to resolve the accessLevel change in the device
 Based on old and new accessLevel captions
 */
 function findCase(oldA, newA, updates){
-  logger.debug(oldA);
-  logger.debug(newA);
+  //logger.debug(oldA);
+  //logger.debug(newA);
   if(oldA === "public" && newA === "private"){
     commServer.callCommServer({}, 'users/' + updates.oid + '/groups/' + 'publicDevices', 'DELETE');
 

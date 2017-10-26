@@ -31,15 +31,17 @@ function putOne(req, res) {
 
   if(updates.status === 'enabled'){
     commServer.callCommServer(payload, 'users', 'POST')
-      .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + updates.cid + '_ownDevices', 'POST'),callbackError) // Add to company group
-      .then(commServer.callCommServer({}, 'users/' + oid + '/groups/' + adid, 'POST')) // Add to agent group
-      .then(deviceActivityNotif(uid, updates.cid, 'Enabled'),callbackError)
-      .then(itemUpdate(uid,updates,res),callbackError);
+      .then(function(response){ return commServer.callCommServer({}, 'users/' + oid + '/groups/' + updates.cid + '_ownDevices', 'POST');}) // Add to company group
+      .then(function(response){ return commServer.callCommServer({}, 'users/' + oid + '/groups/' + adid, 'POST');}) // Add to agent group
+      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Enabled');})
+      .then(function(response){ itemUpdate(uid,updates,res);})
+      .catch(callbackError);
 
   }else if(updates.status === 'disabled'){
     commServer.callCommServer({}, 'users/' + oid , 'DELETE')
-      .then(deviceActivityNotif(uid, updates.cid, 'Disabled'),callbackError)
-      .then(itemUpdate(uid,updates,res),callbackError);
+      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Disabled');})
+      .then(function(response){ itemUpdate(uid,updates,res);})
+      .catch(callbackError);
 
   }else{
 
@@ -55,19 +57,20 @@ function itemUpdate(uid,updates,res){
   if(updates.accessLevel && updates.accessLevel !== 0){
     if(!updates.status){
       query = { accessLevel: updates.accessLevel };
+      logger.debug("Start update of accessLevel...");
     } else {
       query = {status: updates.status, accessLevel: updates.accessLevel};
+      logger.debug("Start update of accessLevel and item activation/deactivation...");
     }
     itemOp.findOneAndUpdate({ _id : uid}, {$set: query }, function(err, raw){
       commServerSharing.changePrivacy(updates);
-      response = {"error": err, "message": raw};
-      res.json(response);
+      res.json({"error": err, "message": raw});
+      logger.debug("Item update process ended successfully...");
       }
     );
   } else {
     itemOp.findOneAndUpdate({ _id : uid}, { $set: updates }, function(err, raw){
-      response = {"error": err, "message": raw};
-      res.json(response);
+      res.json({"error": err, "message": raw});
       }
     );
   }
@@ -88,6 +91,9 @@ function deviceActivityNotif(did,cid,state){
     function(err,data){
       if(err){
         logger.debug("Error creating the notification");
+        return new Promise(function(resolve, reject) { reject("Error"); });
+      } else {
+        return new Promise(function(resolve, reject) { resolve("Done"); });
       }
     }
   );
