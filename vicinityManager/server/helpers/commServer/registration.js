@@ -30,7 +30,9 @@ function postRegistration(req, res, next){
           }
         } else {
           var cid = data.organisation;
-          // get item types - static service
+
+          //TODO get device types - static service
+          //TODO get service types - static service
 
           sync.forEachAll(objectsArray,
             function(value, allresult, next, otherParams) { // Process all new items
@@ -76,10 +78,10 @@ function saveDocuments(objects, otherParams, callback){
   obj.hasAdministrator = otherParams.cid; // CID, obtained from mongo
   obj.accessLevel = 1; // private by default
   obj.avatar = config.avatarItem; // Default avatar provided by VCNT
-  obj.typeOfItem = 'device';
+  obj.typeOfItem = 'device'; // TODO use collection of types from repo to decide if dev/serv
   obj.info = objects; // Thing description obj, might have different structures each time
   obj.info.oid = creds.oid.toLowerCase();
-  obj.status = 'disabled'; // TODO Change in future stages of the project
+  obj.status = 'disabled';
 
   itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
     function(err, data){
@@ -112,6 +114,7 @@ function commServerProcess(docOid, docAdid, docName, docPassword, docOwner, call
         .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
         .then(function(ans){callback(docOid, "Success");})
         .catch(function(err){callback(docOid, 'error commServer: ' + err);} );
+        // instead of last then/catch we can return a rejected promise in case of error and handle the callback in saveDocuments()
       },
         function(err){
           if(err.statusCode !== 404){
@@ -122,6 +125,7 @@ function commServerProcess(docOid, docAdid, docName, docPassword, docOwner, call
           .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
           .then(function(ans){callback(docOid, "Success");})
           .catch(function(err){callback(docOid, 'error commServer: ' + err);} );
+          // instead of last then/catch we can return a rejected promise in case of error and handle the callback in saveDocuments()
         }
       }
     );
