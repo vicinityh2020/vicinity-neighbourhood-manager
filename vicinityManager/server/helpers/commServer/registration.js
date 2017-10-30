@@ -110,12 +110,13 @@ function saveDocuments(objects, otherParams, callback){
       );
       //createInstance(obj, callback)
     } else { // if the TD contains an OID, then we need to update the instance in Mongo (not create a new one)
-      obj.oid = objects.credentials.oid;
-      var pass = objects.credentials.password;
-      delete(objects.credentials);
-      obj.info = objects; // Thing description obj, might have different structures each time
-      obj.info.oid = obj.oid;
-      updateInstance(obj, pass, callback);
+      callback("Null", "Already registered OID or wrong TD schema...");
+      // obj.oid = objects.credentials.oid;
+      // var pass = objects.credentials.password;
+      // delete(objects.credentials);
+      // obj.info = objects; // Thing description obj, might have different structures each time
+      // obj.info.oid = obj.oid;
+      // updateInstance(obj, pass, callback);
     }
   }
 }
@@ -134,36 +135,35 @@ function createInstance(obj, callback){
     });
 }
 
-
 /*
 TD contains a credentials field.
 Meaning: a) Agent sends old version of the TD (now NM should create OID)
          b) Agent wants to update an existing TD
 */
-function updateInstance(obj, pass, callback){
-  itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },   // keep upsert in case the TD did not exist (control possible errors in the TD)
-    function(err, data){
-      if(err){
-        logger.debug("Item " + obj.name + " was not saved...");
-        callback(obj.oid, "error mongo" + err);
-      } else {
-        commServer.callCommServer({username: obj.oid, name: obj.name, password: pass}, 'users/' +  obj.oid, 'DELETE')
-          .then(function(response){ callback(obj.oid, "Success"); })
-          .catch(function(err){
-              if(err.statusCode !== 404){
-                callback(obj.oid, "Error comm server: " + err);
-              } else {
-                callback(obj.oid, "Success");
-              }
-            }
-          );
-        // commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
-        // .then(function(response){ callback(obj.oid, "Success"); })
-        // .catch(function(err){ callback(obj.oid, err); });
-      }
-    }
-  );
-}
+// function updateInstance(obj, pass, callback){
+//   itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },   // keep upsert in case the TD did not exist (control possible errors in the TD)
+//     function(err, data){
+//       if(err){
+//         logger.debug("Item " + obj.name + " was not saved...");
+//         callback(obj.oid, "error mongo" + err);
+//       } else {
+//         commServer.callCommServer({username: obj.oid, name: obj.name, password: pass}, 'users/' +  obj.oid, 'DELETE')
+//           .then(function(response){ callback(obj.oid, "Success"); })
+//           .catch(function(err){
+//               if(err.statusCode !== 404){
+//                 callback(obj.oid, "Error comm server: " + err);
+//               } else {
+//                 callback(obj.oid, "Success");
+//               }
+//             }
+//           );
+//         // commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
+//         // .then(function(response){ callback(obj.oid, "Success"); })
+//         // .catch(function(err){ callback(obj.oid, err); });
+//       }
+//     }
+//   );
+// }
 
 /*
 Creates user in commServer
