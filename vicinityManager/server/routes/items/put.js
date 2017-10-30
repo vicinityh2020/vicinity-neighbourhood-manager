@@ -23,16 +23,9 @@ function putOne(req, res) {
   var oid = req.body.oid; // Object ID - Generated out of VCNT manager
   var adid = req.body.adid; // Agent ID - Generated in VCNT manager
   var updates = req.body;
-  var payload = {
-    username : oid,
-    name: updates.name,
-    password: updates.password,
-    };
 
   if(updates.status === 'enabled'){
-    commServer.callCommServer(payload, 'users', 'POST')
-      .then(function(response){ return commServer.callCommServer({}, 'users/' + oid + '/groups/' + updates.cid + '_ownDevices', 'POST');}) // Add to company group
-      .then(function(response){ return commServer.callCommServer({}, 'users/' + oid + '/groups/' + adid, 'POST');}) // Add to agent group
+    commServerProcess(oid, adid, updates.name, oid, updates.cid)
       .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Enabled');})
       .then(function(response){ itemUpdate(uid,updates,res);})
       .catch(callbackError);
@@ -98,6 +91,39 @@ function deviceActivityNotif(did,cid,state){
     }
   );
 }
+
+/*
+Creates user in commServer
+Adds user to company and agent groups
+If the oid exists in the commServer is deleted and created anew
+*/
+function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
+  var payload = {
+    username : docOid,
+    name: docName,
+    password: docPassword,
+    };
+    return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
+      .then(
+        function(response){
+          return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
+          .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
+          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+          .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+        },
+        function(err){
+          if(err.statusCode !== 404){
+            return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); // return rejected promise because we got a non controlled error
+          } else {
+            return commServer.callCommServer(payload, 'users', 'POST')
+            .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+            .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+            .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+          }
+        }
+      );
+    }
 
 /*
 Handles errors

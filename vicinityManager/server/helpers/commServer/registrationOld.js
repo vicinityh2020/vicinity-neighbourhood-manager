@@ -9,7 +9,6 @@ var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
 var semanticRepo = require('../../helpers/semanticRepo/request');
 var sync = require('../../helpers/asyncHandler/sync');
-var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
 // Public Function -- Main
 
@@ -55,25 +54,23 @@ function postRegistration(req, res, next){
                 },
                 function(allresult) {
                   // Final part: Return results, update node and notify
-                  if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
                     logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+
                     updateItemsList(data.hasItems, allresult)
                     .then(function(response){ data.hasItems = response;
                                               return data.save(); })
                     .then(function(response){ return deviceActivityNotif(cid); })
-                    .then(function(response){
-                                            res.json({"status": 200, "message": allresult});
+                    .then(function(response){ res.json({"error": false, "message" : allresult});
                                               console.timeEnd("ALL REGISTRATION EXECUTION");
                                             })
                     .catch(function(err){ res.json({"error": true, "message" : "Error in final steps: " + err}); });
-                  }
                 },
                 false,
                 {adid: adid, cid:cid, data:data, types:semanticTypes} // additional parameters
               );
             }
           )
-          .catch(function(err){res.json({"error": true, "message" : "Error: " + err});});
+          .catch(function(err){res.json({"error": true, "message" : "Error in semantic repository: " + err});});
         }
       }
     );
@@ -87,20 +84,23 @@ Inserts or updates all oids in the request, depending on their previous existanc
 function saveDocuments(objects, otherParams, callback){
 
   var obj = {};
-  // logger.debug('START execution with value =', creds.oid.toLowerCase());
+  var creds = objects.credentials; // Select credentials object
+  delete objects.credentials; // Delete credentials, not to be stored in MONGO
+  logger.debug('START execution with value =', creds.oid.toLowerCase());
 
   // Create one item document
+  obj.adid = otherParams.adid;
+  obj.oid = creds.oid.toLowerCase(); // Username in commServer
+  obj.name = objects.name; // Name in commServer
+  obj.hasAdministrator = otherParams.cid; // CID, obtained from mongo
+  obj.accessLevel = 1; // private by default
+  obj.avatar = config.avatarItem; // Default avatar provided by VCNT
   obj.typeOfItem = findType(objects.type, otherParams.types); // Use collection of semanticTypes to find if service/device/unknown
   if(obj.typeOfItem === "unknown") {
-    callback("No OID", "Unknown type...");
+    callback(obj.oid, "Unknown type...");
   } else {
-    obj.adid = otherParams.adid;
     obj.info = objects; // Thing description obj, might have different structures each time
-    obj.oid = obj.info.oid = uuid(); // Username in commServer
-    obj.name = objects.name; // Name in commServer
-    obj.hasAdministrator = otherParams.cid; // CID, obtained from mongo
-    obj.accessLevel = 1; // private by default
-    obj.avatar = config.avatarItem; // Default avatar provided by VCNT
+    obj.info.oid = creds.oid.toLowerCase();
     obj.status = 'disabled';
 
     itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
@@ -109,10 +109,9 @@ function saveDocuments(objects, otherParams, callback){
           logger.debug("Item " + obj.name + " was not saved...");
           callback(obj.oid, "error mongo" + err);
         } else {
-          callback(obj.oid, "Success");
-          // commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
-          // .then(function(response){ callback(obj.oid, "Success"); })
-          // .catch(function(err){ callback(obj.oid, err); });
+          commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
+          .then(function(response){ callback(obj.oid, "Success"); })
+          .catch(function(err){ callback(obj.oid, err); });
         }
       }
     );
