@@ -25,10 +25,12 @@ function deleteItems(oids, res){
         });
       },
       function(allresult) {
+        if(allresult.length === oids.length){
           logger.debug('Completed async handler: ' + JSON.stringify(allresult));
           res.json({"error": false, "message": allresult });
+        }
       },
-      true
+      false
     );
   } else {
     res.json({"error": false, "message": "Nothing to be removed..."});
