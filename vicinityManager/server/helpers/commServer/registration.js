@@ -85,9 +85,7 @@ function postRegistration(req, res, next){
 Inserts or updates all oids in the request, depending on their previous existance
 */
 function saveDocuments(objects, otherParams, callback){
-
   var obj = {};
-  // logger.debug('START execution with value =', creds.oid.toLowerCase());
 
   // Create one item document
   obj.typeOfItem = findType(objects.type, otherParams.types); // Use collection of semanticTypes to find if service/device/unknown
@@ -95,28 +93,76 @@ function saveDocuments(objects, otherParams, callback){
     callback("No OID", "Unknown type...");
   } else {
     obj.adid = otherParams.adid;
-    obj.info = objects; // Thing description obj, might have different structures each time
-    obj.oid = obj.info.oid = uuid(); // Username in commServer
     obj.name = objects.name; // Name in commServer
     obj.hasAdministrator = otherParams.cid; // CID, obtained from mongo
     obj.accessLevel = 1; // private by default
     obj.avatar = config.avatarItem; // Default avatar provided by VCNT
     obj.status = 'disabled';
-
-    itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },         // TODO Consider using bulk upsert instead
-      function(err, data){
-        if(err || !data){
-          logger.debug("Item " + obj.name + " was not saved...");
-          callback(obj.oid, "error mongo" + err);
-        } else {
-          callback(obj.oid, "Success");
-          // commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
-          // .then(function(response){ callback(obj.oid, "Success"); })
-          // .catch(function(err){ callback(obj.oid, err); });
-        }
-      }
-    );
+    if(!objects.credentials && !objects.oid){ // Create a new instance in Mongo
+      obj.info = objects; // Thing description obj, might have different structures each time
+      oidExist(uuid()). // Username in commServer
+      then(function(response){
+        obj.oid = response;
+        obj.info.oid = response;
+        createInstance(new itemOp(obj), callback);
+      }).
+      catch(function(err){callback(obj.oid, "Error finding unique ID: " + err);}
+      );
+      //createInstance(obj, callback)
+    } else { // if the TD contains an OID, then we need to update the instance in Mongo (not create a new one)
+      obj.oid = objects.credentials.oid;
+      var pass = objects.credentials.password;
+      delete(objects.credentials);
+      obj.info = objects; // Thing description obj, might have different structures each time
+      obj.info.oid = obj.oid;
+      updateInstance(obj, pass, callback);
+    }
   }
+}
+
+/*
+Totally new TD --> Expects new instance to be created
+*/
+function createInstance(obj, callback){
+  obj.save(
+    function(err, response){
+      if(err){
+        callback(obj.oid, "Error Mongo: " + err);
+      } else {
+        callback(obj.oid, "Success");
+      }
+    });
+}
+
+
+/*
+TD contains a credentials field.
+Meaning: a) Agent sends old version of the TD (now NM should create OID)
+         b) Agent wants to update an existing TD
+*/
+function updateInstance(obj, pass, callback){
+  itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },   // keep upsert in case the TD did not exist (control possible errors in the TD)
+    function(err, data){
+      if(err){
+        logger.debug("Item " + obj.name + " was not saved...");
+        callback(obj.oid, "error mongo" + err);
+      } else {
+        commServer.callCommServer({username: obj.oid, name: obj.name, password: pass}, 'users/' +  obj.oid, 'DELETE')
+          .then(function(response){ callback(obj.oid, "Success"); })
+          .catch(function(err){
+              if(err.statusCode !== 404){
+                callback(obj.oid, "Error comm server: " + err);
+              } else {
+                callback(obj.oid, "Success");
+              }
+            }
+          );
+        // commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
+        // .then(function(response){ callback(obj.oid, "Success"); })
+        // .catch(function(err){ callback(obj.oid, err); });
+      }
+    }
+  );
 }
 
 /*
@@ -124,33 +170,55 @@ Creates user in commServer
 Adds user to company and agent groups
 If the oid exists in the commServer is deleted and created anew
 */
-function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
-  var payload = {
-    username : docOid,
-    name: docName,
-    password: docPassword,
-    };
-    return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
-      .then(
-        function(response){
-          return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
-          .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
-          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
-          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
-          .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
-        },
-        function(err){
-          if(err.statusCode !== 404){
-            return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); // return rejected promise because we got a non controlled error
-          } else {
-            return commServer.callCommServer(payload, 'users', 'POST')
-            .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
-            .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
-            .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
-          }
-        }
-      );
-    }
+// function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
+//   var payload = {
+//     username : docOid,
+//     name: docName,
+//     password: docPassword,
+//     };
+//     return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
+//       .then(
+//         function(response){
+//           return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
+//           .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
+//           .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+//           .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+//           .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+//         },
+//         function(err){
+//           if(err.statusCode !== 404){
+//             return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); // return rejected promise because we got a non controlled error
+//           } else {
+//             return commServer.callCommServer(payload, 'users', 'POST')
+//             .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+//             .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+//             .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+//           }
+//         }
+//       );
+//     }
+
+/*
+Checks if the oid is in Mongo
+If it is, creates a new one and checks again
+Ensures oid uniqueness
+*/
+function oidExist(oid){
+  return itemOp.findOne({oid: oid})
+  .then(
+    function(data){
+      if(!data){
+        return new Promise(function(resolve, reject) { resolve(oid) ;} );
+      } else {
+        oid = uuid();
+        oidExist(oid);
+      }
+    })
+  .catch(
+    function(err){
+        return new Promise(function(resolve, reject) { reject('Error in Mongo: ' + err) ;} );
+  });
+}
 
 /*
 Adds all new oids to the node hasItems
