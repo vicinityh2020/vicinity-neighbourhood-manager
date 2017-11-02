@@ -110,7 +110,7 @@
 
               <hr>
 
-              <strong><i class="fa fa-map-marker margin-r-5"></i> BID</strong>
+              <strong><i class="fa fa-list-alt margin-r-5"></i> BID</strong>
 
                 <a ng-show="false" ng-click="bidEdit()" id="bid2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
                 <a id="bid4" ng-click="bidSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
@@ -150,6 +150,12 @@
                 <option value="purple">Purple</option>
                 <option value="black">Black & White</option>
               </select>
+
+              <hr ng-show="isMyProfile">
+
+              <strong ng-show="imAdmin"><i class="fa fa-exclamation-triangle margin-r-5"></i> Remove organisation</strong>
+
+              <a ng-show="imAdmin" ng-click="removeOrg()" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-times"></i> Remove</a>
 
             </div>
             <!-- /.box-body -->

@@ -13,28 +13,30 @@ var sync = require('../../helpers/asyncHandler/sync');
 /*
 Deletes either a selection of oids or all oids under a node
 */
-function deleteItems(oids, res){
-  if(oids.length > 0){ // Check if there is any item to delete
-    logger.debug('Start async handler...');
-    sync.forEachAll(oids,
-      function(value, allresult, next) {
-        deleting(value, function(value, result) {
-            logger.debug('END execution with value =', value, 'and result =', result);
-            allresult.push({value: value, result: result});
-            next();
-        });
-      },
-      function(allresult) {
-        if(allresult.length === oids.length){
-          logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-          res.json({"error": false, "message": allresult });
-        }
-      },
-      false
-    );
-  } else {
-    res.json({"error": false, "message": "Nothing to be removed..."});
-  }
+function deleteItems(oids){
+  return new Promise(function(resolve, reject) {
+    if(oids.length > 0){ // Check if there is any item to delete
+      logger.debug('Start async handler...');
+      sync.forEachAll(oids,
+        function(value, allresult, next) {
+          deleting(value, function(value, result) {
+              logger.debug('END execution with value =', value, 'and result =', result);
+              allresult.push({value: value, result: result});
+              next();
+          });
+        },
+        function(allresult) {
+          if(allresult.length === oids.length){
+            logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+            resolve({"error": false, "message": allresult });
+          }
+        },
+        false
+      );
+    } else {
+      resolve({"error": false, "message": "Nothing to be removed..."});
+    }
+  });
 }
 
 // Private functions

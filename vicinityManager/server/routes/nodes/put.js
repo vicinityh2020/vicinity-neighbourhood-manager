@@ -15,7 +15,6 @@ var myNode = require('../../helpers/nodes/processNode');
   Receives request from client
   */
   function putOne(req, res) {
-    var response = {};
     var adid = req.params.id;
     var updates = req.body;
 
@@ -24,10 +23,16 @@ var myNode = require('../../helpers/nodes/processNode');
           logger.debug("Error updating the node");
       }else{
         if(req.body.status === 'deleted'){
-          myNode.deleteNode(adid, data.hasItems, res);
+          var adids = [];
+          adids.push(adid);
+          myNode.deleteNode(adids)
+          .then(function(response){res.json({'error': false, 'message': response});})
+          .catch(function(err){res.json({'error': true, 'message': err});});
         }else{
           data.pass = req.body.pass;
-          myNode.updateNode(data, res);
+          myNode.updateNode(data)
+          .then(function(response){res.json({'error': false, 'message': response});})
+          .catch(function(err){res.json({'error': true, 'message': err});});
         }
       }
     });

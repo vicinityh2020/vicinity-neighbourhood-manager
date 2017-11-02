@@ -37,7 +37,9 @@ router
 
   .get('/:id/configuration', configuration.get)
 
-  .put('/:id/configuration', configuration.put);
+  .put('/:id/configuration', configuration.put)
+
+  .delete('/:id/remove', configuration.remove);
 
 
 module.exports = router;

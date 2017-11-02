@@ -35,33 +35,21 @@ function ($scope, $window, commonHelpers, $stateParams, userAccountAPIService, u
       userAPIService.editInfoAboutUser($scope.selectedUser._id,data)
         .then(
           function successCallback(response){
-            var aux = [];
-            for (var i = 0; i < $scope.userAccounts.length; i++){
-              if($scope.selectedUser._id !== $scope.userAccounts[i]._id){
-                aux.push($scope.userAccounts[i]);
-              }
-            }
-            userAccountAPIService.updateUserAccounts($stateParams.companyAccountId,{accountOf:aux})
-              .then(
-                function successCallback(response){
-                  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId);
-                    $scope.myInit();
-                  },
-                  function errorCallback(response){}
-                );
-              },
-              function errorCallback(){Notification.error("Problem updating user profile");}
-            );
-          };
+            $scope.myInit();
+          },
+            function errorCallback(){Notification.error("Problem updating user profile");
+          }
+        );
+      };
 
-    //Initialize & onChange Select2 Elements ==============
+// Initialize & onChange Select2 Elements ==============
 
     $(".select2").select2({
       allowClear: true,
       closeOnSelect: false
     });
 
-    $( ".select2" ).change(function() {
+    $(".select2").change(function() {
       var keyword = new RegExp('devOps');
       if(keyword.test($scope.selectedUser.authentication.principalRoles)){
         $scope.newRoles = ['user','devOps'];
@@ -109,22 +97,14 @@ function ($scope, $window, commonHelpers, $stateParams, userAccountAPIService, u
       if($scope.oneAdmin()){
         if(confirm('Are you sure?')){  // TODO
           $scope.selectedUser = i;
-          var query = {
-            avatar: "",
-            name: "",
-            firstName: "",
-            surname: "",
-            lastName: "",
-            occupation: "",
-            location: "",
-            email: $scope.selectedUser.email,
-            status: 'deleted',
-            authentication: {
-              password: "",
-              principalRoles: []
-            }};
-          $scope.updateUserInfo(query);
-          Notification.success("User removed");
+          userAPIService.deleteUser($scope.selectedUser._id)
+          .then(
+            function(response){
+              Notification.success("User removed");
+              $scope.myInit();
+            },
+            function(err){Notification.warning("Error: " + err);}
+          );
         }
       }else{
         Notification.warning("There must be at least one administrator");

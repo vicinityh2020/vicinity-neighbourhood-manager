@@ -369,4 +369,19 @@ $scope.updateCompany = function(data){
     );
   };
 
+  $scope.removeOrg = function(){
+    if(confirm('Are you sure?')){
+      userAccountAPIService.removeOrganisation($window.sessionStorage.companyAccountId)
+        .then(
+          function successCallback(response){
+            alert('Organisation successfully removed!');
+            // logout
+          },
+          function errorCallback(err){
+            Notification.error('Something went wrong: ' + err);
+        }
+      );
+    }
+  };
+
 });

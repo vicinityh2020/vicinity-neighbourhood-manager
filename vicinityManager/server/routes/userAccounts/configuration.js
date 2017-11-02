@@ -2,6 +2,9 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
+var delUser = require('../../helpers/users/deleteUsers');
+var  myNode = require('../../helpers/nodes/processNode');
+
 
 // Public functions
 
@@ -35,10 +38,51 @@ function put(req, res, next) {
       res.json(response);
     }
   );
-
 }
 
-// Exports Functions
+function remove(req, res, next) {
 
+  var deletingResults = {};
+  var cid = mongoose.Types.ObjectId(req.params.id);
+
+  logger.debug('Removing organisation... ' + cid);
+
+  companyAccountOp.findOne({ _id: cid },
+    function(err, companyData){
+      if (err) {
+        res.json({"error": true, "message": "Error fetching data: " + err});
+      } else {
+        delUser.deleteAllUsers(companyData.accountOf)
+        .then(function(response){
+          deletingResults.users = response;
+          return myNode.deleteNode(companyData.hasNodes);
+        })
+        .then(function(response){
+          deletingResults.nodes = response;
+          // TODO uncomment everything below in order to really remove an organisation 
+          // companyData.location = "";
+          // companyData.organisation = "";
+          companyData.businessId = "";
+          // companyData.hasNotifications = [];
+          // companyData.knows = [];
+          // companyData.knowsRequestsTo = [];
+          // companyData.knowsRequestsFrom = [];
+          // companyData.avatar = "";
+          return companyData.save();
+        })
+        .then(function(response){
+          deletingResults.organisation = {cid: cid, result: 'Success'};
+          logger.debug('Success deleting organisation!!!');
+          logger.debug({result: deletingResults});
+          res.json(deletingResults);
+        })
+        .catch(function(err){res.json({error: true, message: err}); });
+      }
+    }
+  );
+}
+
+// Export Functions
 module.exports.get = get;
 module.exports.put = put;
+module.exports.remove = remove;

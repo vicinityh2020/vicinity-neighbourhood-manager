@@ -64,6 +64,10 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.put(configuration.apiUrl +'/useraccounts/' + id + '/configuration', data);
   };
 
+  userAccountAPI.removeOrganisation = function(id) {
+    return $http.delete(configuration.apiUrl +'/useraccounts/' + id + '/remove');
+  };
+
   return userAccountAPI;
 
 }]);
