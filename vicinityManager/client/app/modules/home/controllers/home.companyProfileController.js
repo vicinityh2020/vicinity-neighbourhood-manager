@@ -1,7 +1,7 @@
 "use strict";
 angular.module('VicinityManagerApp.controllers')
 .controller('companyProfileController',
-function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $timeout, userAccountAPIService, itemsAPIService, tokenDecoder, AuthenticationService, Notification) {
+function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $timeout, $cookies, userAccountAPIService, itemsAPIService, tokenDecoder, AuthenticationService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -375,7 +375,8 @@ $scope.updateCompany = function(data){
         .then(
           function successCallback(response){
             alert('Organisation successfully removed!');
-            // logout
+            $cookies.remove("rM_V"); // If log out remove rememberMe cookie
+            AuthenticationService.signout("/login");
           },
           function errorCallback(err){
             Notification.error('Something went wrong: ' + err);
