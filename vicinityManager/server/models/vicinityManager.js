@@ -41,7 +41,8 @@ var userAccount = new Schema({
   modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
   administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   // badges:[String],
-  notes:String
+  notes:String,
+  status:String
 });
 
 var user = new Schema({

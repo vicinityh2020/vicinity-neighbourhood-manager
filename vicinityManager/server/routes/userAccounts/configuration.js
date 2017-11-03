@@ -76,6 +76,7 @@ function remove(req, res, next) {
           companyData.knowsRequestsTo = [];
           companyData.knowsRequestsFrom = [];
           companyData.avatar = "";
+          companyData.status = "deleted";
           return companyData.save();
         })
         .then(function(response){

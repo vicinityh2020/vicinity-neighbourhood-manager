@@ -10,6 +10,7 @@ angular.module('VicinityManagerApp.controllers').
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
     $scope.filterNumber = 0;
+    $scope.entitiesCaption = "All organisations";
 
     // ====== Triggers window resize to avoid bug =======
     commonHelpers.triggerResize();
@@ -44,6 +45,9 @@ angular.module('VicinityManagerApp.controllers').
 
       $scope.filterOrganisations = function(n){
         $scope.filterNumber = n;
+        if(n === 0){ $scope.entitiesCaption = "All organisations"; }
+        else if(n === 1){ $scope.entitiesCaption = "My partners"; }
+        else{ $scope.entitiesCaption = "Other organisations"; }
         init();
       };
 

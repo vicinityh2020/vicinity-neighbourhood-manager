@@ -16,16 +16,16 @@ function getAllFilteredUserAccountsFacade(req, res, next) {
   var type = req.query.type;
 
   if(Number(type) === 0){
-    userAccountOp.find({})
+    userAccountOp.find({status: {$exists: false}}) // if the field status exists, is also equal to deleted
     .then( function(data) { res.json({"error": false, "message": data}); })
     .catch( function(err) { res.json({"error": true, "message": "Error fetching data"}); });
   } else {
     userAccountOp.findById(o_id, {knows: 1})
     .then( function(data){
       var qry;
-      if(Number(type) === 1){ qry = {$in: data.knows}; }
-      else { qry = {$not: {$in: data.knows}}; }
-      return userAccountOp.find({_id: qry});
+      if(Number(type) === 1){ qry = {_id: {$in: data.knows}, status: {$exists: false} }; }
+      else { qry = {_id: {$not: {$in: data.knows} }, status: {$exists: false} }; }
+      return userAccountOp.find(qry); // if the field status exists, is also equal to deleted
     })
     .then( function(data){res.json({"error": false, "message": data});})
     .catch( function(err){res.json({"error": true, "message": "Error fetching data"});});
