@@ -1,3 +1,10 @@
+/*
+This module contains management utilities for the userAccount (Organisation level)
+get: get properties (main theme color)
+set: set properties (main theme color)
+remove: remove organisation
+*/
+
 // Global objects
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
@@ -9,7 +16,6 @@ var  myNode = require('../../helpers/nodes/processNode');
 // Public functions
 
 function get(req, res, next) {
-
   var response = {};
   var cid = mongoose.Types.ObjectId(req.params.id);
   companyAccountOp.findById(cid, {skinColor: 1}, function(err, data){
@@ -23,7 +29,6 @@ function get(req, res, next) {
 }
 
 function put(req, res, next) {
-
   var response = {};
   var cid = mongoose.Types.ObjectId(req.params.id);
   var update = req.body;
@@ -40,8 +45,11 @@ function put(req, res, next) {
   );
 }
 
+/*
+Removes organisation and everything under:
+Users, nodes, items
+*/
 function remove(req, res, next) {
-
   var deletingResults = {};
   var cid = mongoose.Types.ObjectId(req.params.id);
 
@@ -59,15 +67,15 @@ function remove(req, res, next) {
         })
         .then(function(response){
           deletingResults.nodes = response;
-          // TODO uncomment everything below in order to really remove an organisation 
-          // companyData.location = "";
-          // companyData.organisation = "";
+          // TODO uncomment/comment next 8 lines to test or have real behaviour
+          companyData.location = "";
+          companyData.organisation = "";
           companyData.businessId = "";
-          // companyData.hasNotifications = [];
-          // companyData.knows = [];
-          // companyData.knowsRequestsTo = [];
-          // companyData.knowsRequestsFrom = [];
-          // companyData.avatar = "";
+          companyData.hasNotifications = [];
+          companyData.knows = [];
+          companyData.knowsRequestsTo = [];
+          companyData.knowsRequestsFrom = [];
+          companyData.avatar = "";
           return companyData.save();
         })
         .then(function(response){

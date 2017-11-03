@@ -9,7 +9,8 @@ var sync = require('../../helpers/asyncHandler/sync');
 // Public functions
 
 /*
-Deletes either a selection of oids or all oids under a node
+Deletes a selection of users
+Users to be removed pass their ids in an array as parameter
 */
 function deleteAllUsers(users){
   return new Promise(function(resolve, reject) {
@@ -42,16 +43,15 @@ function deleteAllUsers(users){
 /*
 Delete == Remove relevant fields and change status to removed
 Need to keep some fields for auditing purposes
-TODO Uncomment below in order to have a real user removal function, right now is dummy for test purposes
 */
 function deleting(id, callback){
   logger.debug('START execution with value =', id);
   var obj = {
-    //avatar: "",
-    //name: "",
-    //occupation: "",
+    avatar: "",
+    name: "",
+    occupation: "",
     status: "deleted",
-    //authentication: {}
+    authentication: {}
   };
   userOp.findOneAndUpdate({_id:id}, { $set: obj }, {new: true},
     function(err,data){
@@ -59,14 +59,14 @@ function deleting(id, callback){
         logger.debug("Something went wrong: " + err);
         callback(id, "error mongo" + err);
       } else {
-        // userAccountOp.update({_id: data.organisation}, {$pull: {accountOf: id}}, function(err,data){
-        //   if(err){
-        //     logger.debug("Something went wrong: " + err);
-        //     callback(oid, "error mongo" + err);
-        //   } else {
+        userAccountOp.update({_id: data.organisation}, {$pull: {accountOf: id}}, function(err,data){
+          if(err){
+            logger.debug("Something went wrong: " + err);
+            callback(oid, "error mongo" + err);
+          } else {
             callback(id, "Success");
-        //   }
-        // });
+          }
+        });
       }
     });
   }
