@@ -18,10 +18,6 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
     return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/organisations?type=' + filter);
   };
 
-  // userAccountAPI.getFriends = function(id) {
-  //   return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/friendship/myFriends');
-  // };
-
   // Neigbourhood management
 
   userAccountAPI.sendNeighbourRequest = function (id) {

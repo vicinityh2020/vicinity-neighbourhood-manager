@@ -14,12 +14,8 @@ var itemOp = require('../../models/vicinityManager').item;
 //TODO: Issue #6 check transactions;
 
 function processFriendRequest(req, res, next) {
-    // console.log("POST /:id/friendship");
-    // console.log(":id " + req.params.id);
     friend_id = mongoose.Types.ObjectId(req.params.id);
     my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-    var friend = {};
-    var me = {};
     var response = {};
     companyAccountOp.find({_id: {$in: [friend_id, my_id]}}, function (err, data) {
         if (err || data === null) {
@@ -52,16 +48,8 @@ function processFriendRequest(req, res, next) {
                   function(err,data){
                     if(data){
                       friend.hasNotifications.push(notification._id);
-
-                      friend.save( function(err, data){
-                        if(err || !data){logger.debug('mal  ' + err);}
-                        else{logger.debug('bien');}
-                      });
-
-                      me.save(function(err, data){
-                        if(err || !data){logger.debug('mal  ' + err);}
-                        else{logger.debug('bien');}
-                      });
+                      friend.save();
+                      me.save();
                     }
                   }
                 );
@@ -326,79 +314,9 @@ function cancelFriendship(req, res, next){
   );
 }
 
-function findFriends(req, res, next){
-
-  logger.debug("GET /:id/friends");
-  logger.debug(":id " + req.params.id);
-
-  var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-
-  companyAccountOp.findById(o_id).
-    populate('knows').exec(function(err, data){
-
-    if (err) {
-      response = {"error": true, "message": "Error fetching data"};
-    } else {
-      response = {"error": false, "message": data.knows};
-    }
-
-    res.json(response);
-
-    }
-  );
-}
-
-// var pos = objectsArray.findIndex(matchOid, variableToMatch); // Find right object by matching oid of credentials in objects
-// objectsArray.splice(pos,1); // Delete matched object of objectsArray
-// /*
-// Find index containing same oid and return it
-// */
-// function matchOid(elements){
-//   return elements.oid === this.oid;
-// }
-
-  // function sortListOfFriendsASC(a,b){
-  //   if (a.organisation < b.organisation) {
-  //     return -1;
-  //   } else if (a.organisation > b.organisation){
-  //     return 1;
-  //   } else {
-  //     return 0;
-  //   }
-  // }
-  //
-  // function sortListOfFriendsDESC(a,b){
-  //   if (a.organisation < b.organisation) {
-  //     return 1;
-  //   } else if (a.organisation > b.organisation){
-  //     return -1;
-  //   } else {
-  //     return 0;
-  //   }
-  // }
-
-  // function getFriends(req, res, next) {
-  //     console.log("GET /:id/friends");
-  //     console.log(":id " + req.params.id);
-  //     var response = {};
-  //     var o_id = mongoose.Types.ObjectId(req.params.id);
-  //     companyAccountOp.findById(o_id).
-  //       populate('knows').exec(function(err, user){
-  //       if (err) {
-  //         response = {"error": true, "message": "Error fetching data"};
-  //       } else {
-  //         response = {"error": false, "message": user.knows};
-  //       }
-  //       res.json(response);
-  //     }
-  //   );
-  // }
-
+// Export functions
 module.exports.processFriendRequest = processFriendRequest;
 module.exports.acceptFriendRequest = acceptFriendRequest;
 module.exports.rejectFriendRequest = rejectFriendRequest;
 module.exports.cancelFriendRequest = cancelFriendRequest;
 module.exports.cancelFriendship = cancelFriendship;
-module.exports.findFriends = findFriends;
-// module.exports.getFriends = getFriends;
