@@ -6,18 +6,17 @@
     <div class="row">
         <div ng-show="loaded" class="col-md-6 col-lg-4" ng-repeat="user in userAccounts">
             <!-- Widget: user widget style 1 -->
-            <div class="box box-widget widget-user-2">
+            <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})" >
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-user">
                     <div class="widget-user-image">
-                        <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})" class="img-circle" ng-src="{{user.avatar}}" alt="User Avatar">
+                        <img class="img-circle" ng-src="{{user.avatar}}" alt="User Avatar">
                     </div>
                     <!-- /.widget-user-image -->
-                    <h3 class="widget-user-username"><a style="color: #FFF" href="" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})">{{user.name}}</a></h3>       <!-- {{friend.accountOf.name}}-->
+                    <h3 class="widget-user-username"><a style="color: #FFF" href="">{{user.name}}</a></h3>       <!-- {{friend.accountOf.name}}-->
                     <h5 class="widget-user-desc">{{user.occupation}}</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
                     <h5 class="widget-user-desc">{{user.email}}</h5>
                 </div>
-                <a href="" class="widget-user-footer-moreinfo" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})">More info <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>

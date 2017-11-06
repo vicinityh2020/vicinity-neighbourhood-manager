@@ -6,13 +6,13 @@
   <div class="row" ng-show="loaded">
 
     <div ng-repeat="service in services | custom:isFriend:cid" class="col-md-6 col-lg-4">
-      <div class="box box-widget widget-user-2">
+      <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.serviceProfile({serviceId: service._id})">
         <div style="z-index: -2" class="widget-user-header3 bg-service">
           <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.serviceProfile({serviceId: service._id})" ng-src="{{service.avatar}}" alt="Company Avatar">
+            <img ng-src="{{service.avatar}}" alt="Company Avatar">
           </div>
           <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
-          <h3 class="widget-user-username2"><a style="color: #000" href="" ui-sref="root.main.serviceProfile({serviceId: service._id})">{{service.name}}</a></h3>
+          <h3 class="widget-user-username2"><a style="color: #000" href="">{{service.name}}</a></h3>
           <h5 class="widget-user-desc2">{{service.info.location}}</h5>
           <h5 class="widget-user-desc2">{{service.accessLevelCaption}}</h5>
         </div>
