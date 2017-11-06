@@ -1,11 +1,11 @@
 // Global objects and variables ================================
 
 var mongoose = require('mongoose');
-var itemOp = require('../../models/vicinityManager').item;
-var userAccountOp = require('../../models/vicinityManager').userAccount;
-var logger = require("../../middlewares/logger");
-var commServer = require('../../helpers/commServer/request');
-var mySql = require('../../helpers/mySql/sendQuery');
+var itemOp = require('../models/vicinityManager').item;
+var userAccountOp = require('../models/vicinityManager').userAccount;
+var logger = require("../middlewares/logger");
+var commServer = require('../helpers/commServer/request');
+var mySql = require('../helpers/mySql/sendQuery');
 
 // Public functions ================================
 
@@ -205,6 +205,9 @@ function clasify(lvl){
             break;
         case 8:
             caption = "public";
+            break;
+        default:
+            caption = "private";
     }
     return caption;
 }
@@ -214,8 +217,6 @@ Find how to resolve the accessLevel change in the device
 Based on old and new accessLevel captions
 */
 function findCase(oldA, newA, updates){
-  //logger.debug(oldA);
-  //logger.debug(newA);
   if(oldA === "public" && newA === "private"){
     commServer.callCommServer({}, 'users/' + updates.oid + '/groups/' + 'publicDevices', 'DELETE');
 
@@ -306,12 +307,10 @@ function removeHasAccess(id){
                   for(var i = 0; i < device.hasAccess.length; i++){
                     var flag = 0;
                     flag = friends.indexOf(device.hasAccess[i].toString());
-                    logger.debug(flag);
                     if(flag === -1){
                       notFriends.push(device.hasAccess[i]);
                     }
                   }
-                  logger.debug(notFriends);
                   if(notFriends.length > 0){
                     processCommServerManyOrgs(cid, notFriends, id, 'DELETE');
                   }

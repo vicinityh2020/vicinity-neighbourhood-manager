@@ -3,7 +3,7 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var commServer = require('../../helpers/commServer/request');
-var commServerSharing = require('../../helpers/commServer/sharingRules');
+var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
 
@@ -56,7 +56,7 @@ function itemUpdate(uid,updates,res){
       logger.debug("Start update of accessLevel and item activation/deactivation...");
     }
     itemOp.findOneAndUpdate({ _id : uid}, {$set: query }, function(err, raw){
-      commServerSharing.changePrivacy(updates);
+      sharingRules.changePrivacy(updates);
       res.json({"error": err, "message": raw});
       logger.debug("Item update process ended successfully...");
       }

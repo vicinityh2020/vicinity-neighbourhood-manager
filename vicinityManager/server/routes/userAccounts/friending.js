@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var itemAPI = require('../items/put');
 var notificationAPI = require('../../routes/notifications/notifications');             //my_id should be .cid everywhere
 var logger = require("../../middlewares/logger");
-var commServer = require('../../helpers/commServer/sharingRules');
+var sharingRules = require('../../helpers/sharingRules');
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
 var itemOp = require('../../models/vicinityManager').item;
@@ -104,7 +104,7 @@ function acceptFriendRequest(req, res, next) {
                     }
                 }
 
-                commServer.newFriend(my_id, friend_id); // Adds all my items flagged for friends to my friend foreign group and viceversa
+                sharingRules.newFriend(my_id, friend_id); // Adds all my items flagged for friends to my friend foreign group and viceversa
 
                 // notificationAPI.markAsRead(friend_id, my_id, "friendRequest");
 
@@ -289,7 +289,7 @@ function cancelFriendship(req, res, next){
                     }
                 }
 
-                commServer.removeFriend(my_id, friend_id);  // Removes all my items from my friend foreign group and viceversa
+                sharingRules.removeFriend(my_id, friend_id);  // Removes all my items from my friend foreign group and viceversa
 
                 notificationAPI.deleteNot(my_id, friend_id, 'friendRequest', 'accepted');
                 notificationAPI.deleteNot(friend_id, my_id, 'friendRequest', 'accepted');

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
-var commServer = require('../../helpers/commServer/sharingRules');
+var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
 var notificationOp = require('../../models/vicinityManager').notification;
@@ -32,7 +32,7 @@ function acceptItemRequest(req, res, next) {
                     // }
                 }
 
-                commServer.acceptUserRequest(device.oid, activeCompany_id, friend_id);
+                sharingRules.acceptUserRequest(device.oid, activeCompany_id, friend_id);
                 //notificationAPI.changeStatusToResponded(friend_id, activeCompany_id,+  'deviceRequest','waiting');
                 notificationAPI.markAsRead(friend_id, activeCompany_id, 'deviceRequest','waiting');
 

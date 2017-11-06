@@ -10,7 +10,7 @@ var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var delUser = require('../../helpers/users/deleteUsers');
-var  myNode = require('../../helpers/nodes/processNode');
+var myNode = require('../../helpers/nodes/processNode');
 
 
 // Public functions
