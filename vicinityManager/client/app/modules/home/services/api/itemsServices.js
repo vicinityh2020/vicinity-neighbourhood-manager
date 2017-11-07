@@ -4,6 +4,9 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
 
   var itemsAPI = {};
 
+  /*
+  Process/change/request access to items
+  */
   itemsAPI.processItemAccess = function(id) {
     return $http.put(configuration.apiUrl +'/items/' + id + '/access');
   };
@@ -24,22 +27,24 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
     return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancel');
   };
 
-  itemsAPI.getItemWithAdd = function(id){
-    return $http.get(configuration.apiUrl +'/items/' + id );
-  };
-
+  /*
+  Modify item
+  Delete item
+  Get one item
+  Get my items (Organisation items) - Offline filter in org profile to remove what I should not see
+  TODO: Filter out what I cannot see in backEnd (getMyItems)
+  Get all items I can see, based on restrictive filter (0 most to 7 less restrictive)
+  */
   itemsAPI.putOne = function(id, data) {
     return $http.put(configuration.apiUrl +'/items/' + id, data);
   };
 
-  // TODO test purpuses, remove in final versions
-  // itemsAPI.postBulk = function(data) {
-  //   return $http.delete(configuration.apiUrl +'/commServer/deleteAgent/' + data);
-  // };
-
-  // TODO test purpuses, remove in final versions
   itemsAPI.deleteItem = function(id) {
     return $http.delete(configuration.apiUrl + '/items/' + id);
+  };
+
+  itemsAPI.getItemWithAdd = function(id){
+    return $http.get(configuration.apiUrl +'/items/' + id );
   };
 
   itemsAPI.getMyItems = function(id, filter, offset) {

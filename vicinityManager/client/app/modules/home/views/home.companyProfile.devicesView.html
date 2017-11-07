@@ -6,7 +6,7 @@
   <div class="row" ng-show="loaded">
 
     <div ng-repeat="device in devices | custom:isFriend:cid" class="col-md-6 col-lg-4">
-      <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device._id})"> 
+      <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device._id})">
         <div style="z-index: -2" class="widget-user-header2 bg-yellow">
           <div class="round">
             <img ng-src="{{device.avatar}}" alt="Company Avatar">

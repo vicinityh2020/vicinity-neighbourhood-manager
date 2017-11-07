@@ -7,6 +7,24 @@ Filters the items based on the following rules:
   . are flagged as public
   . if I am partner of the company, also items flagged for friends
 */
+.filter('custom',
+ function() {
+  return function(input, isFriend, cid) {
+
+    var out = [];
+    var keyword = new RegExp(cid);
+
+    angular.forEach(input,
+      function(service) {
+      var keyLevel = new RegExp(service.accessLevel);
+       if (keyword.test(service.hasAdministrator[0]._id) || keyLevel.test("5678") || (keyLevel.test("234") && isFriend) ) {
+          out.push(service);
+       }
+      }
+    );
+    return out;
+  };
+})
 .controller('cPservicesController',
 function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
 
@@ -19,7 +37,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAP
   $scope.isFriend = false;
   $scope.loaded = false;
 
-  itemsAPIService.getMyItems($stateParams.companyAccountId,'service')
+  itemsAPIService.getMyItems($stateParams.companyAccountId,'service', $scope.cid)
     .then(successCallback1, errorCallback)
     .then(successCallback2, errorCallback);
 
