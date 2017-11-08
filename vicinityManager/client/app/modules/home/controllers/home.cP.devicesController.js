@@ -8,35 +8,44 @@ Filters the items based on the following rules:
   . if I am partner of the company, also items flagged for friends
 */
 .controller('cPdevicesController',
-function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
+function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
-  $scope.cid = $window.sessionStorage.companyAccountId.toString();
+  $scope.cid = $window.sessionStorage.companyAccountId;
   $scope.devices = [];
-  $scope.friends = [];
-  $scope.isFriend = false;
+  $scope.allItemsLoaded = false;
+  $scope.loadedPage = false;
   $scope.loaded = false;
+  $scope.offset = 0;
 
-  itemsAPIService.getMyItems($stateParams.companyAccountId,'device')
-    .then(successCallback1, errorCallback)
-    .then(successCallback2, errorCallback);
-
-  function successCallback1(response) {
-    $scope.devices = response.data.message;
-    return userAccountAPIService.getUserAccounts($stateParams.companyAccountId, 1);
+  function init(){
+    itemsAPIService.getMyItems($stateParams.companyAccountId,'device', $scope.offset, $scope.cid)
+      .then(successCallback, errorCallback);
   }
 
-  function successCallback2(response) {
-   $scope.friends = response.data.message;
-   for (var fr in $scope.friends){
-       if ($scope.friends[fr]._id.toString()===$window.sessionStorage.companyAccountId.toString()){
-         $scope.isFriend = true;
-       }
-     }
-     $scope.loaded = true;
-   }
+  init();
+
+  // Trigers load of more items
+
+  $scope.loadMore = function(){
+      $scope.loaded = false;
+      $scope.offset += 12;
+      init();
+  };
+
+  // Callbacks
+
+  function successCallback(response) {
+    for(var i = 0; i < response.data.message.length; i++){
+        $scope.devices.push(response.data.message[i]);
+    }
+    $scope.noItems = ($scope.devices.length === 0);
+    $scope.allItemsLoaded = response.data.message.length < 12;
+    $scope.loaded = true;
+    $scope.loadedPage = true;
+  }
 
   function errorCallback(err){
     Notification.error("Problem retrieving devices: " + err);

@@ -60,25 +60,25 @@ function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $
 
   // TODO Check exact function of below
 
-      var promise = {};
-
-      // When the DOM element is removed from the page,
-      // AngularJS will trigger the $destroy event on
-      // the scope. Here we cancel our promise.
-      $scope.$on('$destroy', function(){
-          $timeout.cancel(promise);
-      });
-
-      // Refresh scope data every 5 sec
-        $scope.intervalFunction = function(){
-          promise = $timeout(function() {
-            $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
-            $scope.myInit();
-            $scope.intervalFunction();
-          }, 5000);
-        };
-
-        $scope.intervalFunction();
+      // var promise = {};
+      //
+      // // When the DOM element is removed from the page,
+      // // AngularJS will trigger the $destroy event on
+      // // the scope. Here we cancel our promise.
+      // $scope.$on('$destroy', function(){
+      //     $timeout.cancel(promise);
+      // });
+      //
+      // // Refresh scope data every 5 sec
+      //   $scope.intervalFunction = function(){
+      //     promise = $timeout(function() {
+      //       $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
+      //       $scope.myInit();
+      //       $scope.intervalFunction();
+      //     }, 5000);
+      //   };
+      //
+      //   $scope.intervalFunction();
 
 // Get resources & data ================
 $scope.myInit = function(){

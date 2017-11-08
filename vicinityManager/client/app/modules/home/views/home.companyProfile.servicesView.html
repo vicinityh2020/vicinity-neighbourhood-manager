@@ -5,7 +5,7 @@
 <div class="active tab-pane" id="activity" >
   <div class="row" ng-show="loaded">
 
-    <div ng-repeat="service in services | custom:isFriend:cid" class="col-md-6 col-lg-4">
+    <div ng-repeat="service in services" class="col-md-6 col-lg-4">
       <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.serviceProfile({serviceId: service._id})">
         <div style="z-index: -2" class="widget-user-header3 bg-service">
           <div class="round">
@@ -19,4 +19,16 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="centered" ng-show="!allItemsLoaded && loaded">
+  <h3 ng-click="loadMore()" class="well" style="cursor: pointer">Load more items</h3>
+</div>
+
+<div class="centered" ng-show="allItemsLoaded && !noItems">
+  <h3 class="well">All items loaded!</h3>
+</div>
+
+<div class="centered" ng-show="noItems" >
+   <h3 class="well">No items found...</h3>
 </div>

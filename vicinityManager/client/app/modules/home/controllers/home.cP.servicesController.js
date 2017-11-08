@@ -7,57 +7,48 @@ Filters the items based on the following rules:
   . are flagged as public
   . if I am partner of the company, also items flagged for friends
 */
-.filter('custom',
- function() {
-  return function(input, isFriend, cid) {
-
-    var out = [];
-    var keyword = new RegExp(cid);
-
-    angular.forEach(input,
-      function(service) {
-      var keyLevel = new RegExp(service.accessLevel);
-       if (keyword.test(service.hasAdministrator[0]._id) || keyLevel.test("5678") || (keyLevel.test("234") && isFriend) ) {
-          out.push(service);
-       }
-      }
-    );
-    return out;
-  };
-})
 .controller('cPservicesController',
-function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification, customFilter) {
+function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
-  $scope.cid = $window.sessionStorage.companyAccountId.toString();
+  $scope.cid = $window.sessionStorage.companyAccountId;
   $scope.services = [];
-  $scope.friends = [];
-  $scope.isFriend = false;
+  $scope.allItemsLoaded = false;
+  $scope.loadedPage = false;
   $scope.loaded = false;
+  $scope.offset = 0;
 
-  itemsAPIService.getMyItems($stateParams.companyAccountId,'service', $scope.cid)
-    .then(successCallback1, errorCallback)
-    .then(successCallback2, errorCallback);
-
-  function successCallback1(response) {
-    $scope.services = response.data.message;
-    return userAccountAPIService.getUserAccounts($stateParams.companyAccountId, 1);
+  function init(){
+    itemsAPIService.getMyItems($stateParams.companyAccountId,'service', $scope.offset, $scope.cid)
+      .then(successCallback, errorCallback);
   }
 
-  function successCallback2(response) {
-   $scope.friends = response.data.message;
-   for (var fr in $scope.friends){
-       if ($scope.friends[fr]._id.toString()===$window.sessionStorage.companyAccountId.toString()){
-         $scope.isFriend = true;
-       }
-     }
-     $scope.loaded = true;
-   }
+  init();
+
+  // Trigers load of more items
+
+  $scope.loadMore = function(){
+      $scope.loaded = false;
+      $scope.offset += 12;
+      init();
+  };
+
+  // Callbacks
+
+  function successCallback(response) {
+    for(var i = 0; i < response.data.message.length; i++){
+        $scope.services.push(response.data.message[i]);
+    }
+    $scope.noItems = ($scope.services.length === 0);
+    $scope.allItemsLoaded = response.data.message.length < 12;
+    $scope.loaded = true;
+    $scope.loadedPage = true;
+  }
 
   function errorCallback(err){
-    Notification.error("Problem retrieving devices: " + err);
+    Notification.error("Problem retrieving services: " + err);
   }
 
 });

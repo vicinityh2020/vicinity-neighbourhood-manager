@@ -24,22 +24,33 @@ function getMyItems(req, res) {
   var o_id = mongoose.Types.ObjectId(req.params.cid);
   var type = req.query.type;
   var offset = req.query.offset;
+  var cid = mongoose.Types.ObjectId(req.query.cid);
+  var query;
 
-  var query = {
-                typeOfItem: type,
-                hasAdministrator: o_id
-              };
+  userAccountOp.find({_id: o_id}, {knows: 1})
+  .then(function(response){
 
-  itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
-    var dataWithAdditional = itemProperties.getAdditional(data,o_id,[]); // Not necessary to know friends because I am always owner
-    if (err) {
-      logger.debug('error','Find Items Error: ' + err.message);
-      response =  {"error": true, "message": "Error fetching data"};
+    if(o_id.toString() === cid.toString()){ // Need to compare strings instead of BSON
+      query = { typeOfItem: type, hasAdministrator: o_id, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
     } else {
-      response = {"error": false, "message": dataWithAdditional};
+      if(response[0].knows.indexOf(cid) !== -1) {
+        query = { typeOfItem: type, hasAdministrator: o_id, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
+      } else {
+        query = { typeOfItem: type, hasAdministrator: o_id, accessLevel: { $gt:4 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
+      }
     }
-    res.json(response);
-  });
+
+    itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
+      var dataWithAdditional = itemProperties.getAdditional(data,o_id,[]); // Not necessary to know friends because I am always owner
+      if (err) {
+        logger.debug('error','Find Items Error: ' + err.message);
+        res.json({"error": true, "message": "Error fetching data"});
+      } else {
+        res.json({"error": false, "message": dataWithAdditional});
+      }
+    });
+  })
+  .catch(function(err){res.json({"error": true, "message": err});} );
 }
 
 /*
@@ -56,7 +67,7 @@ function getAllItems(req, res) {
   var offset = req.query.offset;
   var filterNumber = req.query.filterNumber;
 
-  userAccountOp.find({_id: o_id}, function(err, data){
+  userAccountOp.find({_id: o_id}, {knows: 1}, function(err, data){
     if (err){
       logger.debug('error','UserAccount Items Error: ' + err.message);
     }
