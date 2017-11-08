@@ -55,7 +55,33 @@ function getTypes(typeOfItem){
   return request({
     method : "POST",
     headers: head,
-    uri: config.semanticRepoUrl,
+    uri: config.semanticRepoUrl + "sparql/",
+    body: payload
+    // simple: true
+  });
+
+}
+
+/*
+Semantic Repository static call
+When invoked retrieves all available types of devices or services
+The headers are preconfigured
+*/
+function registerItem(td){
+
+  var head = {
+    // 'authorization' : config.commServerToken,
+    'Content-Type' : 'application/json',
+    'Accept' : 'application/json',
+    'simple': false
+  };
+
+  payload = JSON.stringify(td);
+
+  return request({
+    method : "POST",
+    headers: head,
+    uri: config.semanticRepoUrl + "register/",
     body: payload
     // simple: true
   });
@@ -65,3 +91,4 @@ function getTypes(typeOfItem){
 // Export functions
 module.exports.callSemanticRepo = callSemanticRepo;
 module.exports.getTypes = getTypes;
+module.exports.registerItem = registerItem;

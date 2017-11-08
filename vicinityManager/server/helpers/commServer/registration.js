@@ -63,7 +63,7 @@ function postRegistration(req, res, next){
                     .then(function(response){ return deviceActivityNotif(cid); })
                     .then(function(response){
                                             res.json({"status": 200, "message": allresult});
-                                              console.timeEnd("ALL REGISTRATION EXECUTION");
+                                            console.timeEnd("ALL REGISTRATION EXECUTION");
                                             })
                     .catch(function(err){ res.json({"error": true, "message" : "Error in final steps: " + err}); });
                   }
@@ -92,6 +92,7 @@ function saveDocuments(objects, otherParams, callback){
   if(obj.typeOfItem === "unknown") {
     callback("No OID", "Unknown type...");
   } else {
+    // Adding important fields for Vicinity
     obj.adid = otherParams.adid;
     obj.name = objects.name; // Name in commServer
     obj.hasAdministrator = otherParams.cid; // CID, obtained from mongo
@@ -99,18 +100,25 @@ function saveDocuments(objects, otherParams, callback){
     obj.avatar = config.avatarItem; // Default avatar provided by VCNT
     obj.status = 'disabled';
     if(!objects.credentials && !objects.oid){ // Create a new instance in Mongo
-      obj.info = objects; // Thing description obj, might have different structures each time
-      oidExist(uuid()). // Username in commServer
-      then(function(response){
+      oidExist(uuid()) // Username in commServer & semanticRepo
+      .then(function(response){
         obj.oid = response;
-        obj.info.oid = response;
-        createInstance(new itemOp(obj), callback);
-      }).
-      catch(function(err){callback(obj.oid, "Error finding unique ID: " + err);}
-      );
+        objects.oid = response;
+        objects.uuid = response;
+        return semanticRepo.registerItem(objects); }) // Register TD in semantic repository
+      .then(function(response){
+        var repoAnswer = JSON.parse(response);
+        if(!(repoAnswer.data.hasOwnProperty('errors'))) {
+          obj.info = JSON.parse(response).data.lifting; // Thing description obj, stores response from semanticRepo
+          createInstance(new itemOp(obj), callback);
+        } else { // If lifting ends with error ...
+          callback(obj.oid, "Error semantic repository: " + repoAnswer.data.errors);
+        }
+      })
+      .catch(function(err){callback(obj.oid, "Error: " + err); });
       //createInstance(obj, callback)
     } else { // if the TD contains an OID, then we need to update the instance in Mongo (not create a new one)
-      callback("Null", "Already registered OID or wrong TD schema...");
+      callback("Null", "Update service disabled, you cannot register TDs with OID");
       // obj.oid = objects.credentials.oid;
       // var pass = objects.credentials.password;
       // delete(objects.credentials);
@@ -128,7 +136,7 @@ function createInstance(obj, callback){
   obj.save(
     function(err, response){
       if(err){
-        callback(obj.oid, "Error Mongo: " + err);
+        callback(obj.oid, "Error Mongo Creating Instance: " + err);
       } else {
         callback(obj.oid, "Success");
       }
