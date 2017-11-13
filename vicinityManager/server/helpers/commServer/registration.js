@@ -110,10 +110,10 @@ function saveDocuments(objects, otherParams, callback){
           logger.debug("Item " + obj.name + " was not saved...");
           callback(obj.oid, "error mongo" + err);
         } else {
-          callback(obj.oid, "success");
-          // commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
-          // .then(function(response){ callback(obj.oid, "Success"); })
-          // .catch(function(err){ callback(obj.oid, err); });
+          // callback(obj.oid, "success");
+          commServerProcess(obj.oid, otherParams.adid, obj.name, obj.oid, otherParams.cid)
+          .then(function(response){ callback(obj.oid, "Success"); })
+          .catch(function(err){ callback(obj.oid, err); });
         }
       }
     );
@@ -125,33 +125,33 @@ Creates user in commServer
 Adds user to company and agent groups
 If the oid exists in the commServer is deleted and created anew
 */
-// function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
-//   var payload = {
-//     username : docOid,
-//     name: docName,
-//     password: docPassword,
-//     };
-//     return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
-//       .then(
-//         function(response){
-//           return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
-//           .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
-//           .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
-//           .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
-//           .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
-//         },
-//         function(err){
-//           if(err.statusCode !== 404){
-//             return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); // return rejected promise because we got a non controlled error
-//           } else {
-//             return commServer.callCommServer(payload, 'users', 'POST')
-//             .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
-//             .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
-//             .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
-//           }
-//         }
-//       );
-//     }
+function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
+  var payload = {
+    username : docOid,
+    name: docName,
+    password: docPassword,
+    };
+    return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
+      .then(
+        function(response){
+          return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
+          .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
+          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+          .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+          .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+        },
+        function(err){
+          if(err.statusCode !== 404){
+            return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); // return rejected promise because we got a non controlled error
+          } else {
+            return commServer.callCommServer(payload, 'users', 'POST')
+            .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
+            .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
+            .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+          }
+        }
+      );
+    }
 
 /*
 Adds all new oids to the node hasItems
