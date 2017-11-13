@@ -6,7 +6,9 @@ var itemOp = require('../../models/vicinityManager').item;
 var nodeOp = require('../../models/vicinityManager').node;
 var logger = require('../../middlewares/logger');
 var commServer = require('../../helpers/commServer/request');
+var semanticRepo = require('../../helpers/semanticRepo/request');
 var sync = require('../../helpers/asyncHandler/sync');
+
 
 // Public functions
 
@@ -66,8 +68,9 @@ function deleting(oid, callback){
             callback(oid, "error mongo" + err);
           } else {
             commServer.callCommServer({}, 'users/' + oid, 'DELETE')
+            .then(function(response){return semanticRepo.removeItem(oid);})
             .then(function(ans){callback(oid, "Success");})
-            .catch(function(err){callback(oid, 'error commServer: ' + err);});
+            .catch(function(err){callback(oid, 'Error: ' + err);});
           }
         });
       }
