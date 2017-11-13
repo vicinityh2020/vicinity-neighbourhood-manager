@@ -88,7 +88,31 @@ function registerItem(td){
 
 }
 
+/*
+Semantic Repository static call
+When invoked removes one item - oid passed as parameter
+The headers are preconfigured
+*/
+function removeItem(oid){
+
+  var head = {
+    // 'authorization' : config.commServerToken,
+    'Content-Type' : 'application/json',
+    'Accept' : 'application/json',
+    'simple': false
+  };
+
+  return request({
+    method : "DELETE",
+    headers: head,
+    uri: config.semanticRepoUrl + "remove/" + oid
+    // simple: true
+  });
+
+}
+
 // Export functions
 module.exports.callSemanticRepo = callSemanticRepo;
 module.exports.getTypes = getTypes;
 module.exports.registerItem = registerItem;
+module.exports.removeItem = removeItem;
