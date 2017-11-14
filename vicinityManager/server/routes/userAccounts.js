@@ -33,13 +33,6 @@ router
   .delete('/:id/friendship', friending.cancelFriendship)
 
   /*
-    Deal with userAccount notifications
-  */
-  .get('/:id/notifications', notifications.getNotificationsOfUser)
-
-  .get('/:id/readNotifications', notifications.getNotificationsOfUserRead)
-
-  /*
     Deal with userAccount configuration
   */
   .get('/:id/configuration', configuration.get)
