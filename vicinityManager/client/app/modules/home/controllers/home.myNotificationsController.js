@@ -22,7 +22,7 @@ angular.module('VicinityManagerApp.controllers').
   $scope.myOrderBy = 'date';
   $scope.notifs = [];
   $scope.notifs2 = [];
-  $scope.TempNotifs = [];
+  $scope.tempNotifs = [];
 
 // ====== Checking if user is devOps =============
 $scope.isDev = false;
