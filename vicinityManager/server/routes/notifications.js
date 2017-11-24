@@ -9,6 +9,6 @@ router
   .get('/:id/allUserNotifications', notifications.getAllUserNotifications)
   .get('/allRegistrations', notifications.getAllRegistrations)
   .put('/:id/changeIsUnreadToFalse', notifications.changeIsUnreadToFalse)
-  .put('/:id/:status/changeStatusToResponded', notifications.changeToResponded);
+  .put('/:id/changeStatusToResponded', notifications.changeToResponded);
 
 module.exports = router;

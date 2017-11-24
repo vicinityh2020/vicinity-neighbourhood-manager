@@ -117,8 +117,8 @@ var notification = new Schema({
     itemId: { type: ObjectId, ref: 'item' },
     userId: { type: ObjectId, ref: 'user' },
     isUnread: { type: Boolean, default: true },
-    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded']},
-    type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 24, 31, 32, 33, 34]},
+    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded'], required: true},
+    type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 24, 31, 32, 33, 34, 35, 36], required: true}
     /*
     1 - registrationRequest - toAnswer
     11 - itemEnabled - info
@@ -132,9 +132,10 @@ var notification = new Schema({
     32 - partnershipCancelled - info
     33 - partnershipRejected - info
     34 - partnershipAccepted - info
+    35 - partnershipRequested - info
+    36 - partnershipRequestCancelled - info
     ...
     */
-    dateCreated: { type: Date, default: Date.now }
 });
 
 var remember = new Schema({
@@ -168,14 +169,7 @@ node.set('toJSON',{ getters: true, virtuals: false });
 // were not specified in our schema do not get saved to the db
 // Set to true by default
 // userAccount.set('strict',true);
-// user.set('strict',true);
-// item.set('strict',false);
-// notification.set('strict',true);
-// invitation.set('strict',true);
-// registration.set('strict',true);
-// remember.set('strict',true);
-// node.set('strict',true);
-
+// ...
 
 // Indexes to perform text search =======================
 
@@ -183,7 +177,6 @@ node.set('toJSON',{ getters: true, virtuals: false });
 userAccount.index({organisation: 'text'});
 user.index({name: 'text'});
 item.index({name: 'text'}); */
-
 
 // Indexes for common field searchUser  =================
 // TODO set the index as unique once server side is prepared

@@ -79,7 +79,6 @@ function deviceActivityNotif(did,cid,state, typ){
   dbNotif.itemId = did;
   dbNotif.type = typ;
   dbNotif.status = "info";
-  dbNotif.isUnread = true;
   return dbNotif.save(
     function(err,data){
       if(err){

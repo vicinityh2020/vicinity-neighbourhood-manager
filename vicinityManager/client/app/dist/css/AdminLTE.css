@@ -948,7 +948,7 @@ a:focus {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
   background-color: #ffffff;
-  padding: 7px 10px;
+  /*padding: 7px 10px;*/
   border-bottom: 1px solid #f4f4f4;
   color: #444444;
   font-size: 14px;
@@ -962,7 +962,7 @@ a:focus {
   border-bottom-left-radius: 4px;
   font-size: 12px;
   background-color: #fff;
-  padding: 7px 10px;
+  /*padding: 7px 10px;*/
   border-bottom: 1px solid #eeeeee;
   color: #444!important;
   text-align: center;
@@ -1009,7 +1009,7 @@ a:focus {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 10px;
+  /*padding: 10px;*/
 }
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .glyphicon,
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .fa,

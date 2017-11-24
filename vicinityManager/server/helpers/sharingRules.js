@@ -6,6 +6,7 @@ var userAccountOp = require('../models/vicinityManager').userAccount;
 var logger = require("../middlewares/logger");
 var commServer = require('../helpers/commServer/request');
 var mySql = require('../helpers/mySql/sendQuery');
+var notificationAPI = require('../routes/notifications/notifications');
 
 // Public functions ================================
 
@@ -270,18 +271,18 @@ function findCase(oldA, newA, updates){
 /*
 When a device leaves the state 'underRequest', it needs to clean the buffer of orgs which requested
 access or has granted access. Both arrays are reset to null [].
+Clears open access rqst notifications
 */
 function removeHasAccess(id){
-  itemOp.find({oid:id},
+  itemOp.findOne({oid:id},
     function (err, data) {
       if (err || data === null) {
           response = {"error": true, "message": "Processing data failed!"};
       } else {
-          if (data.length === 1) {
-              var device = data[0];
-              device.accessRequestFrom = device.hasAccess = [];
-              device.save();
-            }
+            var device = data;
+            device.accessRequestFrom = device.hasAccess = [];
+            notificationAPI.changeNotificationStatus("" ,"" , 21, {itemId: data._id});
+            device.save();
           }
         }
       );
@@ -332,41 +333,43 @@ function removeHasAccess(id){
     function clearOldFriendIds(adminId, friendId){
         itemOp.find({ hasAdministrator: {$in : [adminId]}, accessRequestFrom: {$in : [friendId]}, accessLevel: {$in : [3, 4, 7]}},function(err, data){
             var dev = {};
-            var index;
-            for (index in data){
-              dev = data[index];
-
-              for (var index2 = dev.accessRequestFrom.length - 1; index >= 0; index --) {
-                  if (dev.accessRequestFrom[index2].toString() === friendId.toString()) {
-                      dev.accessRequestFrom.splice(index2, 1);
-                  }
-              }
+            var i;
+            for (i in data){
+              dev = data[i];
+              dev.accessRequestFrom = findAndRemove(dev.accessRequestFrom, friendId);
               dev.save();
             }
         });
         itemOp.find({ hasAdministrator: {$in : [adminId]}, hasAccess: {$in : [friendId]}, accessLevel: {$in : [3, 4, 7]}},function(err, data){
             var dev = {};
-            var index;
-            for (index in data){
-              dev = data[index];
-              var index2;
-              for (index2 = dev.hasAccess.length - 1; index >= 0; index --) {
-                  if (dev.hasAccess[index2].toString() === friendId.toString()) {
-                      dev.hasAccess.splice(index2, 1);
-                  }
-              }
+            var i;
+            for (i in data){
+              dev = data[i];
+              dev.hasAccess = findAndRemove(dev.hasAccess, friendId);
               dev.save();
             }
           }
         );
       }
 
-/*
-Handles errors
-*/
-function callbackError(err){
-  logger.debug("We could not process sharing rules: " + err);
-}
+  /*
+  Remove matching values in array
+  */
+  var findAndRemove = function(array, value){
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].toString() === value.toString()) {
+            array.splice(i, 1);
+        }
+      }
+      return array;
+    };
+
+  /*
+  Handles errors
+  */
+  function callbackError(err){
+    logger.debug("We could not process sharing rules: " + err);
+  }
 
 // Function exports ================================
 

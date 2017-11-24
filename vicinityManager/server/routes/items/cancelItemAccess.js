@@ -6,49 +6,50 @@ var notificationOp = require('../../models/vicinityManager').notification;
 
 function cancelItemAccess(req, res, next){
 
-    dev_id = mongoose.Types.ObjectId(req.params.id);
-    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-    var device = {};
-    var response = {};
+  dev_id = mongoose.Types.ObjectId(req.params.id);
+  my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+  var device = {};
+  var response = {};
 
-    itemOp.find({_id: dev_id}, function (err, data) {
+  itemOp.findOne({_id: dev_id}, function (err, device) {
 
-        if (err || data === null) {
-            response = {"error": true, "message": "Processing data failed!"};
-        } else {
-            if (data.length == 1) {
+      if (err || device === null) {
+          res.json({"error": true, "message": "Processing data failed!"});
+      } else {
 
-                var device = data[0];
+        device.hasAccess = findAndRemove(device.hasAccess, my_id); // Remove my access from the obj
 
-                for (var index = device.hasAccess.length - 1; index >= 0; index --) {
-                  if(device.hasAccess[index] && activeCompany_id){
-                    if (device.hasAccess[index].toString() === activeCompany_id.toString()) {
-                        device.hasAccess.splice(index, 1);
-                    }
-                  }
-                }
+        sharingRules.cancelItemAccess(device.oid, device.hasAdministrator[0], my_id);
 
-                commServer.cancelItemAccess(device.oid, device.hasAdministrator[0], activeCompany_id);
+        var notification = new notificationOp();
 
-                var notification = new notificationOp();
+        notification.addressedTo.push(my_id);
+        notification.sentBy = my_id;
+        notification.type = 23;
+        notification.status = 'info';
+        notification.itemId = dev_id;
+        notification.isUnread = true;
+        notification.save();
 
-                notification.addressedTo.push(activeCompany_id);
-                notification.sentBy = activeCompany_id;
-                notification.type = 23;
-                notification.status = 'info';
-                notification.itemId = dev_id;
-                notification.isUnread = true;
-                notification.save();
+        device.save();
 
-                device.save();
-
-                response = {"error": false, "message": data};
-            } else {
-                response = {"error": true, "message": "Processing data failed!"};
-            }
-        }
-
-        res.json(response);
-    });
+        res.json({"error": false, "message": device});
+    }
+  });
 }
+
+/*
+Private Functions
+*/
+
+var findAndRemove = function(array, value){
+  for (var i = 0; i < array.length; i++) {
+      if (array[i].toString() === value.toString()) {
+          array.splice(i, 1);
+      }
+    }
+    return array;
+  };
+
+// Export functions
 module.exports.cancelItemAccess = cancelItemAccess;

@@ -158,8 +158,8 @@ span.ciara {
     height: 3px;
     margin-right: 10px;
     margin-left: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     /*background:#3c8dbc;
     border-bottom:1px solid #3c8dbc;*/
 }
@@ -174,25 +174,21 @@ img.imgNotif{
   height: 20px;
 }
 
-div.readNot{
+.readNot{
   /*background-color: #d2d6de;*/
   background-color: #eee;
 }
 
-li.notifications-menu ul.menu > li > div {
-  padding: 5px;
 
+
+li.notifications-menu ul.menu > li > div {
+  padding: 4px;
 }
 
 li.notifications-menu ul.menu > li div.notification-avatar {
   float: left;
-  width:30%;
-  margin-bottom: 5%;
-  height: 50px;
   display: inline-block;
   border-radius: 50%;
-  width: 50px;
-  margin-left: 5%;
   margin-left: 5%;
 }
 
@@ -213,26 +209,16 @@ li.notifications-menu ul.menu > li div.notification-description {
   padding-left: 30%;
   white-space: pre-line;
   word-wrap: break-word;
-  /*-ms-word-break: break-all;*/
-  /*word-break: break-all;*/
-  /*padding-top: 10px;*/
-  /*padding-left: 5px;*/
-  /*padding-right: 5px;*/
-  /*padding-bottom: 5px;*/
-  /*margin-bottom: 5%;*/
 }
 
 li.notifications-menu ul.menu > li div.notification-description p {
   padding-top: 0px;
-  margin-top: 0%;
+  margin-top: 0px;
 }
 
 li.notifications-menu ul.menu > li div.notification-actions {
   padding-left: 30%;
   clear: left;
-  /*margin-top: 0px;
-  padding-top: 5%;
-  padding-bottom: 5%;*/
 }
 
 li.notifications-menu ul.menu > li div.notification-actions button {

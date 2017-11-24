@@ -14,11 +14,11 @@
 
       <!-- Unread notifications -->
 
-      <li ng-repeat="notif in notifs" ng-show="notif.isUnread" ng-click="changeIsUnread(notif._id)">
+      <li ng-repeat="notif in notifs" ng-show="notif.isUnread">
 
-        <!-- <span class="ciara" ng-class="bckColor"></span> -->
+        <span class="ciara" ng-class="bckColor"></span>
 
-        <div class="row">
+        <div class="row" ng-click="changeIsUnread(notif._id)">
 
           <!-- Avatar -->
           <div class="notification-avatar">
@@ -31,7 +31,7 @@
             <a ng-show="[11, 12, 22, 23, 24].lastIndexOf(notif.type) !== -1" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})">
              <img ng-src="{{notif.itemId.avatar}}" alt="Device Avatar">
             </a>
-            <a ng-show="[31, 32, 33, 34].lastIndexOf(notif.type) !== -1" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
+            <a ng-show="[31, 32, 33, 34, 35].lastIndexOf(notif.type) !== -1" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
               <img ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
             </a>
             <a ng-show="notif.type === 13">
@@ -41,17 +41,18 @@
 
           <!-- Descriptions -->
             <p ng-show="notif.type === 1">You have received a registration request from:<a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})">{{notif.sentByReg.companyName}}</a></p>
-            <p ng-show="notif.type === 11">A device has been activated:  <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
-            <p ng-show="notif.type === 12">A device has been deactivated:  <a ng-click="changeIsUnreadAndResponded(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
+            <p ng-show="notif.type === 11">A device has been activated:  <a ng-click="changeIsUnreadToFalse(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
+            <p ng-show="notif.type === 12">A device has been deactivated:  <a ng-click="changeIsUnreadToFalse(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
             <p ng-show="notif.type === 13">You have discovered new device(s) </p>
             <p ng-show="notif.type === 21">You have a device data request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
             <p ng-show="notif.type === 22">Your data access to device <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a> has been rejected.</p>
             <p ng-show="notif.type === 23">You have canceled the connection with <a  ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
             <p ng-show="notif.type === 24">You've got data access to device <a  ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
             <p ng-show="notif.type === 31">You have a partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
-            <p ng-show="notif.type === 32">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> was canceled.</p>
+            <p ng-show="notif.type === 32">The partnership between <b>{{notif.addressedTo[0].organisation}}</b> and <b>{{notif.addressedTo[1].organisation}}</b> was cancelled by <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
             <p ng-show="notif.type === 33">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> was rejected.</p>
             <p ng-show="notif.type === 34">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> was accepted.</p>
+            <p ng-show="notif.type === 35">You have requested a partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
 
         <!-- Actions -->
@@ -73,7 +74,7 @@
 
       <li ng-repeat="notif in notifs" ng-show="[1, 21, 31].indexOf(notif.type) !== -1 && (notif.status== 'waiting') && !(notif.isUnread)">
 
-        <!-- <span class="ciara" ng-class="bckColor"></span> -->
+        <span class="ciara" ng-class="bckColor"></span>
 
         <div class="row readNot">
         <!-- Avatar -->

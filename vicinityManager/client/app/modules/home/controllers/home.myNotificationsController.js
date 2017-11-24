@@ -21,7 +21,7 @@ angular.module('VicinityManagerApp.controllers').
   $scope.rev = true;
   $scope.myOrderBy = 'date';
   $scope.notifs = [];
-  $scope.notifs2 = [];
+  $scope.notifsWithDate = [];
   $scope.tempNotifs = [];
 
 // ====== Checking if user is devOps =============
@@ -42,7 +42,7 @@ $scope.period = 'week';
   function init(){
     $scope.loadedPage = false;
     $scope.dates = [];
-    $scope.notifs2 = [];
+    $scope.notifsWithDate = [];
     notificationsAPIService.getAllUserNotifications($window.sessionStorage.companyAccountId, $scope.dateFrom)
     .then(getNotifs, commonHelpers.errorCallback);
   }
@@ -81,7 +81,7 @@ $scope.period = 'week';
             n.timeCaption = n.timestamp.format("hh:mm a");
           }
           t.push(n.timestamp);
-          $scope.notifs2.push(n);
+          $scope.notifsWithDate.push(n);
          }
       );
       t.sort(function(a,b){
@@ -129,44 +129,38 @@ $scope.period = 'week';
 
   $scope.acceptNeighbourRequest = function (notifId, friendId){
     userAccountsHelpers.acceptNeighbourRequest(friendId)
-    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
-    .then(init(), userAccountsHelpers.errorCallback)
+    .then(init, userAccountsHelpers.errorCallback)
     .catch(userAccountsHelpers.errorCallback);
   };
 
   $scope.rejectNeighbourRequest = function(notifId, friendId) {
     userAccountsHelpers.rejectNeighbourRequest(friendId)
-    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
-    .then(init(),userAccountsHelpers.errorCallback)
+    .then(init,userAccountsHelpers.errorCallback)
     .catch(userAccountsHelpers.errorCallback);
   };
 
   $scope.acceptDataRequest = function (dev_id, notifId) {
     itemsHelpers.acceptDataRequest(dev_id, notifId)
-    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
-    .then(init(),itemsHelpers.errorCallback)
+    .then(init,itemsHelpers.errorCallback)
     .catch(itemsHelpers.errorCallback);
   };
 
   $scope.rejectDataRequest = function (dev_id, notifId) {
     itemsHelpers.rejectDataRequest(dev_id, notifId)
-    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), itemsHelpers.errorCallback)
-    .then(init(),itemsHelpers.errorCallback)
+    .then(init,itemsHelpers.errorCallback)
     .catch(itemsHelpers.errorCallback);
   };
 
   $scope.acceptRegistration = function (reg_id, notifId) {
    registrationsHelpers.acceptRegistration(reg_id)
-    .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), registrationsHelpers.errorCallback)
-    .then(init(),registrationsHelpers.errorCallback)
+    .then(init,registrationsHelpers.errorCallback)
     .catch(registrationsHelpers.errorCallback);
   };
 
 
   $scope.rejectRegistration = function (reg_id, notifId) {
     registrationsHelpers.rejectRegistration(reg_id)
-      .then(notificationsAPIService.changeStatusToResponded(notifId,'responded'), registrationsHelpers.errorCallback)
-      .then(init(),registrationsHelpers.errorCallback)
+      .then(init,registrationsHelpers.errorCallback)
       .catch(registrationsHelpers.errorCallback);
   };
 

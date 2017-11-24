@@ -52,7 +52,7 @@
 
               <!-- <i class="fa fa-envelope bg-blue"></i> -->
 
-              <div class="timeline-item" style="max-width:700px; margin-top:10px" ng-repeat="notif in notifs2" ng-if="notif.dateCaption === d">
+              <div class="timeline-item" style="max-width:700px; margin-top:10px" ng-repeat="notif in notifsWithDate" ng-if="notif.dateCaption === d">
 
                 <!-- Clock -->
                 <span class="time" > <i class="fa fa-clock-o"></i> {{notif.timeCaption}}</span>
@@ -73,6 +73,8 @@
                       <span ng-show="notif.type===32"><span class="label label-default paddedSides">Partnership cancelled</span></span>
                       <span ng-show="notif.type===33"><span class="label label-default paddedSides">Partnership rejected</span></span>
                       <span ng-show="notif.type===34"><span class="label label-default paddedSides">Partnership accepted</span></span>
+                      <span ng-show="notif.type===35"><span class="label label-default paddedSides">Partnership request</span></span>
+                      <!-- <span ng-show="notif.type===36"><span class="label label-default paddedSides">Partnership rqst cancelled</span></span> -->
 
                       <!-- Label status -->
                       <span ng-show="notif.status==='waiting'"><span class="label label-warning paddedSides">Waiting</span></span>
@@ -93,8 +95,10 @@
                   <span class="padded" ng-show="[22, 24].lastIndexOf(notif.type) >= 0 && !(notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> responded our request to use <b>{{notif.itemId.name}}</b></span>
                   <span class="padded" ng-show="notif.type === 23"><b>{{notif.sentBy.organisation}}</b> interrupted the connection with <b>{{notif.itemId.name}}</b></span>
                   <span class="padded" ng-show="notif.type === 31 && (notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> wants to partner with you.</span>
+                  <span class="padded" ng-show="notif.type === 32">The partnership between <b>{{notif.addressedTo[0].organisation}}</b> and <b>{{notif.addressedTo[1].organisation}}</b> was cancelled by <b>{{notif.sentBy.organisation}}</b>.</span>
                   <span class="padded" ng-show="[33, 34].lastIndexOf(notif.type) >= 0 && !(notif.status=== 'waiting')"><b>{{notif.sentBy.organisation}}</b> responded our partnership request.<b>{{notif.itemId.name}}</b></span>
-                  <!-- <span class="padded" ng-show="notif.type === 32">You canceled friend request with <b>{{notif.itemId.name}}</b></span> -->
+                  <span class="padded" ng-show="notif.type === 35">You have sent a partnership request to <b>{{notif.sentBy.organisation}}</b>.</span>
+                  <!-- <span class="padded" ng-show="notif.type === 36">Partnership request cancelled.</span> -->
 
                   <span class="ciara" ng-class="bckColor"></span>
 

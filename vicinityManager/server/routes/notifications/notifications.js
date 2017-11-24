@@ -13,7 +13,7 @@ function getNotificationsOfUser(req,res){
 
   var o_id = mongoose.Types.ObjectId(req.params.id);
 
-  notificationOp.find({addressedTo: {$in : [o_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('itemId','avatar name').exec(function(err,data){
+  notificationOp.find({addressedTo: {$in : [o_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('addressedTo','organisation').populate('itemId','avatar name').exec(function(err,data){
       if(err){
         res.json({"error": true, "message": "Error fetching data"});
       } else {
@@ -44,7 +44,7 @@ function getAllUserNotifications(req,res){
   var dateFrom = notifHelper.objectIdWithTimestamp(req.query.searchDate);
 
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('itemId','avatar name').exec(function(err,data){
+  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('addressedTo','organisation').populate('itemId','avatar name').exec(function(err,data){
     if(err){
       res.json({"error": true, "message": "Error fetching data"});
     } else {
@@ -71,77 +71,78 @@ function getAllRegistrations(req,res){
 
 // Functions to manipulate notifications
 function changeToResponded(req,res){
-var response = {};
 var o_id = mongoose.Types.ObjectId(req.params.id);
-var stat = req.params.status;
+var stat = req.query.status;
   notificationOp.findByIdAndUpdate(o_id, { $set: { status: stat, isUnread: false }}, { new: true }, function (err, notif) {
     if (err) {
-      response = {"error": true, "message": "Error fetching data"};
+      res.json({"error": true, "message": "Error fetching data"});
     } else {
-      response = {"error": false, "message": notif};
+      res.json({"error": false, "message": notif});
     }
-    res.json(response);
   });
 }
 
-/*
-Sets the notification to read
-Accepts single string or array
-*/
+// Sets the notification to read
+// Accepts single string or array
+
 function changeIsUnreadToFalse(req, res){
   var o_id = [];
-  if(req.params.id && req.params.id != '0'){
+  if(req.params.id && req.params.id !== '0'){
     o_id.push(mongoose.Types.ObjectId(req.params.id));
-    notifHelper.setAsRead(o_id, res);
+    notifHelper.setAsRead(o_id)
+    .then(function(response){res.json({"error": false, "message": "Notifications processed succesfully!"});})
+    .catch(function(error){res.json({"error": true, "message": "Error fetching data"});});
   } else if(req.body.ids){
-    notifHelper.setAsRead(req.body.ids, res);
+    notifHelper.setAsRead(req.body.ids)
+    .then(function(response){res.json({"error": false, "message": "Notifications processed succesfully!"});})
+    .catch(function(error){res.json({"error": true, "message": "Error fetching data"});});
   } else {
-    response = {"error": true, "message": "Error fetching data"};
-    res.json(response);
+    res.json({"error": true, "message": "Error fetching data"});
   }
-  response = {"error": false, "message": "Notifications processed succesfully!"};
-  res.json(response);
 }
 
 
 
-// Functions accessed from backend
+/*
+Functions accessed from backend
+*/
 
-function deleteNot(senderID, recepID, type, status){
-    notificationOp.remove({ sentBy: senderID, addressedTo: {$in : [recepID]}, type: type, status: status},function(err, removed){});
-}
-
-function changeStatusToResponded(senderID, recepID, type, status){
-    notificationOp.findOne({ sentBy: senderID, addressedTo: {$in : [recepID]}, type: type, status: status},
-      function(err, data){
-        var notif = data;
-        notif.status = 'responded';
-        notif.save();
-      }
-    );
-  }
-
-function markAsRead(sender_id, recipient_id, type, status){
-    notificationOp.find({sentBy: sender_id, addressedTo: {$in :[recipient_id]}, type: type, isUnread: true, status: status},
-      function(err, data){
-        for (var index in data){
-            var item = data[index];
-            item.isUnread = false;
-            item.save();
+function changeNotificationStatus(senderId, recepId, type, other){
+    // Build the query only with the relevant keys
+    var query = { 'type': type, 'status': 'waiting' };
+    other = typeof other !== 'undefined' ? other : {};
+    if(senderId !== ""){ query.sentBy = senderId; }
+    if(recepId !== ""){ query.addressedTo = {$in : [recepId]}; }
+    if(other.hasOwnProperty('itemId')){ query.itemId = other.itemId; }
+    // Change status of found notifs
+    notificationOp.find(query,
+      function(err, notif){
+        if(err){
+          logger.debug("Error changing status of notification!!");
+        } else if(!(notif)){
+          logger.debug("Notif not found in changing status of notification!!");
+        } else {
+          for(var n = 0; n < notif.length; n++){
+            notif[n].status = 'responded';
+            notif[n].isUnread = false;
+            notif[n].save();
+          }
         }
       }
     );
   }
 
-// Export functions
 
+/*
+Export functions
+*/
+
+// External rqst
 module.exports.getNotificationsOfUser = getNotificationsOfUser;
 module.exports.getNotificationsOfRegistration = getNotificationsOfRegistration;
 module.exports.getAllUserNotifications = getAllUserNotifications;
 module.exports.getAllRegistrations = getAllRegistrations;
 module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.changeToResponded = changeToResponded;
-
-module.exports.changeStatusToResponded = changeStatusToResponded;
-module.exports.markAsRead = markAsRead;
-module.exports.deleteNot = deleteNot;
+// Internal rqst
+module.exports.changeNotificationStatus = changeNotificationStatus;

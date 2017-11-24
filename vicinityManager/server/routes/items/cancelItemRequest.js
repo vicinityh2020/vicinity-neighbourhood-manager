@@ -1,41 +1,42 @@
 var mongoose = require('mongoose');
-
 var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
 
 
 function cancelItemRequest(req, res, next){
-    console.log("Running cancelation of data access request!");
-    dev_id = mongoose.Types.ObjectId(req.params.id);
-    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-    var device = {};
-    var response = {};
+  dev_id = mongoose.Types.ObjectId(req.params.id);
+  my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
-    itemOp.find({_id: dev_id}).populate('hasAdministrator','organisation').exec(function (err, data) {
+  itemOp.findOne({_id: dev_id}).populate('hasAdministrator','organisation').exec(function (err, device) {
+    if (err || device === null) {
+        res.json({"error": true, "message": "Processing data failed!"});
+    } else {
 
-        if (err || data === null) {
-            response = {"error": true, "message": "Processing data failed!"};
-        } else {
-            if (data.length == 1) {
+      var friend_id = device.hasAdministrator[0]._id;
 
-                var device = data[0];
+      device.accessRequestFrom = findAndRemove(device.accessRequestFrom, my_id);
 
+      notificationAPI.changeNotificationStatus(my_id, friend_id, 21, {itemId: dev_id});
 
-                for (var index = device.accessRequestFrom.length - 1; index >= 0; index --) {
-                    if (device.accessRequestFrom[index].toString() === activeCompany_id.toString()) {
-                        device.accessRequestFrom.splice(index, 1);
-                    }
-                }
+      device.save();
 
-                notificationAPI.deleteNot(activeCompany_id, device.hasAdministrator[0]._id, 'deviceRequest', 'waiting');
-
-                response = {"error": false, "message": data};
-            } else {
-                response = {"error": true, "message": "Processing data failed!"};
-            }
-        }
-
-        res.json(response);
-    });
+      res.json({"error": false, "message": device});
+    }
+  });
 }
+
+/*
+Private Functions
+*/
+
+var findAndRemove = function(array, value){
+  for (var i = 0; i < array.length; i++) {
+      if (array[i].toString() === value.toString()) {
+          array.splice(i, 1);
+      }
+    }
+    return array;
+  };
+
+// Export functions
 module.exports.cancelItemRequest = cancelItemRequest;

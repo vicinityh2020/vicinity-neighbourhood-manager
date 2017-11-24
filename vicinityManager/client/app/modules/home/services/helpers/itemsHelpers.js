@@ -18,7 +18,7 @@ factory('itemsHelpers', ['Notification', 'itemsAPIService',
        } else {
            Notification.success("Access request sent!");
        }
-       return itemsAPIService.getItemWithAdd(response.data.message[0]._id);
+       return itemsAPIService.getItemWithAdd(response.data.message._id);
      };
 
      /*
@@ -30,7 +30,7 @@ factory('itemsHelpers', ['Notification', 'itemsAPIService',
        } else {
            Notification.success("Data access request canceled!");
        }
-       return itemsAPIService.getItemWithAdd(response.data.message[0]._id);
+       return itemsAPIService.getItemWithAdd(response.data.message._id);
      };
 
      /*
@@ -42,7 +42,7 @@ factory('itemsHelpers', ['Notification', 'itemsAPIService',
        } else {
            Notification.success("Connection interrupted!");
        }
-       return itemsAPIService.getItemWithAdd(response.data.message[0]._id);
+       return itemsAPIService.getItemWithAdd(response.data.message._id);
      };
 
      /*

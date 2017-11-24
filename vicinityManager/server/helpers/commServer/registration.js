@@ -54,6 +54,7 @@ function postRegistration(req, res, next){
                 },
                 function(allresult) {
                   // Final part: Return results, update node and notify
+                  if(allresult.length === objectsArray.length){
                     logger.debug('Completed async handler: ' + JSON.stringify(allresult));
 
                     updateItemsList(data.hasItems, allresult)
@@ -64,6 +65,7 @@ function postRegistration(req, res, next){
                                               console.timeEnd("ALL REGISTRATION EXECUTION");
                                             })
                     .catch(function(err){ res.json({"error": true, "message" : "Error in final steps: " + err}); });
+                  }
                 },
                 false,
                 {adid: adid, cid:cid, data:data, types:semanticTypes} // additional parameters
@@ -188,7 +190,6 @@ function deviceActivityNotif(cid){
   dbNotif.sentBy = cid;
   dbNotif.type = 13;
   dbNotif.status = "info";
-  dbNotif.isUnread = true;
   return dbNotif.save();
 }
 

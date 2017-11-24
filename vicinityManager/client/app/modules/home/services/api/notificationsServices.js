@@ -24,8 +24,8 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
     return $http.put(configuration.apiUrl + '/notifications/' + id + '/changeIsUnreadToFalse', data);
   };
 
-  notificationsAPI.changeStatusToResponded = function(id,answer) {
-    return $http.put(configuration.apiUrl + '/notifications/' + id + '/' + answer + '/changeStatusToResponded');
+  notificationsAPI.changeStatusToResponded = function(id,status) {
+    return $http.put(configuration.apiUrl + '/notifications/' + id + '/changeStatusToResponded' + '?status=' + status);
   };
 
   return notificationsAPI;

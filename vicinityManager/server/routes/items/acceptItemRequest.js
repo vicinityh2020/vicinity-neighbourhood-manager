@@ -3,54 +3,53 @@ var logger = require("../../middlewares/logger");
 var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
+var notificationAPI = require('../../routes/notifications/notifications');
 
 function acceptItemRequest(req, res, next) {
-
-    console.log("Running accept data access request");
     dev_id = mongoose.Types.ObjectId(req.params.id);
-    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-    var device = {};
-    var response = {};
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
-    itemOp.find({_id: dev_id}, function (err, data) {
-        if (err || data === null) {
-            response = {"error": true, "message": "Processing data failed!"};
+    itemOp.findOne({_id: dev_id}, function (err, device) {
+        if (err || device === null) {
+            res.json({"error": true, "message": "Processing data failed!"});
         } else {
-            if (data.length == 1) {
 
-                var device = data[0];
-                var friend_id = device.accessRequestFrom[(device.accessRequestFrom.length)-1];
+          // TODO Change, currently only process the last request
+          var friend_id = device.accessRequestFrom[(device.accessRequestFrom.length)-1];
+          device.hasAccess.push(friend_id);
+          device.accessRequestFrom = findAndRemove(device.accessRequestFrom, friend_id); // Remove my access rqst from the obj
 
-                device.hasAccess.push(device.accessRequestFrom[0]);
+          sharingRules.acceptUserRequest(device.oid, my_id, friend_id);
 
-                for (var index = device.accessRequestFrom.length - 1; index >= 0; index --) {
-                    device.accessRequestFrom.splice(index, 1);
-                }
+          var notification = new notificationOp();
 
-                sharingRules.acceptUserRequest(device.oid, activeCompany_id, friend_id);
-                //notificationAPI.changeStatusToResponded(friend_id, activeCompany_id,+  'deviceRequest','waiting');
-                notificationAPI.markAsRead(friend_id, activeCompany_id, 'deviceRequest','waiting');
+          notification.addressedTo.push(friend_id);
+          notification.sentBy = my_id;
+          notification.type = 24; // itemconnRequest
+          notification.status = 'accepted';
+          notification.itemId = device._id;
+          notification.save();
 
-                var notification = new notificationOp();
+          notificationAPI.changeNotificationStatus(friend_id, my_id, 21, {itemId: dev_id});
 
-                notification.addressedTo.push(friend_id);
-                notification.sentBy = activeCompany_id;
-                notification.type = 24; // itemconnRequest
-                notification.status = 'accepted';
-                notification.itemId = device._id;
-                notification.isUnread = true;
-                notification.save();
+          device.save();
 
-                device.save();
-
-                response = {"error": false, "message": "Processing data success!"};
-            } else {
-                response = {"error": true, "message": "Processing data failed!"};
-            }
+          res.json({"error": false, "message": "Processing data success!"});
         }
-
-        res.json(response);
     });
 }
+
+/*
+Private Functions
+*/
+
+var findAndRemove = function(array, value){
+  for (var i = 0; i < array.length; i++) {
+      if (array[i].toString() === value.toString()) {
+          array.splice(i, 1);
+      }
+    }
+    return array;
+  };
 
 module.exports.acceptItemRequest = acceptItemRequest;

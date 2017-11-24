@@ -1,56 +1,53 @@
 var mongoose = require('mongoose');
-
+var logger = require("../../middlewares/logger");
 var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
 var notificationOp = require('../../models/vicinityManager').notification;
 
 function rejectItemRequest(req, res, next) {
-    var index;
-    console.log("Running accept data access request");
-    dev_id = mongoose.Types.ObjectId(req.params.id);
-    activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-    var device = {};
-    var response = {};
+  dev_id = mongoose.Types.ObjectId(req.params.id);
+  my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
 
-    itemOp.find({_id: dev_id}, function (err, data) {
-        if (err || data === null) {
-            response = {"error": true, "message": "Processing data failed!"};
-        } else {
-            if (data.length == 1) {
+  itemOp.findOne({_id: dev_id}, function (err, device) {
+      if (err || device === null) {
+          response = {"error": true, "message": "Processing data failed!"};
+      } else {
 
-                var device = data[0];
-                var friend_id = device.accessRequestFrom[device.accessRequestFrom.length-1];
+        // TODO Change, currently only process the last request
+        var friend_id = device.accessRequestFrom[device.accessRequestFrom.length-1];
+        device.hasAccess = findAndRemove(device.hasAccess, friend_id);
+        device.accessRequestFrom = findAndRemove(device.accessRequestFrom, friend_id);
 
-                for (index = device.hasAccess.length - 1; index >= 0; index --) {
-                     if (device.hasAccess[index].toString() === device.accessRequestFrom[0].toString()) {    //predpokladam, ze v accessRequestFrom moze byt len 1 request, nezmenit z pola na number?
-                        device.hasAccess.splice(index, 1);
-                     }
-                }
+        var notification = new notificationOp();
 
-                for (index = device.accessRequestFrom.length - 1; index >= 0; index --) {
-                      device.accessRequestFrom.splice(index, 1);
-                }
+        notification.addressedTo.push(friend_id);
+        notification.sentBy = my_id;
+        notification.type = 22;
+        notification.status = 'info';
+        notification.itemId = device._id;
+        notification.save();
 
-                var notification = new notificationOp();
+        notificationAPI.changeNotificationStatus(friend_id, my_id, 21, {itemId: dev_id});
 
-                notification.addressedTo.push(friend_id);
-                notification.sentBy = activeCompany_id;
-                notification.type = 22;
-                notification.status = 'info';
-                notification.itemId = device._id;
-                notification.isUnread = true;
-                notification.save();
+        device.save();
 
-                device.save();
-
-                response = {"error": false, "message": "Processing data success!"};
-            } else {
-                response = {"error": true, "message": "Processing data failed!"};
-            }
-        }
-
-        res.json(response);
-    });
+        res.json({"error": false, "message": "Processing data success!"});
+      }
+  });
 }
 
+/*
+Private Functions
+*/
+
+var findAndRemove = function(array, value){
+  for (var i = 0; i < array.length; i++) {
+      if (array[i].toString() === value.toString()) {
+          array.splice(i, 1);
+      }
+    }
+    return array;
+  };
+
+// Export functions
 module.exports.rejectItemRequest = rejectItemRequest;
