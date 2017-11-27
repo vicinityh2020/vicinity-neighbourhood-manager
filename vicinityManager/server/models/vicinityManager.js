@@ -142,6 +142,47 @@ var remember = new Schema({
   token: {type: String, required: true},
 });
 
+var auditLog = new Schema({
+  auditId: {type: String, required: true}, // Can be oid or cid
+  data: [ {
+    creationDate: { type: Date, default: Date.now },
+    triggeredByMe: { type: Boolean, default: true }, // Was the audit triggered by an event in your organisation??
+    user: { type: ObjectId, ref: 'user' }, // User generating the event
+    orgOrigin: { type: ObjectId, ref: 'userAccount' }, // Organisation generating the event
+    orgDest: { type: ObjectId, ref: 'userAccount' },
+    description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
+    type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41], required: true } // Actual situation which triggered the audit
+    /*
+    Organisation:
+    1 - Created ->
+    2 - Deleted ->
+    11 - New user ->
+    12 - User deleted ->
+    13 - User modified ->
+    21 - New node ->
+    22 - Node deleted ->
+    23 - Node modified ->
+    31 - Request partnership <->
+    32 - Cancel request <->
+    33 - Accept partnership <->
+    34 - Reject partnership <->
+    35 - Cancel partnership <->
+    Item:
+    41 - Item discovered ->
+    42 - Item deleted ->
+    43 - Item enabled ->
+    44 - Item disabled ->
+    45 - Privacy change ->
+    51 - Accept connection <->
+    52 - Reject connection <->
+    53 - Cancel connection <->
+    54 - Request connection <->
+    55 - ConnReq cancelled <->
+    ...
+    */
+  } ]
+});
+
 // Set schema options ==================================
 
 // TODO Set all autoIndex to false when moving to production
@@ -154,6 +195,7 @@ invitation.set('autoIndex',true);
 registration.set('autoIndex',true);
 remember.set('autoIndex',true);
 node.set('autoIndex',true);
+auditLog.set('autoIndex',true);
 
 // Converts the mongoose document into a plain javascript object
 userAccount.set('toJSON',{ getters: true, virtuals: false });
@@ -164,6 +206,7 @@ invitation.set('toJSON',{ getters: true, virtuals: false });
 registration.set('toJSON',{ getters: true, virtuals: false });
 remember.set('toJSON',{ getters: true, virtuals: false });
 node.set('toJSON',{ getters: true, virtuals: false });
+auditLog.set('toJSON',{ getters: true, virtuals: false });
 
 // Ensures that values passed to our model constructor that
 // were not specified in our schema do not get saved to the db
@@ -179,13 +222,14 @@ user.index({name: 'text'});
 item.index({name: 'text'}); */
 
 // Indexes for common field searchUser  =================
-// TODO set the index as unique once server side is prepared
+// TODO set the index as unique once server side and agent are prepared
 userAccount.index({organisation: 1}, { unique: false });
 user.index({name: 1}, { unique: false });
 // item.index({name: 1, oid: 1}); // Compound indexes cannot be created in the schema definition!
 item.index({oid: 1}, { unique: false });
 item.index({name: 1}, { unique: false });
 node.index({adid: 1}, { unique: false });
+auditLog.index({auditId: 1}, { unique: true});
 
 
 // Exports models  ===============================
@@ -198,3 +242,4 @@ module.exports.invitation = mongoose.model('invitation', invitation);
 module.exports.registration = mongoose.model('registration', registration);
 module.exports.remember = mongoose.model('remember', remember);
 module.exports.node = mongoose.model('node', node);
+module.exports.auditLog = mongoose.model('auditLog', auditLog);
