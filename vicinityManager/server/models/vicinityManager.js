@@ -149,9 +149,14 @@ var auditLog = new Schema({
     triggeredByMe: { type: Boolean, default: true }, // Was the audit triggered by an event in your organisation??
     user: { type: ObjectId, ref: 'user' }, // User generating the event
     orgOrigin: { type: ObjectId, ref: 'userAccount' }, // Organisation generating the event
-    orgDest: { type: ObjectId, ref: 'userAccount' },
+    orgDest: { type: ObjectId, ref: 'userAccount' }, // Organisation receiving the event
+    // Depending on the audit, we need another connection to user, org, item or node
+    auxConnection: {
+    kind: String,
+    item: { type: ObjectId, refPath: 'auxConnection.kind' }
+    },
     description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
-    type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41], required: true } // Actual situation which triggered the audit
+    eventType: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41], required: true } // Actual situation which triggered the audit
     /*
     Organisation:
     1 - Created ->
