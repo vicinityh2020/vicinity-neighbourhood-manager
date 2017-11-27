@@ -54,6 +54,7 @@ function deleting(oid, callback){
     avatar: "",
     accessLevel: 0,
     hasAdministrator: [],
+    hasAccess: [],
     status: 'deleted'
   };
   itemOp.findOneAndUpdate({oid:oid}, { $set: obj }, {new: true},
