@@ -59,7 +59,7 @@ app.use('/items', [jwtauth, items]);
 app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
 app.use('/search', [jwtauth, search]);
-app.use('/registrations', [jwtauth, audit]);
+app.use('/audit', [ audit]);
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
 app.use('/commServer', commServer);

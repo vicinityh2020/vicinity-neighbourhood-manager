@@ -6,6 +6,6 @@ var putHelper = require('./audit/put.js');
 
 router
   .get('/:id', getHelper.getAudit)
-  .put('/:id', putHelper.putAudit);
+  .put('/:id', putHelper.putAuditExt);
 
 module.exports = router;
