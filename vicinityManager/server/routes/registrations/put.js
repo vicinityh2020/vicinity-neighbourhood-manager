@@ -11,6 +11,7 @@ var logger = require("../../middlewares/logger");
 var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
 var mySql = require('../../helpers/mySql/sendQuery');
+var audits = require('../../routes/audit/put');
 
 // Functions
 
@@ -62,7 +63,12 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
           } else {
             userData.organisation = orgData._id; // Adding the company id to the new user
             userData.save();
-
+            audits.putAuditInt(
+              orgData._id,
+              { orgOrigin: orgData._id,
+                user: userData.email,
+                eventType: 1 }
+            );
             createOrganisationGroups(orgData); // Creates necessary groups in comm server
 
 	    logger.debug('New userAccount was successfuly saved!');
@@ -90,6 +96,13 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
               res.json(response);
             } else {
                 var userAccountId = mongoose.Types.ObjectId(raw.companyId);
+                audits.putAuditInt(
+                  raw.companyId,
+                  { orgOrigin: raw.companyId,
+                    user: userData.email,
+                    auxConnection: {kind: 'user', item: userData._id},
+                    eventType: 11 }
+                );
                 userAccountOp.findById(userAccountId, function(err, data2){
                   var user_id = mongoose.Types.ObjectId(userData._id);
                   if (err) {

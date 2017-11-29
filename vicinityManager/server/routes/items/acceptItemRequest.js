@@ -4,6 +4,7 @@ var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
 var notificationAPI = require('../../routes/notifications/notifications');
+var audits = require('../../routes/audit/put');
 
 function acceptItemRequest(req, res, next) {
     dev_id = mongoose.Types.ObjectId(req.params.id);
@@ -29,6 +30,33 @@ function acceptItemRequest(req, res, next) {
           notification.status = 'accepted';
           notification.itemId = device._id;
           notification.save();
+
+          audits.putAuditInt(
+            my_id,
+            { orgOrigin: my_id,
+              orgDest: friend_id,
+              auxConnection: { kind: 'item', item: dev_id },
+              triggeredByMe: true,
+              eventType: 51 }
+          );
+
+          audits.putAuditInt(
+            friend_id,
+            { orgOrigin: my_id,
+              orgDest: friend_id,
+              auxConnection: { kind: 'item', item: dev_id },
+              triggeredByMe: false,
+              eventType: 51 }
+          );
+
+          audits.putAuditInt(
+            dev_id,
+            { orgOrigin: my_id,
+              orgDest: friend_id,
+              auxConnection: { kind: 'item', item: dev_id },
+              triggeredByMe: false,
+              eventType: 51 }
+          );
 
           notificationAPI.changeNotificationStatus(friend_id, my_id, 21, {itemId: dev_id});
 

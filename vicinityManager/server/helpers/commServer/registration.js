@@ -9,6 +9,7 @@ var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
 var semanticRepo = require('../../helpers/semanticRepo/request');
 var sync = require('../../helpers/asyncHandler/sync');
+var audits = require('../../routes/audit/put');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
 // Public Function -- Main
@@ -61,6 +62,7 @@ function postRegistration(req, res, next){
                     .then(function(response){ data.hasItems = response;
                                               return data.save(); })
                     .then(function(response){ return deviceActivityNotif(cid); })
+                    .then(function(response){ return createAuditLogs(cid, allresult); })
                     .then(function(response){
                                             res.json({"status": 200, "message": allresult});
                                             console.timeEnd("ALL REGISTRATION EXECUTION");
@@ -90,7 +92,7 @@ function saveDocuments(objects, otherParams, callback){
   // Create one item document
   obj.typeOfItem = findType(objects.type, otherParams.types); // Use collection of semanticTypes to find if service/device/unknown
   if(obj.typeOfItem === "unknown") {
-    callback("No OID", "Unknown type...");
+    callback({oid: "No OID", id: "No id"}, "Unknown type...");
   } else {
     // Adding important fields for Vicinity
     obj.adid = otherParams.adid;
@@ -112,13 +114,13 @@ function saveDocuments(objects, otherParams, callback){
           obj.info = JSON.parse(response).data.lifting; // Thing description obj, stores response from semanticRepo
           createInstance(new itemOp(obj), callback);
         } else { // If lifting ends with error ...
-          callback(obj.oid, "Error semantic repository: " + repoAnswer.data.errors);
+          callback({oid: obj.oid, id: "No id"}, "Error: " + repoAnswer.data.errors);
         }
       })
-      .catch(function(err){callback(obj.oid, "Error: " + err); });
+      .catch(function(err){callback({oid: obj.oid, id: "No id"}, "Error: " + err); });
       //createInstance(obj, callback)
     } else { // if the TD contains an OID, then we need to update the instance in Mongo (not create a new one)
-      callback("Null", "Update service disabled, you cannot register TDs with OID");
+      callback({oid: "No OID", id: "No id"}, "Update service disabled, you cannot register TDs with OID");
       // obj.oid = objects.credentials.oid;
       // var pass = objects.credentials.password;
       // delete(objects.credentials);
@@ -136,12 +138,158 @@ function createInstance(obj, callback){
   obj.save(
     function(err, response){
       if(err){
-        callback(obj.oid, "Error Mongo Creating Instance: " + err);
+        callback({oid: obj.oid, id: "No id"}, "Error Mongo Creating Instance: " + err);
       } else {
-        callback(obj.oid, "Success");
+        callback({oid: obj.oid, id: response._id}, "Success");
       }
     });
 }
+
+/*
+Checks if the oid is in Mongo
+If it is, creates a new one and checks again
+Ensures oid uniqueness
+*/
+function oidExist(oid){
+  return itemOp.findOne({oid: oid})
+  .then(
+    function(data){
+      if(!data){
+        return new Promise(function(resolve, reject) { resolve(oid) ;} );
+      } else {
+        oid = uuid();
+        oidExist(oid);
+      }
+    })
+  .catch(
+    function(err){
+        return new Promise(function(resolve, reject) { reject('Error in Mongo: ' + err) ;} );
+  });
+}
+
+/*
+Adds all new oids to the node hasItems
+If the oid is already in there skip it
+*/
+function updateItemsList(items, allresult){
+  // get oids only if doc saved succesfully
+  return new Promise(function(resolve, reject) {
+    try{
+      var oidArray = getIds(allresult, 'oid');
+      var flag = 0;
+      for(var j = 0; j < oidArray.length; j++){
+        flag = items.indexOf(oidArray[j]);
+        if(flag === -1){
+          items.push(oidArray[j]);
+        }
+      }
+      resolve(items);
+    } catch(err){
+      reject("(collecting new oids for the node) " + err);
+    }
+  });
+}
+
+/*
+Sends a notification to the organisation after successful discovery
+*/
+function deviceActivityNotif(cid){
+  var dbNotif = new notifOp();
+  dbNotif.addressedTo = cid;
+  dbNotif.sentBy = cid;
+  dbNotif.type = 13;
+  dbNotif.status = "info";
+  return dbNotif.save();
+}
+
+/*
+Creates audit logs for each registered item
+*/
+function createAuditLogs(cid, allresult){
+  return new Promise(function(resolve, reject) {
+    try{
+      var oidArray = getIds(allresult, 'id');
+      sync.forEachAll(oidArray,
+        function(value, allresult, next, otherParams) { // Process all new items
+          creatingAudit(value, otherParams,function(value, result) {
+              // logger.debug('END execution with value =', value, 'and result =', result);
+              allresult.push({value: value, result: result});
+              next();
+          });
+        },
+        function(allresult) {
+          // Final part: Return results, update node and notify
+          if(allresult.length === oidArray.length){ // Only process final step if all the stack of tasks completed
+            resolve('Audits created...');
+          }
+        },
+        false,
+        {orgOrigin: cid, eventType: 41, auxConnection: {kind: 'item'}}
+      );
+    } catch(err){
+      reject("Error creating audits: " + err);
+    }
+  });
+}
+
+function creatingAudit(oid, data, callback){
+  data.auxConnection.item = oid;
+  var cid = data.orgOrigin;
+  audits.putAuditInt(oid,data)
+  .then(function(response){ return audits.putAuditInt(cid,data); })
+  .then(function(response){ callback(oid,'Success');})
+  .catch(function(err){ callback(oid, err); });
+}
+
+/*
+Extract valid oids from allresult
+*/
+function getIds(allresult, type){ // type indicates if I want the oid or the mongo id
+  var oidArray = [];
+  for(var i = 0; i < allresult.length; i++) {
+    if(allresult[i].result === "Success"){oidArray.push(allresult[i].value[type]);}
+  }
+  return oidArray;
+}
+
+/*
+Extract valuable info from the types request static service
+*/
+function parseGetTypes(arr){
+  return new Promise(function(resolve, reject) {
+    try{
+      var myTypes = []; // store types
+      var pos = 0; // keeps position in the string where the actual type starts
+      var aux = ""; // keeps the value for each iteration
+      for(var i=0; i<arr.length; i++){
+        aux = arr[i].s.value;
+        pos = aux.indexOf('#',0);
+        myTypes.push(aux.substr(pos+1));
+      }
+      resolve(myTypes);
+    }
+    catch(err)
+    {
+      reject("(Error parsing types) " + err);
+    }
+  });
+}
+
+/*
+Find main item type (device/service) based on the semantic repository types
+*/
+function findType(objType, types){
+    if(types.devices.indexOf(objType) !== -1){
+      return("device");
+    } else if(types.services.indexOf(objType) !== -1){
+      return("service");
+    } else {
+      return("unknown");
+    }
+}
+
+// Export Functions
+module.exports.postRegistration = postRegistration;
 
 /*
 TD contains a credentials field.
@@ -205,102 +353,3 @@ If the oid exists in the commServer is deleted and created anew
 //         }
 //       );
 //     }
-
-/*
-Checks if the oid is in Mongo
-If it is, creates a new one and checks again
-Ensures oid uniqueness
-*/
-function oidExist(oid){
-  return itemOp.findOne({oid: oid})
-  .then(
-    function(data){
-      if(!data){
-        return new Promise(function(resolve, reject) { resolve(oid) ;} );
-      } else {
-        oid = uuid();
-        oidExist(oid);
-      }
-    })
-  .catch(
-    function(err){
-        return new Promise(function(resolve, reject) { reject('Error in Mongo: ' + err) ;} );
-  });
-}
-
-/*
-Adds all new oids to the node hasItems
-If the oid is already in there skip it
-*/
-function updateItemsList(items, allresult){
-  // get oids only if doc saved succesfully
-  return new Promise(function(resolve, reject) {
-    try{
-      var oidArray = [];
-      for(var i = 0; i < allresult.length; i++) {
-        if(allresult[i].result === "Success"){oidArray.push(allresult[i].value);}
-      }
-      var flag = 0;
-      for(var j = 0; j < oidArray.length; j++){
-        flag = items.indexOf(oidArray[j]);
-        if(flag === -1){
-          items.push(oidArray[j]);
-        }
-      }
-      resolve(items);
-    } catch(err){
-      reject("(collecting new oids for the node) " + err);
-    }
-  });
-}
-
-/*
-Sends a notification to the organisation after successful discovery
-*/
-function deviceActivityNotif(cid){
-  var dbNotif = new notifOp();
-  dbNotif.addressedTo = cid;
-  dbNotif.sentBy = cid;
-  dbNotif.type = 13;
-  dbNotif.status = "info";
-  return dbNotif.save();
-}
-
-/*
-Extract valuable info from the types request static service
-*/
-function parseGetTypes(arr){
-  return new Promise(function(resolve, reject) {
-    try{
-      var myTypes = []; // store types
-      var pos = 0; // keeps position in the string where the actual type starts
-      var aux = ""; // keeps the value for each iteration
-      for(var i=0; i<arr.length; i++){
-        aux = arr[i].s.value;
-        pos = aux.indexOf('#',0);
-        myTypes.push(aux.substr(pos+1));
-      }
-      resolve(myTypes);
-    }
-    catch(err)
-    {
-      reject("(Error parsing types) " + err);
-    }
-  });
-}
-
-/*
-Find main item type (device/service) based on the semantic repository types
-*/
-function findType(objType, types){
-    if(types.devices.indexOf(objType) !== -1){
-      return("device");
-    } else if(types.services.indexOf(objType) !== -1){
-      return("service");
-    } else {
-      return("unknown");
-    }
-}
-
-// Export Functions
-module.exports.postRegistration = postRegistration;

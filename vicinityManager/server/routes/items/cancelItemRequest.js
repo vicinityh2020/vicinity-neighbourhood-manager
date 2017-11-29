@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
+var audits = require('../../routes/audit/put');
 
 
 function cancelItemRequest(req, res, next){
@@ -17,6 +18,33 @@ function cancelItemRequest(req, res, next){
       device.accessRequestFrom = findAndRemove(device.accessRequestFrom, my_id);
 
       notificationAPI.changeNotificationStatus(my_id, friend_id, 21, {itemId: dev_id});
+
+      audits.putAuditInt(
+        my_id,
+        { orgOrigin: my_id,
+          orgDest: friend_id,
+          auxConnection: { kind: 'item', item: dev_id },
+          triggeredByMe: true,
+          eventType: 55 }
+      );
+
+      audits.putAuditInt(
+        friend_id,
+        { orgOrigin: my_id,
+          orgDest: friend_id,
+          auxConnection: { kind: 'item', item: dev_id },
+          triggeredByMe: false,
+          eventType: 55 }
+      );
+
+      audits.putAuditInt(
+        dev_id,
+        { orgOrigin: my_id,
+          orgDest: friend_id,
+          auxConnection: { kind: 'item', item: dev_id },
+          triggeredByMe: false,
+          eventType: 55 }
+      );
 
       device.save();
 

@@ -14,14 +14,25 @@ function putAuditExt(req, res){
   .catch(function(error){res.json({"res":error});});
 }
 
-// Internal cancelled
+// Internal call
 
 function putAuditInt(id, payload){
-  auditOp.update({auditId: id}, {$push: {data: payload}}, {upsert: true})
-  .then(function(response){res.json({"res":response});})
-  .catch(function(error){res.json({"res":error});});
+  return new Promise(
+    function(resolve, reject) {
+      auditOp.update({auditId: id}, {$push: {data: payload}}, {upsert: true})
+      .then(function(response){
+        logger.debug('Audit success');
+        resolve({"res":response});
+      })
+      .catch(function(error){
+        logger.debug('Audit error');
+        reject({"res":error});
+      });
+    }
+  );
 }
 
 //Export modules
+
 module.exports.putAuditExt = putAuditExt;
 module.exports.putAuditInt = putAuditInt;

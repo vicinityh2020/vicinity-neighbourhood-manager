@@ -3,6 +3,7 @@ var logger = require("../../middlewares/logger");
 var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
+var audits = require('../../routes/audit/put');
 
 function cancelItemAccess(req, res, next){
 
@@ -21,6 +22,8 @@ function cancelItemAccess(req, res, next){
 
         sharingRules.cancelItemAccess(device.oid, device.hasAdministrator[0], my_id);
 
+        var friend_id = device.hasAdministrator[0]._id;
+
         var notification = new notificationOp();
 
         notification.addressedTo.push(my_id);
@@ -30,6 +33,33 @@ function cancelItemAccess(req, res, next){
         notification.itemId = dev_id;
         notification.isUnread = true;
         notification.save();
+
+        audits.putAuditInt(
+          my_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            auxConnection: { kind: 'item', item: dev_id },
+            triggeredByMe: true,
+            eventType: 53 }
+        );
+
+        audits.putAuditInt(
+          friend_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            auxConnection: { kind: 'item', item: dev_id },
+            triggeredByMe: false,
+            eventType: 53 }
+        );
+
+        audits.putAuditInt(
+          dev_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            auxConnection: { kind: 'item', item: dev_id },
+            triggeredByMe: false,
+            eventType: 53 }
+        );
 
         device.save();
 

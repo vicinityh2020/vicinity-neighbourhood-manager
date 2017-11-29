@@ -10,7 +10,7 @@ var sharingRules = require('../../helpers/sharingRules');
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
 var itemOp = require('../../models/vicinityManager').item;
-
+var audits = require('../../routes/audit/put');
 
 /*
 Public Functions
@@ -48,6 +48,22 @@ function processFriendRequest(req, res, next) {
         notification_2.type = 35;
         notification_2.status = 'info';
         notification_2.save();
+
+        audits.putAuditInt(
+          my_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: true,
+            eventType: 31 }
+        );
+
+        audits.putAuditInt(
+          friend_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: false,
+            eventType: 31 }
+        );
 
         // friend.hasNotifications.push(notification._id); // TODO CHECK IF NECESSARY
         friend.save();
@@ -100,6 +116,22 @@ function acceptFriendRequest(req, res, next) {
         notification.isUnread = true;
         notification.save();
 
+        audits.putAuditInt(
+          my_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: true,
+            eventType: 33 }
+        );
+
+        audits.putAuditInt(
+          friend_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: false,
+            eventType: 33 }
+        );
+
         notificationAPI.changeNotificationStatus(friend_id, my_id, 31); // responds partnership request from friend
         notificationAPI.changeNotificationStatus(my_id, friend_id, 31); // responds partnership request from me
 
@@ -145,6 +177,22 @@ function rejectFriendRequest(req, res, next) {
         notification.type = 33;
         notification.status = 'rejected';
         notification.save();
+
+        audits.putAuditInt(
+          my_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: true,
+            eventType: 34 }
+        );
+
+        audits.putAuditInt(
+          friend_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: false,
+            eventType: 34 }
+        );
 
         notificationAPI.changeNotificationStatus(friend_id, my_id, 31); // responds partnership request from friend
         notificationAPI.changeNotificationStatus(my_id, friend_id, 31); // responds partnership request from me
@@ -193,6 +241,22 @@ function cancelFriendRequest(req, res, next){
       // notification.isUnread = true;
       // notification.save();
 
+      audits.putAuditInt(
+        my_id,
+        { orgOrigin: my_id,
+          orgDest: friend_id,
+          triggeredByMe: true,
+          eventType: 32 }
+      );
+
+      audits.putAuditInt(
+        friend_id,
+        { orgOrigin: my_id,
+          orgDest: friend_id,
+          triggeredByMe: false,
+          eventType: 32 }
+      );
+
       friend.save();
       me.save();
 
@@ -237,6 +301,22 @@ function cancelFriendship(req, res, next){
         notification.status = 'info';
         notification.isUnread = true;
         notification.save();
+
+        audits.putAuditInt(
+          my_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: true,
+            eventType: 35 }
+        );
+
+        audits.putAuditInt(
+          friend_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            triggeredByMe: false,
+            eventType: 35 }
+        );
 
         friend.save();
         me.save();

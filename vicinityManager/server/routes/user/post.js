@@ -2,7 +2,7 @@ module.exports.postOne = postOne;
 
 var mongoose = require('mongoose');
 var ce = require('cloneextend');
-
+var audits = require('../../routes/audit/put');
 var userOp = require('../../models/vicinityManager').user;
 
 function postOne(req, res, next) {
@@ -20,12 +20,16 @@ function postOne(req, res, next) {
   db.email = req.body.email;
   db.authentication = ce.clone(req.body.authentication);
 
-  db.save(function(err) {
-    if (err) {
-      response = {"error": true, "message": "Error adding data!"};
-    } else {
-      response = {"error": false, "message": "Data added!"};
-    }
-    res.json(response);
-  });
+  db.save()
+  // .then(function(response){
+  //   return audits.putAuditInt(
+  //     id,
+  //     { orgOrigin: ,
+  //       auxConnection: {kind: 'user', item: db._id},
+  //       eventType: 11 }
+  //   );
+  // })
+  .then(function(response){ res.json({"error": false, "message": "Data added!"}); })
+  .catch(function(err){ res.json({"error": true, "message": err }); });
+
 }

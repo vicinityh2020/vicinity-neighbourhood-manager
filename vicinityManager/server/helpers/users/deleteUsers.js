@@ -46,6 +46,7 @@ Need to keep some fields for auditing purposes
 */
 function deleting(id, callback){
   logger.debug('START execution with value =', id);
+  var cid;
   var obj = {
     avatar: "",
     name: "",
@@ -53,23 +54,24 @@ function deleting(id, callback){
     status: "deleted",
     authentication: {}
   };
-  userOp.findOneAndUpdate({_id:id}, { $set: obj }, {new: true},
-    function(err,data){
-      if( err || !data ){
-        logger.debug("Something went wrong: " + err);
-        callback(id, "error mongo" + err);
-      } else {
-        userAccountOp.update({_id: data.organisation}, {$pull: {accountOf: id}}, function(err,data){
-          if(err){
-            logger.debug("Something went wrong: " + err);
-            callback(oid, "error mongo" + err);
-          } else {
-            callback(id, "Success");
-          }
-        });
-      }
-    });
-  }
+
+  userOp.findOneAndUpdate({_id:id}, { $set: obj }, {new: true})
+  .then(function(response){
+    cid = response.organisation;
+    return audits.putAuditInt(
+      cid,
+      { orgOrigin: cid,
+        auxConnection: {kind: 'user', item: id},
+        eventType: 12 }
+    );
+  })
+  .then(function(response){ return userAccountOp.update({_id: cid}, {$pull: {accountOf: id}}); })
+  .then(function(response){ callback(id, "Success"); })
+  .catch(function(error){
+    logger.debug("Something went wrong: " + error);
+    callback(id, "Error: " + error);
+  });
+}
 
 // Export modules
 

@@ -8,7 +8,7 @@ var logger = require('../../middlewares/logger');
 var commServer = require('../../helpers/commServer/request');
 var semanticRepo = require('../../helpers/semanticRepo/request');
 var sync = require('../../helpers/asyncHandler/sync');
-
+var audits = require('../../routes/audit/put');
 
 // Public functions
 
@@ -57,21 +57,41 @@ function deleting(oid, callback){
     hasAccess: [],
     status: 'deleted'
   };
-  itemOp.findOneAndUpdate({oid:oid}, { $set: obj }, {new: true},
+  itemOp.findOne({oid:oid},
     function(err,data){
       if( err || !data ){
         logger.debug("Something went wrong: " + err);
         callback(oid, "error mongo" + err);
       } else {
-        nodeOp.update({adid: data.adid}, {$pull: {hasItems: oid}}, function(err,agent){
-          if(err){
-            logger.debug("Something went wrong: " + err);
-            callback(oid, "error mongo" + err);
+        var cid = data.hasAdministrator[0];
+        var id = data._id;
+
+        itemOp.update({oid:oid}, {$set: obj})
+        .then(function(response){ return nodeOp.update({adid: data.adid}, {$pull: {hasItems: oid}}); })
+        .then(function(response){ return semanticRepo.removeItem(oid); })
+        .then(function(response){
+          return audits.putAuditInt(
+            id,
+            { orgOrigin: cid,
+              auxConnection: {kind: 'item', item: id},
+              eventType: 42 }
+          );
+        })
+        .then(function(response){
+          return audits.putAuditInt(
+            cid,
+            { orgOrigin: cid,
+              auxConnection: {kind: 'item', item: id},
+              eventType: 42 }
+          );
+        })
+        .then(function(response){ return commServer.callCommServer({}, 'users/' + oid, 'DELETE'); })
+        .then(function(ans){callback(oid, "Success");})
+        .catch(function(err){
+          if(err.statusCode !== 404){
+            callback(oid, 'Error: ' + err);
           } else {
-            commServer.callCommServer({}, 'users/' + oid, 'DELETE')
-            .then(function(response){return semanticRepo.removeItem(oid);})
-            .then(function(ans){callback(oid, "Success");})
-            .catch(function(err){callback(oid, 'Error: ' + err);});
+            callback(oid, "Success");
           }
         });
       }

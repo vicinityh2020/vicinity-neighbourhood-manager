@@ -147,7 +147,7 @@ var auditLog = new Schema({
   data: [ {
     creationDate: { type: Date, default: Date.now },
     triggeredByMe: { type: Boolean, default: true }, // Was the audit triggered by an event in your organisation??
-    user: { type: ObjectId, ref: 'user' }, // User generating the event
+    user: { type: String, default: "Unknown" }, // User generating the event
     orgOrigin: { type: ObjectId, ref: 'userAccount' }, // Organisation generating the event
     orgDest: { type: ObjectId, ref: 'userAccount' }, // Organisation receiving the event
     // Depending on the audit, we need another connection to user, org, item or node

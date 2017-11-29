@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var notificationOp = require('../../models/vicinityManager').notification;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
+var audits = require('../../routes/audit/put');
 
 function processItemAccess(req, res, next) {
 
@@ -24,6 +25,33 @@ function processItemAccess(req, res, next) {
           notification.status = 'waiting';
           notification.itemId = dev_id;
           notification.save();
+
+          audits.putAuditInt(
+            my_id,
+            { orgOrigin: my_id,
+              orgDest: friend_id,
+              auxConnection: { kind: 'item', item: dev_id },
+              triggeredByMe: true,
+              eventType: 54 }
+          );
+
+          audits.putAuditInt(
+            friend_id,
+            { orgOrigin: my_id,
+              orgDest: friend_id,
+              auxConnection: { kind: 'item', item: dev_id },
+              triggeredByMe: false,
+              eventType: 54 }
+          );
+
+          audits.putAuditInt(
+            dev_id,
+            { orgOrigin: my_id,
+              orgDest: friend_id,
+              auxConnection: { kind: 'item', item: dev_id },
+              triggeredByMe: false,
+              eventType: 54 }
+          );
 
           device.save();
 

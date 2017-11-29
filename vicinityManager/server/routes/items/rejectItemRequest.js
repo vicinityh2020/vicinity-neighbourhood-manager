@@ -3,6 +3,7 @@ var logger = require("../../middlewares/logger");
 var itemOp = require('../../models/vicinityManager').item;
 var notificationAPI = require('../notifications/notifications');
 var notificationOp = require('../../models/vicinityManager').notification;
+var audits = require('../../routes/audit/put');
 
 function rejectItemRequest(req, res, next) {
   dev_id = mongoose.Types.ObjectId(req.params.id);
@@ -26,6 +27,33 @@ function rejectItemRequest(req, res, next) {
         notification.status = 'info';
         notification.itemId = device._id;
         notification.save();
+
+        audits.putAuditInt(
+          my_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            auxConnection: { kind: 'item', item: dev_id },
+            triggeredByMe: true,
+            eventType: 52 }
+        );
+
+        audits.putAuditInt(
+          friend_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            auxConnection: { kind: 'item', item: dev_id },
+            triggeredByMe: false,
+            eventType: 52 }
+        );
+
+        audits.putAuditInt(
+          dev_id,
+          { orgOrigin: my_id,
+            orgDest: friend_id,
+            auxConnection: { kind: 'item', item: dev_id },
+            triggeredByMe: false,
+            eventType: 52 }
+        );
 
         notificationAPI.changeNotificationStatus(friend_id, my_id, 21, {itemId: dev_id});
 

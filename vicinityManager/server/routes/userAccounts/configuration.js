@@ -11,7 +11,7 @@ var logger = require("../../middlewares/logger");
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var delUser = require('../../helpers/users/deleteUsers');
 var myNode = require('../../helpers/nodes/processNode');
-
+var audits = require('../../routes/audit/put');
 
 // Public functions
 
@@ -78,6 +78,13 @@ function remove(req, res, next) {
           companyData.avatar = "";
           companyData.status = "deleted";
           return companyData.save();
+        })
+        .then(function(response){
+          return audits.putAuditInt(
+            cid,
+            { orgOrigin: cid,
+              eventType: 2 }
+          );
         })
         .then(function(response){
           deletingResults.organisation = {cid: cid, result: 'Success'};

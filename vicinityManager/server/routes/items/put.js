@@ -5,6 +5,7 @@ var logger = require("../../middlewares/logger");
 var commServer = require('../../helpers/commServer/request');
 var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
+var audits = require('../../routes/audit/put');
 var notificationOp = require('../../models/vicinityManager').notification;
 
 // Public function 1
@@ -27,18 +28,50 @@ function putOne(req, res) {
   if(updates.status === 'enabled'){
     commServerProcess(oid, adid, updates.name, oid, updates.cid)
       .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Enabled', 11);})
-      .then(function(response){ itemUpdate(uid,updates,res);})
-      .catch(callbackError);
+      .then(function(response){
+        return audits.putAuditInt(
+          uid,
+          {
+            orgOrigin: updates.cid,
+            auxConnection: {kind: 'item', item: uid},
+            eventType: 43
+          }
+        );
+      })
+      .then(function(response){ return itemUpdate(uid,updates);})
+      .then(function(response){ res.json({"response":response}); })
+      .catch(function(err){res.json({"response" : err});});
 
   }else if(updates.status === 'disabled'){
     commServer.callCommServer({}, 'users/' + oid , 'DELETE')
       .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Disabled', 12);})
-      .then(function(response){ itemUpdate(uid,updates,res);})
-      .catch(callbackError);
+      .then(function(response){
+        return audits.putAuditInt(
+          uid,
+          {
+            orgOrigin: updates.cid,
+            auxConnection: {kind: 'item', item: uid},
+            eventType: 44
+          }
+        );
+      })
+      .then(function(response){ return itemUpdate(uid,updates);})
+      .then(function(response){ res.json({"response":response}); })
+      .catch(function(err){res.json({"response" : err});} );
 
   }else{
-
-    itemUpdate(uid,updates,res);
+    audits.putAuditInt(
+      uid,
+      {
+        orgOrigin: updates.cid,
+        auxConnection: {kind: 'item', item: uid},
+        eventType: 45,
+        description: "From " + updates.oldAccessLevel + " to " + updates.accessLevel
+      }
+    )
+    .then(function(response){ itemUpdate(uid,updates); })
+    .then(function(response){ res.json({"response":response}); })
+    .catch(function(err){ res.json({"response" : err});} );
 
   }
 }
@@ -46,27 +79,31 @@ function putOne(req, res) {
 /*
 Handles the accessLevel and other properties modifications
 */
-function itemUpdate(uid,updates,res){
-  if(updates.accessLevel && updates.accessLevel !== 0){
-    if(!updates.status){
-      query = { accessLevel: updates.accessLevel };
-      logger.debug("Start update of accessLevel...");
-    } else {
-      query = {status: updates.status, accessLevel: updates.accessLevel};
-      logger.debug("Start update of accessLevel and item activation/deactivation...");
+function itemUpdate(uid,updates){
+  return new Promise(
+    function(resolve, reject) {
+      if(updates.accessLevel && updates.accessLevel !== 0){
+        if(!updates.status){
+          query = { accessLevel: updates.accessLevel };
+          logger.debug("Start update of accessLevel...");
+        } else {
+          query = {status: updates.status, accessLevel: updates.accessLevel};
+          logger.debug("Start update of accessLevel and item activation/deactivation...");
+        }
+        itemOp.findOneAndUpdate({ _id : uid}, {$set: query }, function(err, raw){
+          sharingRules.changePrivacy(updates);
+          resolve({"error": err, "message": raw});
+          logger.debug("Item update process ended successfully...");
+          }
+        );
+      } else {
+        itemOp.findOneAndUpdate({ _id : uid}, { $set: updates }, function(err, raw){
+          resolve({"error": err, "message": raw});
+          }
+        );
+      }
     }
-    itemOp.findOneAndUpdate({ _id : uid}, {$set: query }, function(err, raw){
-      sharingRules.changePrivacy(updates);
-      res.json({"error": err, "message": raw});
-      logger.debug("Item update process ended successfully...");
-      }
-    );
-  } else {
-    itemOp.findOneAndUpdate({ _id : uid}, { $set: updates }, function(err, raw){
-      res.json({"error": err, "message": raw});
-      }
-    );
-  }
+  );
 }
 
 /*
@@ -74,19 +111,23 @@ Sends a notification on change of status
 */
 function deviceActivityNotif(did,cid,state, typ){
   var dbNotif = new notificationOp();
-  dbNotif.addressedTo = cid;
-  dbNotif.sentBy = cid;
-  dbNotif.itemId = did;
-  dbNotif.type = typ;
-  dbNotif.status = "info";
-  return dbNotif.save(
-    function(err,data){
-      if(err){
-        logger.debug("Error creating the notification");
-        return new Promise(function(resolve, reject) { reject("Error"); });
-      } else {
-        return new Promise(function(resolve, reject) { resolve("Done"); });
-      }
+  return new Promise(
+    function(resolve, reject) {
+      dbNotif.addressedTo = cid;
+      dbNotif.sentBy = cid;
+      dbNotif.itemId = did;
+      dbNotif.type = typ;
+      dbNotif.status = "info";
+      dbNotif.save(
+        function(err,data){
+          if(err){
+            logger.debug("Error creating the notification");
+            reject("Error");
+          } else {
+            resolve("Done");
+          }
+        }
+      );
     }
   );
 }
@@ -123,15 +164,6 @@ function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
         }
       );
     }
-
-/*
-Handles errors
-*/
-function callbackError(err){
-  logger.debug('Error updating item: ' + err);
-  // TODO some error handling ...
-  // commServer.callCommServer({}, 'users/' + oid , 'DELETE')
-}
 
 // Module exports
 

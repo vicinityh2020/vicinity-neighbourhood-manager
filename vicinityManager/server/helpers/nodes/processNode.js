@@ -7,6 +7,7 @@ var myItems = require('../../helpers/items/deleteItems');
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var sync = require('../../helpers/asyncHandler/sync');
+var audits = require('../../routes/audit/put');
 
 // Public functions
 
@@ -61,6 +62,16 @@ the update process continues in the commServer
           };
           return commServer.callCommServer(payload2, 'groups/' + data.adid, 'PUT');
         })
+        .then(function(response){ return nodeOp.findOne({adid: data.adid}); })
+        .then(
+          function(response){
+            return audits.putAuditInt(
+              response.organisation,
+              { orgOrigin: response.organisation,
+                auxConnection: {kind: 'node', item: response._id},
+                eventType: 23 }
+            );
+          })
         .then(function(response){ resolve('Success'); })
         .catch(function(err){ reject(err); });
       });
@@ -86,16 +97,18 @@ function deletingNodes(adid, callback){
         function(response){
               aux = response;
               return userAccountOp.update({_id: aux.organisation}, {$pull: {hasNodes: adid}}); })
+      .then(
+        function(response){
+          return audits.putAuditInt(
+            aux.organisation,
+            { orgOrigin: aux.organisation,
+              auxConnection: {kind: 'node', item: aux._id},
+              eventType: 22 }
+          );
+        })
       .then(function(response){ return myItems.deleteItems(aux.hasItems); })
       .then(function(response){callback(adid, {'status':'success', 'items': response}) ;})
       .catch(function(err){callback(adid, 'error');});
-}
-
-/*
-Callback default response for errors
-*/
-function errorCallback(error){
-  logger.debug({"error": true, "message": "Something went wrong: " + error.statusCode});
 }
 
 // Export Functions
