@@ -16,14 +16,14 @@ Change node status to deleted in MONGO
 Remove node from commServer
 Remove all oids under node from commServer AND MONGO
 */
-function deleteNode(adids){
+function deleteNode(adids, email){
 
   return new Promise(function(resolve, reject) {
     if(adids.length > 0){ // Check if there is any item to delete
       logger.debug('Start async handler...' + adids);
       sync.forEachAll(adids,
-        function(value, allresult, next) {
-          deletingNodes(value, function(value, result) {
+        function(value, allresult, next, otherParams) {
+          deletingNodes(value, otherParams, function(value, result) {
               logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
@@ -35,7 +35,8 @@ function deleteNode(adids){
             resolve({"error": false, "message": allresult });
           }
         },
-        false
+        false,
+        {userMail:email}
       );
     } else {
       resolve({"error": false, "message": "Nothing to be removed..."});
@@ -47,7 +48,7 @@ function deleteNode(adids){
 On node saved successfully in MONGO,
 the update process continues in the commServer
 */
-  function updateNode(data){
+  function updateNode(data, email){
     return new Promise(function(resolve, reject) {
       var payload = {
         name: data.name,
@@ -69,6 +70,7 @@ the update process continues in the commServer
               response.organisation,
               { orgOrigin: response.organisation,
                 auxConnection: {kind: 'node', item: response._id},
+                user: email,
                 eventType: 23 }
             );
           })
@@ -82,7 +84,7 @@ the update process continues in the commServer
 /*
 Deletes all node asynchronously
 */
-function deletingNodes(adid, callback){
+function deletingNodes(adid, otherParams, callback){
   var aux = {};
       commServer.callCommServer({}, 'users/' + adid, 'DELETE') // Update node in commServer
       .then( function(response){ return commServer.callCommServer({}, 'groups/' + adid, 'DELETE');})
@@ -103,10 +105,11 @@ function deletingNodes(adid, callback){
             aux.organisation,
             { orgOrigin: aux.organisation,
               auxConnection: {kind: 'node', item: aux._id},
+              user: otherParams.userMail,
               eventType: 22 }
           );
         })
-      .then(function(response){ return myItems.deleteItems(aux.hasItems); })
+      .then(function(response){ return myItems.deleteItems(aux.hasItems, otherParams.userMail); })
       .then(function(response){callback(adid, {'status':'success', 'items': response}) ;})
       .catch(function(err){callback(adid, 'error');});
 }

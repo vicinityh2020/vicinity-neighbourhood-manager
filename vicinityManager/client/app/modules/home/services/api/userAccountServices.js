@@ -1,6 +1,6 @@
 'use strict';
 var services = angular.module('VicinityManagerApp.services').
-factory('userAccountAPIService', ['$http', 'configuration', function($http, configuration){
+factory('userAccountAPIService', ['$http', 'configuration', '$window', function($http, configuration, $window){
 
   var userAccountAPI = {};
 
@@ -21,23 +21,33 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
   // Neigbourhood management
 
   userAccountAPI.sendNeighbourRequest = function (id) {
-    return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship/request', data);
   };
 
   userAccountAPI.acceptNeighbourRequest = function(id) {
-    return $http.put(configuration.apiUrl +'/useraccounts/' + id + '/friendship/accept');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship/accept', data);
   };
 
   userAccountAPI.rejectNeighbourRequest = function(id) {
-    return $http.put(configuration.apiUrl +'/useraccounts/' + id + '/friendship/reject');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship/reject', data);
   };
 
   userAccountAPI.cancelNeighbourRequest = function(id) {
-    return $http.put(configuration.apiUrl +'/useraccounts/' + id + '/friendship/cancel');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship/cancelRequest', data);
   };
 
   userAccountAPI.cancelNeighbourship = function(id) {
-    return $http.delete(configuration.apiUrl +'/useraccounts/' + id + '/friendship');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/friendship/cancel', data);
   };
 
   // Notification calls
@@ -53,7 +63,9 @@ factory('userAccountAPIService', ['$http', 'configuration', function($http, conf
   };
 
   userAccountAPI.removeOrganisation = function(id) {
-    return $http.delete(configuration.apiUrl +'/useraccounts/' + id + '/remove');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl +'/useraccounts/' + id + '/remove', data);
   };
 
   return userAccountAPI;

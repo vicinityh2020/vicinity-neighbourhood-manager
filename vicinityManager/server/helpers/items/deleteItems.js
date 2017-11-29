@@ -15,13 +15,13 @@ var audits = require('../../routes/audit/put');
 /*
 Deletes either a selection of oids or all oids under a node
 */
-function deleteItems(oids){
+function deleteItems(oids, email){
   return new Promise(function(resolve, reject) {
     if(oids.length > 0){ // Check if there is any item to delete
       logger.debug('Start async handler...');
       sync.forEachAll(oids,
-        function(value, allresult, next) {
-          deleting(value, function(value, result) {
+        function(value, allresult, next, otherParams) {
+          deleting(value, otherParams, function(value, result) {
               logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
@@ -33,7 +33,8 @@ function deleteItems(oids){
             resolve({"error": false, "message": allresult });
           }
         },
-        false
+        false,
+        {userMail:email}
       );
     } else {
       resolve({"error": false, "message": "Nothing to be removed..."});
@@ -47,7 +48,7 @@ function deleteItems(oids){
 Delete == Remove relevant fields and change status to removed
 Make sure that agent is deleted or break connection with removed object
 */
-function deleting(oid, callback){
+function deleting(oid, otherParams, callback){
   logger.debug('START execution with value =', oid);
   var obj = {
     info: {},
@@ -73,6 +74,7 @@ function deleting(oid, callback){
           return audits.putAuditInt(
             id,
             { orgOrigin: cid,
+              user: otherParams.userMail,
               auxConnection: {kind: 'item', item: id},
               eventType: 42 }
           );
@@ -81,6 +83,7 @@ function deleting(oid, callback){
           return audits.putAuditInt(
             cid,
             { orgOrigin: cid,
+              user: otherParams.userMail,
               auxConnection: {kind: 'item', item: id},
               eventType: 42 }
           );

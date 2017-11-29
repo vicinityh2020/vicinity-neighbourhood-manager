@@ -12,13 +12,13 @@ var sync = require('../../helpers/asyncHandler/sync');
 Deletes a selection of users
 Users to be removed pass their ids in an array as parameter
 */
-function deleteAllUsers(users){
+function deleteAllUsers(users, mail){
   return new Promise(function(resolve, reject) {
     if(users.length > 0){ // Check if there is any item to delete
       logger.debug('Start async handler...');
       sync.forEachAll(users,
-        function(value, allresult, next) {
-          deleting(value, function(value, result) {
+        function(value, allresult, next, otherParams) {
+          deleting(value, otherParams, function(value, result) {
               logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
@@ -30,7 +30,8 @@ function deleteAllUsers(users){
               resolve(allresult);
           }
         },
-        false
+        false,
+        { userMail : mail }
       );
     } else {
       reject("Nothing to be removed...");
@@ -44,7 +45,7 @@ function deleteAllUsers(users){
 Delete == Remove relevant fields and change status to removed
 Need to keep some fields for auditing purposes
 */
-function deleting(id, callback){
+function deleting(id, otherParams, callback){
   logger.debug('START execution with value =', id);
   var cid;
   var obj = {
@@ -62,6 +63,7 @@ function deleting(id, callback){
       cid,
       { orgOrigin: cid,
         auxConnection: {kind: 'user', item: id},
+        user: otherParams.userMail,
         eventType: 12 }
     );
   })

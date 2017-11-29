@@ -1,10 +1,11 @@
 'use strict';
 var services = angular.module('VicinityManagerApp.services').
-factory('userAPIService', ['$http', 'configuration', function($http, configuration){
+factory('userAPIService', ['$http', 'configuration', '$window', function($http, configuration, $window){
 
   var userAPI = {};
 
   userAPI.editInfoAboutUser = function(id, data) {
+    data.userMail = $window.sessionStorage.username;
     return $http.put(configuration.apiUrl +'/user/' + id, data);
   };
 
@@ -17,13 +18,10 @@ factory('userAPIService', ['$http', 'configuration', function($http, configurati
   };
 
   userAPI.deleteUser = function(id) {
-    return $http.delete(configuration.apiUrl + '/user/' + id);
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl + '/user/delete/' + id, data);
   };
-
-  // userAPI.newUserProfile = function () {
-  //   return $http.post(configuration.apiUrl +'/user/');
-  // };
-  //
 
   return userAPI;
 }]);

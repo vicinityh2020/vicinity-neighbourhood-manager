@@ -60,10 +60,10 @@ function remove(req, res, next) {
       if (err) {
         res.json({"error": true, "message": "Error fetching data: " + err});
       } else {
-        delUser.deleteAllUsers(companyData.accountOf)
+        delUser.deleteAllUsers(companyData.accountOf, req.body.userMail)
         .then(function(response){
           deletingResults.users = response;
-          return myNode.deleteNode(companyData.hasNodes);
+          return myNode.deleteNode(companyData.hasNodes, req.body.userMail);
         })
         .then(function(response){
           deletingResults.nodes = response;
@@ -83,6 +83,7 @@ function remove(req, res, next) {
           return audits.putAuditInt(
             cid,
             { orgOrigin: cid,
+              user: req.body.userMail,
               eventType: 2 }
           );
         })

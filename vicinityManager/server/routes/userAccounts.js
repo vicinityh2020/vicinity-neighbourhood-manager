@@ -19,18 +19,18 @@ router
     Deal with userAccount friendships
   */
   // Send friendship request to :id by autenticated user
-  .post('/:id/friendship', friending.processFriendRequest)
+  .post('/:id/friendship/request', friending.processFriendRequest)
 
   // Send friendship request approval to :id from authenticated user
-  .put('/:id/friendship/accept', friending.acceptFriendRequest)
+  .post('/:id/friendship/accept', friending.acceptFriendRequest)
 
   // Send friendship request approval to :id from authenticated user
-  .put('/:id/friendship/reject', friending.rejectFriendRequest)
+  .post('/:id/friendship/reject', friending.rejectFriendRequest)
 
   // Send friendship request approval to :id from authenticated user
-  .put('/:id/friendship/cancel', friending.cancelFriendRequest)
+  .post('/:id/friendship/cancelRequest', friending.cancelFriendRequest)
 
-  .delete('/:id/friendship', friending.cancelFriendship)
+  .post('/:id/friendship/cancel', friending.cancelFriendship)
 
   /*
     Deal with userAccount configuration
@@ -39,7 +39,7 @@ router
 
   .put('/:id/configuration', configuration.put)
 
-  .delete('/:id/remove', configuration.remove);
+  .post('/:id/remove', configuration.remove);
 
 // Export functions
 module.exports = router;

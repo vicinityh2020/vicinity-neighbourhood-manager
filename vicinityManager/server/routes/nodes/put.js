@@ -17,6 +17,7 @@ var myNode = require('../../helpers/nodes/processNode');
   function putOne(req, res) {
     var adid = req.params.id;
     var updates = req.body;
+    delete updates.userMail;
 
     nodeOp.findOneAndUpdate({adid: adid}, {$set: updates}, { new: true }, function(err, data){
       if(err){
@@ -25,12 +26,12 @@ var myNode = require('../../helpers/nodes/processNode');
         if(req.body.status === 'deleted'){
           var adids = [];
           adids.push(adid);
-          myNode.deleteNode(adids)
+          myNode.deleteNode(adids, req.body.userMail)
           .then(function(response){res.json({'error': false, 'message': response});})
           .catch(function(err){res.json({'error': true, 'message': err});});
         }else{
           data.pass = req.body.pass;
-          myNode.updateNode(data)
+          myNode.updateNode(data, req.body.userMail)
           .then(function(response){res.json({'error': false, 'message': response});})
           .catch(function(err){res.json({'error': true, 'message': err});});
         }

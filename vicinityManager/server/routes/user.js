@@ -10,6 +10,6 @@ router
   .get('/', getHelper.getAll)
   .post('/', postHelper.postOne)
   .put('/:id', putHelper.putOne)
-  .delete('/:id', deleteHelper.deleteUser);
+  .post('/delete/:id', deleteHelper.deleteUser);
 
 module.exports = router;

@@ -32,6 +32,7 @@ function rejectItemRequest(req, res, next) {
           my_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             auxConnection: { kind: 'item', item: dev_id },
             triggeredByMe: true,
             eventType: 52 }
@@ -41,6 +42,7 @@ function rejectItemRequest(req, res, next) {
           friend_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             auxConnection: { kind: 'item', item: dev_id },
             triggeredByMe: false,
             eventType: 52 }
@@ -50,6 +52,7 @@ function rejectItemRequest(req, res, next) {
           dev_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             auxConnection: { kind: 'item', item: dev_id },
             triggeredByMe: false,
             eventType: 52 }

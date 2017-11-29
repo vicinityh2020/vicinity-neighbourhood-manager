@@ -36,6 +36,7 @@ function acceptItemRequest(req, res, next) {
             { orgOrigin: my_id,
               orgDest: friend_id,
               auxConnection: { kind: 'item', item: dev_id },
+              user: req.body.userMail,
               triggeredByMe: true,
               eventType: 51 }
           );
@@ -44,6 +45,7 @@ function acceptItemRequest(req, res, next) {
             friend_id,
             { orgOrigin: my_id,
               orgDest: friend_id,
+              user: req.body.userMail,
               auxConnection: { kind: 'item', item: dev_id },
               triggeredByMe: false,
               eventType: 51 }
@@ -53,6 +55,7 @@ function acceptItemRequest(req, res, next) {
             dev_id,
             { orgOrigin: my_id,
               orgDest: friend_id,
+              user: req.body.userMail,
               auxConnection: { kind: 'item', item: dev_id },
               triggeredByMe: false,
               eventType: 51 }

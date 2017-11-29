@@ -18,12 +18,14 @@ Controls any possible object modification
 */
 function putOne(req, res) {
 //TODO: User authentic - Role check
+//TODO: Notify and audit when a device changes to disabled or private --> To orgs having access to it
 
   var response = {};
   var uid = mongoose.Types.ObjectId(req.params.id); // Unique mongo ID
   var oid = req.body.oid; // Object ID - Generated out of VCNT manager
   var adid = req.body.adid; // Agent ID - Generated in VCNT manager
   var updates = req.body;
+  delete updates.userMail;
 
   if(updates.status === 'enabled'){
     commServerProcess(oid, adid, updates.name, oid, updates.cid)
@@ -33,6 +35,7 @@ function putOne(req, res) {
           uid,
           {
             orgOrigin: updates.cid,
+            user: req.body.userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 43
           }
@@ -50,6 +53,7 @@ function putOne(req, res) {
           uid,
           {
             orgOrigin: updates.cid,
+            user: req.body.userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 44
           }
@@ -65,6 +69,7 @@ function putOne(req, res) {
       {
         orgOrigin: updates.cid,
         auxConnection: {kind: 'item', item: uid},
+        user: req.body.userMail,
         eventType: 45,
         description: "From " + updates.oldAccessLevel + " to " + updates.accessLevel
       }

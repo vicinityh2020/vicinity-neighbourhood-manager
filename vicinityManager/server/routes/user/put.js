@@ -7,12 +7,14 @@ function putOne(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
   var updates = req.body;
+  delete updates.userMail;
   userOp.findOne({ "_id": o_id})
   .then(function(response){
     audits.putAuditInt(
       response.organisation,
       { orgOrigin: response.organisation,
         auxConnection: {kind: 'user', item: o_id},
+        user: req.body.userMail,
         eventType: 13 }
     );
   })

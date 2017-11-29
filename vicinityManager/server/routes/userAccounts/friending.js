@@ -53,6 +53,7 @@ function processFriendRequest(req, res, next) {
           my_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: true,
             eventType: 31 }
         );
@@ -61,6 +62,7 @@ function processFriendRequest(req, res, next) {
           friend_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: false,
             eventType: 31 }
         );
@@ -120,6 +122,7 @@ function acceptFriendRequest(req, res, next) {
           my_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: true,
             eventType: 33 }
         );
@@ -128,6 +131,7 @@ function acceptFriendRequest(req, res, next) {
           friend_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: false,
             eventType: 33 }
         );
@@ -182,6 +186,7 @@ function rejectFriendRequest(req, res, next) {
           my_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: true,
             eventType: 34 }
         );
@@ -190,6 +195,7 @@ function rejectFriendRequest(req, res, next) {
           friend_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: false,
             eventType: 34 }
         );
@@ -245,6 +251,7 @@ function cancelFriendRequest(req, res, next){
         my_id,
         { orgOrigin: my_id,
           orgDest: friend_id,
+          user: req.body.userMail,
           triggeredByMe: true,
           eventType: 32 }
       );
@@ -253,6 +260,7 @@ function cancelFriendRequest(req, res, next){
         friend_id,
         { orgOrigin: my_id,
           orgDest: friend_id,
+          user: req.body.userMail,
           triggeredByMe: false,
           eventType: 32 }
       );
@@ -306,6 +314,7 @@ function cancelFriendship(req, res, next){
           my_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: true,
             eventType: 35 }
         );
@@ -314,6 +323,7 @@ function cancelFriendship(req, res, next){
           friend_id,
           { orgOrigin: my_id,
             orgDest: friend_id,
+            user: req.body.userMail,
             triggeredByMe: false,
             eventType: 35 }
         );

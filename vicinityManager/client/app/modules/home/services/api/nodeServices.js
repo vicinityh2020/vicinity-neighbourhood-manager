@@ -1,6 +1,6 @@
 'use strict';
 var services = angular.module('VicinityManagerApp.services').
-factory('nodeAPIService', ['$http', 'configuration', function($http, configuration){
+factory('nodeAPIService', ['$http', 'configuration', '$window', function($http, configuration, $window){
 
   var nodeAPI = {};
 
@@ -13,6 +13,7 @@ factory('nodeAPIService', ['$http', 'configuration', function($http, configurati
   };
 
   nodeAPI.postOne = function(cid,data) {
+    data.userMail = $window.sessionStorage.username;
     return $http.post(configuration.apiUrl + '/nodes/' + cid, data);
   };
 
@@ -21,6 +22,7 @@ factory('nodeAPIService', ['$http', 'configuration', function($http, configurati
   };
 
   nodeAPI.updateOne = function(cid,data) {
+    data.userMail = $window.sessionStorage.username;
     return $http.put(configuration.apiUrl + '/nodes/' + cid, data);
   };
 

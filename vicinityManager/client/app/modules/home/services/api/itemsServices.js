@@ -1,6 +1,6 @@
 'use strict';
 var services = angular.module('VicinityManagerApp.services').
-factory('itemsAPIService', ['$http', 'configuration', function($http, configuration){
+factory('itemsAPIService', ['$http', 'configuration', '$window', function($http, configuration, $window){
 
   var itemsAPI = {};
 
@@ -8,23 +8,33 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
   Process/change/request access to items
   */
   itemsAPI.processItemAccess = function(id) {
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.put(configuration.apiUrl +'/items/' + id + '/access', data);
   };
 
   itemsAPI.cancelItemRequest = function(id) {
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancelRequest');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancelRequest', data);
   };
 
   itemsAPI.acceptItemRequest = function(id) {
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/accept');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.put(configuration.apiUrl +'/items/' + id + '/access/accept', data);
   };
 
   itemsAPI.rejectItemRequest = function(id) {
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/reject');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.put(configuration.apiUrl +'/items/' + id + '/access/reject', data);
   };
 
   itemsAPI.cancelItemAccess = function(id) {
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancel');
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancel', data);
   };
 
   /*
@@ -36,11 +46,14 @@ factory('itemsAPIService', ['$http', 'configuration', function($http, configurat
   Get all items I can see, based on restrictive filter (0 most to 7 less restrictive)
   */
   itemsAPI.putOne = function(id, data) {
+    data.userMail = $window.sessionStorage.username;
     return $http.put(configuration.apiUrl +'/items/' + id, data);
   };
 
   itemsAPI.deleteItem = function(id) {
-    return $http.delete(configuration.apiUrl + '/items/' + id);
+    var data = {};
+    data.userMail = $window.sessionStorage.username;
+    return $http.post(configuration.apiUrl + '/items/delete/' + id, data);
   };
 
   itemsAPI.getItemWithAdd = function(id){

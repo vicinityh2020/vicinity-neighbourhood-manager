@@ -42,6 +42,7 @@ function postOne(req, res, next) {
       return audits.putAuditInt(
         data.organisation,
         { orgOrigin: data.organisation,
+          user: req.body.userMail,
           auxConnection: {kind: 'node', item: data._id},
           eventType: 21 }
         );

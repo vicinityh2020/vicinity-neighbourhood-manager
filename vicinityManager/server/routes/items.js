@@ -20,7 +20,7 @@ router
   .put('/:id/access/accept', acceptRequest.acceptItemRequest)
   .put('/:id/access/reject', rejectRequest.rejectItemRequest)
   .put('/:id/access/cancel', cancelAccess.cancelItemAccess)
-  .delete('/:id', deleteHelper.deleteOne)
+  .post('/delete/:id', deleteHelper.deleteOne)
 
 // When userAccount requires devices/services
   .get('/:cid/organisation/myItems', getHelper.getMyItems)
