@@ -32,6 +32,39 @@ url/state, the view is displayed at the top position
   };
 
 /*
+Converts Mongo Id into timestamp so we can work with dates in the UI
+*/
+
+  helpers.addTimestamp = function(array, callback){
+    var t = [], aux = [], result = [], dates = [];
+    angular.forEach(array,
+      function(n) {
+        if(n._id){
+          var timestamp = n._id.toString().substring(0,8);
+          var date = new Date(parseInt( timestamp, 16 ) * 1000 );
+          n.timestamp = moment(date);
+          n.dateCaption = n.timestamp.format("Do MMM YYYY");
+          n.timeCaption = n.timestamp.format("hh:mm a");
+        }
+        t.push(n.timestamp);
+        result.push(n);
+       }
+    );
+    t.sort(function(a,b){
+      return b - a;
+    });
+    angular.forEach(t,
+    function(n){
+        aux = n.format("Do MMM YYYY");
+        if (dates.indexOf(aux) === -1){
+          dates.push(aux);
+        }
+      }
+    );
+    callback(result, dates);
+  };
+
+/*
 Handling enable/disable scroll
 */
 // left: 37, up: 38, right: 39, down: 40,

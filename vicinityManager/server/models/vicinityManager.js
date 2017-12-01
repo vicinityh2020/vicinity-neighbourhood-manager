@@ -153,7 +153,7 @@ var auditLog = new Schema({
     // Depending on the audit, we need another connection to user, org, item or node
     auxConnection: {
     kind: String,
-    item: { type: ObjectId, refPath: 'auxConnection.kind' }
+    item: { type: ObjectId, refPath: 'data.auxConnection.kind' }
     },
     description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
     eventType: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit

@@ -56,51 +56,21 @@ $scope.period = 'week';
             for(var index in response.data.message){
               $scope.notifs = $scope.tempNotifs.concat(response.data.message);
             }
-            addTimestamp();
+            commonHelpers.addTimestamp($scope.notifs, function(array, dates){
+              $scope.dates = dates;
+              $scope.notifsWithDate = array;
+              $scope.loadedPage = true;
+            });
           },
           commonHelpers.errorCallback
         );
       }else{
         $scope.notifs = $scope.tempNotifs;
-        addTimestamp();
-      }
-    }
-
-// ========= Time related functions ===============
-
-    function addTimestamp(){
-      var t = [];
-      var aux = [];
-      angular.forEach($scope.notifs,
-        function(n) {
-          if(n._id){
-            var timestamp = n._id.toString().substring(0,8);
-            var date = new Date(parseInt( timestamp, 16 ) * 1000 );
-            n.timestamp = moment(date);
-            n.dateCaption = n.timestamp.format("Do MMM YYYY");
-            n.timeCaption = n.timestamp.format("hh:mm a");
-          }
-          t.push(n.timestamp);
-          $scope.notifsWithDate.push(n);
-         }
-      );
-      t.sort(function(a,b){
-        return b - a;
-      });
-      angular.forEach(t,
-      function(n){
-          aux = n.format("Do MMM YYYY");
-          findUnique(aux);
-        }
-      );
-      $scope.loadedPage = true;
-    }
-
-// --------------------------------------------------
-
-    function findUnique(a){
-      if ($scope.dates.indexOf(a) === -1){
-        $scope.dates.push(a);
+        commonHelpers.addTimestamp($scope.notifs, function(array, dates){
+          $scope.dates = dates;
+          $scope.notifsWithDate = array;
+          $scope.loadedPage = true;
+        });
       }
     }
 

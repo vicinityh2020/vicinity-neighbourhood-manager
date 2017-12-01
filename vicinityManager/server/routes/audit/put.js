@@ -25,7 +25,7 @@ function putAuditInt(id, payload){
         resolve({"res":response});
       })
       .catch(function(error){
-        logger.debug('Audit error');
+        logger.debug('Audit error: ' + error);
         reject({"res":error});
       });
     }
