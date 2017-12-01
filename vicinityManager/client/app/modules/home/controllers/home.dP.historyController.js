@@ -8,6 +8,7 @@ function ($scope, $window, commonHelpers, $stateParams, auditAPIService, Notific
   commonHelpers.triggerResize();
 
   $scope.loadedPage = false;
+  $scope.noLogs = true;
   $scope.dates = [];
   $scope.logs = [];
 
@@ -20,6 +21,7 @@ function ($scope, $window, commonHelpers, $stateParams, auditAPIService, Notific
         commonHelpers.addTimestamp(myAudits, function(array, dates){
           $scope.dates = dates;
           $scope.logs = array;
+          $scope.noLogs = array.length !== 0 ? false : true;
           $scope.loadedPage = true;
         });
         $scope.logs.reverse();

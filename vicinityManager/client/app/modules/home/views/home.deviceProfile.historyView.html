@@ -6,8 +6,12 @@
   <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
 </div>
 
+<div class="coll-md-1" ng-show="loadedPage && noLogs" style="margin: auto; max-width:700px">
+  <h3 class="well">No logs found...</h3>
+</div>
+
 <!-- /.box-header -->
-<section class="content" ng-show="loadedPage">
+<section class="content" ng-show="loadedPage && !noLogs">
 
 <div class="box-body">
 
