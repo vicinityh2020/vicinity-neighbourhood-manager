@@ -224,7 +224,7 @@ function createAuditLogs(cid, allresult){
           }
         },
         false,
-        {orgOrigin: cid, eventType: 41, auxConnection: {kind: 'item'}}
+        {orgOrigin: cid, user: "Agent", eventType: 41, auxConnection: {kind: 'item'}}
       );
     } catch(err){
       reject("Error creating audits: " + err);

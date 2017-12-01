@@ -25,6 +25,7 @@ function putOne(req, res) {
   var oid = req.body.oid; // Object ID - Generated out of VCNT manager
   var adid = req.body.adid; // Agent ID - Generated in VCNT manager
   var updates = req.body;
+  var userMail = req.body.userMail;
   delete updates.userMail;
 
   if(updates.status === 'enabled'){
@@ -35,7 +36,18 @@ function putOne(req, res) {
           uid,
           {
             orgOrigin: updates.cid,
-            user: req.body.userMail,
+            user: userMail,
+            auxConnection: {kind: 'item', item: uid},
+            eventType: 43
+          }
+        );
+      })
+      .then(function(response){
+        return audits.putAuditInt(
+          updates.cid,
+          {
+            orgOrigin: updates.cid,
+            user: userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 43
           }
@@ -53,7 +65,18 @@ function putOne(req, res) {
           uid,
           {
             orgOrigin: updates.cid,
-            user: req.body.userMail,
+            user: userMail,
+            auxConnection: {kind: 'item', item: uid},
+            eventType: 44
+          }
+        );
+      })
+      .then(function(response){
+        return audits.putAuditInt(
+          updates.cid,
+          {
+            orgOrigin: updates.cid,
+            user: userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 44
           }
@@ -69,9 +92,9 @@ function putOne(req, res) {
       {
         orgOrigin: updates.cid,
         auxConnection: {kind: 'item', item: uid},
-        user: req.body.userMail,
+        user: userMail,
         eventType: 45,
-        description: "From " + updates.oldAccessLevel + " to " + updates.accessLevel
+        description: "From " + clasify(Number(updates.oldAccessLevel)) + " to " + clasify(Number(updates.accessLevel))
       }
     )
     .then(function(response){ itemUpdate(uid,updates); })
@@ -168,6 +191,41 @@ function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
           }
         }
       );
+    }
+
+    /*
+    Converts accessLevel number to actual data accessLevel caption
+    */
+    function clasify(lvl){
+        switch (lvl) {
+            case 1:
+                caption = "private";
+                break;
+            case 2:
+                caption = "private";
+                break;
+            case 3:
+                caption = "request";
+                break;
+            case 4:
+                caption = "friend";
+                break;
+            case 5:
+                caption = "private";
+                break;
+            case 6:
+                caption = "request";
+                break;
+            case 7:
+                caption = "friend";
+                break;
+            case 8:
+                caption = "public";
+                break;
+            default:
+                caption = "private";
+        }
+        return caption;
     }
 
 // Module exports
