@@ -23,7 +23,7 @@
           <!-- Avatar -->
           <div class="notification-avatar">
             <a ng-show="notif.type === 1" ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})">
-              <img ng-src="../../../../img/icons/data_request.png" alt="Registration Request"/>
+              <img ng-src="./img/icons/data_request.png" alt="Registration Request"/>
             </a>
             <a ng-show="notif.type === 21" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})">
              <img ng-src="{{notif.itemId.avatar}}" alt="Device Avatar">
@@ -35,7 +35,7 @@
               <img ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
             </a>
             <a ng-show="notif.type === 13">
-              <img ng-src="../../../../app/img/icons/data_request.png" alt="Company Avatar"/>
+              <img ng-src="./img/icons/data_request.png" alt="Company Avatar"/>
             </a>
           </div>
 
