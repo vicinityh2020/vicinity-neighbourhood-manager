@@ -4,10 +4,18 @@ factory('searchAPIService', ['$http', 'configuration', function($http, configura
 
   var searchAPI = {};
 
-  //simple search filter
-  // searchAPI.search = function(filter) {
-  //   return $http.get('http://localhost:3000/search?filter=' + filter);
-  // };
+  searchAPI.getSubclass = function(filter) {
+    return $http.get(configuration.apiUrl + '/search/subclass?searchTerm=' + filter );
+  };
+
+  searchAPI.getAllSubclass = function(filter) {
+    return $http.get(configuration.apiUrl + '/search/allSubclass?searchTerm=' + filter );
+  };
+
+  searchAPI.getOids = function(filter, predicate, getGraph) {
+    var obj = {searchTerm: filter, predicate: predicate, getGraph: getGraph};
+    return $http.post(configuration.apiUrl + '/search/getOids', obj);
+  };
 
   searchAPI.searchOrganisation = function(filter) {
     return $http.get(configuration.apiUrl + '/search/organisation?searchTerm=' + filter );

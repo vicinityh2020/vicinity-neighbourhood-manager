@@ -5,27 +5,47 @@
 <section class="content">
 
   <!-- Filter -->
-  <div class="box-header with-border" style >
-    <div class="box-tools">
-      <div class="dropdown">
-        <a ui-sref="root.main.allDevices" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Item selection
+  <div class="panel panel-primary">
+    <p class="panel-heading">
+      <b>FILTERS</b>
+      <a class="pull-right" ng-show="isCollapsed" ng-click="collapseFlag()" data-toggle="collapse" data-target="#lvl_filters"><i style="color:white" class="fa fa-plus-square fa-2x"></i></a>
+      <a class="pull-right" ng-show="!isCollapsed" ng-click="collapseFlag()" data-toggle="collapse" data-target="#lvl_filters"><i style="color:white" class="fa fa-minus-square fa-2x"></i></a>
+    </p>
+    <div id="lvl_filters" class="collapse">
+    <div class="dropdown" style="margin: 10px">
+      <a ui-sref="root.main.allDevices" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Item selection
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu" role="menu">
+         <li><a ng-click="filterItems(0)" ui-sref="root.main.allDevices">My disabled {{typeOfItem}}</a></li>
+         <li><a ng-click="filterItems(1)" ui-sref="root.main.allDevices">My private {{typeOfItem}}</a></li>
+         <li><a ng-click="filterItems(2)" ui-sref="root.main.allDevices">My shared {{typeOfItem}}</a></li>
+         <li><a ng-click="filterItems(3)" ui-sref="root.main.allDevices">My public {{typeOfItem}}</a></li>
+         <li><a ng-click="filterItems(4)" ui-sref="root.main.allDevices">My {{typeOfItem}}</a></li>
+         <li><a ng-click="filterItems(5)" ui-sref="root.main.allDevices">All shared {{typeOfItem}}</a></li>
+         <li><a ng-click="filterItems(6)" ui-sref="root.main.allDevices">All public {{typeOfItem}}</a></li>
+         <li><a ng-click="filterItems(7)" ui-sref="root.main.allDevices">All {{typeOfItem}}</a></li>
+      </ul>
+     </div>
+      <div class="dropdown" style="margin: 10px">
+        <a ui-sref="root.main.allDevices" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Device type selection
           <span class="caret"></span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-right" role="menu">
-           <li><a ng-click="filterItems(0)" ui-sref="root.main.allDevices">My disabled {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(1)" ui-sref="root.main.allDevices">My private {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(2)" ui-sref="root.main.allDevices">My shared {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(3)" ui-sref="root.main.allDevices">My public {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(4)" ui-sref="root.main.allDevices">My {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(5)" ui-sref="root.main.allDevices">All shared {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(6)" ui-sref="root.main.allDevices">All public {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(7)" ui-sref="root.main.allDevices">All {{typeOfItem}}</a></li>
+        <ul class="dropdown-menu" role="menu">
+           <li ng-repeat="it in ontologyDevType.value"><a ng-click="getSubclassDevType($index)" ui-sref="root.main.allDevices">{{it}}</a></li>
         </ul>
        </div>
+       <div class="dropdown" style="margin: 10px">
+         <a ui-sref="root.main.allDevices" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Property selection
+           <span class="caret"></span>
+         </a>
+         <ul class="dropdown-menu" role="menu">
+           <li ng-repeat="prop in ontologyProperties.value"><a ng-click="getSubclassProp($index)" ui-sref="root.main.allDevices">{{prop}}</a></li>
+         </ul>
+      </div>
     </div>
   </div>
 
-<hr>
 <!-- Start -->
   <div class="row" ng-show="loadedPage">
 

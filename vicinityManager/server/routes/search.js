@@ -5,6 +5,9 @@ var getHelper = require('../helpers/search/get.js');
   router
     .get('/organisation', getHelper.searchOrganisation)
     .get('/user', getHelper.searchUser)
+    .get('/subclass', getHelper.searchInOntology)
+    .get('/allSubclass', getHelper.searchInOntologyWithInferences)
+    .post('/getOids', getHelper.getOidFromOntology)
     .post('/item/:cid', getHelper.searchItem);
 
 module.exports = router;

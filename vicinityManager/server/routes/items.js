@@ -24,6 +24,6 @@ router
 
 // When userAccount requires devices/services
   .get('/:cid/organisation/myItems', getHelper.getMyItems)
-  .get('/:cid/organisation/allItems', getHelper.getAllItems);
+  .post('/:cid/organisation/allItems', getHelper.getAllItems);
 
 module.exports = router;

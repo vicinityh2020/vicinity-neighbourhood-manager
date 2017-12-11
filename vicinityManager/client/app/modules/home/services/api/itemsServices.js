@@ -64,8 +64,9 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/myItems?type=' + filter + '&offset=' + offset + '&cid=' + cid);
   };
 
-  itemsAPI.getAllItems = function(id, filter, offset, filterNumber) {
-    return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/allItems?type=' + filter + '&offset=' + offset + '&filterNumber=' + filterNumber);
+  itemsAPI.getAllItems = function(id, filter, offset, filterNumber, filterOntology) {
+    var payload = { type: filter, offset: offset, filterNumber: filterNumber, filterOntology: filterOntology};
+    return $http.post(configuration.apiUrl + '/items/' + id + '/organisation/allItems', payload);
   };
 
   return itemsAPI;

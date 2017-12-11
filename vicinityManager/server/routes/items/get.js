@@ -63,9 +63,10 @@ Receives following parameters:
 function getAllItems(req, res) {
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-  var type = req.query.type;
-  var offset = req.query.offset;
-  var filterNumber = req.query.filterNumber;
+  var type = req.body.type;
+  var offset = req.body.offset;
+  var filterNumber = req.body.filterNumber;
+  var filterOntology = typeof req.body.filterOntology !== 'undefined' ? req.body.filterOntology : [];
 
   userAccountOp.find({_id: o_id}, {knows: 1}, function(err, data){
     if (err){
@@ -80,6 +81,9 @@ function getAllItems(req, res) {
       { hasAdministrator: o_id }
       ]
     };
+
+    // Filters oids based on ontology matches to the user selection
+    if(filterOntology.length > 0){query.oid = {$in: filterOntology}; }
 
     query = updateQueryWithFilterNumber(query, filterNumber, o_id);
 
