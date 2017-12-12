@@ -71,7 +71,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
             );
             createOrganisationGroups(orgData); // Creates necessary groups in comm server
 
-	    logger.debug('New userAccount was successfuly saved!');
+	          logger.debug('New userAccount was successfuly saved!');
             response = {"error": false, "message": "New userAccount was successfuly saved!"};
             res.json(response);
           }
@@ -162,20 +162,12 @@ function createOrganisationGroups(data){
       function(response){
         payload.name = data._id + names[1];
         commServer.callCommServer(payload, 'groups', 'POST')
-        // TODO remove when comm server architecture stable
-          // .then(
-          //     function(response){
-          //       payload.name = data._id + names[2];
-          //       commServer.callCommServer(payload, 'groups', 'POST')
-                  .then(
-                    function(response){
-                      mySql.sendQuery(data._id, 'publicDevices'); // Updates sharedRoster groups in mySql db of the commServer
-                    },
-                    errorCallback1
-                  );
-          //     },
-          //     errorCallback1
-          // );
+        .then(
+          function(response){
+            mySql.sendQuery(data._id, 'publicDevices'); // Updates sharedRoster groups in mySql db of the commServer
+          },
+          errorCallback1
+        );
       },
       errorCallback1
     );

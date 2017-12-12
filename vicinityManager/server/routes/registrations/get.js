@@ -22,7 +22,7 @@ function getOne(req, res, next) {
     }
     logger.debug('End getOne');
     res.json(response);
-  })
+  });
 }
 
 function getAll(req, res, next) {
@@ -38,17 +38,3 @@ function getAll(req, res, next) {
     res.json(response);
   });
 }
-
-// function getAll(req, res, next) {
-// //TODO: User authentic - Role check
-//   var response = {};
-//
-//   itemOp.find({}, function(err, data) {
-//     if (err) {
-//       response = {"error": true, "message": "Error fetching data"};
-//     } else {
-//       response = {"error": false, "message": data};
-//     }
-//     res.json(response);
-//   });
-// }

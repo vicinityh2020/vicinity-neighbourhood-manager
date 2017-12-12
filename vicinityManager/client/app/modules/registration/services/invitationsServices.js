@@ -1,3 +1,4 @@
+"use strict";
 var services = angular.module('VicinityManagerApp.services').
 factory('invitationsAPIService', ['$http', 'configuration', function($http, configuration){
 
@@ -14,11 +15,6 @@ factory('invitationsAPIService', ['$http', 'configuration', function($http, conf
   invitationsAPI.postOne = function(data) {
     return $http.post(configuration.apiUrl +'/invitations/', data);
   };
-
-  // itemsAPI.addFriendToHasAccess = function(id){
-  //   return $http.put('http://localhost:3000/items/' + id '/hasAccess');
-  // };
-
 
   return invitationsAPI;
 }]);

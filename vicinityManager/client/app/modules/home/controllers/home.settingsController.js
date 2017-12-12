@@ -49,35 +49,24 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
     );
 
   userAPIService.getUser($window.sessionStorage.userAccountId)
-    .then(
-      function successCallback(response) {
-        $scope.user = response.data.message;
-      },
-      function errorCallback(response){
-      }
-  );
-
-
+    .then( function successCallback(response) { $scope.user = response.data.message; },
+      function errorCallback(response){});
 
   $scope.alertPopUp1 = function () {
-    // alert("Please copy the following link and send it to new user: http://localhost:8000/app/#/login");
-
     $('div#myModal1').show();
-  }
+  };
 
   $scope.alertPopUp2 = function () {
     $('div#myModal2').show();
-    // alert("Please copy the following link and send it to administrator of new company: http://localhost:8000/app/#/login");
-
-  }
+  };
 
   $scope.closeNow1 = function () {
     $('div#myModal1').hide();
-  }
+  };
 
   $scope.closeNow2 = function () {
     $('div#myModal2').hide();
-  }
+  };
 
   $scope.inviteCompany = function (validBool2) {
     if (validBool2){
@@ -103,27 +92,7 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
         $('input#emailVer2').removeClass("invalid");
       }, 2000);
     }
-    // invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}, function (response){
-    //
-    //   var $emailVer = $('input#emailVer');
-    //
-    //   $('div#myModal2').hide();
-    //
-    //   if(response.success){
-    //     $('div#myModal2').hide();
-    //
-    //   }else{
-    //     // $emailVer.addClass("invalid");
-    //     $emailVer.addClass("invalid");
-    //
-    //     setTimeout(function() {
-    //      $('input#emailVer').removeClass("invalid");
-    //
-    //    }, 2000);
-    //   };
-    // });
-
-  }
+  };
 
   $scope.inviteUser = function (validBool) {
     if (validBool) {
@@ -151,7 +120,5 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
       }, 2000);
     }
   };
-
-
 
 });

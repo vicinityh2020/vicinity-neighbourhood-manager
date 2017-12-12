@@ -26,44 +26,24 @@ angular.module('Registration')
 
 
 // ===== Update status to verified =======
-             var myInit = function(){
-               registrationsAPIService.getOne($stateParams.registrationId).then(
-                 function successCallback(response){
-                   $scope.registration = response.data.message;
-                  if ($scope.registration.status == "open" || $scope.registration.status == "pending"){
-                     registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).then(
-                       function successCallback(){
-                      //  $window.alert("verified");
-                       // TODO update the process and do it in the server side
-                      //  postNewUsers($scope.registration);
-                      //  registrationsAPI.postOneUserAccount(data).then(
-                      //    function successCallback(response){
-                      //    },
-                      //    function errorCallback(response){}
-                      //  );
-
-                     },
-                     function errorCallback(){$window.alert("verification failed");}
-                   );
-                    }
-                    else{$window.alert("already verified")}
-                 },
-                 function errorCallback(){$window.alert("verification failed");}
-               );
-             }
+   var myInit = function(){
+     registrationsAPIService.getOne($stateParams.registrationId).then(
+       function successCallback(response){
+         $scope.registration = response.data.message;
+        if ($scope.registration.status == "open" || $scope.registration.status == "pending"){
+           registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).then(
+           function successCallback(){
+           },
+           function errorCallback(){$window.alert("verification failed");}
+         );
+          }
+          else{$window.alert("already verified")}
+       },
+       function errorCallback(){$window.alert("verification failed");}
+     );
+   };
 
 
-              myInit();
-
-
-              // var postNewUsers = function(data){
-              //   registrationsAPI.postOneUserAccount(data).then(
-              //     function successCallback(response){
-              //
-              //
-              //     },
-              //     function errorCallback(response){}
-              //   );
-              // }
+    myInit();
 
 }]);

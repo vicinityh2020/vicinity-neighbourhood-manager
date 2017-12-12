@@ -8,6 +8,6 @@ router
 
   .post('/', postHelper.postOne)
   .get('/', getHelper.getAll)
-  .get('/:id', getHelper.getOne)
+  .get('/:id', getHelper.getOne);
 
 module.exports = router;

@@ -1,3 +1,4 @@
+"use strict";
 var services = angular.module('VicinityManagerApp.services').
 factory('registrationsAPIService', ['$http', 'configuration', function($http, configuration){
 
