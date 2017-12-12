@@ -119,24 +119,24 @@ Note, bower packages are installed by npm install.
 ```
 
 # Deploy instance of VCNT NM in a virtual machine
-
-## Linux/Debian machine
+### Linux/Debian machine
  
-0. Pre-requisites
-* GIT - [https://git-scm.com/]
-* NodeJS - [http://nodejs.org/]
+## Pre-requisites
+ * GIT - [https://git-scm.com/]
+ * NodeJS - [http://nodejs.org/]
   
 
-1. Get the web application
+## Get the web application
 #### Navigate to the right folder and clone the repository:
-* cd /var/www
-* git clone https://jalmela@bitbucket.org/bavenir/vicinity.git
+ * cd /var/www
+ * git clone https://jalmela@bitbucket.org/bavenir/vicinity.git
 
-2. Install and configure Mongo DB
+## Install and configure Mongo DB
 #### Install
 ###### Import they key for the official MongoDB repository.
-* sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-#### After successfully importing the key, you will see:
+ * sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+###### After successfully importing the key, you will see:
+
 ```
 Output
 gpg: Total number processed: 1
@@ -162,7 +162,7 @@ gpg:               imported: 1  (RSA: 1)
 * Storage --> dbPath: /data/db
 * SystemLog --> path: /var/log/mongodb/mongod.log
 
-3. Run the client
+## Run the client
 #### Install NGINX -- https://www.nginx.com/resources/wiki/start/
 * sudo apt-get update
 * sudo apt-get upgrade
@@ -197,7 +197,7 @@ try_files $uri $uri/ =404;
   
 ```
 
-4. Run the server
+## Run the server
 
 #### Install forever 
 * npm install –g forever
@@ -311,7 +311,7 @@ try_files $uri $uri/ =404;
 #### Run service
 * sudo service vcnt_server start
 
-5. Putting all together -- First user and organisation in the app
+## Putting all together -- First user and organisation in the app
 #### To start using the web app we need to create the first user manually
 ###### Basic set up
 * Create dB vicinity_neighbourhood_manager in Mongo
