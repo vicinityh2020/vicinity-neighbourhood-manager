@@ -204,6 +204,8 @@ Note, bower packages are installed by npm install.
   
   # Vicinity server configuration
   
+
+  ```
   ```
   server {
   
