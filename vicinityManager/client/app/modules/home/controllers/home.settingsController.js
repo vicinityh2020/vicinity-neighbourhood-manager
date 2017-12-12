@@ -39,10 +39,10 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
             for (index2 in $scope.comp.accountOf[index].authentication.principalRoles){
               if ($scope.comp.accountOf[index].authentication.principalRoles[index2] == "administrator"){
                 $scope.isAdmin = true;
-              };
-            };
-          };
-        };
+              }
+            }
+          }
+        }
       },
       function errorCallback(response){
       }
@@ -81,7 +81,7 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
 
   $scope.inviteCompany = function (validBool2) {
     if (validBool2){
-      data = {
+      var data = {
           emailTo: $scope.emailCompany,
           nameTo: $scope.nameCompany,
           sentBy:
@@ -102,7 +102,7 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
       setTimeout(function() {
         $('input#emailVer2').removeClass("invalid");
       }, 2000);
-    };
+    }
     // invitationsAPIService.postOne({emailTo: $scope.emailCompany, nameTo: $scope.nameCompany, sentBy: {name: $scope.user.name, organisation: $scope.comp.organisation, email: $scope.user.email}, type: "newCompany"}, function (response){
     //
     //   var $emailVer = $('input#emailVer');
@@ -127,7 +127,7 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
 
   $scope.inviteUser = function (validBool) {
     if (validBool) {
-      data = {
+      var data = {
           emailTo: $scope.emailUser,
           nameTo: $scope.nameUser,
           sentBy:
@@ -149,8 +149,8 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
       setTimeout(function() {
         $('input#emailVer').removeClass("invalid");
       }, 2000);
-    };
-  }
+    }
+  };
 
 
 
