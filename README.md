@@ -122,124 +122,93 @@ Note, bower packages are installed by npm install.
 
 ## Linux/Debian machine
  
- 
 0. Pre-requisites
-  GIT - [https://git-scm.com/]
-  NodeJS - [http://nodejs.org/]
+* GIT - [https://git-scm.com/]
+* NodeJS - [http://nodejs.org/]
   
 
 1. Get the web application
-  * Navigate to the right folder and clone the repository:
-    * cd /var/www
-    git clone https://jalmela@bitbucket.org/bavenir/vicinity.git ???
+#### Navigate to the right folder and clone the repository:
+* cd /var/www
+* git clone https://jalmela@bitbucket.org/bavenir/vicinity.git
 
 2. Install and configure Mongo DB
- * Install
- **Import they key for the official MongoDB repository.
+#### Install
+###### Import they key for the official MongoDB repository.
+* sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+#### After successfully importing the key, you will see:
+```
+Output
+gpg: Total number processed: 1
+gpg:               imported: 1  (RSA: 1)
+```  
+###### Next, we have to add the MongoDB repository details so apt will know where to download the packages from. Issue the following command to create a list file for MongoDB.
+* echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+###### After adding the repository details, update the packages list and install the MongoDB package.
+* sudo apt-get update 
+* sudo apt-get install -y mongodb-org
+###### Once MongoDB installs, start the service, and ensure it starts when your server reboots:
+* sudo systemctl enable mongod.service
+* sudo systemctl start mongod
+* sudo systemctl status mongod – Check it runs properly
  
-  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-
-  **After successfully importing the key, you will see:
-
-  Output
-  gpg: Total number processed: 1
-  gpg:               imported: 1  (RSA: 1)
-  
-  Next, we have to add the MongoDB repository details so apt will know where to download the packages from.
-  
-  **Issue the following command to create a list file for MongoDB.
-  
-  echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-
-  **After adding the repository details, update the packages list and install the MongoDB package.
-
-  sudo apt-get update 
-  sudo apt-get install -y mongodb-org
-
-  **Once MongoDB installs, start the service, and ensure it starts when your server reboots:
- 
- sudo systemctl enable mongod.service
- sudo systemctl start mongod
- sudo systemctl status mongod – Check it runs properly
- 
-## VERY IMPORTANT
-  ** Create target folders for mongo and give permissions to the mongo user on that folders.   
-
-  Mkdir /data/db 
-  Chown -R mongodb:mongodb /data/db
-  Chown -R mongodb:mongodb /var/lib/mongodb 
-    
-   
-  * Configuration file -- /etc/mongod.conf
-  
-  ** Set paths to:
-  
-    *** Storage:
-    dbPath: /data/db
-    *** SystemLog:
-    path: /var/log/mongodb/mongod.log
-
+#### VERY IMPORTANT
+###### Create target folders for mongo and give permissions to the mongo user on that folders.   
+* Mkdir /data/db 
+* Chown -R mongodb:mongodb /data/db
+* Chown -R mongodb:mongodb /var/lib/mongodb 
+#### Configuration file -- /etc/mongod.conf
+###### Set paths to:
+* Storage --> dbPath: /data/db
+* SystemLog --> path: /var/log/mongodb/mongod.log
 
 3. Run the client
+#### Install NGINX -- https://www.nginx.com/resources/wiki/start/
+* sudo apt-get update
+* sudo apt-get upgrade
+* sudo apt-get install nginx
+#### Configure NGINX
+* https://www.linode.com/docs/web-servers/nginx/how-to-configure-nginx
+#### Backup the old configuration
+* cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
+* service nginx reload
+#### Create server file
+* touch /etc/nginx/sites-available/vicinity
+#### Script vicinity
 
-  * Install NGINX -- https://www.nginx.com/resources/wiki/start/
-  sudo apt-get update
-  sudo apt-get upgrade
-  sudo apt-get install nginx
+```
+server {
+listen 80 default_server;
+listen [::]:80 default_server;
 
-  * Configure NGINX
-  
-  https://www.linode.com/docs/web-servers/nginx/how-to-configure-nginx
-  
-  ** Backup the old configuration
+root /var/www/vicinity/vicinityManager/client/app;
 
-  cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
-  service nginx reload
+# Add index.php to the list if you are using PHP
+index index.html index.htm index.nginx-debian.html;
 
-  ** Create server file
-  
-  touch /etc/nginx/sites-available/vicinity
-  
-  ** Script vicinity
-  
-  # Vicinity server configuration
-  
+server_name _;
 
-  ```
-  ```
-  server {
-  
-	listen 80 default_server;
-	listen [::]:80 default_server;
-
-	root /var/www/vicinity/vicinityManager/client/app;
-
-	# Add index.php to the list if you are using PHP
-	index index.html index.htm index.nginx-debian.html;
-
-	server_name _;
-
-	location / {
-		# First attempt to serve request as file, then
-		# as directory, then fall back to displaying a 404.
-		try_files $uri $uri/ =404;
-	}
-  }
+location / {
+# First attempt to serve request as file, then
+# as directory, then fall back to displaying a 404.
+try_files $uri $uri/ =404;
+}
+}
   
 ```
 
 4. Run the server
 
-  * Install forever 
-  npm install –g forever
-  sudo mkdir /var/run/forever
+#### Install forever 
+* npm install –g forever
+* sudo mkdir /var/run/forever
 
-  * Create a service 
-  sudo touch /etc/init.d/vcnt_server
-  sudo chmod a+x /etc/init.d/ vcnt_server 
-  sudo update-rc.d vcnt_server defaults
+#### Create a service 
+* sudo touch /etc/init.d/vcnt_server
+* sudo chmod a+x /etc/init.d/ vcnt_server 
+* sudo update-rc.d vcnt_server defaults
 
-  * Script
+#### Script
 
 ```
   #!/bin/bash
@@ -339,31 +308,26 @@ Note, bower packages are installed by npm install.
   exit $RETVAL
 ```
 
-  * Run service
-  sudo service vcnt_server start
+#### Run service
+* sudo service vcnt_server start
 
 5. Putting all together -- First user and organisation in the app
+#### To start using the web app we need to create the first user manually
+###### Basic set up
+* Create dB vicinity_neighbourhood_manager in Mongo
+* Create the collections user and useraccounts
+###### Insert first organisation in Mongo – In the useraccount collection
 
-  *To start using the web app we need to create the first user manually
-
-  ** Basic set up
-
-  Create dB vicinity_neighbourhood_manager in Mongo
-  Create the collections user and useraccounts
-
-  ** Insert first organisation in Mongo – In the useraccount collection
-  
-  db. useraccounts.insert({
-    "location" : Some location as String,
-    "organisation" : Some name as String,
-    "businessId" : Some BID as String
-  })
-
-  ** Find organisation and copy the Mongo Id
-
-  db.useraccounts.find({organisation: organisationName}).pretty()
-
-  ** Insert first user – In the user collection
+```
+db. useraccounts.insert({
+"location" : Some location as String,
+"organisation" : Some name as String,
+"businessId" : Some BID as String
+})
+```
+###### Find organisation and copy the Mongo Id
+* db.useraccounts.find({organisation: organisationName}).pretty()
+###### Insert first user – In the user collection
   
 ```
   db.users.insert({
@@ -382,13 +346,10 @@ Note, bower packages are installed by npm install.
   })
 ```
 
-  ** Add your new user to the organisation
-  
-  db.useraccounts.update({'organisation': organisationName},{$push:{'accountOf': userMongoId }})
-
-  ** Try to log in 
-  
-  Navigate your browser to the app domain and use the mail and password to do the first log in. 
+###### Add your new user to the organisation
+* db.useraccounts.update({'organisation': organisationName},{$push:{'accountOf': userMongoId }})
+###### Try to log in 
+* Navigate your browser to the app domain and use the mail and password to do the first log in. 
 
 
 
