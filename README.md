@@ -117,7 +117,7 @@ Note, bower packages are installed by npm install.
 'node-debugger:step-out' (shift-F11)
 'node-debugger:attach'
 ```
-```
+
 # Deploy instance of VCNT NM in a virtual machine
 
 ## Linux/Debian machine
