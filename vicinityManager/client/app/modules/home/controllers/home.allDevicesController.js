@@ -115,8 +115,8 @@ angular.module('VicinityManagerApp.controllers')
   // Filters items
 
   $scope.filterItems = function(n){
-      n = typeof n !== 'undefined' ? n : false;
-      if(n){
+      var haveFilter = typeof n !== 'undefined' ? true : false;
+      if(haveFilter){
         $scope.filterNumber = n;
         changeHeader(n);
       }

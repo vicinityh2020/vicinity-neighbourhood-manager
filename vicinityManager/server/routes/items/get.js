@@ -147,7 +147,6 @@ function getItemWithAdd(req, res, next) {
 // Private functions
 
 function updateQueryWithFilterNumber(q, fN, cid){
-  logger.debug(fN);
   switch (Number(fN)) {
       case 0:
           q.status = "disabled";
@@ -176,7 +175,6 @@ function updateQueryWithFilterNumber(q, fN, cid){
       case 7:
           break;
         }
-        logger.debug(JSON.stringify(q));
         return q;
       }
 
