@@ -14,11 +14,12 @@ When invoked needs to receive an object with the mail fields
 function sendMail(mailInfo){
 
   var smtpConfig = {
-    service: 'Gmail',
+
+    host: 'vicinity.bavenir.eu',
     auth:
-    { user: 'noreply.vicinity@gmail.com',
-      pass: '9]hj4!gfmSa>8eA,' }
-  };
+    { user: 'vicinitymailservice',
+      pass: '1nTer0Per4bilit715h3r3' }
+    };
 
   var transporter = nodemailer.createTransport(smtpConfig);
 
@@ -44,8 +45,8 @@ function sendMail(mailInfo){
               logger.debug(error);
             } else {
             logger.debug('Message sent: ' + info.response);
-            }  
-	  }	
+            }
+	  }
 	);
       });
     }
