@@ -5,6 +5,7 @@ var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require('../../middlewares/logger');
 var sync = require('../../helpers/asyncHandler/sync');
+var audits = require('../../routes/audit/put');
 
 // Public functions
 

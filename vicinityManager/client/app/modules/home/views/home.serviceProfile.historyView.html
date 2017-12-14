@@ -60,13 +60,13 @@
                 <span ng-show="log.eventType===44">The {{log.auxConnection.item.name}} was disabled</span>
                 <span ng-show="log.eventType===45">Privacy change: {{log.description}} </span>
 
-                <span ng-show="log.eventType===51 && log.triggeredByMe===true">You accepted the request from {{log.orgDest.organisation}} to access {{log.auxConnection.item.name}} data</span>
-                <span ng-show="log.eventType===52 && log.triggeredByMe===true">You rejected the request from {{log.orgDest.organisation}} to access {{log.auxConnection.item.name}} data</span>
-                <span ng-show="log.eventType===53 && log.triggeredByMe===true">You cancelled your data access to {{log.auxConnection.item.name}}</span>
-                <span ng-show="log.eventType===54 && log.triggeredByMe===true"> You requested access to {{log.auxConnection.item.name}} which belongs to {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===55 && log.triggeredByMe===true"> You cancelled your access request to {{log.auxConnection.item.name}} which belongs to {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===51 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} accepted your data access request to {{log.auxConnection.item.name}}</span>
-                <span ng-show="log.eventType===52 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} rejected your data access request to {{log.auxConnection.item.name}}</span>
+                <span ng-show="log.eventType===51 && log.triggeredByMe===true">{{log.orgOrigin.organisation}} accepted the request from {{log.orgDest.organisation}} to access {{log.auxConnection.item.name}} data</span>
+                <span ng-show="log.eventType===52 && log.triggeredByMe===true">{{log.orgOrigin.organisation}} rejected the request from {{log.orgDest.organisation}} to access {{log.auxConnection.item.name}} data</span>
+                <span ng-show="log.eventType===53 && log.triggeredByMe===true">{{log.orgOrigin.organisation}} cancelled {{log.orgDest.organisation}} data access to {{log.auxConnection.item.name}}</span>
+                <span ng-show="log.eventType===54 && log.triggeredByMe===true"> {{log.orgOrigin.organisation}} requested access to {{log.auxConnection.item.name}} which belongs to {{log.orgDest.organisation}}</span>
+                <span ng-show="log.eventType===55 && log.triggeredByMe===true">{{log.orgOrigin.organisation}} cancelled {{log.orgDest.organisation}} access request to {{log.auxConnection.item.name}} which belongs to {{log.orgDest.organisation}}</span>
+                <span ng-show="log.eventType===51 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} accepted {{log.orgDest.organisation}} data access request to {{log.auxConnection.item.name}}</span>
+                <span ng-show="log.eventType===52 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} rejected {{log.orgDest.organisation}} data access request to {{log.auxConnection.item.name}}</span>
                 <span ng-show="log.eventType===53 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} cancelled the connection with {{log.auxConnection.item.name}}</span>
                 <span ng-show="log.eventType===54 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} requests access to {{log.auxConnection.item.name}}</span>
                 <span ng-show="log.eventType===55 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} cancelled the access request to {{log.auxConnection.item.name}}</span>
