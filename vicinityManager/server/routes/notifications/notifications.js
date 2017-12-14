@@ -114,6 +114,7 @@ function changeNotificationStatus(senderId, recepId, type, other){
     if(senderId !== ""){ query.sentBy = senderId; }
     if(recepId !== ""){ query.addressedTo = {$in : [recepId]}; }
     if(other.hasOwnProperty('itemId')){ query.itemId = other.itemId; }
+    if(other.hasOwnProperty('sentByReg')){ query.sentByReg = other.sentByReg; }
     // Change status of found notifs
     notificationOp.find(query,
       function(err, notif){

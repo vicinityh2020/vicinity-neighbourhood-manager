@@ -12,6 +12,7 @@ var config = require('../../configuration/configuration');
 var commServer = require('../../helpers/commServer/request');
 var mySql = require('../../helpers/mySql/sendQuery');
 var audits = require('../../routes/audit/put');
+var notificationAPI = require('../../routes/notifications/notifications');
 
 // Functions
 
@@ -125,6 +126,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
 
       }else if ((raw.type == "newCompany") && (raw.status == "pending")){
         send_mail(raw._id,raw.email,raw.companyName, raw.status);
+        notificationAPI.changeNotificationStatus("", "", 1, {sentByReg: raw._id});
         response = {"error": false, "message": "Verification mail sent!"};
         res.json(response);
 
@@ -132,6 +134,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
 
       }else if ((raw.type == "newCompany") && (raw.status == "declined")){
         send_mail(raw._id,raw.email,raw.companyName, raw.status);
+        notificationAPI.changeNotificationStatus("", "", 1, {sentByReg: raw._id});
         response = {"error": false, "message": "Verification mail sent!"};
         res.json(response);
 
