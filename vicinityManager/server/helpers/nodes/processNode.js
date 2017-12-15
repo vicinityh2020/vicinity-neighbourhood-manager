@@ -24,14 +24,14 @@ function deleteNode(adids, email){
       sync.forEachAll(adids,
         function(value, allresult, next, otherParams) {
           deletingNodes(value, otherParams, function(value, result) {
-              logger.debug('END execution with value =', value, 'and result =', result);
+              // logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
           });
         },
         function(allresult) {
           if(allresult.length === adids.length){
-            logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+            // logger.debug('Completed async handler: ' + JSON.stringify(allresult));
             resolve({"error": false, "message": allresult });
           }
         },
@@ -39,6 +39,7 @@ function deleteNode(adids, email){
         {userMail:email}
       );
     } else {
+      logger.warn({user: email, action: 'deleteNodes', message: "No nodes found to be removed"});
       resolve({"error": false, "message": "Nothing to be removed..."});
     }
   });
@@ -74,8 +75,14 @@ the update process continues in the commServer
                 eventType: 23 }
             );
           })
-        .then(function(response){ resolve('Success'); })
-        .catch(function(err){ reject(err); });
+        .then(function(response){
+          logger.audit({user: email, action: 'updateNode', item: response._id });
+          resolve('Success');
+        })
+        .catch(function(err){
+          logger.error({user: email, action: 'updateNode', item: response._id, message: err});
+          reject(err);
+        });
       });
   }
 
@@ -110,8 +117,12 @@ function deletingNodes(adid, otherParams, callback){
           );
         })
       .then(function(response){ return myItems.deleteItems(aux.hasItems, otherParams.userMail); })
-      .then(function(response){callback(adid, {'status':'success', 'items': response}) ;})
-      .catch(function(err){callback(adid, 'error');});
+      .then(function(response){
+        logger.audit({user: otherParams.userMail, action: 'deleteNodes', item: adid });
+        callback(adid, {'status':'success', 'items': response}) ;})
+      .catch(function(err){
+        logger.error({user: otherParams.userMail, action: 'deleteNodes', item: adid, message: err});
+        callback(adid, 'error');});
 }
 
 // Export Functions

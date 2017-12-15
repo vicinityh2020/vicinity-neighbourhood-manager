@@ -32,7 +32,7 @@ function put(req, res, next) {
   var response = {};
   var cid = mongoose.Types.ObjectId(req.params.id);
   var update = req.body;
-  logger.debug(JSON.stringify(update));
+  // logger.debug(JSON.stringify(update));
   companyAccountOp.update({ _id: cid }, { $set: update },
     function(err, data){
       if (err) {
@@ -89,11 +89,15 @@ function remove(req, res, next) {
         })
         .then(function(response){
           deletingResults.organisation = {cid: cid, result: 'Success'};
+          logger.audit({user: req.body.userMail, action: 'deleteOrganisation', item: cid });
           logger.debug('Success deleting organisation!!!');
           logger.debug({result: deletingResults});
           res.json(deletingResults);
         })
-        .catch(function(err){res.json({error: true, message: err}); });
+        .catch(function(err){
+          logger.error({user: req.body.userMail, action: 'deleteOrganisation', item: cid, message: err})
+          res.json({error: true, message: err}); }
+        );
       }
     }
   );

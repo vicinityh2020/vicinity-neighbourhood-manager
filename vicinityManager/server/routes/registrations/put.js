@@ -46,7 +46,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
     db2.save(function(err, userData) {
       if (err) {
         response = {"error": true, "message": "Error adding data!"};
-        logger.debug('Error in saving new user!');
+        logger.error({user: raw.email, action: 'createOrganisation', message: err});
         res.json(response);
       } else {
         logger.debug('New user was successfuly saved!');
@@ -59,7 +59,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
         db.save(function(err, orgData) {
           if (err) {
             response = {"error": true, "message": "Error adding data!"};
-            logger.debug('Error in saving new userAccount!');
+            logger.error({user: raw.email, action: 'createOrganisation', message: err});
             res.json(response);
           } else {
             userData.organisation = orgData._id; // Adding the company id to the new user
@@ -70,9 +70,11 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
                 user: userData.email,
                 eventType: 1 }
             );
+
+            logger.audit({user: userData.email, action: 'createOrganisation', item: orgData._id });
+
             createOrganisationGroups(orgData); // Creates necessary groups in comm server
 
-	          logger.debug('New userAccount was successfuly saved!');
             response = {"error": false, "message": "New userAccount was successfuly saved!"};
             res.json(response);
           }

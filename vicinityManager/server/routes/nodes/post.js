@@ -47,10 +47,18 @@ function postOne(req, res, next) {
           eventType: 21 }
         );
       })
-    .then(function(response){ res.json({error: 'false', message: 'Node created!'}); })
-    .catch(function(err){ res.json({error: 'true', message: err }); });
+    .then(function(response){
+      logger.audit({user: req.body.userMail, action: 'createNode', item: data._id });
+      res.json({error: 'false', message: 'Node created!'}); })
+    .catch(function(err){
+      logger.warn({user: req.body.userMail, action: 'createNode', message: err});
+      res.json({error: 'true', message: err });
+    });
   })
-  .catch(function(err){ res.json({error: 'true', message: err}); });
+  .catch(function(err){
+    logger.error({user: req.body.userMail, action: 'createNode', message: err});
+    res.json({error: 'true', message: err});
+  });
 }
 
 // Export Functions

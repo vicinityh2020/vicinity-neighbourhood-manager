@@ -11,7 +11,8 @@ function processItemAccess(req, res, next) {
 
     itemOp.findOne({_id: dev_id}).populate('hasAdministrator','organisation').exec(function (err, device) {
       if (err || device === null) {
-          res.json({"error": true, "message": "Processing data failed!"});
+        logger.error({user: req.body.userMail, action: 'processItemAccess', message: err});
+        res.json({"error": true, "message": "Processing data failed!"});
       } else {
           var friend_id = device.hasAdministrator[0]._id;
 
@@ -55,6 +56,8 @@ function processItemAccess(req, res, next) {
               triggeredByMe: false,
               eventType: 54 }
           );
+
+          logger.audit({user: req.body.userMail, action: 'processItemAccess', orgOrigin: my_id, orgDest: friend_id, item: dev_id });
 
           device.save();
 

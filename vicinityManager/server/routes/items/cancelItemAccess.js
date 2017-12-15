@@ -13,9 +13,9 @@ function cancelItemAccess(req, res, next){
   var response = {};
 
   itemOp.findOne({_id: dev_id}, function (err, device) {
-
       if (err || device === null) {
-          res.json({"error": true, "message": "Processing data failed!"});
+        logger.error({user: req.body.userMail, action: 'cancelItemAccess', message: err});
+        res.json({"error": true, "message": "Processing data failed!"});
       } else {
 
         device.hasAccess = findAndRemove(device.hasAccess, my_id); // Remove my access from the obj
@@ -63,6 +63,8 @@ function cancelItemAccess(req, res, next){
             triggeredByMe: false,
             eventType: 53 }
         );
+
+        logger.audit({user: req.body.userMail, action: 'cancelItemAccess', orgOrigin: my_id, orgDest: friend_id, item: dev_id });
 
         device.save();
 

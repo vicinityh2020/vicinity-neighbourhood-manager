@@ -2,14 +2,14 @@ var mongoose = require('mongoose');
 var ce = require('cloneextend');
 var invitationOp = require('../../models/vicinityManager').invitation;
 var mailing = require('../../helpers/mail/mailing');
-
+var logger = require("../../middlewares/logger");
 
 function postOne(req, res, next) {
   var db = new invitationOp();
-  var response = {};
 //TODO: Request body atributes null check;
 //TODO: ObjectId conversion;
 
+  var userName = req.body.emailTo;
   db.emailTo = req.body.emailTo;
   db.nameTo = req.body.nameTo;
   db.sentBy = ce.clone(req.body.sentBy);
@@ -17,14 +17,10 @@ function postOne(req, res, next) {
 
   db.save(function(err, product) {
     if (err) {
-      response = {"error": true, "message": "Error adding data!"};
+      logger.error({user: userName, action: 'invitationSent', message: err});
+      res.json({"error": true, "message": "Error adding data!"});
     } else {
-      response = {"error": false, "message": "Data added!"};
-
-      var thisLink;
-      var thisTmp;
-      var thisName;
-      var thisOrg;
+      var thisLink, thisTmp, thisName, thisOrg;
 
       if(product.type === 'newUser'){
         thisLink = "http://vicinity.bavenir.eu/#/invitation/newUser/" ;
@@ -48,9 +44,10 @@ function postOne(req, res, next) {
         sentByOrg : thisOrg
       };
 
+      logger.audit({user: userName, action: 'invitationSent'});
       mailing.sendMail(mailInfo);
+      res.json(response = {"error": false, "message": "Data added!"});
     }
-    res.json(response);
   });
 }
 

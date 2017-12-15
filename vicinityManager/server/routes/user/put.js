@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var audits = require('../../routes/audit/put');
 var userOp = require('../../models/vicinityManager').user;
-
+var logger = require("../../middlewares/logger");
 
 function putOne(req, res) {
   var response = {};
@@ -19,8 +19,13 @@ function putOne(req, res) {
     );
   })
   .then(function(response){ return userOp.update({ "_id": o_id}, {$set: updates}); })
-  .then(function(response){ res.json({"error": err, "message": response}); })
-  .catch(function(err){res.json({"error": err, "message": "Something went wrong..."}); });
+  .then(function(response){
+    logger.audit({user: req.body.userMail, action: 'updateUser', item: o_id });
+    res.json({"error": false, "message": response}); })
+  .catch(function(err){
+    logger.error({user: req.body.userMail, action: 'updateUser', item: o_id, message: err });
+    res.json({"error": err, "message": "Something went wrong..."});
+  });
 }
 
 module.exports.putOne = putOne;

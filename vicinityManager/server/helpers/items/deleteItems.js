@@ -37,6 +37,7 @@ function deleteItems(oids, email){
         {userMail:email}
       );
     } else {
+      logger.warn({user:email, action: 'deleteItem', message: "No items to be removed"});
       resolve({"error": false, "message": "Nothing to be removed..."});
     }
   });
@@ -89,11 +90,15 @@ function deleting(oid, otherParams, callback){
           );
         })
         .then(function(response){ return commServer.callCommServer({}, 'users/' + oid, 'DELETE'); })
-        .then(function(ans){callback(oid, "Success");})
+        .then(function(ans){
+          logger.audit({user: otherParams.userMail, action: 'deleteItem', item: oid });
+          callback(oid, "Success");})
         .catch(function(err){
           if(err.statusCode !== 404){
+            logger.error({user: otherParams.userMail, action: 'deleteItem', item: oid, message: err });
             callback(oid, 'Error: ' + err);
           } else {
+            logger.warn({user: otherParams.userMail, action: 'deleteItem', item: oid, message: 'Object did not exist in comm server' });
             callback(oid, "Success");
           }
         });

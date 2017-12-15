@@ -54,8 +54,13 @@ function putOne(req, res) {
         );
       })
       .then(function(response){ return itemUpdate(uid,updates);})
-      .then(function(response){ res.json({"response":response}); })
-      .catch(function(err){res.json({"response" : err});});
+      .then(function(response){
+        logger.audit({user: userMail, action: 'EnableItem', item: uid });
+        res.json({"response":response}); })
+      .catch(function(err){
+        logger.error({user: userMail, action: 'EnableItem', item: uid, message: err});
+        res.json({"response" : err});}
+      );
 
   }else if(updates.status === 'disabled'){
     commServer.callCommServer({}, 'users/' + oid , 'DELETE')
@@ -83,9 +88,13 @@ function putOne(req, res) {
         );
       })
       .then(function(response){ return itemUpdate(uid,updates);})
-      .then(function(response){ res.json({"response":response}); })
-      .catch(function(err){res.json({"response" : err});} );
-
+      .then(function(response){
+        logger.audit({user: userMail, action: 'DisableItem', item: uid });
+        res.json({"response":response}); })
+      .catch(function(err){
+        logger.error({user: userMail, action: 'DisableItem', item: uid, message: err});
+        res.json({"response" : err});}
+      );
   }else{
     audits.putAuditInt(
       uid,
@@ -98,8 +107,13 @@ function putOne(req, res) {
       }
     )
     .then(function(response){ itemUpdate(uid,updates); })
-    .then(function(response){ res.json({"response":response}); })
-    .catch(function(err){ res.json({"response" : err});} );
+    .then(function(response){
+      logger.audit({user: userMail, action: 'itemUpdate', item: uid });
+      res.json({"response":response}); })
+    .catch(function(err){ 
+      logger.error({user: userMail, action: 'itemUpdate', item: uid, message: err});
+      res.json({"response" : err});}
+    );
 
   }
 }

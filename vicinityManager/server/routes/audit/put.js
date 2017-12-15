@@ -21,7 +21,6 @@ function putAuditInt(id, payload){
     function(resolve, reject) {
       auditOp.update({auditId: id}, {$push: {data: payload}}, {upsert: true})
       .then(function(response){
-        logger.debug('Audit success');
         resolve({"res":response});
       })
       .catch(function(error){

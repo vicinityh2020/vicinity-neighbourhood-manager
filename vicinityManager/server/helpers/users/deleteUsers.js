@@ -35,6 +35,7 @@ function deleteAllUsers(users, mail){
         { userMail : mail }
       );
     } else {
+      logger.warn({user:mail, action: 'deleteUser', message: "No users to be removed"});
       reject("Nothing to be removed...");
     }
   });
@@ -69,9 +70,12 @@ function deleting(id, otherParams, callback){
     );
   })
   .then(function(response){ return userAccountOp.update({_id: cid}, {$pull: {accountOf: id}}); })
-  .then(function(response){ callback(id, "Success"); })
+  .then(function(response){
+    logger.audit({user: otherParams.userMail, action: 'deleteUser', item: id });
+    callback(id, "Success");
+  })
   .catch(function(error){
-    logger.debug("Something went wrong: " + error);
+    logger.error({user: otherParams.userMail, action: 'deleteUser', item: id, message: error});
     callback(id, "Error: " + error);
   });
 }

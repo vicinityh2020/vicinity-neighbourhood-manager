@@ -39,13 +39,16 @@ function authenticate(req, res, next) {
               message: credentials
             };
             res.json(response);
+            logger.audit({user: userName, action: 'login'});
           });
         } else {
+          logger.warn({user: userName, action: 'login', message: 'Wrong password'});
           res.json({success: false});
         }
       }
     });
   } else {
+    logger.warn({user: userName, action: 'login', message: 'Missing fields'});
     res.json({success: false});
   }
 }

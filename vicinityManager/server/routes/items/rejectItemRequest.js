@@ -11,7 +11,8 @@ function rejectItemRequest(req, res, next) {
 
   itemOp.findOne({_id: dev_id}, function (err, device) {
       if (err || device === null) {
-          response = {"error": true, "message": "Processing data failed!"};
+        logger.error({user: req.body.userMail, action: 'rejectItemRequest', message: err});
+        response = {"error": true, "message": "Processing data failed!"};
       } else {
 
         // TODO Change, currently only process the last request
@@ -57,6 +58,8 @@ function rejectItemRequest(req, res, next) {
             triggeredByMe: false,
             eventType: 52 }
         );
+
+        logger.audit({user: req.body.userMail, action: 'rejectItemRequest', orgOrigin: my_id, orgDest: friend_id, item: dev_id });
 
         notificationAPI.changeNotificationStatus(friend_id, my_id, 21, {itemId: dev_id});
 

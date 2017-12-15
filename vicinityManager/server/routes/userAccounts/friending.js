@@ -70,11 +70,12 @@ function processFriendRequest(req, res, next) {
         // friend.hasNotifications.push(notification._id); // TODO CHECK IF NECESSARY
         friend.save();
         me.save();
-
+        logger.audit({user: req.body.userMail, action: 'processFriendRequest', orgOrigin: my_id, orgDest: friend_id});
         res.json({"error": false, "message": "Friending successful!"});
       }
     ).catch(
       function(err){
+        logger.error({user: req.body.userMail, action: 'processFriendRequest', message: err});
         res.json({"error": true, "message": "Error friending: " + err});
       }
     );
@@ -141,11 +142,12 @@ function acceptFriendRequest(req, res, next) {
 
         friend.save();
         me.save();
-
+        logger.audit({user: req.body.userMail, action: 'acceptFriendRequest', orgOrigin: my_id, orgDest: friend_id});
         res.json({"error": false, "message": "Friending successful!"});
       }
     ).catch(
       function(err){
+        logger.error({user: req.body.userMail, action: 'acceptFriendRequest', message: err});
         res.json({"error": true, "message": "Error friending: " + err});
       }
     );
@@ -205,11 +207,12 @@ function rejectFriendRequest(req, res, next) {
 
         friend.save();
         me.save();
-
+        logger.audit({user: req.body.userMail, action: 'rejectFriendRequest', orgOrigin: my_id, orgDest: friend_id});
         res.json({"error": false, "message": "Friending successful!"});
       }
     ).catch(
       function(err){
+        logger.error({user: req.body.userMail, action: 'rejectFriendRequest', message: err});
         res.json({"error": true, "message": "Error friending: " + err});
       }
     );
@@ -267,11 +270,12 @@ function cancelFriendRequest(req, res, next){
 
       friend.save();
       me.save();
-
+      logger.audit({user: req.body.userMail, action: 'cancelFriendRequest', orgOrigin: my_id, orgDest: friend_id});
       res.json({"error": false, "message": "Friending successful!"});
     }
   ).catch(
     function(err){
+      logger.error({user: req.body.userMail, action: 'cancelFriendRequest', message: err});
       res.json({"error": true, "message": "Error friending: " + err});
     }
   );
@@ -330,11 +334,12 @@ function cancelFriendship(req, res, next){
 
         friend.save();
         me.save();
-
+        logger.audit({user: req.body.userMail, action: 'cancelFriendship', orgOrigin: my_id, orgDest: friend_id});
         res.json({"error": false, "message": "Friending successful!"});
       }
     ).catch(
       function(err){
+        logger.error({user: req.body.userMail, action: 'cancelFriendship', message: err});
         res.json({"error": true, "message": "Error friending: " + err});
       }
     );

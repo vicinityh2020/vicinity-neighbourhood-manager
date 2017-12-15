@@ -67,7 +67,7 @@ function getAdditional(data,activeCompany_id,friends){
             deviceWithAdd.isUnderRequest = isUnderRequest;
             deviceWithAdd.imFriend = (imFriend === true && isOwner === false);
             deviceWithAdd.myFriends = friends;
-            logger.debug(friends);
+            // logger.debug(friends);
             deviceWithAdd.accessLevelCaption = accessLevelCaption;
             deviceWithAdd.cancelRequest = cancelRequest;
             deviceWithAdd.interruptConnection = interruptConnection;
