@@ -11,35 +11,26 @@ var Schema = mongoose.Schema;
 // TODO Remove unnecesary joins between schemas (ref:)
 
 var userAccount = new Schema({
-  organisation: String,
-  avatar: String,
-  creatorOf: [ObjectId], //Creator of UserAccounts
-  follows: [ObjectId], //Follows UserAccounts
-  memberOf: [ObjectId], //Member of UserGroups
-  location: String,
-  businessId : String,
+  organisation: {type: String, required: true},
+  cid: {type: String, required: true},
+  businessId : {type: String, required: true},
+  accountOf: [{ type: ObjectId, ref: 'user'} ],
+  knows: [{ type: ObjectId, ref: 'userAccount'} ],
+  knowsRequestsFrom: [{ type: ObjectId, ref: 'userAccount' }],
+  knowsRequestsTo: [{ type: ObjectId, ref: 'userAccount' }],
+  hasNotifications: [{ type: ObjectId, ref: 'notification' }],
+  hasNodes: [{ type: ObjectId, ref: 'node' }],
   skinColor: {type: String, enum: ['blue', 'red', 'green', 'purple', 'yellow', 'black']},
-  accountOf: [
-    { type: ObjectId, ref: 'user'}
-  ],
-  knows: [
-    { type: ObjectId, ref: 'userAccount'}
-  ],
-  knowsRequestsFrom: [
-    { type: ObjectId, ref: 'userAccount'}
-  ],
-  knowsRequestsTo: [
-    { type: ObjectId, ref: 'userAccount'}
-  ],
-  hasNotifications: [
-    { type: ObjectId, ref: 'notification'}
-  ],
-  hasNodes: [String],
-  modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
-  administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
+  avatar: String,
+  location: String,
+  notes: String,
+  status: String
+  // creatorOf: [ObjectId], //Creator of UserAccounts
+  // follows: [ObjectId], //Follows UserAccounts
+  // memberOf: [ObjectId], //Member of UserGroups
+  // modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
+  // administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
   // badges:[String],
-  notes:String,
-  status:String
 });
 
 var user = new Schema({
