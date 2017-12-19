@@ -18,26 +18,26 @@ Receives request from client
 */
 function postOne(req, res, next) {
   var db = new nodeOp();
-  var cid = mongoose.Types.ObjectId(req.params.id);
+  var cid = req.body.cid;
+  var company_id = mongoose.Types.ObjectId(req.params.id);
   db.name = req.body.name;
   db.eventUri = req.body.eventUri;
   db.agent = req.body.agent;
   db.type = req.body.type;
   db.status = "active";
-  db.organisation = cid;
+  db.organisation = company_id;
   db.adid = uuid();
 
   db.save()
-  .then(function(response){
-    var data = response;
+  .then(function(data){
     var payload = { username : data.adid, name: data.name, password: req.body.pass
       // properties: { property: [ {'@key':'agent', '@value': data.agent}, {'@key':'uri', '@value': data.eventUri} ]}
     };
     var groupData = { name: data.adid, description: data.name };
     commServer.callCommServer(payload, 'users', 'POST')
-    .then( function(response){ return commServer.callCommServer({}, 'users/' + data.adid + '/groups/' + data.organisation.toString() + '_agents', 'POST'); })  //Add node to company group in commServer
+    .then( function(response){ return commServer.callCommServer({}, 'users/' + data.adid + '/groups/' + cid + '_agents', 'POST'); })  //Add node to company group in commServer
     .then( function(response){ return commServer.callCommServer(groupData, 'groups/', 'POST'); }) // Create node group in commServer
-    .then( function(response){ return userAccountOp.update( { _id: data.organisation}, {$push: {hasNodes: data.adid}}); }) // Add node to company in MONGO
+    .then( function(response){ return userAccountOp.update( { _id: company_id}, {$push: {hasNodes: data.adid}}); }) // Add node to company in MONGO
     .then( function(response){
       return audits.putAuditInt(
         data.organisation,

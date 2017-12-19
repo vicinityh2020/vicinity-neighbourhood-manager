@@ -22,7 +22,7 @@ function putOne(req, res) {
 
   var response = {};
   var uid = mongoose.Types.ObjectId(req.params.id); // Unique mongo ID
-  var oid = req.body.oid; // Object ID - Generated out of VCNT manager
+  var oid = req.body.oid; // Object ID - Generated in VCNT manager
   var adid = req.body.adid; // Agent ID - Generated in VCNT manager
   var updates = req.body;
   var userMail = req.body.userMail;
@@ -30,12 +30,12 @@ function putOne(req, res) {
 
   if(updates.status === 'enabled'){
     commServerProcess(oid, adid, updates.name, oid, updates.cid)
-      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Enabled', 11);})
+      .then(function(response){ return deviceActivityNotif(uid, updates.company_id, 'Enabled', 11);})
       .then(function(response){
         return audits.putAuditInt(
           uid,
           {
-            orgOrigin: updates.cid,
+            orgOrigin: updates.company_id,
             user: userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 43
@@ -44,9 +44,9 @@ function putOne(req, res) {
       })
       .then(function(response){
         return audits.putAuditInt(
-          updates.cid,
+          updates.company_id,
           {
-            orgOrigin: updates.cid,
+            orgOrigin: updates.company_id,
             user: userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 43
@@ -64,12 +64,12 @@ function putOne(req, res) {
 
   }else if(updates.status === 'disabled'){
     commServer.callCommServer({}, 'users/' + oid , 'DELETE')
-      .then(function(response){ return deviceActivityNotif(uid, updates.cid, 'Disabled', 12);})
+      .then(function(response){ return deviceActivityNotif(uid, updates.company_id, 'Disabled', 12);})
       .then(function(response){
         return audits.putAuditInt(
           uid,
           {
-            orgOrigin: updates.cid,
+            orgOrigin: updates.company_id,
             user: userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 44
@@ -78,9 +78,9 @@ function putOne(req, res) {
       })
       .then(function(response){
         return audits.putAuditInt(
-          updates.cid,
+          updates.company_id,
           {
-            orgOrigin: updates.cid,
+            orgOrigin: updates.company_id,
             user: userMail,
             auxConnection: {kind: 'item', item: uid},
             eventType: 44
@@ -99,7 +99,7 @@ function putOne(req, res) {
     audits.putAuditInt(
       uid,
       {
-        orgOrigin: updates.cid,
+        orgOrigin: updates.company_id,
         auxConnection: {kind: 'item', item: uid},
         user: userMail,
         eventType: 45,
@@ -110,7 +110,7 @@ function putOne(req, res) {
     .then(function(response){
       logger.audit({user: userMail, action: 'itemUpdate', item: uid });
       res.json({"response":response}); })
-    .catch(function(err){ 
+    .catch(function(err){
       logger.error({user: userMail, action: 'itemUpdate', item: uid, message: err});
       res.json({"response" : err});}
     );

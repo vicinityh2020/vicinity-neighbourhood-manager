@@ -12,6 +12,7 @@ router
   // Get the profile of the user account (Filtered or unfiltered)
   .get('/:id/organisations', userProfile.getAllFiltered)
   .get('/:id', userProfile.get)
+  .get('/:id/cid', userProfile.getUserAccountCid)
   // update of the user account profile
   .put('/:id', userProfile.update)
 

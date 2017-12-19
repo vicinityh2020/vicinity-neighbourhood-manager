@@ -6,7 +6,7 @@ angular.module('VicinityManagerApp.controllers').
             $stateParams,
             $window,
             $location,
-            $http,
+            userAccountAPIService,
             commonHelpers,
             nodeAPIService,
             Notification) {
@@ -56,16 +56,18 @@ angular.module('VicinityManagerApp.controllers').
                   pass: $scope.nPass
                 };
                 if($scope.nodeId === '0'){
-
-                  nodeAPIService.postOne($window.sessionStorage.companyAccountId, query)
-                    .then(
-                      function successCallback(response){
-                        Notification.success("Node successfully created!!");
-                        $scope.backToList();
-                       },
-                      function errorCallback(response){}
-
-                    );
+                userAccountAPIService.getUserAccountCid($window.sessionStorage.companyAccountId)
+                .then(function(response){
+                  query.cid = response.data.message.cid;
+                  return nodeAPIService.postOne($window.sessionStorage.companyAccountId, query);
+                })
+                .then(function(response){
+                    Notification.success("Node successfully created!!");
+                    $scope.backToList();
+                })
+                .catch(function(err){
+                  Notification.error("Error creating node " + err);
+                });
 
                 }else{
 
@@ -75,7 +77,9 @@ angular.module('VicinityManagerApp.controllers').
                       Notification.success("Node successfully modified!!");
                       $scope.backToList();
                     },
-                    function errorCallback(response){}
+                    function errorCallback(err){
+                      Notification.error("Error updating node " + err);
+                    }
                   );
                 }
               }else{

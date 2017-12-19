@@ -44,6 +44,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         $scope.devInfo = $scope.device.info;
         $scope.owner = $scope.device.hasAdministrator[0].organisation;
         $scope.owner_id = $scope.device.hasAdministrator[0]._id;
+        $scope.cid = $scope.device.hasAdministrator[0].cid;
         $scope.AL = $scope.device.accessLevel;
         $scope.devEnabled = ($scope.device.status === 'enabled');
         $scope.canSeeData = $scope.device.seeData;
@@ -60,8 +61,9 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         query = {
           "status":'disabled',
           "name":$scope.device.name,
-          "cid": $scope.owner_id,
+          "company_id": $scope.owner_id,
           "oid": $scope.device.oid,
+          "cid": $scope.cid,
           "adid": $scope.device.adid,
           "password":"test",
           "accessLevel": 1, // Always 1 when enabling/disabling
@@ -72,7 +74,8 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         query = {
           "status":'enabled',
           "name":$scope.device.name,
-          "cid": $scope.owner_id,
+          "company_id": $scope.owner_id,
+          "cid": $scope.cid,
           "oid": $scope.device.oid,
           "adid": $scope.device.adid,
           "password":"test",

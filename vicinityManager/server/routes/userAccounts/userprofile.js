@@ -112,7 +112,21 @@ function getUserAccountFacade(req, res, next) {
       });
 }
 
+/*
+Get CID
+*/
+function getUserAccountCid(req, res, next){
+    var response = {};
+    var o_id = mongoose.Types.ObjectId(req.params.id);
+    userAccountOp.findById(o_id, {cid: 1, organisation: 1}, function (err, data) {
+      response = {"error": err, "message": data};
+      res.json(response);
+    });
+}
+
+
 // Export functions
 module.exports.get = getUserAccountFacade;
 module.exports.getAllFiltered = getAllFilteredUserAccountsFacade;
 module.exports.update = updateUserAccountFacade;
+module.exports.getUserAccountCid = getUserAccountCid;

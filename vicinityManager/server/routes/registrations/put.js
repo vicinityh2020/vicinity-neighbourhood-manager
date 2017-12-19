@@ -13,6 +13,7 @@ var commServer = require('../../helpers/commServer/request');
 var mySql = require('../../helpers/mySql/sendQuery');
 var audits = require('../../routes/audit/put');
 var notificationAPI = require('../../routes/notifications/notifications');
+var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
 // Functions
 
@@ -55,6 +56,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
         db.location = raw.companyLocation;
         db.accountOf[0] = userData._id;
         db.avatar = config.avatarOrg;
+        db.cid = uuid();
 
         db.save(function(err, orgData) {
           if (err) {

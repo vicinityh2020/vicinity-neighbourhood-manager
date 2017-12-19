@@ -10,6 +10,10 @@ factory('userAccountAPIService', ['$http', 'configuration', '$window', function(
     return $http.get(configuration.apiUrl +'/useraccounts/' + id);
   };
 
+  userAccountAPI.getUserAccountCid = function(id) {
+    return $http.get(configuration.apiUrl +'/useraccounts/' + id +'/cid');
+  };
+
   userAccountAPI.updateUserAccounts = function(id,data){
     return $http.put(configuration.apiUrl +'/useraccounts/' + id, data);
   };

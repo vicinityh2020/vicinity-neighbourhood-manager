@@ -92,37 +92,48 @@ the update process continues in the commServer
 Deletes all node asynchronously
 */
 function deletingNodes(adid, otherParams, callback){
-  var aux = {};
-      commServer.callCommServer({}, 'users/' + adid, 'DELETE') // Update node in commServer
-      .then( function(response){ return commServer.callCommServer({}, 'groups/' + adid, 'DELETE');})
-      .then(
-        function(response){
-              var query = {
-                'status': 'deleted',
-                'name': 'empty'
-              };
-              return nodeOp.findOneAndUpdate({adid: adid}, { $set: query }, { new: true }); })
-      .then(
-        function(response){
-              aux = response;
-              return userAccountOp.update({_id: aux.organisation}, {$pull: {hasNodes: adid}}); })
-      .then(
-        function(response){
-          return audits.putAuditInt(
-            aux.organisation,
-            { orgOrigin: aux.organisation,
-              auxConnection: {kind: 'node', item: aux._id},
-              user: otherParams.userMail,
-              eventType: 22 }
-          );
-        })
-      .then(function(response){ return myItems.deleteItems(aux.hasItems, otherParams.userMail); })
-      .then(function(response){
-        logger.audit({user: otherParams.userMail, action: 'deleteNodes', item: adid });
-        callback(adid, {'status':'success', 'items': response}) ;})
-      .catch(function(err){
-        logger.error({user: otherParams.userMail, action: 'deleteNodes', item: adid, message: err});
-        callback(adid, 'error');});
+  var aux = {}, itemsRes;
+  var query = {
+    'status': 'deleted',
+    'name': 'empty'
+  };
+  nodeOp.findOneAndUpdate({adid: adid}, { $set: query }, { new: true })
+  .then(
+  function(response){
+    aux = response;
+    return userAccountOp.update({_id: aux.organisation}, {$pull: {hasNodes: adid}});
+  })
+  .then(
+  function(response){
+    return audits.putAuditInt(
+      aux.organisation,
+      { orgOrigin: aux.organisation,
+        auxConnection: {kind: 'node', item: aux._id},
+        user: otherParams.userMail,
+        eventType: 22 }
+    );
+  })
+  .then(function(response){ return myItems.deleteItems(aux.hasItems, otherParams.userMail); })
+  .then(function(response){
+    itemsRes = response;
+  return commServer.callCommServer({}, 'users/' + adid, 'DELETE'); // Update node in commServer
+  })
+  .then(function(response){
+    return commServer.callCommServer({}, 'groups/' + adid, 'DELETE'); })
+  .then(function(response){
+    logger.audit({user: otherParams.userMail, action: 'deleteNodes', item: adid });
+    callback(adid, {'status':'success', 'items': itemsRes}) ;
+  })
+  .catch(function(error){
+    if (error.statusCode !== 404){
+      logger.error({user: otherParams.userMail, action: 'deleteNodes', item: adid, message: error});
+      callback(adid, 'error');
+    } else {
+      commServer.callCommServer({}, 'groups/' + adid, 'DELETE');
+      logger.warn({user: otherParams.userMail, action: 'deleteNodes', item: adid, message: 'Node not found in comm server' });
+      callback(adid, {'status':'success', 'items': itemsRes}) ;
+    }
+  });
 }
 
 // Export Functions

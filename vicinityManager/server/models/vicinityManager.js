@@ -19,7 +19,7 @@ var userAccount = new Schema({
   knowsRequestsFrom: [{ type: ObjectId, ref: 'userAccount' }],
   knowsRequestsTo: [{ type: ObjectId, ref: 'userAccount' }],
   hasNotifications: [{ type: ObjectId, ref: 'notification' }],
-  hasNodes: [{ type: ObjectId, ref: 'node' }],
+  hasNodes: [String],
   skinColor: {type: String, enum: ['blue', 'red', 'green', 'purple', 'yellow', 'black']},
   avatar: String,
   location: String,
@@ -224,6 +224,7 @@ item.index({name: 'text'}); */
 // Indexes for common field searchUser  =================
 // TODO set the index as unique once server side and agent are prepared
 userAccount.index({organisation: 1}, { unique: false });
+userAccount.index({cid: 1}, { unique: false });
 user.index({name: 1}, { unique: false });
 // item.index({name: 1, oid: 1}); // Compound indexes cannot be created in the schema definition!
 item.index({oid: 1}, { unique: false });

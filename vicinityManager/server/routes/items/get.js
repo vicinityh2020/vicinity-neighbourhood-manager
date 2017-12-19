@@ -40,7 +40,7 @@ function getMyItems(req, res) {
       }
     }
 
-    itemOp.find(query).populate('hasAdministrator','organisation').populate('accessRequestFrom','organisation').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
+    itemOp.find(query).populate('hasAdministrator','organisation', 'cid').populate('accessRequestFrom','organisation cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
       var dataWithAdditional = itemProperties.getAdditional(data,o_id,[]); // Not necessary to know friends because I am always owner
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
@@ -89,7 +89,7 @@ function getAllItems(req, res) {
 
     var friends = data[0].knows;
 
-    itemOp.find(query).populate('hasAdministrator','organisation').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
+    itemOp.find(query).populate('hasAdministrator','organisation cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
         response =  {"error": true, "message": "Error fetching data"};
@@ -122,7 +122,7 @@ function getItemWithAdd(req, res, next) {
         res.json(response);
       } else {
         var friends = data[0].knows;
-        itemOp.find({_id: o_id}).populate('hasAdministrator','organisation')
+        itemOp.find({_id: o_id}).populate('hasAdministrator','organisation cid')
             .exec(
               function(err, data){
                 if (err || data === null) {
