@@ -9,14 +9,10 @@ var mongoose = require('mongoose');
 //var winston = require('winston');
 
 // ROUTES Import
-var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var audit = require('./routes/audit');
 var userAccounts = require('./routes/userAccounts');
-var userGroups = require('./routes/userGroups');
-var organisationUnits = require('./routes/organisationUnits');
-var gateways = require('./routes/gateways');
 var items = require('./routes/items');
 var user = require('./routes/user');
 var notifications = require('./routes/notifications');
@@ -53,7 +49,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/', routes);
 app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup security
-app.use('/gateways', [jwtauth, gateways]);
 app.use('/nodes', [jwtauth, nodes]);
 app.use('/items', [jwtauth, items]);
 app.use('/user', [jwtauth, user]);
