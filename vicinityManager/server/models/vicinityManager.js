@@ -53,6 +53,10 @@ var user = new Schema({
   email: String,
   status: String,
   organisation: { type: ObjectId, ref: 'userAccount' },
+  accessLevel: {type: Number, enum: [0, 1, 2]},
+  /* 0 - Only organisation
+  1 - Friends
+  2 - Everyone */
   authentication: {
     password: String,
     principalRoles: [String]
