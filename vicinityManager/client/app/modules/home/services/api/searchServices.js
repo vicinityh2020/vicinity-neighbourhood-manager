@@ -1,6 +1,6 @@
 'use strict';
 var services = angular.module('VicinityManagerApp.services').
-factory('searchAPIService', ['$http', 'configuration', function($http, configuration){
+factory('searchAPIService', ['$http', 'configuration', '$window', function($http, configuration, $window){
 
   var searchAPI = {};
 
@@ -22,7 +22,8 @@ factory('searchAPIService', ['$http', 'configuration', function($http, configura
   };
 
   searchAPI.searchUser = function(filter) {
-    return $http.get(configuration.apiUrl + '/search/user?searchTerm=' + filter );
+    var cid = $window.sessionStorage.companyAccountId.toString();
+    return $http.get(configuration.apiUrl + '/search/user?searchTerm=' + filter + '&cid=' + cid);
   };
 
   searchAPI.searchItem = function(cid, filter, data) {

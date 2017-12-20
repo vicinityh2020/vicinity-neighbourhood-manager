@@ -5,25 +5,27 @@ var logger = require("../../middlewares/logger");
 
 function putOne(req, res) {
   var response = {};
+  var updItem;
   var o_id = mongoose.Types.ObjectId(req.params.id);
   var updates = req.body;
+  var userMail = updates.userMail;
   delete updates.userMail;
-  userOp.findOne({ "_id": o_id})
+  userOp.findOneAndUpdate( { "_id": o_id}, {$set: updates}, { returnNewDocument : true } )
   .then(function(response){
-    audits.putAuditInt(
-      response.organisation,
-      { orgOrigin: response.organisation,
+    updItem = response;
+    return audits.putAuditInt(
+      updItem.organisation,
+      { orgOrigin: updItem.organisation,
         auxConnection: {kind: 'user', item: o_id},
-        user: req.body.userMail,
+        user: userMail,
         eventType: 13 }
     );
   })
-  .then(function(response){ return userOp.update({ "_id": o_id}, {$set: updates}); })
   .then(function(response){
-    logger.audit({user: req.body.userMail, action: 'updateUser', item: o_id });
-    res.json({"error": false, "message": response}); })
+    logger.audit({user: userMail, action: 'updateUser', item: o_id });
+    res.json({"error": false, "message": updItem}); })
   .catch(function(err){
-    logger.error({user: req.body.userMail, action: 'updateUser', item: o_id, message: err });
+    logger.error({user: userMail, action: 'updateUser', item: o_id, message: err });
     res.json({"error": err, "message": "Something went wrong..."});
   });
 }

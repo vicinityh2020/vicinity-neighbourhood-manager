@@ -13,8 +13,9 @@ factory('userAPIService', ['$http', 'configuration', '$window', function($http, 
     return $http.get(configuration.apiUrl +'/user/' + id);
   };
 
-  userAPI.getAll = function(id) {
-    return $http.get(configuration.apiUrl +'/user/');
+  userAPI.getAll = function(othercid) {
+    var mycid = $window.sessionStorage.companyAccountId.toString();
+    return $http.get(configuration.apiUrl +'/user/all/' + othercid + '?mycid=' + mycid);
   };
 
   userAPI.deleteUser = function(id) {

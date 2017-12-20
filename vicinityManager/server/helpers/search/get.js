@@ -39,15 +39,30 @@ var asyncHandler = require('../../helpers/asyncHandler/sync');
   function searchUser(req, res, next) {
     var response = {};
     var searchTerm = req.query.searchTerm;
+    var cid = mongoose.Types.ObjectId(req.query.cid);
     var sT = new RegExp(searchTerm, 'i');
-    // logger.debug(searchTerm);
-    userOp.find({$query: {name: sT}, $hint: { name : 1 }}, function(err, data) {
-      if (!data || err) {
-        response = {"error": true, "message": "Error fetching data"};
-      } else {
-        response = {"error": false, "message": data};
-      }
-      res.json(response);
+    var friends = [], query = {};
+
+    userAccountOp.findById(cid, {knows:1})
+    .then(function(response){
+      friends = response.knows;
+      query = {
+        $or :[
+        {$and: [ { organisation: cid }, { accessLevel: 0 } ] },
+        {$and: [ { organisation: {$in: friends}}, { accessLevel: 1 } ] },
+        { accessLevel: 2 }
+      ],
+      name: {$regex: sT}
+      };
+      logger.debug(cid);
+      logger.debug(query);
+      return userOp.find(query);
+    })
+    .then(function(response){
+        res.json({"error": false, "message": response});
+    })
+    .catch(function(error){
+        res.json({"error": true, "message": error});
     });
   }
 

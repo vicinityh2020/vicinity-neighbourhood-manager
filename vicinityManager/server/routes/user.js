@@ -7,7 +7,7 @@ var postHelper = require('./user/post.js');
 
 router
   .get('/:id', getHelper.getOne)
-  .get('/', getHelper.getAll)
+  .get('/all/:id', getHelper.getAll)
   .post('/', postHelper.postOne)
   .put('/:id', putHelper.putOne)
   .post('/delete/:id', deleteHelper.deleteUser);

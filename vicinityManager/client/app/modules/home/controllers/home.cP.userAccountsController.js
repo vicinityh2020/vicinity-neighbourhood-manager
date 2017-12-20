@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cPuserAccountsController',
-function ($scope, $stateParams, commonHelpers, userAccountAPIService) {
+function ($scope, $stateParams, commonHelpers, userAPIService) {
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
@@ -9,10 +9,10 @@ function ($scope, $stateParams, commonHelpers, userAccountAPIService) {
   $scope.companyId = $stateParams.companyAccountId;
   $scope.loaded = false;
 
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+  userAPIService.getAll($stateParams.companyAccountId)
     .then(
       function successCallback(response){
-        $scope.userAccounts = response.data.message.accountOf;
+        $scope.userAccounts = response.data.message;
         $scope.loaded = true;
       },
       function errorCallback(response){}
