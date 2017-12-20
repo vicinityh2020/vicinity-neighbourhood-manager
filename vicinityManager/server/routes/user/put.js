@@ -10,7 +10,7 @@ function putOne(req, res) {
   var updates = req.body;
   var userMail = updates.userMail;
   delete updates.userMail;
-  userOp.findOneAndUpdate( { "_id": o_id}, {$set: updates}, { returnNewDocument : true } )
+  userOp.findOneAndUpdate( { "_id": o_id}, {$set: updates}, {new: true})
   .then(function(response){
     updItem = response;
     return audits.putAuditInt(

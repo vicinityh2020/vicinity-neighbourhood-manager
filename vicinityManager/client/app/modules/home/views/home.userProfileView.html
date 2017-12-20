@@ -91,6 +91,25 @@
             <p id="nameP1" class="text-muted">{{occupation}}</p>
             <input id="editOccupationInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="occupation"></input>
 
+            <hr>
+
+            <!-- Access level-->
+            <strong ng-show="isMyProfile"><i class="fa fa-eye margin-r-5"></i> Who can see?</strong>
+             <a ng-show="isMyProfile" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInputAL()"><i style="color: black" class="fa fa-pencil"></i>Edit</a>
+             <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+             <a ng-click="backToEditAL()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+
+              <p id="accessName" class="text-muted" style="display: block">
+                {{accessLevelCaption}}
+              </p>
+
+              <select id="editAccessName" name="menu">
+                <option value="0" selected>Change status to:</option>
+                <option value="1">Only my organisation</option>
+                <option value="2">Only my friends</option>
+                <option value="3">Everyone can see</option>
+              </select>
+
       </div>
     </div>
   </div>

@@ -7,7 +7,6 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAP
   commonHelpers.triggerResize();
 
   $scope.locationPrefix = $location.path();
-  console.log("location:" + $location.path());
 
 // Define and initialize variables
 
@@ -24,6 +23,8 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAP
   $scope.organisation = "";
   $scope.password = "";
   $scope.email= "";
+  $scope.accessLevel = 0;
+  $scope.accessLevelCaption = "";
   $scope.roles = [];
 
   // JQuery variables
@@ -47,6 +48,11 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAP
   $('input#editPassNew2Input').hide();
   $('a#edits13').hide();
   $('a#edits23').hide();
+  $('a#accessEdit').show();
+  $('p#accessName').show();
+  $('select#editAccessName').hide();
+  $('a#accessSave').hide();
+  $('a#accessCancel').hide();
 
 // Loading resources
 
@@ -76,6 +82,8 @@ function updateScopeAttributes(response){
       $scope.password = response.data.message.accountOf[j].authentication.password;
       $scope.email = response.data.message.accountOf[j].email;
       $scope.roles = response.data.message.accountOf[j].authentication.principalRoles;
+      $scope.accessLevel = Number(response.data.message.accountOf[j].accessLevel);
+      $scope.accessLevelCaption = getCaption($scope.accessLevel);
       i=1;
     }
     j++;
@@ -141,8 +149,7 @@ $scope.changeToInput1 = function () {
   $('input#editOccupationInput').show();
   $('a#edits11').fadeIn('slow');
   $('a#edits21').fadeIn('slow');
-
-}
+};
 
 $scope.backToEdit1 = function () {
   $('a#edits11').fadeOut('slow');
@@ -176,7 +183,7 @@ $scope.backToEdit1 = function () {
       },
     errorCallback
     );
-  }
+  };
 
   $scope.changeToInput3 = function () {
     $('p#passP').hide();
@@ -186,7 +193,7 @@ $scope.backToEdit1 = function () {
     $('input#editPassNew2Input').show();
     $('a#edits13').fadeIn('slow');
     $('a#edits23').fadeIn('slow');
-  }
+  };
 
   $scope.backToEdit3 = function () {
     $('a#edits13').fadeOut('slow');
@@ -201,9 +208,7 @@ $scope.backToEdit1 = function () {
      $scope.password = response.data.message.authentication.password;
 
          $scope.pass="";
-         k=0;
-
-         for (k = 0; k < $scope.password.length; k++) {
+         for (var k = 0; k < $scope.password.length; k++) {
            $scope.pass += "*";
          }
      },
@@ -232,10 +237,8 @@ $scope.backToEdit1 = function () {
                function successCallback(response) {
                $scope.password = response.data.message.authentication.password;
 
-               $scope.pass="";
-               k=0;
-
-               for (k = 0; k < $scope.password.length; k++) {
+               $scope.pass=""; 
+               for (var k = 0; k < $scope.password.length; k++) {
                  $scope.pass += "*";
                }
 
@@ -279,6 +282,59 @@ $scope.backToEdit1 = function () {
    errorCallback
  );
 };
+
+/*ACCESS LEVEL*/
+$scope.changeToInputAL = function () {
+  $('a#accessEdit').hide();
+  $('p#accessName').hide();
+  $('select#editAccessName').show();
+  $('a#accessSave').fadeIn('slow');
+  $('a#accessCancel').fadeIn('slow');
+};
+
+$scope.backToEditAL = function () {
+  $('a#accessCancel').fadeOut('slow');
+  $('a#accessSave').fadeOut('slow');
+  $('select#editAccessName').fadeOut('slow');
+  setTimeout(function() {
+    $('a#accessEdit').fadeIn('fast');
+    $('p#accessName').fadeIn('fast');
+  }, 600);
+};
+
+$scope.saveNewAccess = function () {
+  var lvl = Number($('select#editAccessName').val()) - 1;
+  if (Number($('select#editAccessName').val()) >= 0){
+      userAPIService.editInfoAboutUser($stateParams.userAccountId,
+        {accessLevel: lvl})
+        .then(
+          function successCallback(response){
+            $scope.accessLevel = Number(response.data.message.accessLevel);
+            $scope.accessLevelCaption = getCaption($scope.accessLevel);
+            $scope.backToEditAL();
+          }
+        );
+      }
+    };
+
+function getCaption(lvl){
+  var ret;
+  switch(lvl) {
+    case 0:
+        ret = "Only my organisation";
+        break;
+    case 1:
+        ret = "Only my friends";
+        break;
+    case 2:
+        ret = "Everyone can see";
+        break;
+    default:
+        ret = "Wrong access level";
+        break;
+      }
+      return ret;
+    }
 
 // Handle errors
 

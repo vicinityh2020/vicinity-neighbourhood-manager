@@ -2,9 +2,13 @@
   <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
 </div>
 
+<div class="centered" ng-show="noUsers">
+  <h3 class="well">No users found...</h3>
+</div>
+
 <div class="active tab-pane" id="activity">
     <div class="row">
-        <div ng-show="loaded" class="col-md-6 col-lg-4" ng-repeat="user in userAccounts">
+        <div ng-show="loaded & !noUsers" class="col-md-6 col-lg-4" ng-repeat="user in userAccounts">
             <!-- Widget: user widget style 1 -->
             <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})" >
                 <!-- Add the bg color to the header using any of the bg-* classes -->
