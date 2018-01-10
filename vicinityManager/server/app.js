@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 //var winston = require('winston');
 
 // ROUTES Import
-var users = require('./routes/users');
+// var users = require('./routes/users');
 var api = require('./routes/api');
 var audit = require('./routes/audit');
 var userAccounts = require('./routes/userAccounts');

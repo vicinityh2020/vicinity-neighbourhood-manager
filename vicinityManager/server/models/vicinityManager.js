@@ -11,72 +11,143 @@ var Schema = mongoose.Schema;
 // TODO Remove unnecesary joins between schemas (ref:)
 
 var userAccount = new Schema({
-  organisation: {type: String, required: true},
+  name: {type: String, required: true},
   cid: {type: String, required: true},
   businessId : {type: String, required: true},
-  accountOf: [{ type: ObjectId, ref: 'user'} ],
-  knows: [{ type: ObjectId, ref: 'userAccount'} ],
-  knowsRequestsFrom: [{ type: ObjectId, ref: 'userAccount' }],
-  knowsRequestsTo: [{ type: ObjectId, ref: 'userAccount' }],
+  accountOf:[{
+    id: { type: ObjectId, ref: 'user' },
+    extid: String
+  }],
+  knows:[{
+    id: {type: ObjectId, ref: 'userAccount'},
+    extid: String
+  }],
+  knowsRequestsFrom:[{
+    id: {type: ObjectId, ref: 'userAccount'},
+    extid: String
+  }],
+  knowsRequestsTo:[{
+    id: {type: ObjectId, ref: 'userAccount'},
+    extid: String
+  }],
+  hasNodes:[{
+    id: { type: ObjectId, ref: 'node' },
+    extid: String
+  }],
   hasNotifications: [{ type: ObjectId, ref: 'notification' }],
-  hasNodes: [String],
   skinColor: {type: String, enum: ['blue', 'red', 'green', 'purple', 'yellow', 'black']},
   avatar: String,
   location: String,
   notes: String,
   status: String
-  // creatorOf: [ObjectId], //Creator of UserAccounts
-  // follows: [ObjectId], //Follows UserAccounts
-  // memberOf: [ObjectId], //Member of UserGroups
-  // modifierOf: [ObjectId], //UserAccount is modifier of Item, Container or Space
-  // administratorOf: [ObjectId], //UserAccount is administrator of Item, Container or Space
-  // badges:[String],
 });
 
 var user = new Schema({
-  avatar: String,
-  name: String,
-  firstName: String,
-  surname: String,
-  lastName: String,
+  name: {type: String, required: true},
+  email: {type: String, required: true},
+  cid: {
+    id: { type: ObjectId, ref: 'userAccount', required: true},
+    extid: String
+  },
   occupation: String,
   location: String,
-  email: String,
+  avatar: String,
   status: String,
-  organisation: { type: ObjectId, ref: 'userAccount' },
   accessLevel: {type: Number, enum: [0, 1, 2]},
   /* 0 - Only organisation
   1 - Friends
   2 - Everyone */
   authentication: {
-    password: String,
-    principalRoles: [String]
-  }
+    password: {type: String, required: true},
+    principalRoles: [{type: String, required: true}]
+  },
+  hasItems: [{
+    id: { type: ObjectId, ref: 'item' },
+    extid: String
+  }], // Own items and foreign items under contract
+  hasContracts: [{
+    id: {type: ObjectId, ref: 'contract', required: true},
+    extid: String,
+    contractingParty: {type: String, required: true}
+  }]
 });
 
 var node = new Schema({
   adid: {type: String, required: true},
   name: {type: String, required: true},
-  eventUri: String,
-  organisation: { type: ObjectId, ref: 'userAccount' },
-  type: [String],
-  agent: String,
+  cid: {
+    id: {type: ObjectId, ref: 'userAccount'},
+    extid: String
+  },
+  type: [{type: String, required: true}],
   status: String,
-  hasItems: [String]
+  hasItems: [{
+    id: { type: ObjectId, ref: 'item' },
+    extid: String
+  }],
+  eventUri: String,
+  agent: String
 });
 
 var item = new Schema({
-  name: String,
-  oid: String, // Object id -- different to Mongo uid
-  adid: String, // Agent id
-  hasAdministrator: [{type: ObjectId, ref: 'userAccount'}],
-  hasAccess: [{type: ObjectId, ref: 'userAccount'}],
-  accessRequestFrom: [{type: ObjectId, ref: 'userAccount'}],
-  accessLevel: Number,
+  name: {type: String, required: true},
   avatar: String,
-  info: mongoose.Schema.Types.Mixed, // Thing description, object with flexible schema
+  oid: {type: String, required: true}, // Object id -- different to Mongo uid
+  adid: {
+    id: {type: ObjectId, ref: 'node'},
+    extid: String
+  }, // Agent id
+  cid: {
+    id: {type: ObjectId, ref: 'userAccount'},
+    extid: String
+  },
+  uid: {
+    id: {type: ObjectId, ref: 'user'},
+    extid: String
+  },
+  hasContracts: [{
+    id: {type: ObjectId, ref: 'contract', required: true},
+    extid: String,
+    contractingParty: {type: String, required: true}
+  }],
+  accessLevel: {type: Number, default: 1},
   typeOfItem: {type: String, enum: ['device','service']},
-  status: String // Enabled or disabled
+  status: {type: String, default: 'disabled'}, // Enabled, disabled or deleted
+  info: mongoose.Schema.Types.Mixed // Thing description, object with flexible schema
+});
+
+var contract = new Schema({
+ctid: {type: String, required: true},
+cid: {
+  id: {type: ObjectId, ref: 'userAccount'},
+  extid: String
+},
+serviceProvider:{
+  uid: {
+    id: {type: ObjectId, ref: 'user'},
+    extid: String
+  },
+  termsAndConditions: Boolean,
+  items: [{
+    id: { type: ObjectId, ref: 'item' },
+    extid: String
+  }]
+},
+iotOwner:{
+  uid: {
+    id: {type: ObjectId, ref: 'user'},
+    extid: String
+  },
+  termsAndConditions: Boolean,
+  items: [{
+    id: { type: ObjectId, ref: 'item' },
+    extid: String
+  }]
+},
+accessRights: { type: String, enum:['R', 'W'] },
+legalDescription: String,
+type: { type: String, enum: ['serviceRequest', 'deviceUse']},
+status: { type: String, enum: ['pending', 'accepted', 'cancelled', 'rejected']}
 });
 
 var invitation = new Schema({
@@ -138,17 +209,23 @@ var remember = new Schema({
 });
 
 var auditLog = new Schema({
-  auditId: {type: String, required: true}, // Can be oid or cid
+  auditId: {type: String, required: true}, // Can be oid or cid (extid)
   data: [ {
     creationDate: { type: Date, default: Date.now },
     triggeredByMe: { type: Boolean, default: true }, // Was the audit triggered by an event in your organisation??
     user: { type: String, default: "Unknown" }, // User generating the event
-    orgOrigin: { type: ObjectId, ref: 'userAccount' }, // Organisation generating the event
-    orgDest: { type: ObjectId, ref: 'userAccount' }, // Organisation receiving the event
-    // Depending on the audit, we need another connection to user, org, item or node
-    auxConnection: {
+    orgOrigin: { // Organisation generating the event
+      id: {type: ObjectId, ref: 'userAccount'},
+      extid: String
+    },
+    orgDest: { // Organisation receiving the event
+      id: {type: ObjectId, ref: 'userAccount'},
+      extid: String
+    },
+    auxConnection: { // Depending on the audit, we need another connection to user, org, item or node
     kind: String,
-    item: { type: ObjectId, refPath: 'data.auxConnection.kind' }
+    item: { type: ObjectId, refPath: 'data.auxConnection.kind' },
+    extid: String
     },
     description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
     eventType: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
@@ -196,17 +273,19 @@ registration.set('autoIndex',true);
 remember.set('autoIndex',true);
 node.set('autoIndex',true);
 auditLog.set('autoIndex',true);
+contract.set('autoIndex',true);
 
 // Converts the mongoose document into a plain javascript object
-userAccount.set('toJSON',{ getters: true, virtuals: false });
-user.set('toJSON',{ getters: true, virtuals: false });
-item.set('toJSON',{ getters: true, virtuals: false });
-notification.set('toJSON',{ getters: true, virtuals: false });
-invitation.set('toJSON',{ getters: true, virtuals: false });
-registration.set('toJSON',{ getters: true, virtuals: false });
-remember.set('toJSON',{ getters: true, virtuals: false });
-node.set('toJSON',{ getters: true, virtuals: false });
-auditLog.set('toJSON',{ getters: true, virtuals: false });
+// userAccount.set('toJSON',{ getters: true, virtuals: false });
+// user.set('toJSON',{ getters: true, virtuals: false });
+// item.set('toJSON',{ getters: true, virtuals: false });
+// notification.set('toJSON',{ getters: true, virtuals: false });
+// invitation.set('toJSON',{ getters: true, virtuals: false });
+// registration.set('toJSON',{ getters: true, virtuals: false });
+// remember.set('toJSON',{ getters: true, virtuals: false });
+// node.set('toJSON',{ getters: true, virtuals: false });
+// auditLog.set('toJSON',{ getters: true, virtuals: false });
+// contract.set('toJSON',{ getters: true, virtuals: false });
 
 // Ensures that values passed to our model constructor that
 // were not specified in our schema do not get saved to the db
@@ -217,13 +296,13 @@ auditLog.set('toJSON',{ getters: true, virtuals: false });
 // Indexes to perform text search =======================
 
 /* Only works for FULL TEXT search !!!!
-userAccount.index({organisation: 'text'});
+userAccount.index({name: 'text'});
 user.index({name: 'text'});
 item.index({name: 'text'}); */
 
 // Indexes for common field searchUser  =================
 // TODO set the index as unique once server side and agent are prepared
-userAccount.index({organisation: 1}, { unique: false });
+userAccount.index({name: 1}, { unique: false });
 userAccount.index({cid: 1}, { unique: false });
 user.index({name: 1}, { unique: false });
 // item.index({name: 1, oid: 1}); // Compound indexes cannot be created in the schema definition!
@@ -231,6 +310,7 @@ item.index({oid: 1}, { unique: false });
 item.index({name: 1}, { unique: false });
 node.index({adid: 1}, { unique: false });
 auditLog.index({auditId: 1}, { unique: true});
+contract.index({ctid: 1}, { unique: true});
 
 
 // Exports models  ===============================
@@ -244,3 +324,4 @@ module.exports.registration = mongoose.model('registration', registration);
 module.exports.remember = mongoose.model('remember', remember);
 module.exports.node = mongoose.model('node', node);
 module.exports.auditLog = mongoose.model('auditLog', auditLog);
+module.exports.contract = mongoose.model('contract', contract);
