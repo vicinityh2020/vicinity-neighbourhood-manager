@@ -1,59 +1,72 @@
 // Global variables and definitions =========
 
 var mongoose = require('mongoose');
-
 var ObjectId = mongoose.Schema.Types.ObjectId;
-
 var Schema = mongoose.Schema;
 
-// Vicinity neighorhood schemas ============
+// Vicinity subSchemas - Replace repeated structures
 
-// TODO Remove unnecesary joins between schemas (ref:)
+var cidSchema = {
+  id: {type: ObjectId, ref: 'userAccount'},
+  extid: String
+};
+
+var adidSchema = {
+  id: {type: ObjectId, ref: 'node'},
+  extid: String
+};
+
+var uidSchema = {
+  id: {type: ObjectId, ref: 'user'},
+  extid: String
+};
+
+var oidSchema = {
+  id: {type: ObjectId, ref: 'item'},
+  extid: String
+};
+
+var ctidSchema = {
+  id: {type: ObjectId, ref: 'contract', required: true},
+  extid: String,
+  contractingParty: {type: String, required: true}
+};
+
+var contractSubschema = {
+  cid: cidSchema,
+  uid: uidSchema,
+  termsAndConditions: Boolean,
+  items: [ oidSchema ]
+};
+
+// Vicinity neighorhood schemas ============
 
 var userAccount = new Schema({
   name: {type: String, required: true},
   cid: {type: String, required: true},
   businessId : {type: String, required: true},
-  accountOf:[{
-    id: { type: ObjectId, ref: 'user' },
-    extid: String
-  }],
-  knows:[{
-    id: {type: ObjectId, ref: 'userAccount'},
-    extid: String
-  }],
-  knowsRequestsFrom:[{
-    id: {type: ObjectId, ref: 'userAccount'},
-    extid: String
-  }],
-  knowsRequestsTo:[{
-    id: {type: ObjectId, ref: 'userAccount'},
-    extid: String
-  }],
-  hasNodes:[{
-    id: { type: ObjectId, ref: 'node' },
-    extid: String
-  }],
+  accountOf:[ uidSchema ],
+  knows:[ cidSchema ],
+  knowsRequestsFrom:[ cidSchema ],
+  knowsRequestsTo:[ cidSchema ],
+  hasNodes:[ adidSchema ],
   hasNotifications: [{ type: ObjectId, ref: 'notification' }],
   skinColor: {type: String, enum: ['blue', 'red', 'green', 'purple', 'yellow', 'black']},
   avatar: String,
   location: String,
   notes: String,
-  status: String
+  status: {type: String, enum: ['active', 'deleted'], default: 'active'},
 });
 
 var user = new Schema({
   name: {type: String, required: true},
   email: {type: String, required: true},
-  cid: {
-    id: { type: ObjectId, ref: 'userAccount', required: true},
-    extid: String
-  },
+  cid: cidSchema,
   occupation: String,
   location: String,
   avatar: String,
-  status: String,
-  accessLevel: {type: Number, enum: [0, 1, 2]},
+  status: {type: String, enum: ['active', 'deleted'], default: 'active'},
+  accessLevel: {type: Number, enum: [0, 1, 2], default: 0},
   /* 0 - Only organisation
   1 - Friends
   2 - Everyone */
@@ -61,30 +74,17 @@ var user = new Schema({
     password: {type: String, required: true},
     principalRoles: [{type: String, required: true}]
   },
-  hasItems: [{
-    id: { type: ObjectId, ref: 'item' },
-    extid: String
-  }], // Own items and foreign items under contract
-  hasContracts: [{
-    id: {type: ObjectId, ref: 'contract', required: true},
-    extid: String,
-    contractingParty: {type: String, required: true}
-  }]
+  hasItems: [ oidSchema ], // Own items and foreign items under contract
+  hasContracts: [ ctidSchema ]
 });
 
 var node = new Schema({
   adid: {type: String, required: true},
   name: {type: String, required: true},
-  cid: {
-    id: {type: ObjectId, ref: 'userAccount'},
-    extid: String
-  },
+  cid: cidSchema,
   type: [{type: String, required: true}],
-  status: String,
-  hasItems: [{
-    id: { type: ObjectId, ref: 'item' },
-    extid: String
-  }],
+  status: {type: String, enum: ['active', 'deleted'], default: 'active'},
+  hasItems: [ oidSchema ],
   eventUri: String,
   agent: String
 });
@@ -93,61 +93,24 @@ var item = new Schema({
   name: {type: String, required: true},
   avatar: String,
   oid: {type: String, required: true}, // Object id -- different to Mongo uid
-  adid: {
-    id: {type: ObjectId, ref: 'node'},
-    extid: String
-  }, // Agent id
-  cid: {
-    id: {type: ObjectId, ref: 'userAccount'},
-    extid: String
-  },
-  uid: {
-    id: {type: ObjectId, ref: 'user'},
-    extid: String
-  },
-  hasContracts: [{
-    id: {type: ObjectId, ref: 'contract', required: true},
-    extid: String,
-    contractingParty: {type: String, required: true}
-  }],
-  accessLevel: {type: Number, default: 1},
+  adid: adidSchema, // Agent id
+  cid: cidSchema,
+  uid: uidSchema,
+  hasContracts: [ ctidSchema ],
+  accessLevel: {type: Number, enum: [0, 1, 2], default: 0},
   typeOfItem: {type: String, enum: ['device','service']},
-  status: {type: String, default: 'disabled'}, // Enabled, disabled or deleted
+  status: {type: String, enum: ['disabled', 'enabled', 'deleted'], default: 'disabled'}, // Enabled, disabled or deleted
   info: mongoose.Schema.Types.Mixed // Thing description, object with flexible schema
 });
 
 var contract = new Schema({
 ctid: {type: String, required: true},
-cid: {
-  id: {type: ObjectId, ref: 'userAccount'},
-  extid: String
-},
-serviceProvider:{
-  uid: {
-    id: {type: ObjectId, ref: 'user'},
-    extid: String
-  },
-  termsAndConditions: Boolean,
-  items: [{
-    id: { type: ObjectId, ref: 'item' },
-    extid: String
-  }]
-},
-iotOwner:{
-  uid: {
-    id: {type: ObjectId, ref: 'user'},
-    extid: String
-  },
-  termsAndConditions: Boolean,
-  items: [{
-    id: { type: ObjectId, ref: 'item' },
-    extid: String
-  }]
-},
+serviceProvider: contractSubschema,
+iotOwner: contractSubschema,
 accessRights: { type: String, enum:['R', 'W'] },
 legalDescription: String,
 type: { type: String, enum: ['serviceRequest', 'deviceUse']},
-status: { type: String, enum: ['pending', 'accepted', 'cancelled', 'rejected']}
+status: { type: String, enum: ['pending', 'accepted', 'rejected', 'deleted'], default: 'pending'}
 });
 
 var invitation = new Schema({
@@ -214,18 +177,12 @@ var auditLog = new Schema({
     creationDate: { type: Date, default: Date.now },
     triggeredByMe: { type: Boolean, default: true }, // Was the audit triggered by an event in your organisation??
     user: { type: String, default: "Unknown" }, // User generating the event
-    orgOrigin: { // Organisation generating the event
-      id: {type: ObjectId, ref: 'userAccount'},
-      extid: String
-    },
-    orgDest: { // Organisation receiving the event
-      id: {type: ObjectId, ref: 'userAccount'},
-      extid: String
-    },
+    orgOrigin: cidSchema, // Organisation generating the event
+    orgDest: cidSchema, // Organisation receiving the event
     auxConnection: { // Depending on the audit, we need another connection to user, org, item or node
-    kind: String,
-    item: { type: ObjectId, refPath: 'data.auxConnection.kind' },
-    extid: String
+      kind: String,
+      item: { type: ObjectId, refPath: 'data.auxConnection.kind' },
+      extid: String
     },
     description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
     eventType: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
@@ -277,15 +234,6 @@ contract.set('autoIndex',true);
 
 // Converts the mongoose document into a plain javascript object
 // userAccount.set('toJSON',{ getters: true, virtuals: false });
-// user.set('toJSON',{ getters: true, virtuals: false });
-// item.set('toJSON',{ getters: true, virtuals: false });
-// notification.set('toJSON',{ getters: true, virtuals: false });
-// invitation.set('toJSON',{ getters: true, virtuals: false });
-// registration.set('toJSON',{ getters: true, virtuals: false });
-// remember.set('toJSON',{ getters: true, virtuals: false });
-// node.set('toJSON',{ getters: true, virtuals: false });
-// auditLog.set('toJSON',{ getters: true, virtuals: false });
-// contract.set('toJSON',{ getters: true, virtuals: false });
 
 // Ensures that values passed to our model constructor that
 // were not specified in our schema do not get saved to the db
@@ -305,9 +253,10 @@ item.index({name: 'text'}); */
 userAccount.index({name: 1}, { unique: false });
 userAccount.index({cid: 1}, { unique: false });
 user.index({name: 1}, { unique: false });
+user.index({email: 1}, { unique: false });
 // item.index({name: 1, oid: 1}); // Compound indexes cannot be created in the schema definition!
-item.index({oid: 1}, { unique: false });
 item.index({name: 1}, { unique: false });
+item.index({oid: 1}, { unique: false });
 node.index({adid: 1}, { unique: false });
 auditLog.index({auditId: 1}, { unique: true});
 contract.index({ctid: 1}, { unique: true});

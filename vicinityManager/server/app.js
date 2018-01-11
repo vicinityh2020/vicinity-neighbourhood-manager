@@ -50,7 +50,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', api);
 app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup security
 app.use('/nodes', [jwtauth, nodes]);
-app.use('/items', [jwtauth, items]);
+app.use('/items', [items]);  // TODO add JWAUTH back !!!
 app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
 app.use('/search', [jwtauth, search]);

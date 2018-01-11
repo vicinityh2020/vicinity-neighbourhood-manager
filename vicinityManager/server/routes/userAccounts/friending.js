@@ -108,8 +108,6 @@ function acceptFriendRequest(req, res, next) {
         friend.knowsRequestsTo = findAndRemove(friend.knowsRequestsTo, my_id);
         me.knowsRequestsFrom = findAndRemove(me.knowsRequestsFrom, friend_id);
 
-        sharingRules.newFriend(my_id, friend_id); // Adds all my items flagged for friends to my friend foreign group and viceversa
-
         var notification = new notificationOp();
 
         notification.addressedTo.push(friend_id);
@@ -303,7 +301,8 @@ function cancelFriendship(req, res, next){
         friend.knows = findAndRemove(friend.knows, my_id);
         me.knows = findAndRemove(me.knows, friend_id);
 
-        sharingRules.removeFriend(my_id, friend_id);  // Removes all my items from my friend foreign group and viceversa
+        // Removes all items with FRIEND access level from the contracts of the company I am breaking the friendship with
+        sharingRules.removeFriend(my_id, friend_id);
 
         var notification = new notificationOp();
 
