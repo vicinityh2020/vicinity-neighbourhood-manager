@@ -124,7 +124,7 @@ Handles the accessLevel and other properties modifications
 function itemUpdate(uid,updates){
   return new Promise(
     function(resolve, reject) {
-      if(updates.accessLevel && updates.accessLevel !== 0){
+      if(updates.accessLevel){
         if(!updates.status){
           query = { accessLevel: updates.accessLevel };
           logger.debug("Start update of accessLevel...");
@@ -151,7 +151,7 @@ function itemUpdate(uid,updates){
 /*
 Sends a notification on change of status
 */
-function deviceActivityNotif(did,cid,state, typ){
+function deviceActivityNotif(did,cid,state,typ){
   var dbNotif = new notificationOp();
   return new Promise(
     function(resolve, reject) {
@@ -212,29 +212,14 @@ function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
     */
     function clasify(lvl){
         switch (lvl) {
-            case 1:
+            case 0:
                 caption = "private";
+                break;
+            case 1:
+                caption = "request friends";
                 break;
             case 2:
-                caption = "private";
-                break;
-            case 3:
-                caption = "request";
-                break;
-            case 4:
-                caption = "friend";
-                break;
-            case 5:
-                caption = "private";
-                break;
-            case 6:
-                caption = "request";
-                break;
-            case 7:
-                caption = "friend";
-                break;
-            case 8:
-                caption = "public";
+                caption = "request public";
                 break;
             default:
                 caption = "private";

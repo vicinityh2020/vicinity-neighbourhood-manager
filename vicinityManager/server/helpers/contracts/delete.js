@@ -14,6 +14,12 @@ Remove contract
 */
 function removeContract(req, res){
   var id = req.params.id;
+  remove(id, function(res, err){
+    res.json({error: err, message: res});
+  });
+}
+
+function removing(id, callback){
   var finalResp;
   var data = {};
   var query = {
@@ -37,30 +43,29 @@ function removeContract(req, res){
 
     var cidService = data.serviceProvider.cid.extid;
     var cidDevice = data.iotOwner.cid.extid;
-    var ctidService = {id: data._id, extid: data.ctid, contractingParty: cidDevice };
-    var ctidDevice = {id: data._id, extid: data.ctid, contractingParty: cidService };
+    var ctid = {id: data._id, extid: data.ctid};
     var uidService = data.serviceProvider.uid.id;
     var idsService = [];
     getOnlyId(idsService, data.serviceProvider.items);
     var uidDevice = data.iotOwner.uid.id;
     var idsDevice = [];
     getOnlyId(idsDevice, data.iotOwner.items);
-    return userOp.update({_id: uidDevice}, { $pull: {hasContracts: ctidDevice} });
+    return userOp.update({_id: uidDevice}, { $pull: {hasContracts: ctid} });
   })
   .then(function(response){
-      return itemOp.update({_id: {$in: idsDevice }}, { $pull: {hasContracts: ctidDevice} }, { multi: true });
+      return itemOp.update({_id: {$in: idsDevice }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
-    return userOp.update({_id: uidService}, { $pull: {hasContracts: ctidService} });
+    return userOp.update({_id: uidService}, { $pull: {hasContracts: ctid} });
   })
   .then(function(response){
-    return itemOp.update({_id: {$in: idsService }}, { $pull: {hasContracts: ctidService} }, { multi: true });
+    return itemOp.update({_id: {$in: idsService }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
-    res.json({error: false, message: finalResp});
+    callback(finalResp, false);
   })
   .catch(function(error){
-    res.json({error: true, message: error});
+    callback(error, true);
   });
 
 }
@@ -76,3 +81,4 @@ function getOnlyId(array, toAdd){
 // Export modules
 
 module.exports.removeContract = removeContract;
+module.exports.removing = removing;
