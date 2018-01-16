@@ -74,15 +74,15 @@ function updateScopeAttributes(response){
   var i=0;
   var j=0;
   while (i === 0){
-    if (response.data.message.accountOf[j]._id.toString() === $stateParams.userAccountId.toString()){
-      $scope.name =response.data.message.accountOf[j].name;
-      $scope.occupation=response.data.message.accountOf[j].occupation;
-      $scope.avatar =response.data.message.accountOf[j].avatar;
+    if (response.data.message.accountOf[j].id._id.toString() === $stateParams.userAccountId.toString()){
+      $scope.name =response.data.message.accountOf[j].id.name;
+      $scope.occupation=response.data.message.accountOf[j].id.occupation;
+      $scope.avatar =response.data.message.accountOf[j].id.avatar;
       $scope.userAccountId = $stateParams.userAccountId;
-      $scope.password = response.data.message.accountOf[j].authentication.password;
-      $scope.email = response.data.message.accountOf[j].email;
-      $scope.roles = response.data.message.accountOf[j].authentication.principalRoles;
-      $scope.accessLevel = Number(response.data.message.accountOf[j].accessLevel);
+      $scope.password = response.data.message.accountOf[j].id.authentication.password;
+      $scope.email = response.data.message.accountOf[j].id.email;
+      $scope.roles = response.data.message.accountOf[j].id.authentication.principalRoles;
+      $scope.accessLevel = Number(response.data.message.accountOf[j].id.accessLevel);
       $scope.accessLevelCaption = getCaption($scope.accessLevel);
       i=1;
     }
@@ -237,7 +237,7 @@ $scope.backToEdit1 = function () {
                function successCallback(response) {
                $scope.password = response.data.message.authentication.password;
 
-               $scope.pass=""; 
+               $scope.pass="";
                for (var k = 0; k < $scope.password.length; k++) {
                  $scope.pass += "*";
                }

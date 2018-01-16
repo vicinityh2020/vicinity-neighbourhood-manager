@@ -34,7 +34,7 @@ function postRegistration(req, res, next){
             res.json({"error": true, "message" : "Invalid adid identificator"});
           }
         } else {
-          var cid = data.organisation;
+          var cid = data.cid;
           var semanticTypes = {};
           // Get available item types in the semantic repository
           semanticRepo.getTypes("Device")
@@ -176,11 +176,13 @@ function updateItemsList(items, allresult){
   return new Promise(function(resolve, reject) {
     try{
       var oidArray = getIds(allresult, 'oid');
-      var flag = 0;
+      var itemsOid = []; //store a simple array of OIDs to compare
+      for(var i = 0; i < items.length; i++){
+          itemsOid.push(items[i].oid);
+      }
       for(var j = 0; j < oidArray.length; j++){
-        flag = items.indexOf(oidArray[j]);
-        if(flag === -1){
-          items.push(oidArray[j]);
+        if(itemsOid.indexOf(oidArray[j]) === -1){
+          items.push(allresult.value[j]);
         }
       }
       resolve(items);
@@ -195,8 +197,8 @@ Sends a notification to the organisation after successful discovery
 */
 function deviceActivityNotif(cid){
   var dbNotif = new notifOp();
-  dbNotif.addressedTo = cid;
-  dbNotif.sentBy = cid;
+  dbNotif.addressedTo = cid.id;
+  dbNotif.sentBy = cid.id;
   dbNotif.type = 13;
   dbNotif.status = "info";
   return dbNotif.save();
@@ -208,8 +210,8 @@ Creates audit logs for each registered item
 function createAuditLogs(cid, allresult){
   return new Promise(function(resolve, reject) {
     try{
-      var oidArray = getIds(allresult, 'id');
-      sync.forEachAll(oidArray,
+      // var oidArray = getIds(allresult, 'id');
+      sync.forEachAll(allresult.value,
         function(value, allresult, next, otherParams) { // Process all new items
           creatingAudit(value, otherParams,function(value, result) {
               // logger.debug('END execution with value =', value, 'and result =', result);
@@ -219,7 +221,7 @@ function createAuditLogs(cid, allresult){
         },
         function(allresult) {
           // Final part: Return results, update node and notify
-          if(allresult.length === oidArray.length){ // Only process final step if all the stack of tasks completed
+          if(allresult.length === allresult.value.length){ // Only process final step if all the stack of tasks completed
             resolve('Audits created...');
           }
         },
@@ -232,25 +234,25 @@ function createAuditLogs(cid, allresult){
   });
 }
 
-function creatingAudit(oid, data, callback){
-  data.auxConnection.item = oid;
+function creatingAudit(ids, data, callback){
+  data.auxConnection.item = ids.id;
   var cid = data.orgOrigin;
-  audits.putAuditInt(oid,data)
+  audits.putAuditInt(ids,data)
   .then(function(response){ return audits.putAuditInt(cid,data); })
-  .then(function(response){ callback(oid,'Success');})
-  .catch(function(err){ callback(oid, err); });
+  .then(function(response){ callback(ids.oid,'Success');})
+  .catch(function(err){ callback(ids.oid, err); });
 }
 
 /*
 Extract valid oids from allresult
 */
-function getIds(allresult, type){ // type indicates if I want the oid or the mongo id
-  var oidArray = [];
-  for(var i = 0; i < allresult.length; i++) {
-    if(allresult[i].result === "Success"){oidArray.push(allresult[i].value[type]);}
-  }
-  return oidArray;
-}
+// function getIds(allresult, type){ // type indicates if I want the oid or the mongo id
+//   var oidArray = [];
+//   for(var i = 0; i < allresult.length; i++) {
+//     if(allresult[i].result === "Success"){oidArray.push(allresult[i].value[type]);}
+//   }
+//   return oidArray;
+// }
 
 /*
 Extract valuable info from the types request static service

@@ -32,7 +32,11 @@ function getAll(req, res, next) {
 
   userAccountOp.findById(cid, {hasNodes: 1},
     function(err, data){
-      nodeOp.find({adid: { $in: data.hasNodes } }, {adid:1, name:1, eventUri:1, type:1, hasItems:1}, function(err,data){
+      var myNodes = [];
+      if(data){
+        myNodes = getIds(JSON.parse(JSON.stringify(data)).hasNodes);
+      }
+      nodeOp.find({_id: { $in: myNodes } }, {adid:1, name:1, eventUri:1, type:1, hasItems:1}, function(err,data){
         if (err) {
           response =  {"error": true, "message": "Error fetching data: " + err};
         } else {
@@ -44,6 +48,16 @@ function getAll(req, res, next) {
   }
 );
 
+}
+
+// Private functions
+
+function getIds(array){
+  var a = [];
+  for(var i = 0; i < array.length; i++){
+    a.push(array[i].id);
+  }
+  return a;
 }
 
 // Exports Functions

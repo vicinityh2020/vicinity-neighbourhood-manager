@@ -21,7 +21,7 @@ var asyncHandler = require('../../helpers/asyncHandler/sync');
     var searchTerm = req.query.searchTerm;
     var sT = new RegExp(searchTerm, 'i');
     // logger.debug(searchTerm);
-    userAccountOp.find({$query: {organisation: sT}, $hint: { organisation : 1 }}, function(err, data) {
+    userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, function(err, data) {
       if (err) {
         response = {"error": true, "message": "Error fetching data"};
       } else {
@@ -48,14 +48,14 @@ var asyncHandler = require('../../helpers/asyncHandler/sync');
       friends = response.knows;
       query = {
         $or :[
-        {$and: [ { organisation: cid }, { accessLevel: 0 } ] },
-        {$and: [ { organisation: {$in: friends}}, { accessLevel: 1 } ] },
+        {$and: [ { 'cid.id': cid }, { accessLevel: 0 } ] },
+        {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: 1 } ] },
         { accessLevel: 2 }
       ],
       name: {$regex: sT}
       };
-      logger.debug(cid);
-      logger.debug(query);
+      //logger.debug(cid);
+      //logger.debug(query);
       return userOp.find(query);
     })
     .then(function(response){
@@ -88,9 +88,9 @@ var asyncHandler = require('../../helpers/asyncHandler/sync');
     var query = {
       name: sT,
       $or :[
-      {$and: [ { hasAdministrator: {$in: friends}}, { accessLevel: {$in: [2, 3, 4]} } ] },
+      {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: {$in: [2, 3, 4]} } ] },
       { accessLevel: { $gt:4 } },
-      {$and: [ { hasAdministrator: cid}, {accessLevel: 1} ] }
+      {$and: [ { 'cid.id': cid}, {accessLevel: 1} ] }
       ]
     };
 

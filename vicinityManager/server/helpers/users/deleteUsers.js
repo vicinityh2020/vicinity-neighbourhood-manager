@@ -60,7 +60,7 @@ function deleting(id, otherParams, callback){
 
   userOp.findOneAndUpdate({_id:id}, { $set: obj }, {new: true})
   .then(function(response){
-    cid = response.organisation;
+    cid = response.cid.id;
     return audits.putAuditInt(
       cid,
       { orgOrigin: cid,

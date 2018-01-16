@@ -32,8 +32,8 @@ function processFriendRequest(req, res, next) {
     ).then(
       function(response){
         friend = response;
-        friend.knowsRequestsFrom.push(my_id);
-        me.knowsRequestsTo.push(friend_id);
+        friend.knowsRequestsFrom.push({'id': my_id, 'extid': me.cid });
+        me.knowsRequestsTo.push({'id': friend_id, 'extid': friend.cid });
 
         var notification_1 = new notificationOp();
         notification_1.addressedTo.push(friend._id);
@@ -51,8 +51,8 @@ function processFriendRequest(req, res, next) {
 
         audits.putAuditInt(
           my_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
+          { orgOrigin: {'id': my_id, 'extid': me.cid },
+            orgDest: {'id': friend_id, 'extid': friend.cid },
             user: req.body.userMail,
             triggeredByMe: true,
             eventType: 31 }
@@ -60,8 +60,8 @@ function processFriendRequest(req, res, next) {
 
         audits.putAuditInt(
           friend_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
+          { orgOrigin: {'id': my_id, 'extid': me.cid },
+            orgDest: {'id': friend_id, 'extid': friend.cid },
             user: req.body.userMail,
             triggeredByMe: false,
             eventType: 31 }
@@ -69,8 +69,8 @@ function processFriendRequest(req, res, next) {
 
         // friend.hasNotifications.push(notification._id); // TODO CHECK IF NECESSARY
         friend.save();
-        me.save();
-        logger.audit({user: req.body.userMail, action: 'processFriendRequest', orgOrigin: my_id, orgDest: friend_id});
+        me.save(function(err,res){logger.debug(err);});
+        logger.audit({user: req.body.userMail, action: 'processFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
         res.json({"error": false, "message": "Friending successful!"});
       }
     ).catch(
@@ -101,8 +101,8 @@ function acceptFriendRequest(req, res, next) {
       function(response){
         friend = response;
 
-        friend.knows.push(my_id);
-        me.knows.push(friend_id);
+        friend.knows.push({'id': my_id, 'extid': me.cid });
+        me.knows.push({'id': friend_id, 'extid': friend.cid });
 
         // Removes friend from my org knows, knowRqstFrom or knowRqstTo
         friend.knowsRequestsTo = findAndRemove(friend.knowsRequestsTo, my_id);
@@ -119,8 +119,8 @@ function acceptFriendRequest(req, res, next) {
 
         audits.putAuditInt(
           my_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
+          { orgOrigin: {'id': my_id, 'extid': me.cid },
+            orgDest: {'id': friend_id, 'extid': friend.cid },
             user: req.body.userMail,
             triggeredByMe: true,
             eventType: 33 }
@@ -128,8 +128,8 @@ function acceptFriendRequest(req, res, next) {
 
         audits.putAuditInt(
           friend_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
+          { orgOrigin: {'id': my_id, 'extid': me.cid },
+            orgDest: {'id': friend_id, 'extid': friend.cid },
             user: req.body.userMail,
             triggeredByMe: false,
             eventType: 33 }
@@ -140,7 +140,7 @@ function acceptFriendRequest(req, res, next) {
 
         friend.save();
         me.save();
-        logger.audit({user: req.body.userMail, action: 'acceptFriendRequest', orgOrigin: my_id, orgDest: friend_id});
+        logger.audit({user: req.body.userMail, action: 'acceptFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
         res.json({"error": false, "message": "Friending successful!"});
       }
     ).catch(
@@ -184,8 +184,8 @@ function rejectFriendRequest(req, res, next) {
 
         audits.putAuditInt(
           my_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
+          { orgOrigin: {'id': my_id, 'extid': me.cid },
+            orgDest: {'id': friend_id, 'extid': friend.cid },
             user: req.body.userMail,
             triggeredByMe: true,
             eventType: 34 }
@@ -193,8 +193,8 @@ function rejectFriendRequest(req, res, next) {
 
         audits.putAuditInt(
           friend_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
+          { orgOrigin: {'id': my_id, 'extid': me.cid },
+            orgDest: {'id': friend_id, 'extid': friend.cid },
             user: req.body.userMail,
             triggeredByMe: false,
             eventType: 34 }
@@ -205,7 +205,7 @@ function rejectFriendRequest(req, res, next) {
 
         friend.save();
         me.save();
-        logger.audit({user: req.body.userMail, action: 'rejectFriendRequest', orgOrigin: my_id, orgDest: friend_id});
+        logger.audit({user: req.body.userMail, action: 'rejectFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
         res.json({"error": false, "message": "Friending successful!"});
       }
     ).catch(
@@ -250,8 +250,8 @@ function cancelFriendRequest(req, res, next){
 
       audits.putAuditInt(
         my_id,
-        { orgOrigin: my_id,
-          orgDest: friend_id,
+        { orgOrigin: {'id': my_id, 'extid': me.cid },
+          orgDest: {'id': friend_id, 'extid': friend.cid },
           user: req.body.userMail,
           triggeredByMe: true,
           eventType: 32 }
@@ -259,8 +259,8 @@ function cancelFriendRequest(req, res, next){
 
       audits.putAuditInt(
         friend_id,
-        { orgOrigin: my_id,
-          orgDest: friend_id,
+        { orgOrigin: {'id': my_id, 'extid': me.cid },
+          orgDest: {'id': friend_id, 'extid': friend.cid },
           user: req.body.userMail,
           triggeredByMe: false,
           eventType: 32 }
@@ -268,7 +268,7 @@ function cancelFriendRequest(req, res, next){
 
       friend.save();
       me.save();
-      logger.audit({user: req.body.userMail, action: 'cancelFriendRequest', orgOrigin: my_id, orgDest: friend_id});
+      logger.audit({user: req.body.userMail, action: 'cancelFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
       res.json({"error": false, "message": "Friending successful!"});
     }
   ).catch(
@@ -350,7 +350,7 @@ Private Functions
 
 var findAndRemove = function(array, value){
   for (var i = 0; i < array.length; i++) {
-      if (array[i].toString() === value.toString()) {
+      if (array[i].id.toString() === value.toString()) {
           array.splice(i, 1);
       }
     }

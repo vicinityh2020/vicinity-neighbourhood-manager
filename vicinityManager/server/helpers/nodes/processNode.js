@@ -101,7 +101,7 @@ function deletingNodes(adid, otherParams, callback){
   .then(
   function(response){
     aux = response;
-    return userAccountOp.update({_id: aux.organisation}, {$pull: {hasNodes: adid}});
+    return userAccountOp.update({_id: aux.cid.id}, {$pull: {hasNodes: adid}});
   })
   .then(
   function(response){

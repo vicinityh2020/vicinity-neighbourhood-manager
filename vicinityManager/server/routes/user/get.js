@@ -23,8 +23,8 @@ function getAll(req, res, next) {
   var othercid = mongoose.Types.ObjectId(req.params.id);
   var mycid = mongoose.Types.ObjectId(req.query.mycid);
   var friends = [], users = [];
-  
-  userAccountOp.findById(othercid, {knows:1, accountOf:1}).populate('accountOf', 'avatar name email occupation location authentication status accessLevel')
+
+  userAccountOp.findById(othercid, {knows:1, accountOf:1}).populate('accountOf.id', 'avatar name email occupation location authentication status accessLevel')
   .then(function(response){
     friends = response.knows;
     users = response.accountOf;

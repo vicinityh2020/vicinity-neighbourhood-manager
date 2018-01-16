@@ -25,7 +25,7 @@ function postOne(req, res, next) {
   db.agent = req.body.agent;
   db.type = req.body.type;
   db.status = "active";
-  db.organisation = company_id;
+  db.cid = {"id": company_id, "extid": cid};
   db.adid = uuid();
 
   db.save()
@@ -37,7 +37,7 @@ function postOne(req, res, next) {
     commServer.callCommServer(payload, 'users', 'POST')
     .then( function(response){ return commServer.callCommServer({}, 'users/' + data.adid + '/groups/' + cid + '_agents', 'POST'); })  //Add node to company group in commServer
     .then( function(response){ return commServer.callCommServer(groupData, 'groups/', 'POST'); }) // Create node group in commServer
-    .then( function(response){ return userAccountOp.update( { _id: company_id}, {$push: {hasNodes: data.adid}}); }) // Add node to company in MONGO
+    .then( function(response){ return userAccountOp.update( { _id: company_id}, {$push: {hasNodes: {"id": data._id, "extid": data.adid}}}); }) // Add node to company in MONGO
     .then( function(response){
       return audits.putAuditInt(
         data.organisation,

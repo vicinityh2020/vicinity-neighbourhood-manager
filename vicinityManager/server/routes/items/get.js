@@ -30,18 +30,23 @@ function getMyItems(req, res) {
   userAccountOp.find({_id: o_id}, {knows: 1})
   .then(function(response){
 
+    var friends = [];
+    if(response){
+        friends = getIds(response.knows);
+    }
+
     if(o_id.toString() === cid.toString()){ // Need to compare strings instead of BSON
       query = { typeOfItem: type, hasAdministrator: o_id, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
     } else {
-      if(response[0].knows.indexOf(cid) !== -1) {
+      if(friends.indexOf(cid) !== -1) {
         query = { typeOfItem: type, hasAdministrator: o_id, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
       } else {
         query = { typeOfItem: type, hasAdministrator: o_id, accessLevel: { $gt:4 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
       }
     }
 
-    itemOp.find(query).populate('hasAdministrator','organisation', 'cid').populate('accessRequestFrom','organisation cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
-      var dataWithAdditional = itemProperties.getAdditional(data,o_id,[]); // Not necessary to know friends because I am always owner
+    itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
+      var dataWithAdditional = itemProperties.getAdditional(data,o_id,friends); // Not necessary to know friends because I am always owner
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
         res.json({"error": true, "message": "Error fetching data"});
@@ -62,34 +67,41 @@ Receives following parameters:
 */
 function getAllItems(req, res) {
   var response = {};
-  var o_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+  var o_id = mongoose.Types.ObjectId(req.params.id);
   var type = req.body.type;
   var offset = req.body.offset;
   var filterNumber = req.body.filterNumber;
   var filterOntology = typeof req.body.filterOntology !== 'undefined' ? req.body.filterOntology : [];
 
-  userAccountOp.find({_id: o_id}, {knows: 1}, function(err, data){
+  userAccountOp.findOne({_id: o_id}, {knows: 1}, function(err, data){
     if (err){
       logger.debug('error','UserAccount Items Error: ' + err.message);
     }
 
+    var friends = [];
     var query = {
       typeOfItem: type,
-      $or :[
-      {$and: [ { hasAdministrator: {$in: data[0].knows}}, { accessLevel: {$in: [2, 3, 4]} } ] },
-      { accessLevel: { $gt:4 } },
-      { hasAdministrator: o_id }
-      ]
+      $or :[ { accessLevel: 2 }, { hasAdministrator: o_id }]
     };
+
+    if(data){
+        friends = getIds(data.knows);
+        query = {
+          typeOfItem: type,
+          $or :[
+          {$and: [ { hasAdministrator: {$in: friends}}, { accessLevel: 1 } ] },
+          { accessLevel: 2 },
+          { hasAdministrator: o_id }
+          ]
+        };
+      }
 
     // Filters oids based on ontology matches to the user selection
     if(filterOntology.length > 0){query.oid = {$in: filterOntology}; }
 
     query = updateQueryWithFilterNumber(query, filterNumber, o_id);
 
-    var friends = data[0].knows;
-
-    itemOp.find(query).populate('hasAdministrator','organisation cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
+    itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
         response =  {"error": true, "message": "Error fetching data"};
@@ -111,32 +123,29 @@ Receives following parameters:
 */
 function getItemWithAdd(req, res, next) {
 
-    // logger.debug('Start: getItemWithAdd');
-
-    var response = {};
     var o_id = mongoose.Types.ObjectId(req.params.id);
     var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
     userAccountOp.find({_id: activeCompany_id}, function (err, data) {
       if(err){
-        response = {"error": true, "message": "Processing data failed!"};
-        res.json(response);
+        res.json({"error": true, "message": "Processing data failed!"});
       } else {
-        var friends = data[0].knows;
-        itemOp.find({_id: o_id}).populate('hasAdministrator','organisation cid')
+        var friends = [];
+        if(data){
+            friends = getIds(data.knows);
+        }
+        itemOp.find({_id: o_id}).populate('cid.id','name cid')
             .exec(
               function(err, data){
                 if (err || data === null) {
-                  response = {"error": true, "message": "Processing data failed!"};
+                  res.json({"error": true, "message": "Processing data failed!"});
                 } else {
                   if (data.length === 1) {
                     var dataWithAdditional = itemProperties.getAdditional(data,activeCompany_id, friends); // Not necessary to know friends because I process only devices underRequest!
-                    response = {"error": false, "message": dataWithAdditional};
+                    res.json({"error": false, "message": dataWithAdditional});
                   } else {
-                    response = {"error": true, "message": "Processing data failed!"};
+                    res.json({"error": true, "message": "Processing data failed!"});
                   }
                 }
-                // logger.debug('End: getItemWithAdd');
-                res.json(response);
               }
             );
           }
@@ -152,31 +161,39 @@ function updateQueryWithFilterNumber(q, fN, cid){
           q.status = "disabled";
           break;
       case 1:
-          q.accessLevel = 1;
+          q.accessLevel = 0;
           q.status = "enabled";
           break;
       case 2:
-          q.accessLevel = {$in: [2, 3, 4]};
-          q.hasAdministrator = cid;
+          q.accessLevel = 1;
+          q.cid.id = cid;
           break;
       case 3:
-          q.accessLevel = {$in: [5, 6, 7, 8]};
-          q.hasAdministrator = cid;
+          q.accessLevel = 2;
+          q.cid.id = cid;
           break;
       case 4:
-          q.hasAdministrator = cid;
+          q.cid.id = cid;
           break;
       case 5:
-          q.accessLevel = {$in: [2, 3, 4]};
+          q.accessLevel = 1;
           break;
       case 6:
-          q.accessLevel = {$in: [5, 6, 7, 8]};
+          q.accessLevel = 2;
           break;
       case 7:
           break;
         }
         return q;
       }
+
+
+  function getIds(array){
+    var a = [];
+    for(var i = 0; i < array.length; i++){
+      a.push(array[i].id);
+    }
+  }
 
 // Function exports ================================
 

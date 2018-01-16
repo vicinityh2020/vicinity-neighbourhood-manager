@@ -11,7 +11,7 @@ function updatePwd(req, res) {
   userOp.update({ "_id": o_id}, {$set: updates}, function(err, raw){
     response = {"error": err, "message": raw};
     res.json(response);
-  })
+  });
 }
 
 function updateCookie(req, res) {
@@ -28,8 +28,8 @@ function updateCookie(req, res) {
           var response = {"error": err, "message": data};
           res.json(response);
       }
-    })
-  })
+    });
+  });
 }
 
 module.exports.updatePwd = updatePwd;

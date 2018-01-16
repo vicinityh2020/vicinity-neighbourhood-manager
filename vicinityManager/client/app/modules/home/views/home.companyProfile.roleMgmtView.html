@@ -8,23 +8,23 @@
     <i ng-click="onSort(true)" class="fa fa-sort-alpha-desc btn btn-default" aria-hidden="true"></i>
   </span>
   <hr ng-show="!loaded">
-  <div ng-if="user._id === selectedUser._id || editing === false && user.status !== 'deleted'" class="box-body box" ng-repeat="user in userAccounts | orderBy:'name':rev">
+  <div ng-if="user.id._id === selectedUser._id || editing === false && user.id.status !== 'deleted'" class="box-body box" ng-repeat="user in userAccounts | orderBy:'name':rev">
       <div class="col-sm-2">
-        <a ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})"><strong>{{user.name}}</strong></a>
+        <a ui-sref="root.main.userProfile({userAccountId: user.id._id, companyAccountId: companyId})"><strong>{{user.id.name}}</strong></a>
       </div>
       <div class="col-sm-3">
-        <p>{{user.email}}</p>
+        <p>{{user.id.email}}</p>
       </div>
       <div class="col-sm-3">
-        <div ng-repeat="role in user.authentication.principalRoles">
+        <div ng-repeat="role in user.id.authentication.principalRoles">
           <span class="label label-success">{{role}}</span>
       </div>
       </div>
       <div class="col-sm-2">
-        <button class="btn btn-default btn-block pull-right" ng-show="!loaded" ng-click="startUpdate(user)">Change roles</button>
+        <button class="btn btn-default btn-block pull-right" ng-show="!loaded" ng-click="startUpdate(user.id)">Change roles</button>
       </div>
       <div class="col-sm-2">
-        <button class="btn btn-default btn-block pull-right" ng-show="!loaded" ng-click="deleteUser(user)">Delete User</button>
+        <button class="btn btn-default btn-block pull-right" ng-show="!loaded" ng-click="deleteUser(user.id)">Delete User</button>
       </div>
   </div>
   <div class="row">

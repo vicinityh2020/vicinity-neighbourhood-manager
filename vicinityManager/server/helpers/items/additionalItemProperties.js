@@ -16,32 +16,11 @@ function getAdditional(data,activeCompany_id,friends){
             device = data[index];
 
             var isOwner = (activeCompanyStr === device.hasAdministrator[0]._id.toString());
-            var isPublic = (isOwner === false && device.accessLevel === 8);
-            var isUnderRequest = false;
-            var isFriendData = false;
-            var isPrivate = false;
-            var cancelRequest = false;
-            var interruptConnection = false;
+            var isPublic = (isOwner === false && device.accessLevel === 2);
+            var isFriendData = (isOwner === false && device.accessLevel === 1);
+            var isPrivate = (isOwner === false && device.accessLevel === 0);
 
             var i = 0;
-
-            var haveAccess = 0;
-            for (i = 0; i < device.hasAccess.length; i++){
-              if(device.hasAccess[i]){
-                if (device.hasAccess[i].toString() === activeCompanyStr){
-                  haveAccess++;
-                }
-              }
-            }
-
-            var haveRequested = 0;
-            for (i = 0; i < device.accessRequestFrom.length; i++){
-              if(device.accessRequestFrom[i]){
-                if (device.accessRequestFrom[i].toString() === activeCompanyStr){
-                  haveRequested++;
-                }
-              }
-            }
 
             var imFriend = false;
             for (i = 0; i < friends.length; i++){
@@ -50,28 +29,16 @@ function getAdditional(data,activeCompany_id,friends){
                 }
             }
 
-            isUnderRequest = (isOwner === false && (device.accessLevel === 3 || device.accessLevel === 6));
-            isFriendData = (device.accessLevel === 4 || device.accessLevel === 7);
-            isPrivate = (isOwner === false && (device.accessLevel === 2 || device.accessLevel === 5));
-            cancelRequest = (isUnderRequest && haveRequested && !haveAccess);
-            interruptConnection = (isUnderRequest && haveAccess);
-            seeData = (isOwner || haveAccess > 0 || isPublic || (isFriendData && imFriend));
-
             var accessLevelCaption = giveMeCaption(device.accessLevel);
 
             deviceWithAdd = device.toObject();
             deviceWithAdd.isOwner = isOwner;
             deviceWithAdd.isPrivate = isPrivate;
-            deviceWithAdd.isFriendData = (isFriendData === true && isOwner === false);
+            deviceWithAdd.isFriendData = isFriendData;
             deviceWithAdd.isPublic = isPublic;
-            deviceWithAdd.isUnderRequest = isUnderRequest;
             deviceWithAdd.imFriend = (imFriend === true && isOwner === false);
             deviceWithAdd.myFriends = friends;
-            // logger.debug(friends);
             deviceWithAdd.accessLevelCaption = accessLevelCaption;
-            deviceWithAdd.cancelRequest = cancelRequest;
-            deviceWithAdd.interruptConnection = interruptConnection;
-            deviceWithAdd.seeData = seeData;
 
             plain_data.push(deviceWithAdd);
           }
@@ -81,29 +48,14 @@ function getAdditional(data,activeCompany_id,friends){
 
 function giveMeCaption(n){
   switch (n) {
-      case 1:
+      case 0:
           caption = "Private";
           break;
+      case 1:
+          caption = "Data Under Request for friends";
+          break;
       case 2:
-          caption = "Metadata Only";
-          break;
-      case 3:
-          caption = "Data Under Request";
-          break;
-      case 4:
-          caption = "Data Shared With Partners";
-          break;
-      case 5:
-          caption = "Public Metadata Only";
-          break;
-      case 6:
-          caption = "Public Data Under Request";
-          break;
-      case 7:
-          caption = "Public Data Shared With Partners";
-          break;
-      case 8:
-          caption = "Public";
+          caption = "Data Under Request for everyone";
           break;
       default:
           caption = "Private";

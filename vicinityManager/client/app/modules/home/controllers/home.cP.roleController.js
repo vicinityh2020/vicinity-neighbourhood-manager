@@ -119,7 +119,7 @@ function ($scope, $window, commonHelpers, $stateParams, userAccountAPIService, u
       // Find out if removing admin role
       if(keyword.test($scope.selectedUser.authentication.principalRoles) && !keyword.test($scope.newRoles)){
         for(var i = 0; i < $scope.userAccounts.length; i++){
-          if(keyword.test($scope.userAccounts[i].authentication.principalRoles)){
+          if(keyword.test($scope.userAccounts[i].id.authentication.principalRoles)){
             cont++;
           }
         }

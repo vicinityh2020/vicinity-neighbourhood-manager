@@ -30,7 +30,7 @@ function authenticate(req, res, next) {
 
             var o_id = mongoose.Types.ObjectId(result[0]._id);
 
-            userAccountsOp.find({ accountOf: {$elemMatch: {$eq : o_id }}}, function(error, result2) {
+            userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, function(error, result2) {
             //TODO: test if exist result2
             var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
 

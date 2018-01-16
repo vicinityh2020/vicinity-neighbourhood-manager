@@ -34,10 +34,10 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
         $scope.comp = response.data.message;
         var index = 0;
         for (index in $scope.comp.accountOf){
-          if ($scope.comp.accountOf[index]._id.toString() === $window.sessionStorage.userAccountId.toString()){
+          if ($scope.comp.accountOf[index].id._id.toString() === $window.sessionStorage.userAccountId.toString()){
             var index2 = 0;
-            for (index2 in $scope.comp.accountOf[index].authentication.principalRoles){
-              if ($scope.comp.accountOf[index].authentication.principalRoles[index2] == "administrator"){
+            for (index2 in $scope.comp.accountOf[index].id.authentication.principalRoles){
+              if ($scope.comp.accountOf[index].id.authentication.principalRoles[index2] == "administrator"){
                 $scope.isAdmin = true;
               }
             }
@@ -50,7 +50,8 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
 
   userAPIService.getUser($window.sessionStorage.userAccountId)
     .then( function successCallback(response) { $scope.user = response.data.message; },
-      function errorCallback(response){});
+      function errorCallback(response){
+      });
 
   $scope.alertPopUp1 = function () {
     $('div#myModal1').show();
