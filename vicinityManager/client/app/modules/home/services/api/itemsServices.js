@@ -57,7 +57,8 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   };
 
   itemsAPI.getItemWithAdd = function(id){
-    return $http.get(configuration.apiUrl +'/items/' + id );
+    var cid = $window.sessionStorage.companyAccountId;
+    return $http.get(configuration.apiUrl + '/items/' + id + '?cid=' + cid);
   };
 
   itemsAPI.getMyItems = function(id, filter, offset, cid) {

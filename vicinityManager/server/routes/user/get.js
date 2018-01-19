@@ -26,14 +26,17 @@ function getAll(req, res, next) {
 
   userAccountOp.findById(othercid, {knows:1, accountOf:1}).populate('accountOf.id', 'avatar name email occupation location authentication status accessLevel')
   .then(function(response){
-    friends = response.knows;
-    users = response.accountOf;
+
+    var parsedData = response.toObject();
+    friends = parsedData.knows;
+    users = parsedData.accountOf;
+    logger.debug(friends);
     var relation = myRelationWithOther(mycid, othercid, friends);
 
     if(relation === 1){
-      users = users.filter(function(i){return i.accessLevel >= 1;});
+      users = users.filter(function(i){return i.id.accessLevel >= 1;});
     } else if(relation === 2){
-      users = users.filter(function(i){return i.accessLevel === 2;});
+      users = users.filter(function(i){return i.id.accessLevel === 2;});
     } else {}
 
     res.json({"error": false, "message": users});
@@ -46,11 +49,21 @@ function getAll(req, res, next) {
 // Private functions
 
 function myRelationWithOther(a,b,c){
-  c = c.join();
-  c = c.split(',');
+  var d = getIds(c);
+  d = d.join();
+  d = d.split(',');
+  logger.debug(d);
   if(a.toString() === b.toString()){ return 0; } // Same company
-  else if(c.indexOf(a.toString()) !== -1){ return 1; } // Friend company
+  else if(d.indexOf(a.toString()) !== -1){ return 1; } // Friend company
   else { return 2; } // Other company
+}
+
+function getIds(array){
+  var a = [];
+  for(var i = 0; i < array.length; i++){
+    a.push(array[i].id);
+  }
+  return a;
 }
 
 // Export functions

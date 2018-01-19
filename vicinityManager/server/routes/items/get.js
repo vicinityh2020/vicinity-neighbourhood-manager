@@ -27,24 +27,22 @@ function getMyItems(req, res) {
   var cid = mongoose.Types.ObjectId(req.query.cid);
   var query;
 
-  userAccountOp.find({_id: o_id}, {knows: 1})
+  userAccountOp.findOne(o_id, {knows: 1})
   .then(function(response){
-
+    var parsedData = response.toObject();
     var friends = [];
-    if(response){
-        friends = getIds(response.knows);
+    if(parsedData.knows != null){
+        getIds(parsedData.knows, friends);
     }
-
     if(o_id.toString() === cid.toString()){ // Need to compare strings instead of BSON
-      query = { typeOfItem: type, hasAdministrator: o_id, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
+      query = { typeOfItem: type, 'cid.id': o_id, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
     } else {
       if(friends.indexOf(cid) !== -1) {
-        query = { typeOfItem: type, hasAdministrator: o_id, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
+        query = { typeOfItem: type, 'cid.id': o_id, accessLevel: { $gte:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
       } else {
-        query = { typeOfItem: type, hasAdministrator: o_id, accessLevel: { $gt:4 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
+        query = { typeOfItem: type, 'cid.id': o_id, accessLevel: { $gte:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
       }
     }
-
     itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
       var dataWithAdditional = itemProperties.getAdditional(data,o_id,friends); // Not necessary to know friends because I am always owner
       if (err) {
@@ -67,31 +65,32 @@ Receives following parameters:
 */
 function getAllItems(req, res) {
   var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
+  var o_id = mongoose.Types.ObjectId(req.params.cid);
+  // var o_id = req.params.cid;
   var type = req.body.type;
   var offset = req.body.offset;
   var filterNumber = req.body.filterNumber;
   var filterOntology = typeof req.body.filterOntology !== 'undefined' ? req.body.filterOntology : [];
 
-  userAccountOp.findOne({_id: o_id}, {knows: 1}, function(err, data){
+  userAccountOp.findOne(o_id, {knows: 1}, function(err, data){
     if (err){
       logger.debug('error','UserAccount Items Error: ' + err.message);
     }
+    var parsedData = data.toObject();
 
     var friends = [];
     var query = {
       typeOfItem: type,
-      $or :[ { accessLevel: 2 }, { hasAdministrator: o_id }]
+      $or :[ { accessLevel: 2 }, { 'cid.id': o_id }]
     };
-
-    if(data){
-        friends = getIds(data.knows);
+    if(parsedData.knows != null){
+        getIds(parsedData.knows, friends);
         query = {
           typeOfItem: type,
           $or :[
-          {$and: [ { hasAdministrator: {$in: friends}}, { accessLevel: 1 } ] },
+          { $and: [ { 'cid.id': {$in: friends}}, { accessLevel: 1 } ] },
           { accessLevel: 2 },
-          { hasAdministrator: o_id }
+          { 'cid.id': o_id }
           ]
         };
       }
@@ -109,7 +108,6 @@ function getAllItems(req, res) {
         var dataWithAdditional = itemProperties.getAdditional(data,o_id,friends);
         response = {"error": false, "message": dataWithAdditional};
       }
-
       res.json(response);
     });
   });
@@ -124,27 +122,25 @@ Receives following parameters:
 function getItemWithAdd(req, res, next) {
 
     var o_id = mongoose.Types.ObjectId(req.params.id);
-    var activeCompany_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
-    userAccountOp.find({_id: activeCompany_id}, function (err, data) {
+    var activeCompany_id = mongoose.Types.ObjectId(req.query.cid);
+    userAccountOp.findOne(activeCompany_id, {knows:1}, function (err, data) {
+      var parsedData = data.toObject();
       if(err){
         res.json({"error": true, "message": "Processing data failed!"});
       } else {
         var friends = [];
-        if(data){
-            friends = getIds(data.knows);
+        if(parsedData.knows != null){
+            getIds(parsedData.knows, friends);
         }
+
         itemOp.find({_id: o_id}).populate('cid.id','name cid')
             .exec(
               function(err, data){
                 if (err || data === null) {
                   res.json({"error": true, "message": "Processing data failed!"});
                 } else {
-                  if (data.length === 1) {
-                    var dataWithAdditional = itemProperties.getAdditional(data,activeCompany_id, friends); // Not necessary to know friends because I process only devices underRequest!
-                    res.json({"error": false, "message": dataWithAdditional});
-                  } else {
-                    res.json({"error": true, "message": "Processing data failed!"});
-                  }
+                  var dataWithAdditional = itemProperties.getAdditional(data, activeCompany_id, friends); // Not necessary to know friends because I process only devices underRequest!
+                  res.json({"error": false, "message": dataWithAdditional});
                 }
               }
             );
@@ -188,10 +184,9 @@ function updateQueryWithFilterNumber(q, fN, cid){
       }
 
 
-  function getIds(array){
-    var a = [];
+  function getIds(array, friends){
     for(var i = 0; i < array.length; i++){
-      a.push(array[i].id);
+      friends.push(array[i].id);
     }
   }
 

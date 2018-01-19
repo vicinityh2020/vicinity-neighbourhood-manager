@@ -60,17 +60,20 @@ function remove(req, res, next) {
       if (err) {
         res.json({"error": true, "message": "Error fetching data: " + err});
       } else {
-        delUser.deleteAllUsers(companyData.accountOf, req.body.userMail)
+        var companyDataParsed = companyData.toObject();
+        var users = [];
+        getOids(companyDataParsed.accountOf, users, 'id');
+        delUser.deleteAllUsers(users, req.body.userMail)
         .then(function(response){
           deletingResults.users = response;
-          return myNode.deleteNode(companyData.hasNodes, req.body.userMail);
+          var nodes = [];
+          getOids(companyDataParsed.hasNodes, nodes, 'extid');
+          return myNode.deleteNode(nodes, req.body.userMail);
         })
         .then(function(response){
           deletingResults.nodes = response;
           // TODO uncomment/comment next 8 lines to test or have real behaviour
           companyData.location = "";
-          companyData.organisation = "";
-          companyData.businessId = "";
           companyData.hasNotifications = [];
           companyData.knows = [];
           companyData.knowsRequestsTo = [];
@@ -82,7 +85,7 @@ function remove(req, res, next) {
         .then(function(response){
           return audits.putAuditInt(
             cid,
-            { orgOrigin: cid,
+            { orgOrigin: companyData.cid, // extid
               user: req.body.userMail,
               eventType: 2 }
           );
@@ -95,13 +98,24 @@ function remove(req, res, next) {
           res.json(deletingResults);
         })
         .catch(function(err){
-          logger.error({user: req.body.userMail, action: 'deleteOrganisation', item: cid, message: err})
+          logger.error({user: req.body.userMail, action: 'deleteOrganisation', item: cid, message: err});
           res.json({error: true, message: err}); }
         );
       }
     }
   );
 }
+
+// Private functions
+
+function getOids(array, friends, type){
+  var aux;
+  for(var i = 0; i < array.length; i++){
+    aux = array[i];
+    friends.push(aux[type]);
+  }
+}
+
 
 // Export Functions
 module.exports.get = get;

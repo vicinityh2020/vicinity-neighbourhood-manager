@@ -23,14 +23,16 @@ function getAllFilteredUserAccountsFacade(req, res, next) {
   } else {
     userAccountOp.findById(o_id, {knows: 1})
     .then( function(data){
+      var parsedData = data.toObject();
       var qry;
       var friends = [];
-      if(data){
-          friends = getIds(data.knows);
+      if(parsedData){
+        getIds(parsedData.knows, friends);
       }
-      logger.debug(data.knows);
-      if(Number(type) === 1){ qry = {_id: {$in: friends}, status: {$exists: false} }; }
-      else { qry = {_id: {$not: {$in: friends} }, status: {$exists: false} }; }
+      // friends = friends.join();
+      // friends = friends.split(',');
+      if(Number(type) === 1){ qry = {_id: {$in: friends}, status: { $not: /^del.*/} }; }
+      else { qry = {_id: {$not: {$in: friends} }, status: { $not: /^del.*/} }; }
       return userAccountOp.find(qry); // if the field status exists, is also equal to deleted
     })
     .then( function(data){res.json({"error": false, "message": data});})
@@ -73,8 +75,7 @@ function getUserAccountFacade(req, res, next) {
           if (err) {
               response = {"error": true, "message": "Error fetching data"};
           } else {
-            // getIds()
-            var parsedData = JSON.parse(JSON.stringify(data));
+            var parsedData = data.toObject();
             var myNeighbors = parsedData.knows;
             var requestsFrom = parsedData.knowsRequestsFrom;
             var requestTo = parsedData.knowsRequestsTo;
@@ -113,7 +114,7 @@ function getUserAccountFacade(req, res, next) {
 
               }
               //TODO: Issue #6 Check existing knows requests
-              plain_data = data.toObject();
+              plain_data = data; //.toObject();
               plain_data.isNeighbour = isNeighbour;
               plain_data.canSendNeighbourRequest = canSendNeighbourRequest;
               plain_data.canCancelNeighbourRequest = canCancelNeighbourRequest;
@@ -137,10 +138,9 @@ function getUserAccountCid(req, res, next){
     });
 }
 
-function getIds(array){
-  var a = [];
+function getIds(array, friends){
   for(var i = 0; i < array.length; i++){
-    a.push(array[i].id);
+    friends.push(array[i].id);
   }
 }
 

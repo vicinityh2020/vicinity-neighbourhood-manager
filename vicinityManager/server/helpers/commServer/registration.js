@@ -25,7 +25,7 @@ function postRegistration(req, res, next){
   console.time("ALL REGISTRATION EXECUTION");
   console.time("REGISTRATION FIX PART");
 
-  nodeOp.findOne({adid: adid, status: "active"}, {organisation:1, hasItems: 1},
+  nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1},
     function(err,data){
         if(err || !data){
           if(err){
@@ -34,6 +34,7 @@ function postRegistration(req, res, next){
             res.json({"error": true, "message" : "Invalid adid identificator"});
           }
         } else {
+          var nodeId = data._id;
           var cid = data.cid;
           var semanticTypes = {};
           // Get available item types in the semantic repository
@@ -71,7 +72,7 @@ function postRegistration(req, res, next){
                   }
                 },
                 false,
-                {adid: adid, cid:cid, data:data, types:semanticTypes} // additional parameters
+                {adid: adid, cid:cid, nodeId: nodeId, data:data, types:semanticTypes} // additional parameters
               );
             }
           )
@@ -92,13 +93,13 @@ function saveDocuments(objects, otherParams, callback){
   // Create one item document
   obj.typeOfItem = findType(objects.type, otherParams.types); // Use collection of semanticTypes to find if service/device/unknown
   if(obj.typeOfItem === "unknown") {
-    callback({oid: "No OID", id: "No id"}, "Unknown type...");
+    callback({extid: "No OID", id: "No id"}, "Unknown type...");
   } else {
     // Adding important fields for Vicinity
-    obj.adid = otherParams.adid;
+    obj.adid = {'id': otherParams.nodeId, 'extid': otherParams.adid};
     obj.name = objects.name; // Name in commServer
-    obj.hasAdministrator = otherParams.cid; // CID, obtained from mongo
-    obj.accessLevel = 1; // private by default
+    obj.cid = otherParams.cid; // CID, obtained from mongo
+    obj.accessLevel = 0; // private by default
     obj.avatar = config.avatarItem; // Default avatar provided by VCNT
     obj.status = 'disabled';
     if(!objects.credentials && !objects.oid){ // Create a new instance in Mongo
@@ -114,13 +115,13 @@ function saveDocuments(objects, otherParams, callback){
           obj.info = JSON.parse(response).data.lifting; // Thing description obj, stores response from semanticRepo
           createInstance(new itemOp(obj), callback);
         } else { // If lifting ends with error ...
-          callback({oid: obj.oid, id: "No id"}, "Error: " + repoAnswer.data.errors);
+          callback({extid: obj.oid, id: "No id"}, "Error: " + repoAnswer.data.errors);
         }
       })
-      .catch(function(err){callback({oid: obj.oid, id: "No id"}, "Error: " + err); });
+      .catch(function(err){callback({extid: obj.oid, id: "No id"}, "Error: " + err); });
       //createInstance(obj, callback)
     } else { // if the TD contains an OID, then we need to update the instance in Mongo (not create a new one)
-      callback({oid: "No OID", id: "No id"}, "Update service disabled, you cannot register TDs with OID");
+      callback({extid: "No OID", id: "No id"}, "Update service disabled, you cannot register TDs with OID");
       // obj.oid = objects.credentials.oid;
       // var pass = objects.credentials.password;
       // delete(objects.credentials);
@@ -138,9 +139,9 @@ function createInstance(obj, callback){
   obj.save(
     function(err, response){
       if(err){
-        callback({oid: obj.oid, id: "No id"}, "Error Mongo Creating Instance: " + err);
+        callback({extid: obj.oid, id: "No id"}, "Error Mongo Creating Instance: " + err);
       } else {
-        callback({oid: obj.oid, id: response._id}, "Success");
+        callback({extid: obj.oid, id: response._id}, "Success");
       }
     });
 }
@@ -175,14 +176,21 @@ function updateItemsList(items, allresult){
   // get oids only if doc saved succesfully
   return new Promise(function(resolve, reject) {
     try{
-      var oidArray = getIds(allresult, 'oid');
-      var itemsOid = []; //store a simple array of OIDs to compare
-      for(var i = 0; i < items.length; i++){
-          itemsOid.push(items[i].oid);
-      }
-      for(var j = 0; j < oidArray.length; j++){
-        if(itemsOid.indexOf(oidArray[j]) === -1){
-          items.push(allresult.value[j]);
+      // var oidArray = getIds(allresult, 'oid');
+      var i, j;
+      if(items.length > 0){
+        var itemsOid = []; //store a simple array of OIDs to compare
+        for(i = 0; i < items.length; i++){
+            itemsOid.push(items[i].extid);
+        }
+        for(j = 0; j < allresult.length; j++){
+          if(itemsOid.indexOf(allresult[j].value.extid) === -1){
+            items.push(allresult[j].value);
+          }
+        }
+      } else {
+        for(j = 0; j < allresult.length; j++){
+          items.push(allresult[j].value);
         }
       }
       resolve(items);
@@ -207,13 +215,13 @@ function deviceActivityNotif(cid){
 /*
 Creates audit logs for each registered item
 */
-function createAuditLogs(cid, allresult){
+function createAuditLogs(cid, ids){
   return new Promise(function(resolve, reject) {
     try{
       // var oidArray = getIds(allresult, 'id');
-      sync.forEachAll(allresult.value,
+      sync.forEachAll(ids,
         function(value, allresult, next, otherParams) { // Process all new items
-          creatingAudit(value, otherParams,function(value, result) {
+          creatingAudit(value, otherParams, function(value, result) {
               // logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
@@ -221,7 +229,7 @@ function createAuditLogs(cid, allresult){
         },
         function(allresult) {
           // Final part: Return results, update node and notify
-          if(allresult.length === allresult.value.length){ // Only process final step if all the stack of tasks completed
+          if(allresult.length === ids.length){ // Only process final step if all the stack of tasks completed
             resolve('Audits created...');
           }
         },
@@ -235,12 +243,12 @@ function createAuditLogs(cid, allresult){
 }
 
 function creatingAudit(ids, data, callback){
-  data.auxConnection.item = ids.id;
+  data.auxConnection.item = ids.value.id;
   var cid = data.orgOrigin;
   audits.putAuditInt(ids,data)
   .then(function(response){ return audits.putAuditInt(cid,data); })
-  .then(function(response){ callback(ids.oid,'Success');})
-  .catch(function(err){ callback(ids.oid, err); });
+  .then(function(response){ callback(ids.value.extid,'Success');})
+  .catch(function(err){ callback(ids.value.extid, err); });
 }
 
 /*

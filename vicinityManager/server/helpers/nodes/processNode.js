@@ -92,28 +92,35 @@ the update process continues in the commServer
 Deletes all node asynchronously
 */
 function deletingNodes(adid, otherParams, callback){
-  var aux = {}, itemsRes;
+  var aux = {};
+  var itemsRes;
   var query = {
-    'status': 'deleted',
-    'name': 'empty'
+    status: 'deleted',
+    cid: {}
   };
-  nodeOp.findOneAndUpdate({adid: adid}, { $set: query }, { new: true })
+  nodeOp.findOne({adid: adid})
   .then(
   function(response){
     aux = response;
-    return userAccountOp.update({_id: aux.cid.id}, {$pull: {hasNodes: adid}});
+    return nodeOp.update({adid:adid},{$set:query});
+  })
+  .then(function(response){
+    return userAccountOp.update({_id: aux.cid.id}, {$pull: {hasNodes: { id: aux._id }}});
   })
   .then(
   function(response){
     return audits.putAuditInt(
-      aux.organisation,
-      { orgOrigin: aux.organisation,
+      aux.cid.id,
+      { orgOrigin: aux.cid.extid,
         auxConnection: {kind: 'node', item: aux._id},
         user: otherParams.userMail,
         eventType: 22 }
     );
   })
-  .then(function(response){ return myItems.deleteItems(aux.hasItems, otherParams.userMail); })
+  .then(function(response){
+    var friends = [];
+    getOids(aux.hasItems, friends);
+    return myItems.deleteItems(friends, otherParams.userMail); })
   .then(function(response){
     itemsRes = response;
   return commServer.callCommServer({}, 'users/' + adid, 'DELETE'); // Update node in commServer
@@ -134,6 +141,14 @@ function deletingNodes(adid, otherParams, callback){
       callback(adid, {'status':'success', 'items': itemsRes}) ;
     }
   });
+}
+
+// Private functions
+
+function getOids(array, friends){
+  for(var i = 0; i < array.length; i++){
+    friends.push(array[i].extid);
+  }
 }
 
 // Export Functions

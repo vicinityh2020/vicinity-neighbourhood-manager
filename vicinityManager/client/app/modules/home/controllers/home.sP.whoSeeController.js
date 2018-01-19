@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('sPwhoSeeController',
-function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPIService, Notification) {
+function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPIService, $window, Notification) {
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
@@ -15,24 +15,20 @@ function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPISe
     .then(
       function successCallback(response){
         $scope.item = response.data.message[0];
-        if ($scope.item.accessLevel === 8){
-          userAccountAPIService.getUserAccounts()
+        if ($scope.item.accessLevel === 1){
+          userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
             .then(
               function successCallback(response){
-                $scope.friends = response.data.message;
+                $scope.friends = response.data.message.knows;
               },
               errorCallback
             );
-          }else if ($scope.item.accessLevel === 1) {
+          }else if ($scope.item.accessLevel === 0) {
             $scope.note = "Item is private. No one can see this item.";
             $scope.giveNote = true;
           }else {
-            userAccountAPIService.getUserAccounts($scope.item.hasAdministrator[0]._id, 1).then(
-              function successCallback(response){
-                $scope.friends = response.data.message;
-              },
-              errorCallback
-            );
+            $scope.note = "Item has public visibility. Everyone can see it.";
+            $scope.giveNote = true;
           }
           $scope.loaded = true;
         },

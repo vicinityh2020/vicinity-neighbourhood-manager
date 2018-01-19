@@ -11,7 +11,6 @@ function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $
   $scope.name = {};
   $scope.avatar = {};
   $scope.occupation = {};
-  $scope.organisation = {};
   $scope.bid = {};
   $scope.companyAccountId = {};
   $scope.isMyProfile = true;
@@ -268,10 +267,9 @@ $scope.uploadPic = function(){
   };
 
   function updateScopeAttributes(response){
-      $scope.name = response.data.message.organisation;
+      $scope.name = response.data.message.name;
       $scope.avatar = response.data.message.avatar;
       $scope.occupation = response.data.message.accountOf.occupation;
-      $scope.organisation = response.data.message.organisation;
       $scope.companyAccountId = response.data.message._id;
       $scope.location = response.data.message.location;
       $scope.badges = response.data.message.badges;

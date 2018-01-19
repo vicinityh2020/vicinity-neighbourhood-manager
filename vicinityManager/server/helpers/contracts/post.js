@@ -34,8 +34,8 @@ function createContract(req, res){
       } else {
         var cidService = data.cidService.extid;
         var cidDevice = data.cidDevice.extid;
-        var ctidService = {id: response._id, extid: data.ctid, contractingParty: cidDevice };
-        var ctidDevice = {id: response._id, extid: data.ctid, contractingParty: cidService };
+        var ctidService = {id: response._id, extid: response.ctid, contractingParty: cidDevice };
+        var ctidDevice = {id: response._id, extid: response.ctid, contractingParty: cidService };
         var uidService = data.uidService.id;
         var idsService = [];
         getOnlyId(idsService, data.oidService);

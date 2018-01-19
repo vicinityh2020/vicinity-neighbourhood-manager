@@ -23,8 +23,8 @@
           </div>
           <i ng-if="myFriends.indexOf(result._id.toString()) !== -1" class="tooltip2 fa fa-users push-right" aria-hidden="true"></i>
           <!-- /.widget-user-image -->
-          <h3 ng-show="activeCompanyID.toString() === result._id.toString()" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">{{result.organisation}}</a></h3>
-          <h3 ng-show="!(activeCompanyID.toString() === result._id.toString())" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">{{result.organisation}}</a></h3>
+          <h3 ng-show="activeCompanyID.toString() === result._id.toString()" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">{{result.name}}</a></h3>
+          <h3 ng-show="!(activeCompanyID.toString() === result._id.toString())" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">{{result.name}}</a></h3>
           <!-- <h5 class="widget-user-desc">{{result._id}}</h5> -->
           <h5 class="widget-user-desc"><i class="fa fa-map-marker margin-r-5"></i>{{result.location}}</h5>
         </div>
@@ -69,7 +69,7 @@
 
           <!-- /.widget-user-image -->
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.cid.id.name}}</a></h5>
           <h5 class="widget-user-desc2">{{dev.accessLevelCaption}}</h5>
           <!-- <h5 class="widget-user-desc2">{{dev.info.location}}</h5> -->
           <h5 ng-show="dev.seeData && !dev.isOwner" class="widget-user-desc2 label label-success"><i class="fa fa-link" aria-hidden="true"></i>  Data Access</h5>
@@ -139,7 +139,7 @@
 
             <!-- /.widget-user-image -->
             <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-            <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
+            <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.cid.id.name}}</a></h5>
             <h5 class="widget-user-desc2">{{dev.accessLevelCaption}}</h5>
             <!-- <h5 class="widget-user-desc2">{{dev.info.location}}</h5> -->
             <h5 ng-show="dev.seeData && !dev.isOwner" class="widget-user-desc2 label label-success"><i class="fa fa-link" aria-hidden="true"></i>  Data Access</h5>

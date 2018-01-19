@@ -42,15 +42,15 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
     function updateScopeAttributes(response){
         $scope.device = response.data.message[0];
         $scope.devInfo = $scope.device.info;
-        $scope.owner = $scope.device.hasAdministrator[0].organisation;
-        $scope.owner_id = $scope.device.hasAdministrator[0]._id;
-        $scope.cid = $scope.device.hasAdministrator[0].cid;
+        $scope.owner = $scope.device.cid.id.name;
+        $scope.owner_id = $scope.device.cid.id._id;
+        $scope.cid = $scope.device.cid;
         $scope.AL = $scope.device.accessLevel;
         $scope.devEnabled = ($scope.device.status === 'enabled');
         $scope.canSeeData = $scope.device.seeData;
         $scope.myFriends = $scope.device.myFriends;
-        var aux = ["Private", "Partners without Data", "Partners with Data Under Request", "Partners including Data", "Public without Data", "Public with Data Under Request", "Public including Data for Partners", "Public"];
-        $scope.ALcaption = aux[$scope.AL - 1];
+        var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
+        $scope.ALcaption = aux[$scope.AL];
 
         $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
     }
@@ -66,7 +66,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
           "cid": $scope.cid,
           "adid": $scope.device.adid,
           "password":"test",
-          "accessLevel": 1, // Always 1 when enabling/disabling
+          "accessLevel": 0, // Always 1 when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
           "myFriends": $scope.myFriends
         };
@@ -79,7 +79,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
           "oid": $scope.device.oid,
           "adid": $scope.device.adid,
           "password":"test",
-          "accessLevel": 1, // Always 1 when enabling/disabling
+          "accessLevel": 0, // Always 1 when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
           "myFriends": $scope.myFriends
         };
@@ -136,8 +136,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
   $scope.saveNewAccess = function () {
     if (Number($('select#editAccessName').val()) !== 0){
         itemsAPIService.putOne($stateParams.deviceId,
-          {accessLevel: $('select#editAccessName').val(),
-          cid: $scope.owner_id,
+          {accessLevel: $('select#editAccessName').val() - 1,
           myFriends: $scope.myFriends,
           oid: $scope.device.oid,
           oldAccessLevel: $scope.device.accessLevel })

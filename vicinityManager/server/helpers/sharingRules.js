@@ -170,27 +170,39 @@ Process change of the access level
 function processAccessLevelChange(oid, friends, ctids){
   itemOp.find({_id: oid},{hasContracts:1})
   .then(function(item){
-    for(var i=0; i < item.hasContracts.length; i++){
-      if(friends.indexOf(item.hasContracts[i].id) === -1){
-        ctids.push(item.hasContracts[i].id);
-        item.hasContracts.splice(i, 1);
+    if(item.hasContracts != null){
+      for(var i=0; i < item.hasContracts.length; i++){
+        if(friends.indexOf(item.hasContracts[i].id) === -1){
+          ctids.push(item.hasContracts[i].id);
+          item.hasContracts.splice(i, 1);
+        }
       }
+      return item.save();
+    } else {
+      return false;
     }
-    return item.save();
   })
   .then(function(response){
-    return contractOp.find({_id:{$in: ctids}});
+    if(response){
+      return contractOp.find({_id:{$in: ctids}});
+    } else {
+      return false;
+    }
   })
   .then(function(item){
-    for(var i=0; i < item.iotOwner.items.length; i++){
-      oid.push(item.iotOwner.items[i].id);
-      item.hasContracts.items.splice(i, 1);
+    if(item){
+      for(var i=0; i < item.iotOwner.items.length; i++){
+        oid.push(item.iotOwner.items[i].id);
+        item.hasContracts.items.splice(i, 1);
+      }
+      for(var j=0; j < item.serviceProvider.items.length; j++){
+        oid.push(item.serviceProvider.items[j].id);
+        item.hasContracts.items.splice(j, 1);
+      }
+      return item.save();
+    } else {
+      return {};
     }
-    for(var j=0; j < item.serviceProvider.items.length; j++){
-      oid.push(item.serviceProvider.items[j].id);
-      item.hasContracts.items.splice(j, 1);
-    }
-    return item.save();
   })
   .then(function(response){
     logger.debug('Change of accessLevel processed...');

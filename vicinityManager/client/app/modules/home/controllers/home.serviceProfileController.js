@@ -43,15 +43,15 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
     function updateScopeAttributes(response){
         $scope.item = response.data.message[0];
         $scope.devInfo = $scope.item.info;
-        $scope.owner = $scope.item.hasAdministrator[0].organisation;
-        $scope.owner_id = $scope.item.hasAdministrator[0]._id;
-        $scope.cid = $scope.device.hasAdministrator[0].cid;
+        $scope.owner = $scope.item.cid.id.name;
+        $scope.owner_id = $scope.item.cid.id._id;
+        $scope.cid = $scope.item.cid;
         $scope.AL = $scope.item.accessLevel;
         $scope.devEnabled = ($scope.item.status === 'enabled');
         $scope.canSeeData = $scope.item.seeData;
 
-        var aux = ["Private", "Partners without Data", "Partners with Data Under Request", "Partners including Data", "Public without Data", "Public with Data Under Request", "Public including Data for Partners", "Public"];
-        $scope.ALcaption = aux[$scope.AL - 1];
+        var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
+        $scope.ALcaption = aux[$scope.AL];
 
         $scope.isMyItem = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
     }
@@ -67,7 +67,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "oid": $scope.item.oid,
           "adid": $scope.item.adid,
           "password":"test",
-          "accessLevel": 1,
+          "accessLevel": 0,
           "oldAccessLevel" : $scope.item.accessLevel,
           "myFriends": $scope.item.myFriends
         };
@@ -80,7 +80,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "oid": $scope.item.oid,
           "adid": $scope.item.adid,
           "password":"test",
-          "accessLevel": 1,
+          "accessLevel": 0,
           "oldAccessLevel" : $scope.item.accessLevel,
           "myFriends": $scope.item.myFriends
         };
@@ -135,10 +135,11 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
 
   $scope.saveNewAccess = function () {
     if (Number($('select#editAccessName').val()) !== 0){
-        itemsAPIService.putOne($stateParams.serviceId, {accessLevel: $('select#editAccessName').val(),
-                                                      myFriends: $scope.item.myFriends,
-                                                      oid: $scope.item.oid,
-                                                      oldAccessLevel: $scope.item.accessLevel })
+        itemsAPIService.putOne($stateParams.serviceId,
+            {accessLevel: $('select#editAccessName').val() - 1,
+            myFriends: $scope.item.myFriends,
+            oid: $scope.item.oid,
+            oldAccessLevel: $scope.item.accessLevel })
           .then(
             function successCallback(response){
               initData();

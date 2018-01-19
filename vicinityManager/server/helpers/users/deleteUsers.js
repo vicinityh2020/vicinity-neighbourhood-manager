@@ -20,14 +20,14 @@ function deleteAllUsers(users, mail){
       sync.forEachAll(users,
         function(value, allresult, next, otherParams) {
           deleting(value, otherParams, function(value, result) {
-              logger.debug('END execution with value =', value, 'and result =', result);
+              // logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
           });
         },
         function(allresult) {
           if(allresult.length === users.length){
-            logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+            // logger.debug('Completed async handler: ' + JSON.stringify(allresult));
               resolve(allresult);
           }
         },
@@ -48,34 +48,40 @@ Delete == Remove relevant fields and change status to removed
 Need to keep some fields for auditing purposes
 */
 function deleting(id, otherParams, callback){
-  logger.debug('START execution with value =', id);
+  //logger.debug('START execution with value =', id);
   var cid;
   var obj = {
     avatar: "",
     name: "",
     occupation: "",
+    location: "",
     status: "deleted",
-    authentication: {}
+    authentication: {},
+    hasItems: [],
+    hasContracts: [],
+    cid: {}
   };
-
-  userOp.findOneAndUpdate({_id:id}, { $set: obj }, {new: true})
+  userOp.findOne({_id: id})
   .then(function(response){
-    cid = response.cid.id;
+    cid = response.cid;
+    userOp.update({_id: id}, { $set: obj });
+  })
+  .then(function(response){
     return audits.putAuditInt(
-      cid,
-      { orgOrigin: cid,
+      cid.id,
+      { orgOrigin: cid.extid,
         auxConnection: {kind: 'user', item: id},
         user: otherParams.userMail,
         eventType: 12 }
     );
   })
-  .then(function(response){ return userAccountOp.update({_id: cid}, {$pull: {accountOf: id}}); })
+  .then(function(response){ return userAccountOp.update({_id: cid.id}, {$pull: {accountOf: { id: id }}}); })
   .then(function(response){
     logger.audit({user: otherParams.userMail, action: 'deleteUser', item: id });
     callback(id, "Success");
   })
   .catch(function(error){
-    logger.error({user: otherParams.userMail, action: 'deleteUser', item: id, message: error});
+    logger.error({user: otherParams.userMail, action: 'deleteUser', item: id, message: JSON.stringify(error)});
     callback(id, "Error: " + error);
   });
 }

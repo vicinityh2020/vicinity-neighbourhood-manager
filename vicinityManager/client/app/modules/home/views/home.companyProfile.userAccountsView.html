@@ -10,7 +10,7 @@
     <div class="row">
         <div ng-show="loaded & !noUsers" class="col-md-6 col-lg-4" ng-repeat="user in userAccounts">
             <!-- Widget: user widget style 1 -->
-            <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: user._id, companyAccountId: companyId})" >
+            <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: user.id._id, companyAccountId: companyId})" >
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-user">
                     <div class="widget-user-image">

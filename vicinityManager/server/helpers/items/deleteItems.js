@@ -55,9 +55,10 @@ function deleting(oid, otherParams, callback){
     info: {},
     avatar: "",
     accessLevel: 0,
-    hasAdministrator: [],
-    hasAccess: [],
-    status: 'deleted'
+    status: 'deleted',
+    cid: [],
+    adid: [],
+    hasContracts: []
   };
   itemOp.findOne({oid:oid},
     function(err,data){
@@ -65,16 +66,16 @@ function deleting(oid, otherParams, callback){
         logger.debug("Something went wrong: " + err);
         callback(oid, "error mongo" + err);
       } else {
-        var cid = data.hasAdministrator[0];
+        var cid = data.cid;
         var id = data._id;
 
         itemOp.update({oid:oid}, {$set: obj})
-        .then(function(response){ return nodeOp.update({adid: data.adid}, {$pull: {hasItems: oid}}); })
+        .then(function(response){ return nodeOp.update({_id: data.adid.id}, {$pull: {hasItems: { extid : oid }}}); })
         .then(function(response){ return semanticRepo.removeItem(oid); })
         .then(function(response){
           return audits.putAuditInt(
             id,
-            { orgOrigin: cid,
+            { orgOrigin: cid.extid,
               user: otherParams.userMail,
               auxConnection: {kind: 'item', item: id},
               eventType: 42 }
@@ -82,8 +83,8 @@ function deleting(oid, otherParams, callback){
         })
         .then(function(response){
           return audits.putAuditInt(
-            cid,
-            { orgOrigin: cid,
+            cid.id,
+            { orgOrigin: cid.extid,
               user: otherParams.userMail,
               auxConnection: {kind: 'item', item: id},
               eventType: 42 }
@@ -95,7 +96,7 @@ function deleting(oid, otherParams, callback){
           callback(oid, "Success");})
         .catch(function(err){
           if(err.statusCode !== 404){
-            logger.error({user: otherParams.userMail, action: 'deleteItem', item: oid, message: err });
+            logger.error({user: otherParams.userMail, action: 'deleteItem', item: oid, message: err});
             callback(oid, 'Error: ' + err);
           } else {
             logger.warn({user: otherParams.userMail, action: 'deleteItem', item: oid, message: 'Object did not exist in comm server' });

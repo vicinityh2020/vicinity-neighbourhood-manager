@@ -37,7 +37,7 @@ function ($scope, $window, $stateParams, commonHelpers, itemsAPIService, Notific
           $scope.device = response.data.message[0];
           $scope.devInfo = $scope.device.info;
           $scope.devEnabled = ($scope.device.status === 'enabled');
-          $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === $scope.device.hasAdministrator[0]._id.toString());
+          $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === $scope.device.cid.id._id.toString());
           loopObj($scope.devInfo);
       }
 

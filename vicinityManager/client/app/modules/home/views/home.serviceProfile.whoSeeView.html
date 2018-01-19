@@ -10,15 +10,15 @@
 
         <div ng-show = "!giveNote && loaded" class="col-md-6" ng-repeat="friend in friends">
             <!-- Widget: user widget style 1 -->
-            <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.services({companyAccountId: friend._id})">
+            <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.services({companyAccountId: friend.id._id})">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-gold">
                     <div class="widget-user-image">
-                        <img class="img-circle" ng-src="{{friend.avatar}}" alt="User Avatar">
+                        <img class="img-circle" ng-src="{{friend.id.avatar}}" alt="User Avatar">
                     </div>
                     <!-- /.widget-user-image -->
-                    <h3 class="widget-user-username"><a style="color: #FFF" href="">{{friend.organisation}}</a></h3>       <!-- {{friend.accountOf.name}}-->
-                    <h5 class="widget-user-desc"><i class="fa fa-map-marker margin-r-5"></i> {{friend.location}}</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
+                    <h3 class="widget-user-username"><a style="color: #FFF" href="">{{friend.id.organisation}}</a></h3>       <!-- {{friend.accountOf.name}}-->
+                    <h5 class="widget-user-desc"><i class="fa fa-map-marker margin-r-5"></i> {{friend.id.location}}</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
                 </div>
             </div>
         </div>

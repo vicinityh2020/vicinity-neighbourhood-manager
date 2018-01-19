@@ -36,7 +36,7 @@ angular.module('VicinityManagerApp.controllers')
 
    function init(){
      $scope.loaded = false;
-      itemsAPIService.getAllItems($window.sessionStorage.companyAccountId, "device", $scope.offset, $scope.filterNumber, $scope.oidsFilter)
+      itemsAPIService.getAllItems($scope.myId, "device", $scope.offset, $scope.filterNumber, $scope.oidsFilter)
       .then(function(response){
         for(var i = 0; i < response.data.message.length; i++){
             $scope.devs.push(response.data.message[i]);
@@ -60,7 +60,7 @@ angular.module('VicinityManagerApp.controllers')
        resolve();
      })
      .catch(function(err){
-       Notification.error(err);
+       Notification.error('Semantic repository: ' + err);
        reject();
      });
    });
@@ -75,7 +75,7 @@ angular.module('VicinityManagerApp.controllers')
         resolve();
       })
       .catch(function(err){
-        Notification.error(err);
+        Notification.error('Semantic repository: ' + err);
         reject();
       });
     });

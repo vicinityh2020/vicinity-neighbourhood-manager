@@ -10,12 +10,13 @@ function getAdditional(data,activeCompany_id,friends){
           var plain_data = [];
           var deviceWithAdd = {};
           var index;
+          friends = friends != null ? friends : [];
 
           for (index = 0; index < data.length; index++){
 
             device = data[index];
 
-            var isOwner = (activeCompanyStr === device.hasAdministrator[0]._id.toString());
+            var isOwner = (activeCompanyStr === device.cid.id.toString());
             var isPublic = (isOwner === false && device.accessLevel === 2);
             var isFriendData = (isOwner === false && device.accessLevel === 1);
             var isPrivate = (isOwner === false && device.accessLevel === 0);
@@ -24,14 +25,13 @@ function getAdditional(data,activeCompany_id,friends){
 
             var imFriend = false;
             for (i = 0; i < friends.length; i++){
-                if (friends[i].toString() === device.hasAdministrator[0]._id.toString()){
+                if (friends[i].toString() === device.cid.id.toString()){
                   imFriend = true;
                 }
             }
 
             var accessLevelCaption = giveMeCaption(device.accessLevel);
-
-            deviceWithAdd = device.toObject();
+            deviceWithAdd = device;
             deviceWithAdd.isOwner = isOwner;
             deviceWithAdd.isPrivate = isPrivate;
             deviceWithAdd.isFriendData = isFriendData;
@@ -42,7 +42,6 @@ function getAdditional(data,activeCompany_id,friends){
 
             plain_data.push(deviceWithAdd);
           }
-
           return plain_data;
 }
 

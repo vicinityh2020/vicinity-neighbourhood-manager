@@ -1,45 +1,41 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPwhoSeeController',
-function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPIService, Notification) {
+function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPIService, $window, Notification) {
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
   $scope.friends=[];
   $scope.note = "";
-  $scope.device = {};
+  $scope.item = {};
   $scope.giveNote = false;
   $scope.loaded = false;
 
   itemsAPIService.getItemWithAdd($stateParams.deviceId)
-    .then(
-      function successCallback(response){
-        $scope.device = response.data.message[0];
-        if ($scope.device.accessLevel === 8){
-          userAccountAPIService.getUserAccounts()
-            .then(
-              function successCallback(response){
-                $scope.friends = response.data.message;
-              },
-              errorCallback
-            );
-          }else if ($scope.device.accessLevel === 1) {
-            $scope.note = "Device is private. No one can see this device.";
-            $scope.giveNote = true;
-          }else {
-            userAccountAPIService.getUserAccounts($scope.device.hasAdministrator[0]._id, 1).then(
-              function successCallback(response){
-                $scope.friends = response.data.message;
-              },
-              errorCallback
-            );
-          }
-          $scope.loaded = true;
-        },
-        errorCallback
-      );
+  .then(
+    function successCallback(response){
+      $scope.item = response.data.message[0];
+      if ($scope.item.accessLevel === 1){
+        userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
+          .then(
+            function successCallback(response){
+              $scope.friends = response.data.message.knows;
+            },
+            errorCallback
+          );
+        }else if ($scope.item.accessLevel === 0) {
+          $scope.note = "Item is private. No one can see this item.";
+          $scope.giveNote = true;
+        }else {
+          $scope.note = "Item has public visibility. Everyone can see it.";
+          $scope.giveNote = true;
+        }
+        $scope.loaded = true;
+      },
+      errorCallback
+    );
 
-      function errorCallback(err){
-        Notification.error("There was an error: " + err);
-      }
+    function errorCallback(err){
+      Notification.error("There was an error: " + err);
+    }
 });

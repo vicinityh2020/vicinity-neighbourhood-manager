@@ -93,7 +93,7 @@ function updateScopeAttributes(response){
   for ( var k = 0; k < $scope.password.length; k++ ) {
     $scope.pass += "*";
   }
-  $scope.organisation = response.data.message.organisation;
+  $scope.organisation = response.data.message.name;
   $scope.orgId = response.data.message._id;
   $scope.loaded = true;
 }

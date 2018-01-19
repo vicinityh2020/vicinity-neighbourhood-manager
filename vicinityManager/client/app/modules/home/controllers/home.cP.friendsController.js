@@ -2,7 +2,7 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('cPfriendsController',
 function ($scope, $stateParams, commonHelpers, userAccountAPIService, $window) {
-  
+
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 

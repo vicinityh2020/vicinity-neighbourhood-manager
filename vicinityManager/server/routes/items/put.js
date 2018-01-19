@@ -29,7 +29,7 @@ function putOne(req, res) {
   delete updates.userMail;
 
   if(updates.status === 'enabled'){
-    commServerProcess(oid, adid, updates.name, oid, updates.cid)
+    commServerProcess(oid, adid.extid, updates.name, oid, updates.cid.extid)
       .then(function(response){ return deviceActivityNotif(uid, updates.company_id, 'Enabled', 11);})
       .then(function(response){
         return audits.putAuditInt(
@@ -124,7 +124,7 @@ Handles the accessLevel and other properties modifications
 function itemUpdate(uid,updates){
   return new Promise(
     function(resolve, reject) {
-      if(updates.accessLevel){
+      if(updates.accessLevel == null){
         if(!updates.status){
           query = { accessLevel: updates.accessLevel };
           logger.debug("Start update of accessLevel...");

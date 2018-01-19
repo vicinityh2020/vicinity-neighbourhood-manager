@@ -27,9 +27,10 @@ var oidSchema = {
 };
 
 var ctidSchema = {
-  id: {type: ObjectId, ref: 'contract', required: true},
+  id: {type: ObjectId, ref: 'contract'},
   extid: String,
-  contractingParty: {type: String, required: true}
+  contractingParty: String,
+  approved: Boolean
 };
 
 var contractSubschema = {
@@ -59,7 +60,7 @@ var userAccount = new Schema({
 });
 
 var user = new Schema({
-  name: {type: String, required: true},
+  name: {type: String},
   email: {type: String, required: true},
   cid: cidSchema,
   occupation: String,
@@ -71,8 +72,8 @@ var user = new Schema({
   1 - Friends
   2 - Everyone */
   authentication: {
-    password: {type: String, required: true},
-    principalRoles: [{type: String, required: true}]
+    password: String,
+    principalRoles: [ String ]
   },
   hasItems: [ oidSchema ], // Own items and foreign items under contract
   hasContracts: [ ctidSchema ]
@@ -82,8 +83,8 @@ var node = new Schema({
   adid: {type: String, required: true},
   name: {type: String, required: true},
   cid: cidSchema,
-  type: [{type: String, required: true}],
-  status: {type: String, enum: ['active', 'deleted'], default: 'active'},
+  type: [ String ],
+  status: {type: String, enum: ['active', 'deleted']},
   hasItems: [ oidSchema ],
   eventUri: String,
   agent: String
