@@ -85,17 +85,6 @@ angular.module('VicinityManagerApp', [
           }
         })
 
-        .state('root.main.mydevices', {
-          url: '/mydevices',
-          views: {
-            'mainContentView@root':
-              {
-                templateUrl: 'modules/home/views/home.mydevicesView.html',
-                controller: 'myDevicesController'
-              }
-          }
-        })
-
         .state('root.main.allEntities', {
           url: '/allEntities',
           views: {
@@ -103,17 +92,6 @@ angular.module('VicinityManagerApp', [
               {
                 templateUrl: 'modules/home/views/home.allEntities.html',
                 controller: 'allEntities'
-              }
-          }
-        })
-
-        .state('root.main.myServices', {
-          url: '/myServices',
-          views: {
-            'mainContentView@root':
-              {
-                templateUrl: 'modules/home/views/home.myServices.html',
-                controller: 'myServicesController'
               }
           }
         })
@@ -353,6 +331,39 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('root.main.userProfile.devices', {
+          url: '/devices',
+          views: {
+            'tabPanel@root.main.userProfile':
+            {
+              templateUrl: 'modules/home/views/home.userProfileView.devices.html',
+              controller:  'uPdevicesController'
+            }
+          }
+        })
+
+        .state('root.main.userProfile.services', {
+          url: '/services',
+          views: {
+            'tabPanel@root.main.userProfile':
+            {
+              templateUrl: 'modules/home/views/home.userProfileView.services.html',
+              controller:  'uPservicesController'
+            }
+          }
+        })
+
+        .state('root.main.userProfile.contracts', {
+          url: '/contracts',
+          views: {
+            'tabPanel@root.main.userProfile':
+            {
+              templateUrl: 'modules/home/views/home.userProfileView.contracts.html',
+              controller:  'uPcontractsController'
+            }
+          }
+        })
+
         .state('root.main.registrationProfile', {
           url: '/profile/registration/:registrationId',
           views: {
@@ -382,6 +393,17 @@ angular.module('VicinityManagerApp', [
             {
               templateUrl: 'modules/home/views/home.nodeDetail.html',
               controller:  'nodeDetailController'
+            }
+          }
+        })
+
+        .state('root.main.requestService', {
+          url: '/requestservice/:companyAccountId/:serviceId',
+          views: {
+            'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.contract.requestService.html',
+              controller:  'cTrequestService'
             }
           }
         })

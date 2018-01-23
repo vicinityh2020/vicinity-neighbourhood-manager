@@ -5,48 +5,15 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   var itemsAPI = {};
 
   /*
-  Process/change/request access to items
-  */
-  itemsAPI.processItemAccess = function(id) {
-    var data = {};
-    data.userMail = $window.sessionStorage.username;
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access', data);
-  };
-
-  itemsAPI.cancelItemRequest = function(id) {
-    var data = {};
-    data.userMail = $window.sessionStorage.username;
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancelRequest', data);
-  };
-
-  itemsAPI.acceptItemRequest = function(id) {
-    var data = {};
-    data.userMail = $window.sessionStorage.username;
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/accept', data);
-  };
-
-  itemsAPI.rejectItemRequest = function(id) {
-    var data = {};
-    data.userMail = $window.sessionStorage.username;
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/reject', data);
-  };
-
-  itemsAPI.cancelItemAccess = function(id) {
-    var data = {};
-    data.userMail = $window.sessionStorage.username;
-    return $http.put(configuration.apiUrl +'/items/' + id + '/access/cancel', data);
-  };
-
-  /*
   Modify item
   Delete item
   Get one item
   Get my items (Organisation items) - Offline filter in org profile to remove what I should not see
-  TODO: Filter out what I cannot see in backEnd (getMyItems)
   Get all items I can see, based on restrictive filter (0 most to 7 less restrictive)
   */
   itemsAPI.putOne = function(id, data) {
     data.userMail = $window.sessionStorage.username;
+    data.userId = $window.sessionStorage.userAccountId;
     return $http.put(configuration.apiUrl +'/items/' + id, data);
   };
 
@@ -68,6 +35,19 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   itemsAPI.getAllItems = function(id, filter, offset, filterNumber, filterOntology) {
     var payload = { type: filter, offset: offset, filterNumber: filterNumber, filterOntology: filterOntology};
     return $http.post(configuration.apiUrl + '/items/' + id + '/organisation/allItems', payload);
+  };
+
+  itemsAPI.getUserItems = function(reqId, reqCid, ownCid, type){
+    var payload = { reqId: reqId, reqCid: reqCid, ownCid: ownCid, type: type};
+    return $http.post(configuration.apiUrl + '/items/user', payload);
+  };
+
+  /*
+  Contract management
+  */
+
+  itemsAPI.postContract = function(payload){
+    return $http.post(configuration.apiUrl + '/items/contract', payload);
   };
 
   return itemsAPI;

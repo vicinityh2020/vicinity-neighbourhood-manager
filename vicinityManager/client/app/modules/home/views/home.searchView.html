@@ -41,13 +41,13 @@
           <!-- Add the bg color to the header using any of the bg-* classes -->
           <div class="widget-user-header3 bg-user">
               <div class="widget-user-image">
-                  <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.organisation})" class="img-circle" ng-src="{{result2.avatar}}" alt="User Avatar">
+                  <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})" class="img-circle" ng-src="{{result2.avatar}}" alt="User Avatar">
               </div>
               <!-- /.widget-user-image -->
-              <h3 class="widget-user-username"><a style="color: #FFF" href="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.organisation})">{{result2.name}}</a></h3>       <!-- {{friend.accountOf.name}}-->
+              <h3 class="widget-user-username"><a style="color: #FFF" href="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})">{{result2.name}}</a></h3>       <!-- {{friend.accountOf.name}}-->
               <h5 class="widget-user-desc">{{result2.occupation}}</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
           </div>
-          <a href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.organisation})">More info <i class="fa fa-arrow-circle-right"></i></a>
+          <a href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})">More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
   </div>

@@ -30,7 +30,7 @@ function getAll(req, res, next) {
     var parsedData = response.toObject();
     friends = parsedData.knows;
     users = parsedData.accountOf;
-    logger.debug(friends);
+    // logger.debug(friends);
     var relation = myRelationWithOther(mycid, othercid, friends);
 
     if(relation === 1){

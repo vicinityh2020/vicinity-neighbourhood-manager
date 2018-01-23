@@ -54,8 +54,6 @@ var asyncHandler = require('../../helpers/asyncHandler/sync');
       ],
       name: {$regex: sT}
       };
-      //logger.debug(cid);
-      //logger.debug(query);
       return userOp.find(query);
     })
     .then(function(response){

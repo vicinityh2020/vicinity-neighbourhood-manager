@@ -19,7 +19,7 @@ function modifyContract(req, res){
   var query = { $set: {"serviceProvider.termsAndConditions": true, status: 'accepted'} };
   contractOp.findOneAndUpdate( { "_id": id}, query, {new: true})
   .then(function(response){
-    updItem = JSON.parse(JSON.stringify(response)); // Get rid of metadata
+    updItem = response.toObject(); // Get rid of metadata
     return sharingRules.createContract(updItem.ctid, 'Contract: ' + updItem.type);
   })
   .then(function(response){

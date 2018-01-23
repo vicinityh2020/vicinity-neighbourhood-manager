@@ -11,6 +11,7 @@ angular.module('VicinityManagerApp.controllers').
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
     $scope.filterNumber = 0;
     $scope.entitiesCaption = "All organisations";
+    $scope.myFriends = [];
 
     // ====== Triggers window resize to avoid bug =======
     commonHelpers.triggerResize();
@@ -36,8 +37,8 @@ angular.module('VicinityManagerApp.controllers').
       function getFriends(){
         var i = 0;
         for(i = 0; i < $scope.resultsList.length; i++){
-          if($scope.resultsList[i]._id === $window.sessionStorage.companyAccountId){
-            $scope.myFriends = $scope.resultsList[i].knows;
+          if($scope.resultsList[i]._id.toString() === $window.sessionStorage.companyAccountId){
+            $scope.getIds($scope.resultsList[i].knows);
             $scope.resultsList.splice(i,1);
           }
         }
@@ -49,6 +50,12 @@ angular.module('VicinityManagerApp.controllers').
         else if(n === 1){ $scope.entitiesCaption = "My partners"; }
         else{ $scope.entitiesCaption = "Other organisations"; }
         init();
+      };
+
+      $scope.getIds = function(array){
+        for(var i = 0; i < array.length; i++){
+          $scope.myFriends.push(array[i].id);
+        }
       };
 
   });

@@ -1,0 +1,89 @@
+<section class="content-header">
+  <h1>Request Service</h1>
+</section>
+
+<div class="row" ng-hide="loaded">
+  <div class="coll-md-1"  style="margin: auto; width:60%">
+    <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+  </div>
+</div>
+
+<section class="content" ng-show="loaded">
+
+  <div class="box box-primary" style="width:70%, padding:20px">
+
+    <div class="box-header with-border well">
+        <h3 class="box-title">Service description</h3>
+    </div>
+    <div class="box-body">
+      <p><b>Name:</b> {{service.name}}</p>
+      <p><b>Access level:</b> {{service.accessLevelCaption}}</p>
+      <!-- <p><b>Minimum access rights:</b> lorem ipsum </p> -->
+      <p><b>Friends:</b> {{service.myFriend}}</p>
+    </div>
+
+    <div class="box-header with-border well">
+        <h3 class="box-title">Choose devices</h3>
+    </div>
+    <div class="box-body">
+      <form role="form">
+        <div class="form-group padded">
+          <div class="checkbox" ng-repeat="thing in things">
+            <label>
+              <input type="checkbox" ng-model="thing.id.status">
+              {{thing.id.name}} -- {{thing.id.accessLevelCaption}}
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="box-header with-border well">
+        <h3 class="box-title">Access Rights</h3>
+    </div>
+
+    <div class="box-body">
+      <p class="padded">Would you like to grant write rights to your devices as well? By default read rights only.</p>
+      <form role="form">
+        <div class="form-group pull-right paddedSides">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="readWrite">
+              Write rights
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="box-header with-border well">
+        <h3 class="box-title">Terms and conditions</h3>
+    </div>
+
+    <div class="box-body">
+      <p class="padded">Lorem ipsum</p>
+      <form role="form">
+        <div class="form-group pull-right paddedSides">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="terms">
+              Confirm terms and conditions
+              <!-- TODO {{service.termsAndConditions}} -->
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="box-footer">
+      <div class="col-xs-6">
+        <button ng-click="processContract()" ng-disabled="!terms" class="btn btn-primary">Submit</button>
+      </div>
+      <div class="col-xs-6">
+        <a href="" ui-sref="root.main.allServices()" class="pull-right">Cancel</a>
+      </div>
+    </div>
+
+  </div>
+
+</section>

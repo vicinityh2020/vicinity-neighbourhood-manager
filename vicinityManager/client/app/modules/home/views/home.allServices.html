@@ -15,10 +15,10 @@
         <ul class="dropdown-menu dropdown-menu-right" role="menu">
            <li><a ng-click="filterItems(0)" ui-sref="root.main.allServices">My disabled {{typeOfItem}}</a></li>
            <li><a ng-click="filterItems(1)" ui-sref="root.main.allServices">My private {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(2)" ui-sref="root.main.allServices">My shared {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(2)" ui-sref="root.main.allServices">My {{typeOfItem}} for friends</a></li>
            <li><a ng-click="filterItems(3)" ui-sref="root.main.allServices">My public {{typeOfItem}}</a></li>
            <li><a ng-click="filterItems(4)" ui-sref="root.main.allServices">My {{typeOfItem}}</a></li>
-           <li><a ng-click="filterItems(5)" ui-sref="root.main.allServices">All shared {{typeOfItem}}</a></li>
+           <li><a ng-click="filterItems(5)" ui-sref="root.main.allServices">All {{typeOfItem}} for friends</a></li>
            <li><a ng-click="filterItems(6)" ui-sref="root.main.allServices">All public {{typeOfItem}}</a></li>
            <li><a ng-click="filterItems(7)" ui-sref="root.main.allServices">All {{typeOfItem}}</a></li>
         </ul>
@@ -27,6 +27,7 @@
   </div>
 
 <hr>
+
 <!-- Start -->
   <div class="row">
 
@@ -50,57 +51,21 @@
           </div>
 
           <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})">{{it.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.services({companyAccountId: it.hasAdministrator[0]._id})">{{it.hasAdministrator[0].organisation}}</a></h5>
-          <h5 class="widget-user-desc2" ng-show="it.status === 'enabled'">{{it.accessLevelCaption}}</h5>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.services({companyAccountId: it.cid.id._id})">{{it.cid.id.name}}</a></h5>
+          <h5 class="widget-user-desc2" ng-show="it.status === 'enabled'">Enabled</h5>
           <h5 class="widget-user-desc2" ng-show="it.status === 'disabled'">Disabled</h5>
-          <!-- <h5 class="widget-user-desc2">{{it.info.location}}</h5> -->
-          <h5 ng-show="it.seeData && !it.isOwner" class="widget-user-desc2 label label-success"><i class="fa fa-link" aria-hidden="true"></i>  Data Access</h5>
-          <h5 ng-show="!it.seeData && !it.isOwner" class="widget-user-desc2 label label-default"><i class="fa fa-chain-broken" aria-hidden="true"></i>  No Data Access</h5>
-
-          <!-- <div ng-show="it.status === 'disabled'" class="centered" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <i class="fa fa-ban my-black fa-2x" aria-hidden="true"></i>
-          </div> -->
-
+          <h5 class="widget-user-desc2" ng-show="it.isPublic">Device is public</h5>
+          <h5 class="widget-user-desc2" ng-show="it.isFriendData">Access for friends</h5>
+          <h5 class="widget-user-desc2" ng-show="it.isPrivate">Private data</h5>
+          <h5 class="widget-user-desc2" ng-show="it.isOwner && it.status === 'enabled'">My service</h5>
         </div>
 
-        <div  class="widget-user-footer-moreinfo2" ng-show="it.isUnderRequest && !it.cancelRequest && !it.interruptConnection">
-          <a href=""  ng-click="processMyAccess(it._id)" class=" btn-xs btn-success btn-block" >
+        <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner">
+          <a href="" ui-sref="root.main.requestService({companyAccountId: it.cid.id._id, serviceId: it._id})" class=" btn-xs btn-success btn-block" >
              <i class="fa fa-bar-chart fa-lg"></i>
              <i class="fa fa-plus fa-lg"></i>
-              &nbsp;<b>Get access!</b>
+              &nbsp;<b>Request service</b>
          </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="it.isUnderRequest && it.cancelRequest">
-         <a href=""  ng-click="cancelMyRequest(it._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-bar-chart fa-lg"></i>
-            <i class="fa fa-times fa-lg"></i>
-             &nbsp;Cancel request
-        </a>
-        </div>
-
-        <div class="widget-user-footer-moreinfo2" ng-show="it.isUnderRequest && it.interruptConnection">
-         <a href=""  ng-click="cancelMyAccess(it._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-chain-broken fa-lg"></i>
-             &nbsp;Interrupt connection
-        </a>
-        </div>
-
-
-        <div class="widget-user-footer-moreinfo3" ng-show="it.isPublic" >
-        <span><i href="/#" class="fa fa-bar-chart fa-1x"></i> <strong> Service is public </strong> </span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="it.isFriendData">
-        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="it.isPrivate">
-        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Private data</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="it.isOwner">
-        <span><strong>My service</strong></span>
         </div>
 
         <a href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>

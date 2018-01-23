@@ -6,39 +6,39 @@ var Schema = mongoose.Schema;
 
 // Vicinity subSchemas - Replace repeated structures
 
-var cidSchema = {
+var cidSchema = Schema({
   id: {type: ObjectId, ref: 'userAccount'},
   extid: String
-};
+},{ _id : false });
 
-var adidSchema = {
+var adidSchema = Schema({
   id: {type: ObjectId, ref: 'node'},
   extid: String
-};
+},{ _id : false });
 
-var uidSchema = {
+var uidSchema = Schema({
   id: {type: ObjectId, ref: 'user'},
   extid: String
-};
+},{ _id : false });
 
-var oidSchema = {
+var oidSchema = Schema({
   id: {type: ObjectId, ref: 'item'},
   extid: String
-};
+},{ _id : false });
 
-var ctidSchema = {
+var ctidSchema = Schema({
   id: {type: ObjectId, ref: 'contract'},
   extid: String,
   contractingParty: String,
-  approved: Boolean
-};
+  approved: {type: Boolean, default: false}
+},{ _id : false });
 
-var contractSubschema = {
+var contractSubschema = Schema({
   cid: cidSchema,
   uid: uidSchema,
-  termsAndConditions: Boolean,
+  termsAndConditions: {type: Boolean, default: false},
   items: [ oidSchema ]
-};
+},{ _id : false });
 
 // Vicinity neighorhood schemas ============
 
@@ -108,7 +108,7 @@ var contract = new Schema({
 ctid: {type: String, required: true},
 serviceProvider: contractSubschema,
 iotOwner: contractSubschema,
-accessRights: { type: String, enum:['R', 'W'] },
+readWrite: Boolean, // True RW -- False R
 legalDescription: String,
 type: { type: String, enum: ['serviceRequest', 'deviceUse']},
 status: { type: String, enum: ['pending', 'accepted', 'rejected', 'deleted'], default: 'pending'}
@@ -145,6 +145,7 @@ var notification = new Schema({
     sentBy: { type: ObjectId, ref: 'userAccount' },
     sentByReg: { type: ObjectId, ref: 'registration' },
     itemId: { type: ObjectId, ref: 'item' },
+    ctId: { type: ObjectId, ref: 'contract' },
     userId: { type: ObjectId, ref: 'user' },
     isUnread: { type: Boolean, default: true },
     status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded'], required: true},
@@ -154,10 +155,10 @@ var notification = new Schema({
     11 - itemEnabled - info
     12 - itemDisabled - info
     13 - itemDiscovered - info
-    21 - itemconnRequest - toAnswer
-    22 - itemconnRejected - info
-    23 - itemconnCancelled - info
-    24 - itemconnAccepted - info
+    21 - contractRequest - info
+    22 - contractRejected - info
+    23 - contractCancelled - info
+    24 - contractAccepted - info
     31 - partnershipRequest  - toAnswer
     32 - partnershipCancelled - info
     33 - partnershipRejected - info

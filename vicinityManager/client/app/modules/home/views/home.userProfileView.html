@@ -99,7 +99,7 @@
              <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
              <a ng-click="backToEditAL()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
 
-              <p id="accessName" class="text-muted" style="display: block">
+              <p id="accessName" class="text-muted" style="display: block" ng-show="isMyProfile">
                 {{accessLevelCaption}}
               </p>
 

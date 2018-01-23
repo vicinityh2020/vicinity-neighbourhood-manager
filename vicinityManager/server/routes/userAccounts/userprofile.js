@@ -114,7 +114,7 @@ function getUserAccountFacade(req, res, next) {
 
               }
               //TODO: Issue #6 Check existing knows requests
-              plain_data = data; //.toObject();
+              plain_data = data.toObject();
               plain_data.isNeighbour = isNeighbour;
               plain_data.canSendNeighbourRequest = canSendNeighbourRequest;
               plain_data.canCancelNeighbourRequest = canCancelNeighbourRequest;

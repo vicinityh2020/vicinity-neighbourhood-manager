@@ -5,44 +5,41 @@ Complements each item object with new fields
 Client --> Views/ MyDevices && AllDevices
 */
 function getAdditional(data,activeCompany_id,friends){
-          var activeCompanyStr = activeCompany_id.toString();
-          var device = {};
-          var plain_data = [];
-          var deviceWithAdd = {};
-          var index;
-          friends = friends != null ? friends : [];
+  var activeCompanyStr = activeCompany_id.toString();
+  var device = {};
+  var plain_data = [];
+  var deviceWithAdd = {};
 
-          for (index = 0; index < data.length; index++){
+  friends = friends != null ? friends : [];
 
-            device = data[index];
+  for ( var index = 0; index < data.length; index++){
 
-            var isOwner = (activeCompanyStr === device.cid.id.toString());
-            var isPublic = (isOwner === false && device.accessLevel === 2);
-            var isFriendData = (isOwner === false && device.accessLevel === 1);
-            var isPrivate = (isOwner === false && device.accessLevel === 0);
+    device = data[index];
+    var isOwner = (activeCompanyStr === device.cid.id._id.toString());
+    var isPublic = (isOwner === false && device.accessLevel === 2);
+    var isFriendData = (isOwner === false && device.accessLevel === 1);
+    var isPrivate = (isOwner === false && device.accessLevel === 0);
 
-            var i = 0;
+    var imFriend = false;
+    for (var i = 0; i < friends.length; i++){
+        if (friends[i].toString() === device.cid.id._id.toString()){
+          imFriend = true;
+        }
+    }
 
-            var imFriend = false;
-            for (i = 0; i < friends.length; i++){
-                if (friends[i].toString() === device.cid.id.toString()){
-                  imFriend = true;
-                }
-            }
+    var accessLevelCaption = giveMeCaption(device.accessLevel);
+    deviceWithAdd = device.toObject();
+    deviceWithAdd.isOwner = isOwner;
+    deviceWithAdd.isPrivate = isPrivate;
+    deviceWithAdd.isFriendData = isFriendData;
+    deviceWithAdd.isPublic = isPublic;
+    deviceWithAdd.imFriend = (imFriend === true && isOwner === false);
+    deviceWithAdd.myFriends = friends;
+    deviceWithAdd.accessLevelCaption = accessLevelCaption;
 
-            var accessLevelCaption = giveMeCaption(device.accessLevel);
-            deviceWithAdd = device;
-            deviceWithAdd.isOwner = isOwner;
-            deviceWithAdd.isPrivate = isPrivate;
-            deviceWithAdd.isFriendData = isFriendData;
-            deviceWithAdd.isPublic = isPublic;
-            deviceWithAdd.imFriend = (imFriend === true && isOwner === false);
-            deviceWithAdd.myFriends = friends;
-            deviceWithAdd.accessLevelCaption = accessLevelCaption;
-
-            plain_data.push(deviceWithAdd);
-          }
-          return plain_data;
+    plain_data.push(deviceWithAdd);
+  }
+  return plain_data;
 }
 
 function giveMeCaption(n){

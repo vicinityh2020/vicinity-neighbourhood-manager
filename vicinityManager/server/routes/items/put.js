@@ -5,6 +5,7 @@ var logger = require("../../middlewares/logger");
 var commServer = require('../../helpers/commServer/request');
 var sharingRules = require('../../helpers/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
+var userOp = require('../../models/vicinityManager').user;
 var audits = require('../../routes/audit/put');
 var notificationOp = require('../../models/vicinityManager').notification;
 
@@ -22,10 +23,14 @@ function putOne(req, res) {
 
   var response = {};
   var uid = mongoose.Types.ObjectId(req.params.id); // Unique mongo ID
+  var updates = req.body;
   var oid = req.body.oid; // Object ID - Generated in VCNT manager
   var adid = req.body.adid; // Agent ID - Generated in VCNT manager
-  var updates = req.body;
+  var userId = mongoose.Types.ObjectId(req.body.userId);
   var userMail = req.body.userMail;
+  delete updates.oid;
+  delete updates.adid;
+  delete updates.userId;
   delete updates.userMail;
 
   if(updates.status === 'enabled'){
@@ -53,7 +58,8 @@ function putOne(req, res) {
           }
         );
       })
-      .then(function(response){ return itemUpdate(uid,updates);})
+      .then(function(response){ return manageUserItems(oid, uid, userMail, userId, 'enabled'); })
+      .then(function(response){ return itemUpdate(uid,updates); })
       .then(function(response){
         logger.audit({user: userMail, action: 'EnableItem', item: uid });
         res.json({"response":response}); })
@@ -87,6 +93,7 @@ function putOne(req, res) {
           }
         );
       })
+      .then(function(response){ return manageUserItems(oid, uid, userMail, userId, 'disabled'); })
       .then(function(response){ return itemUpdate(uid,updates);})
       .then(function(response){
         logger.audit({user: userMail, action: 'DisableItem', item: uid });
@@ -146,6 +153,20 @@ function itemUpdate(uid,updates){
       }
     }
   );
+}
+
+/*
+Push or pull OID from service/device owner
+Enable/Disable triggers the action
+*/
+function manageUserItems(oid, uid, email, userId, type){
+  var item = {'id': uid, 'extid': oid};
+  var user = type === 'enabled' ? {'id': userId, 'extid': email} : {};
+  var query = type === 'enabled' ? {$push: {hasItems: item}} : {$pull: {hasItems: item}};
+  return userOp.update({'email': email}, query)
+  .then(function(response){
+    return itemOp.update({_id:uid}, {$set: {uid: user }});
+  });
 }
 
 /*

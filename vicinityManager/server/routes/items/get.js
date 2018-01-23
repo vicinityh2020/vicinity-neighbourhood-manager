@@ -3,6 +3,7 @@
 
 var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
+var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 var itemProperties = require("../../helpers/items/additionalItemProperties");
@@ -131,6 +132,7 @@ function getItemWithAdd(req, res, next) {
         var friends = [];
         if(parsedData.knows != null){
             getIds(parsedData.knows, friends);
+            logger.debug(friends);
         }
 
         itemOp.find({_id: o_id}).populate('cid.id','name cid')
@@ -149,6 +151,52 @@ function getItemWithAdd(req, res, next) {
       );
     }
 
+  /*
+  Gets user items
+  Only those which can be shared depending on the situation:
+  - Request service -- Depends on service owner
+  */
+
+  function getUserItems(req, res, next){
+    var reqId = mongoose.Types.ObjectId(req.body.reqId);
+    var reqCid = mongoose.Types.ObjectId(req.body.reqCid);
+    var ownerCid = req.body.ownCid;
+    var type = req.body.type;
+    var data = {};
+    var parsedData = {};
+    var items = [];
+    var friends = [];
+
+    userOp.findOne({_id: reqId}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem')
+    .then(function(response){
+      parsedData = response.toObject();
+      items = parsedData.hasItems;
+      data.cid = parsedData.cid;
+      data._id = parsedData._id;
+      return userAccountOp.findOne({_id:reqCid}, {knows:1});
+    })
+    .then(function(response){
+      parsedFriends = response.toObject();
+      getIds(parsedFriends.knows, friends);
+      var relation = myRelationWithOther(ownerCid, reqCid, friends);
+
+      if(relation === 1){
+        items = items.filter(function(i){return i.id.accessLevel >= 1 && i.id.typeOfItem === type;});
+      } else if(relation === 2){
+        items = items.filter(function(i){return i.id.accessLevel === 2 && i.id.typeOfItem === type;});
+      } else {}
+
+      data.items = items;
+
+      res.json({"error": false, "message": data});
+    })
+    .catch(function(error){
+      logger.debug(error);
+      res.json({"error": true, "message": error});
+    });
+
+  }
+
 // Private functions
 
 function updateQueryWithFilterNumber(q, fN, cid){
@@ -162,14 +210,14 @@ function updateQueryWithFilterNumber(q, fN, cid){
           break;
       case 2:
           q.accessLevel = 1;
-          q.cid.id = cid;
+          q['cid.id'] = cid;
           break;
       case 3:
           q.accessLevel = 2;
-          q.cid.id = cid;
+          q['cid.id'] = cid;
           break;
       case 4:
-          q.cid.id = cid;
+          q['cid.id'] = cid;
           break;
       case 5:
           q.accessLevel = 1;
@@ -183,6 +231,15 @@ function updateQueryWithFilterNumber(q, fN, cid){
         return q;
       }
 
+  function myRelationWithOther(a,b,c){
+    // toString array items
+    c = c.join();
+    c = c.split(',');
+    // find relation
+    if(a.toString() === b.toString()){ return 0; } // Same company
+    else if(c.indexOf(a.toString()) !== -1){ return 1; } // Friend company
+    else { return 2; } // Other company
+  }
 
   function getIds(array, friends){
     for(var i = 0; i < array.length; i++){
@@ -195,3 +252,4 @@ function updateQueryWithFilterNumber(q, fN, cid){
 module.exports.getAllItems = getAllItems;
 module.exports.getMyItems = getMyItems;
 module.exports.getItemWithAdd = getItemWithAdd;
+module.exports.getUserItems = getUserItems;

@@ -40,27 +40,6 @@ angular.module('VicinityManagerApp.controllers')
       );
     }
 
-  // Manage access request functions =====================
-
-     $scope.processMyAccess = function(it_id) {
-       itemsAPIService.processItemAccess(it_id)
-       .then(itemsHelpers.processingAccess,itemsHelpers.errorCallback)
-       .then(updateScopeAttributes,itemsHelpers.errorCallback);
-      };
-
-     $scope.cancelMyRequest = function(it_id) {
-       itemsAPIService.cancelItemRequest(it_id)
-       .then(itemsHelpers.cancellingRequest,itemsHelpers.errorCallback)
-       .then(updateScopeAttributes,itemsHelpers.errorCallback);
-      };
-
-     $scope.cancelMyAccess = function(it_id) {
-       $scope.note = "";
-       itemsAPIService.cancelItemAccess(it_id)
-       .then(itemsHelpers.cancellingAccess,itemsHelpers.errorCallback)
-       .then(updateScopeAttributes,itemsHelpers.errorCallback);
-     };
-
 // Refresh scope
 
   function updateScopeAttributes(response){
@@ -90,7 +69,7 @@ angular.module('VicinityManagerApp.controllers')
             $scope.header = "My private " + $scope.typeOfItem;
             break;
         case 2:
-            $scope.header = "My shared " + $scope.typeOfItem;
+            $scope.header = "My " + $scope.typeOfItem + " for friends";
             break;
         case 3:
             $scope.header = "My public " + $scope.typeOfItem;
@@ -99,7 +78,7 @@ angular.module('VicinityManagerApp.controllers')
             $scope.header = "My " + $scope.typeOfItem;
             break;
         case 5:
-            $scope.header = "All shared " + $scope.typeOfItem;
+            $scope.header = "All " + $scope.typeOfItem + " for friends";
             break;
         case 6:
             $scope.header = "All public " + $scope.typeOfItem;
