@@ -14,8 +14,8 @@ Remove contract
 */
 function removeContract(req, res){
   var id = req.params.id;
-  remove(id, function(res, err){
-    res.json({error: err, message: res});
+  removing(id, function(response, err){
+    res.json({error: err, message: response});
   });
 }
 
@@ -25,15 +25,14 @@ function removing(id, callback){
   var query = {
     serviceProvider:{},
     iotOwner:{},
-    accessRights: "",
     legalDescription: "",
     status: 'deleted'
     };
 
-  contractOp.find({_id:id})
+  contractOp.findOne({_id:id})
   .then(function(response){
-    data = JSON.parse(JSON.stringify(response)); // Get rid of metadata
-    return contractOp.update({_id:id}, {$set: query} );
+    data = response.toObject(); // Get rid of metadata
+    return contractOp.update({_id:id}, {$set: query});
   })
   .then(function(response){
     return sharingRules.cancelContract(data.ctid);

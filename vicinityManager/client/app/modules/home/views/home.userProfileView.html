@@ -5,12 +5,13 @@
 
 <section class="content">
 
-  <div class="row" style="width: 100%">
+  <div class="row">
+
     <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
       <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
     </div>
 
-    <div class="col-md-6" ng-show="loaded">
+    <div class="col-md-3" ng-show="loaded">
 
         <div id="login-wrap" class="box-body box box-primary" >
 
@@ -112,5 +113,21 @@
 
       </div>
     </div>
+
+    <div class="col-md-9" ng-show="loaded && isMyProfile">
+      <div class="nav-tabs-custom">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs">
+          <li ui-sref-active="active"><a ui-sref="root.main.userProfile.devices"><i class="fa fa-clone"></i>&nbsp;Devices</a></li>
+          <li ui-sref-active="active"><a ui-sref="root.main.userProfile.services"><i class="fa fa-cloud"></i>&nbsp;Services</a></li>
+          <li ui-sref-active="active"><a ui-sref="root.main.userProfile.contracts"><i class="fa fa-briefcase"></i>&nbsp;Contracts</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content" ui-view="tabPanel">
+        </div>
+      </div>
+    </div>
+
   </div>
+
 </section>

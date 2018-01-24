@@ -45,9 +45,28 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   /*
   Contract management
   */
+  itemsAPI.getContracts = function(id){
+    return $http.get(configuration.apiUrl + '/items/contract/' + id);
+  };
+
+  itemsAPI.getContractDetails = function(id){
+    return $http.get(configuration.apiUrl + '/items/contract/' + id + '/details');
+  };
 
   itemsAPI.postContract = function(payload){
     return $http.post(configuration.apiUrl + '/items/contract', payload);
+  };
+
+  itemsAPI.acceptContract = function(id, payload){
+    return $http.put(configuration.apiUrl + '/items/contract/' + id + '/accept', payload);
+  };
+
+  itemsAPI.modifyContract = function(id, payload){
+    return $http.put(configuration.apiUrl + '/items/contract/' + id + '/modify', payload);
+  };
+
+  itemsAPI.removeContract = function(id){
+    return $http.delete(configuration.apiUrl + '/items/contract/' + id);
   };
 
   return itemsAPI;

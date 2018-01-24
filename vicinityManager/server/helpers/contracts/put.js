@@ -13,7 +13,7 @@ Modify contract
 // TODO Create notification
 // TODO Create audit
 */
-function modifyContract(req, res){
+function acceptContract(req, res){
   var id = req.params.id;
   var updItem = {};
   var query = { $set: {"serviceProvider.termsAndConditions": true, status: 'accepted'} };
@@ -37,6 +37,10 @@ function modifyContract(req, res){
   });
 }
 
+
+function modifyContract(req, res){
+}
+
 // Private Functions
 
 function getOnlyOid(items, toAdd){
@@ -46,4 +50,5 @@ function getOnlyOid(items, toAdd){
 }
 
 // Export modules
+module.exports.acceptContract = acceptContract;
 module.exports.modifyContract = modifyContract;

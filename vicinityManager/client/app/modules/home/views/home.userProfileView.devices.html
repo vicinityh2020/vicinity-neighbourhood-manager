@@ -1,0 +1,25 @@
+<div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
+
+<div class="active tab-pane" id="activity" >
+  <div class="row" ng-show="loaded">
+
+    <div ng-repeat="device in things" class="col-md-6 col-lg-4">
+      <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device.id._id})">
+        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+          <div class="round">
+            <img ng-src="{{device.id.avatar}}" alt="Company Avatar">
+          </div>
+          <span class="pull-right" id="circle_gray" ><a style="cursor:default" title="Unknown" alt="Unknown"> &nbsp; &nbsp; &nbsp;</a></span>
+          <h3 class="widget-user-username2"><a style="color: #FFF" href="">{{device.id.name}}</a></h3>
+          <h5 class="widget-user-username2" ng-show="device.id.cid.id === cid.id"><a style="color: #FFF" href="">My Item</a></h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="centered" ng-show="noItems" >
+   <h3 class="well">No items found...</h3>
+</div>

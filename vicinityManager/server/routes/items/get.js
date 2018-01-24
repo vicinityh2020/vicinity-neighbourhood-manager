@@ -167,7 +167,7 @@ function getItemWithAdd(req, res, next) {
     var items = [];
     var friends = [];
 
-    userOp.findOne({_id: reqId}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem')
+    userOp.findOne({_id: reqId}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid')
     .then(function(response){
       parsedData = response.toObject();
       items = parsedData.hasItems;
@@ -184,7 +184,9 @@ function getItemWithAdd(req, res, next) {
         items = items.filter(function(i){return i.id.accessLevel >= 1 && i.id.typeOfItem === type;});
       } else if(relation === 2){
         items = items.filter(function(i){return i.id.accessLevel === 2 && i.id.typeOfItem === type;});
-      } else {}
+      } else {
+        items = items.filter(function(i){return i.id.typeOfItem === type;});
+      }
 
       data.items = items;
 
