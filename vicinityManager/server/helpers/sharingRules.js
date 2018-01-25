@@ -9,6 +9,7 @@ var notificationAPI = require('../routes/notifications/notifications');
 var sync = require('../helpers/asyncHandler/sync');
 var commServer = require('../helpers/commServer/request');
 var contractHelper = require('../helpers/contracts/delete');
+var audits = require('../routes/audit/put');
 
 // Public functions ================================
 
@@ -48,7 +49,7 @@ function removeFriend(my_id, friend_id){
           false
         );
       } else {
-        // logger.warn({user:email, action: 'deleteItem', message: "No items to be removed"});
+        // logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
         resolve({"error": false, "message": "Nothing to be removed..."});
       }
     });
@@ -86,14 +87,14 @@ function createContract(id, descr){
 /*
 Add items to the contract
 */
-function addItemsToContract(id, items){
+function addItemsToContract(other, items){
   return new Promise(function(resolve, reject) {
     if(items.length > 0){ // Check if there is any item to delete
-      logger.debug('Start async handler...');
+      // logger.debug('Start async handler...');
       sync.forEachAll(items,
         function(value, allresult, next, otherParams) {
           adding(value, otherParams, function(value, result) {
-              logger.debug('END execution with value =', value, 'and result =', result);
+              // logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
           });
@@ -105,10 +106,10 @@ function addItemsToContract(id, items){
           }
         },
         false,
-        {id: id}
+        {ctid: other.ctid, id: other._id, mail: other.serviceProvider.uid.extid, orgOrigin: other.iotOwner.cid, OrgDest: other.serviceProvider.cid}
       );
     } else {
-      // logger.warn({user:email, action: 'deleteItem', message: "No items to be removed"});
+      logger.warn({user:mail, action: 'addItemToContract', message: "No items to be added"});
       resolve({"error": false, "message": "Nothing to be removed..."});
     }
   });
@@ -118,7 +119,16 @@ function addItemsToContract(id, items){
 Remove contract group in commServer
 */
 function cancelContract(id){
-  return commServer.callCommServer({}, 'groups/' + id, 'DELETE');
+  return commServer.callCommServer({}, 'groups/' + id, 'DELETE')
+  .catch(function(err){
+    return new Promise(function(resolve, reject) {
+      if(err.statusCode !== 404){
+        reject('Error in commServer: ' + err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
 }
 
 // Private functions ================================
@@ -152,13 +162,30 @@ function findCase(oldA, newA, updates){
 Add items to contract group in commServer
 */
 function adding(oid, otherParams, callback){
-  logger.debug('START execution with value =', oid);
-  commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.id , 'POST')
+  // logger.debug('START execution with value =', oid);
+  commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST')
+  // .then(function(response){
+  //   var id = null;
+  //   for(var i = 0; i < otherParams.iotOwner.items.length;){
+  //     if(otherParams.iotOwner.items[i].extid === oid){id = otherParams.iotOwner.items[i].id;}
+  //   }
+  //   if(id === null){
+  //     new Promise(function(resolve, reject) { resolve(true); } );
+  //   } else {
+  //     return audits.putAuditInt(
+  //       id,
+  //       { orgOrigin: otherParams.orgDest,
+  //         orgDest:otherParams.orgOrigin,
+  //         auxConnection: {kind: 'contract', item: otherParams.id, extid: otherParams.ctid},
+  //         eventType: 51 }
+  //     );
+  //   }
+  // })
   .then(function(ans){
-    //logger.audit({user: otherParams.userMail, action: 'deleteItem', item: oid });
+    logger.audit({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid });
     callback(oid, "Success");})
   .catch(function(err){
-      //logger.error({user: otherParams.userMail, action: 'deleteItem', item: oid, message: err });
+      logger.error({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid, message: err });
       callback(oid, 'Error: ' + err);
   });
 }

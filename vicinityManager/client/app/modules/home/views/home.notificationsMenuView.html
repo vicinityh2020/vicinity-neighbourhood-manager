@@ -25,17 +25,20 @@
             <a ng-show="notif.type === 1" ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})">
               <img ng-src="./img/icons/data_request.png" alt="Registration Request"/>
             </a>
-            <a ng-show="notif.type === 21" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})">
+            <a ng-show="[11, 12].lastIndexOf(notif.type) !== -1" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})">
              <img ng-src="{{notif.itemId.avatar}}" alt="Device Avatar">
             </a>
-            <a ng-show="[11, 12, 22, 23, 24].lastIndexOf(notif.type) !== -1" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})">
-             <img ng-src="{{notif.itemId.avatar}}" alt="Device Avatar">
+            <a ng-show="[22, 23, 24].lastIndexOf(notif.type) !== -1">
+             <img ng-src="./img/org_avatar 14.46.39.png" alt="Contract Avatar">
             </a>
             <a ng-show="[31, 32, 33, 34, 35].lastIndexOf(notif.type) !== -1" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">
               <img ng-src="{{notif.sentBy.avatar}}" alt="Company Avatar">
             </a>
             <a ng-show="notif.type === 13">
               <img ng-src="./img/icons/data_request.png" alt="Company Avatar"/>
+            </a>
+            <a ng-show="notif.type === 21" ui-sref="root.main.userProfile.contracts({companyAccountId: notif.addressedTo[0]._id, userAccountId: notif.userId})">
+              <img ng-src="./img/org_avatar 14.46.39.png" alt="Contract Avatar"/>
             </a>
           </div>
 
@@ -44,10 +47,10 @@
             <p ng-show="notif.type === 11">A device has been activated:  <a ng-click="changeIsUnreadToFalse(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
             <p ng-show="notif.type === 12">A device has been deactivated:  <a ng-click="changeIsUnreadToFalse(notif._id)" ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
             <p ng-show="notif.type === 13">You have discovered new device(s) </p>
-            <p ng-show="notif.type === 21">You have a device data request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
-            <p ng-show="notif.type === 22">Your data access to device <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a> has been rejected.</p>
-            <p ng-show="notif.type === 23">You have canceled the connection with <a  ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
-            <p ng-show="notif.type === 24">You've got data access to device <a  ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.deviceId._id})">{{notif.itemId.name}}</a>.</p>
+            <p ng-show="notif.type === 21">You have a <a  ui-sref="root.main.userProfile.contracts({companyAccountId: notif.addressedTo[0]._id, userAccountId: notif.userId})">contract</a> request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.name}}</a>.</p>
+            <p ng-show="notif.type === 22">A <a ui-sref="root.main.userProfile.contracts({companyAccountId: notif.addressedTo[0]._id, userAccountId: notif.userId})">contract</a> has been modified.</p>
+            <p ng-show="notif.type === 23">A contract has been cancelled.</p>
+            <p ng-show="notif.type === 24">A contract has been approved.</p>
             <p ng-show="notif.type === 31">You have a partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
             <p ng-show="notif.type === 32">The partnership between <b>{{notif.addressedTo[0].organisation}}</b> and <b>{{notif.addressedTo[1].organisation}}</b> was cancelled by <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
             <p ng-show="notif.type === 33">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> was rejected.</p>
@@ -60,8 +63,8 @@
           <button  ng-show="notif.type === 1" ng-click="acceptRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
           <button  ng-show="notif.type === 1" ng-click="rejectRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
 
-          <button ng-show="notif.type === 21" ng-click="acceptDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
-          <button ng-show="notif.type === 21" ng-click="rejectDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
+          <!-- <button ng-show="notif.type === 21" ng-click="acceptDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
+          <button ng-show="notif.type === 21" ng-click="rejectDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button> -->
 
           <button  ng-show="notif.type === 31" ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Accept</button>
           <button  ng-show="notif.type === 31" ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Decline</button>
@@ -92,7 +95,7 @@
 
         <!-- Description -->
           <p ng-show="notif.type === 1"> You have received a registration request from: </p><a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.sentByReg._id})"><p> {{notif.sentByReg.companyName}} </p></a>
-          <p ng-show="notif.type === 21">You have device data request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
+          <p ng-show="notif.type === 21">You have a <a  ui-sref="root.main.userProfile.contracts({companyAccountId: notif.addressedTo[0]._id, userAccountId: notif.userId})">contract</a> request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.name}}</a>.</p>
           <p ng-show="notif.type === 31">You have partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
         </div>
 
@@ -102,8 +105,8 @@
           <button  ng-show="notif.type === 1" ng-click="acceptRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
           <button  ng-show="notif.type === 1" ng-click="rejectRegistration(notif.sentByReg._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
 
-          <button ng-show="notif.type === 21" ng-click="acceptDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
-          <button ng-show="notif.type === 21" ng-click="rejectDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
+          <!-- <button ng-show="notif.type === 21" ng-click="acceptDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
+          <button ng-show="notif.type === 21" ng-click="rejectDataRequest(notif.itemId._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button> -->
 
           <button  ng-show="notif.type === 31" ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Accept</button>
           <button  ng-show="notif.type === 31" ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" type="button" class="btn btn-default btn-xs">Decline</button>

@@ -13,7 +13,7 @@ function getNotificationsOfUser(req,res){
 
   var o_id = mongoose.Types.ObjectId(req.params.id);
 
-  notificationOp.find({addressedTo: {$in : [o_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('addressedTo','organisation').populate('itemId','avatar name').exec(function(err,data){
+  notificationOp.find({addressedTo: {$in : [o_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentBy','avatar name').populate('addressedTo','name').populate('itemId','avatar name').exec(function(err,data){
       if(err){
         res.json({"error": true, "message": "Error fetching data"});
       } else {
@@ -44,7 +44,7 @@ function getAllUserNotifications(req,res){
   var dateFrom = notifHelper.objectIdWithTimestamp(req.query.searchDate);
 
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar organisation').populate('addressedTo','organisation').populate('itemId','avatar name').exec(function(err,data){
+  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar name').populate('addressedTo','name').populate('itemId','avatar name').exec(function(err,data){
     if(err){
       res.json({"error": true, "message": "Error fetching data"});
     } else {

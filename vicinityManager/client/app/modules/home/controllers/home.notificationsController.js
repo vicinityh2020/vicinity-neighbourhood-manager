@@ -7,7 +7,7 @@ function ($scope,
           $state,
           notificationsAPIService,
           tokenDecoder,
-          itemsHelpers,
+          itemsAPIService,
           userAccountsHelpers,
           commonHelpers,
           registrationsHelpers,
@@ -143,17 +143,25 @@ $scope.isDev = keyword.test(payload.roles);
       .catch(userAccountsHelpers.errorCallback);
     };
 
-    $scope.acceptDataRequest = function (dev_id, notifId) {
-      itemsHelpers.acceptDataRequest(dev_id, notifId)
-      .then(init(),itemsHelpers.errorCallback)
-      .catch(itemsHelpers.errorCallback);
-    };
-
-    $scope.rejectDataRequest = function (dev_id, notifId) {
-      itemsHelpers.rejectDataRequest(dev_id, notifId)
-      .then(init(),itemsHelpers.errorCallback)
-      .catch(itemsHelpers.errorCallback);
-    };
+    // $scope.acceptContract = function(id){
+    //   itemsAPIService.acceptContract(id, {})
+    //     .then(function(response){
+    //       Notification.success("The contract was agreed!");
+    //       init();
+    //     },
+    //       function(error){ Notification.error("Problem accepting contract: " + error); }
+    //     );
+    //   };
+    //
+    // $scope.removeContract = function(id){
+    //   itemsAPIService.removeContract(id)
+    //     .then(function(response){
+    //       Notification.success("The contract was cancelled!");
+    //       init();
+    //     },
+    //       function(error){ Notification.error("Problem canceling contract: " + error); }
+    //     );
+    // };
 
     $scope.acceptRegistration = function (reg_id, notifId) {
      registrationsHelpers.acceptRegistration(reg_id)

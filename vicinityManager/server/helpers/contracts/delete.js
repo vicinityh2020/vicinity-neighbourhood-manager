@@ -5,6 +5,8 @@ var logger = require("../../middlewares/logger");
 var audits = require('../../routes/audit/put');
 var contractOp = require('../../models/vicinityManager').contract;
 var notificationOp = require('../../models/vicinityManager').notification;
+var userOp = require('../../models/vicinityManager').user;
+var itemOp = require('../../models/vicinityManager').item;
 var sharingRules = require('../../helpers/sharingRules');
 
 /*
@@ -22,6 +24,14 @@ function removeContract(req, res){
 function removing(id, callback){
   var finalResp;
   var data = {};
+  var idsDevice = [];
+  var idsService = [];
+  var cidService = "";
+  var cidDevice = "";
+  var ctid = {};
+  var uidService = "";
+  var uidDevice = "";
+
   var query = {
     serviceProvider:{},
     iotOwner:{},
@@ -39,15 +49,12 @@ function removing(id, callback){
   })
   .then(function(response){
     finalResp = response;
-
-    var cidService = data.serviceProvider.cid.extid;
-    var cidDevice = data.iotOwner.cid.extid;
-    var ctid = {id: data._id, extid: data.ctid};
-    var uidService = data.serviceProvider.uid.id;
-    var idsService = [];
+    cidService = data.serviceProvider.cid.extid;
+    cidDevice = data.iotOwner.cid.extid;
+    ctid = {id: data._id, extid: data.ctid};
+    uidService = data.serviceProvider.uid.id;
     getOnlyId(idsService, data.serviceProvider.items);
-    var uidDevice = data.iotOwner.uid.id;
-    var idsDevice = [];
+    uidDevice = data.iotOwner.uid.id;
     getOnlyId(idsDevice, data.iotOwner.items);
     return userOp.update({_id: uidDevice}, { $pull: {hasContracts: ctid} });
   })
@@ -61,9 +68,38 @@ function removing(id, callback){
     return itemOp.update({_id: {$in: idsService }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
+    var notification = new notificationOp();
+    notification.addressedTo.push(data.serviceProvider.cid.id, data.iotOwner.cid.id);
+    // notification.sentBy = data.iotOwner.cid.id;
+    // notification.userId = data.serviceProvider.uid.id;
+    notification.ctId = data._id;
+    notification.type = 23;
+    notification.status = 'info';
+    return notification.save();
+  })
+  .then(function(response){
+    return audits.putAuditInt(
+      data.iotOwner.cid.id,
+      { orgOrigin: data.iotOwner.cid,
+        orgDest: data.serviceProvider.cid,
+        auxConnection: {kind: 'contract', item: data._id, extid: data.ctid},
+        eventType: 52 }
+    );
+  })
+  .then(function(response){
+    return audits.putAuditInt(
+      data.serviceProvider.cid.id,
+      { orgOrigin: data.iotOwner.cid,
+        orgDest: data.serviceProvider.cid,
+        auxConnection: {kind: 'contract', item: data._id, extid: data.ctid},
+        eventType: 52 }
+    );
+  })
+  .then(function(response){
     callback(finalResp, false);
   })
   .catch(function(error){
+    logger.debug(error);
     callback(error, true);
   });
 

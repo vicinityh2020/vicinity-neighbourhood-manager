@@ -61,8 +61,26 @@ function createContract(req, res){
           notification.userId = data.uidService.id;
           notification.ctId = ct_id;
           notification.type = 21;
-          notification.status = 'waiting';
-          notification.save();
+          notification.status = 'info';
+          return notification.save();
+        })
+        .then(function(response){
+          return audits.putAuditInt(
+            data.cidDevice.id,
+            { orgOrigin: data.cidDevice,
+              orgDest: data.cidService,
+              auxConnection: {kind: 'contract', item: ct_id, extid: ct.ctid},
+              eventType: 53 }
+          );
+        })
+        .then(function(response){
+          return audits.putAuditInt(
+            data.cidService.id,
+            { orgOrigin: data.cidDevice,
+              orgDest: data.cidService,
+              auxConnection: {kind: 'contract', item: ct_id, extid: ct.ctid},
+              eventType: 53 }
+          );
         })
         .then(function(response){
           res.json({error: false});

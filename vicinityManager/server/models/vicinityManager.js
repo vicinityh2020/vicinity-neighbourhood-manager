@@ -156,7 +156,7 @@ var notification = new Schema({
     12 - itemDisabled - info
     13 - itemDiscovered - info
     21 - contractRequest - info
-    22 - contractRejected - info
+    22 - contractModified - info
     23 - contractCancelled - info
     24 - contractAccepted - info
     31 - partnershipRequest  - toAnswer
@@ -209,11 +209,9 @@ var auditLog = new Schema({
     43 - Item enabled ->
     44 - Item disabled ->
     45 - Privacy change ->
-    51 - Accept connection <->
-    52 - Reject connection <->
-    53 - Cancel connection <->
-    54 - Request connection <->
-    55 - ConnReq cancelled <->
+    51 - Accept contract <->
+    52 - Cancel contract <->
+    53 - Request contract <->
     ...
     */
   } ]

@@ -53,8 +53,12 @@ $scope.period = 'week';
         notificationsAPIService.getAllRegistrations($scope.dateFrom)
         .then(
           function successCallback(response){
-            for(var index in response.data.message){
-              $scope.notifs = $scope.tempNotifs.concat(response.data.message);
+            if(response.data.message.length === 0){
+              $scope.notifs = $scope.tempNotifs;
+            } else {
+              for(var index in response.data.message){
+                $scope.notifs = $scope.tempNotifs.concat(index);
+              }
             }
             commonHelpers.addTimestamp($scope.notifs, function(array, dates){
               $scope.dates = dates;
