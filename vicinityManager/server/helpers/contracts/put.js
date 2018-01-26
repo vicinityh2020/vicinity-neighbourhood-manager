@@ -30,7 +30,7 @@ function acceptContract(req, res){
   .then(function(response){
     var notification = new notificationOp();
     notification.addressedTo.push(updItem.serviceProvider.cid.id, updItem.iotOwner.cid.id);
-    notification.sentBy = data.serviceProvider.cid.id;
+    notification.sentBy = updItem.serviceProvider.cid.id;
     // notification.userId = data.serviceProvider.uid.id;
     notification.ctId = updItem._id;
     notification.type = 24;

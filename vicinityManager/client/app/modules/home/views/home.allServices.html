@@ -54,18 +54,26 @@
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.services({companyAccountId: it.cid.id._id})">{{it.cid.id.name}}</a></h5>
           <h5 class="widget-user-desc2" ng-show="it.status === 'enabled'">Enabled</h5>
           <h5 class="widget-user-desc2" ng-show="it.status === 'disabled'">Disabled</h5>
-          <h5 class="widget-user-desc2" ng-show="it.isPublic">Device is public</h5>
+          <h5 class="widget-user-desc2" ng-show="it.isPublic">Service is public</h5>
           <h5 class="widget-user-desc2" ng-show="it.isFriendData">Access for friends</h5>
           <h5 class="widget-user-desc2" ng-show="it.isPrivate">Private data</h5>
-          <h5 class="widget-user-desc2" ng-show="it.isOwner && it.status === 'enabled'">My service</h5>
         </div>
 
-        <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner">
-          <a href="" ui-sref="root.main.requestService({companyAccountId: it.cid.id._id, serviceId: it._id})" class=" btn-xs btn-success btn-block" >
-             <i class="fa fa-bar-chart fa-lg"></i>
+        <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner && !it.contracted">
+          <a href="" ui-sref="root.main.requestService({companyAccountId: it.cid.id._id, serviceId: it._id})" class=" btn-xs btn-success btn-block">
              <i class="fa fa-plus fa-lg"></i>
               &nbsp;<b>Request service</b>
          </a>
+        </div>
+
+        <div class="widget-user-footer-moreinfo2 bg-primary" ng-show="!it.isOwner && it.contracted" >
+          <i class="fa fa-bar-chart fa-lg"></i>
+              &nbsp;<b>Service in use</b>
+        </div>
+
+        <div class="widget-user-footer-moreinfo2 bg-teal" ng-show="it.isOwner">
+             <i class="fa fa-user fa-lg"></i>
+              &nbsp;<b>My service</b>
         </div>
 
         <a href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>

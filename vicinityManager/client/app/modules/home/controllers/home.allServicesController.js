@@ -16,6 +16,7 @@ angular.module('VicinityManagerApp.controllers')
        $scope.loadedPage = false;
        $scope.noItems = true;
        $scope.myId = $window.sessionStorage.companyAccountId;
+       $scope.myUserId = $window.sessionStorage.userAccountId;
        $scope.offset = 0;
        $scope.allItemsLoaded = false;
        $scope.filterNumber = 7;
@@ -29,6 +30,11 @@ angular.module('VicinityManagerApp.controllers')
       .then(
         function successCallback(response){
           for(var i = 0; i < response.data.message.length; i++){
+            for(var j = 0; j < response.data.message[i].hasContracts.length; j++){
+              if(response.data.message[i].hasContracts[j].contractingUser.toString() === $scope.myUserId.toString()){
+                response.data.message[i].contracted = true;
+              }
+            }
               $scope.items.push(response.data.message[i]);
           }
           $scope.noItems = ($scope.items.length === 0);

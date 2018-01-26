@@ -29,6 +29,7 @@ var oidSchema = Schema({
 var ctidSchema = Schema({
   id: {type: ObjectId, ref: 'contract'},
   extid: String,
+  contractingUser: String,
   contractingParty: String,
   approved: {type: Boolean, default: false}
 },{ _id : false });
@@ -212,6 +213,7 @@ var auditLog = new Schema({
     51 - Accept contract <->
     52 - Cancel contract <->
     53 - Request contract <->
+    54 - Update contract <->
     ...
     */
   } ]

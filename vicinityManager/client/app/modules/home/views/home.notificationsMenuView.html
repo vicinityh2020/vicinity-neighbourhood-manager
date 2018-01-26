@@ -51,11 +51,11 @@
             <p ng-show="notif.type === 22">A <a ui-sref="root.main.userProfile.contracts({companyAccountId: notif.addressedTo[0]._id, userAccountId: notif.userId})">contract</a> has been modified.</p>
             <p ng-show="notif.type === 23">A contract has been cancelled.</p>
             <p ng-show="notif.type === 24">A contract has been approved.</p>
-            <p ng-show="notif.type === 31">You have a partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
-            <p ng-show="notif.type === 32">The partnership between <b>{{notif.addressedTo[0].organisation}}</b> and <b>{{notif.addressedTo[1].organisation}}</b> was cancelled by <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
-            <p ng-show="notif.type === 33">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> was rejected.</p>
-            <p ng-show="notif.type === 34">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a> was accepted.</p>
-            <p ng-show="notif.type === 35">You have requested a partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.organisation}}</a>.</p>
+            <p ng-show="notif.type === 31">You have a partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.name}}</a>.</p>
+            <p ng-show="notif.type === 32">The partnership between <b>{{notif.addressedTo[0].name}}</b> and <b>{{notif.addressedTo[1].name}}</b> was cancelled by <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.name}}</a>.</p>
+            <p ng-show="notif.type === 33">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.name}}</a> was rejected.</p>
+            <p ng-show="notif.type === 34">Your partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.name}}</a> was accepted.</p>
+            <p ng-show="notif.type === 35">You have requested a partnership with <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})">{{notif.sentBy.name}}</a>.</p>
         </div>
 
         <!-- Actions -->

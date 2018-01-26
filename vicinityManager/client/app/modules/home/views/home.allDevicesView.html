@@ -69,57 +69,30 @@
           </div>
 
           <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.hasAdministrator[0].organisation}}</a></h5>
-          <h5 class="widget-user-desc2" ng-show="dev.status === 'enabled'">{{dev.accessLevelCaption}}</h5>
+          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.cid.id._id})">{{dev.cid.id.name}}</a></h5>
+          <h5 class="widget-user-desc2" ng-show="dev.status === 'enabled'">Enabled</h5>
           <h5 class="widget-user-desc2" ng-show="dev.status === 'disabled'">Disabled</h5>
-          <h5 ng-show="dev.seeData && !dev.isOwner" class="widget-user-desc2 label label-success"><i class="fa fa-link" aria-hidden="true"></i>  Data Access</h5>
-          <h5 ng-show="!dev.seeData && !dev.isOwner" class="widget-user-desc2 label label-default"><i class="fa fa-chain-broken" aria-hidden="true"></i>  No Data Access</h5>
-
-          <!-- <div ng-show="dev.status === 'disabled'" class="centered" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <i class="fa fa-ban my-black fa-2x" aria-hidden="true"></i>
-          </div> -->
+          <h5 class="widget-user-desc2" ng-show="dev.isPublic">Device is public</h5>
+          <h5 class="widget-user-desc2" ng-show="dev.isFriendData">Access for friends</h5>
+          <h5 class="widget-user-desc2" ng-show="dev.isPrivate">Private data</h5>
 
         </div>
 
-        <div  class="widget-user-footer-moreinfo2" ng-show="dev.isUnderRequest && !dev.cancelRequest && !dev.interruptConnection">
-          <a href=""  ng-click="processMyAccess(dev._id)" class=" btn-xs btn-success btn-block" >
-             <i class="fa fa-bar-chart fa-lg"></i>
-             <i class="fa fa-plus fa-lg"></i>
-              &nbsp;<b>Get access!</b>
-         </a>
+        <div class="widget-user-footer-moreinfo2 bg-gray" ng-show="!dev.isOwner && !dev.imFriend">
+             <i class="fa fa-circle-thin fa-lg"></i>
+              &nbsp;<b>Other device</b>
         </div>
 
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isUnderRequest && dev.cancelRequest">
-         <a href=""  ng-click="cancelMyRequest(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-bar-chart fa-lg"></i>
-            <i class="fa fa-times fa-lg"></i>
-             &nbsp;Cancel request
-        </a>
+        <div class="widget-user-footer-moreinfo2 bg-maroon" ng-show="!dev.isOwner && dev.imFriend" >
+          <i class="fa fa-circle fa-lg"></i>
+              &nbsp;<b>Friend Device</b>
         </div>
 
-        <div class="widget-user-footer-moreinfo2" ng-show="dev.isUnderRequest && dev.interruptConnection">
-         <a href=""  ng-click="cancelMyAccess(dev._id)"  class="btn-xs btn-default btn-block" >
-            <i class="fa fa-chain-broken fa-lg"></i>
-             &nbsp;Interrupt connection
-        </a>
+        <div class="widget-user-footer-moreinfo2 bg-teal" ng-show="dev.isOwner">
+             <i class="fa fa-user fa-lg"></i>
+              &nbsp;<b>My Device</b>
         </div>
 
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPublic" >
-        <span><i href="/#" class="fa fa-bar-chart fa-1x"></i> <strong> Device is public </strong> </span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isFriendData">
-        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isPrivate">
-        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Private data</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isOwner">
-        <span><strong>My device</strong></span>
-        </div>
 
         <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo" >More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>

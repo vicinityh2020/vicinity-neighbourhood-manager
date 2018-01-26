@@ -16,9 +16,9 @@ function getAdditional(data,activeCompany_id,friends){
 
     device = data[index];
     var isOwner = (activeCompanyStr === device.cid.id._id.toString());
-    var isPublic = (isOwner === false && device.accessLevel === 2);
-    var isFriendData = (isOwner === false && device.accessLevel === 1);
-    var isPrivate = (isOwner === false && device.accessLevel === 0);
+    var isPublic = (device.accessLevel === 2);
+    var isFriendData = (device.accessLevel === 1);
+    var isPrivate = (device.accessLevel === 0);
 
     var imFriend = false;
     for (var i = 0; i < friends.length; i++){

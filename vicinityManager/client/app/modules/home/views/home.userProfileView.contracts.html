@@ -3,46 +3,78 @@
 </div>
 <h3>{{mainTitle}}</h3>
 <section ng-show="loaded">
-  <div class="active tab-pane" >
+  <!-- No items found -->
+  <div class="active tab-pane">
     <div class="centered" ng-show="noItems">
        <h3 class="well">No items found...</h3>
     </div>
-    <div class="box-body box" ng-repeat="contract in contracts">
-      <div ng-show="!detailsShow">
-        <div class="col-sm-3">
-          <label> Id </label>
-          <p>{{contract.ctid}}</p>
-        </div>
-        <div class="col-sm-2">
-          <table style="width:100%">
-            <tr><td><label> Status </label></td></tr>
-            <tr><td><span ng-show="contract.status === 'pending'" class="label label-warning">{{contract.status}}</span></td></tr>
-            <tr><td><span ng-show="contract.status === 'accepted'" class="label label-success">{{contract.status}}</span></td></tr>
-          </table>
-        </div>
-        <div class="col-sm-2">
-          <table style="width:100%">
-            <tr><td><label> Permissions </label></td></tr>
-            <tr><td><span ng-if="contract.readWrite">Read/Write</span></td></tr>
-            <tr><td><span ng-if="!contract.readWrite">Read only</span></td></tr>
-          </table>
-        </div>
-        <div class="col-sm-2">
-          <table style="width:100%">
-            <tr><td><label> Type </label></td></tr>
-            <tr><td><span class="label label-info">{{contract.type}}</span></td></tr>
-          </table>
-        </div>
-        <div class="col-sm-3 padded centered">
-          <button ng-show="!contract.agreed"  ng-click="acceptContract(contract._id)"><i class="fa fa-check"></i></button>
-          <button ng-click="showDetails(contract._id)"><i class="fa fa-eye"></i></button>
-          <button ng-disabled="true" ng-click="editContract(contract._id)"><i class="fa fa-pencil"></i></button>
-          <button ng-click="removeContract(contract._id)"><i class="fa fa-times"></i></button>
-        </div>
+    <!-- Contracts summary -->
+    <div class="box-body box" ng-repeat="contract in contracts" ng-show="!detailsShow">
+      <div class="col-sm-3">
+        <label> Id </label>
+        <p>{{contract.ctid}}</p>
+      </div>
+      <div class="col-sm-2">
+        <table style="width:100%">
+          <tr><td><label> Status </label></td></tr>
+          <tr><td><span ng-show="contract.status === 'pending'" class="label label-warning">{{contract.status}}</span></td></tr>
+          <tr><td><span ng-show="contract.status === 'accepted'" class="label label-success">{{contract.status}}</span></td></tr>
+        </table>
+      </div>
+      <div class="col-sm-2">
+        <table style="width:100%">
+          <tr><td><label> Type </label></td></tr>
+          <tr><td><span class="label label-info">{{contract.type}}</span></td></tr>
+        </table>
+      </div>
+      <div class="col-sm-2">
+        <table style="width:100%">
+          <tr><td><label> Service Provider </label></td></tr>
+          <tr><td><span ng-if="contract.readWrite">{{contract.serviceProvider.uid.extid}}</span></td></tr>
+        </table>
+      </div>
+      <div class="col-sm-3 padded centered">
+        <button ng-show="!contract.agreed"  ng-click="acceptContract(contract._id)"><i class="fa fa-check"></i></button>
+        <button ng-click="showDetails(contract._id)"><i class="fa fa-eye"></i></button>
+        <button ng-disabled="true" ng-click="editContract(contract._id)"><i class="fa fa-pencil"></i></button>
+        <button ng-click="removeContract(contract._id)"><i class="fa fa-times"></i></button>
+      </div>
     </div>
-    <div class="row" ng-show="detailsShow">
-      <button class="pull-right" ng-click="closeDetails()"><i class="fa fa-times"></i></button>
-      <p>{{wholeContract}}</p>
+    <!-- Contract details -->
+    <div class="box box-body" ng-show="detailsShow">
+      <div class="box-header with-border well">
+          <h3 class="box-title">Main Info</h3>
+          <button class="pull-right" ng-click="closeDetails()"><i class="fa fa-times"></i></button>
+      </div>
+      <div class="box-body">
+        <p><b>ID:</b> {{wholeContract.ctid}}</p>
+        <p><b>Service name:</b> {{wholeContract.serviceProvider.items[0].id.name}}</p>
+        <p><b>Service owner:</b> {{wholeContract.serviceProvider.uid.extid}}</p>
+        <p><b>Devices owner:</b> {{wholeContract.iotOwner.uid.extid}}</p>
+        <p><b>Access rights:</b>
+          <span class="label label-info" ng-show="!wholeContract.readWrite"> Read only</span>
+          <span class="label label-info" ng-show="wholeContract.readWrite"> Read/Write</span>
+        </p>
+        <p><b>Status:</b>
+          <span ng-show="wholeContract.status === 'pending'" class="label label-warning">{{wholeContract.status}}</span>
+          <span ng-show="wholeContract.status === 'accepted'" class="label label-success">{{wholeContract.status}}</span>
+        </p>
+      </div>
+      <div class="box-header with-border well">
+          <h3 class="box-title">Legal Description</h3>
+      </div>
+      <div class="box-body">
+        {{wholeContract.legalDescription}}
+      </div>
+      <div class="box-header with-border well">
+          <h3 class="box-title">Devices</h3>
+      </div>
+      <div class="box-body">
+      <div class="checkbox" ng-repeat="thing in wholeContract.iotOwner.items">
+        <ul>
+          <li>{{thing.id.name}} -- {{thing.id._id}}</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

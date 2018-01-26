@@ -6,9 +6,9 @@
   <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
 </div>
 
-<div class="coll-md-1" ng-show="loadedPage && noLogs" style="margin: auto; max-width:700px">
-  <h3 class="well">No logs found...</h3>
-</div>
+ <div class="centered"  ng-show="loadedPage && noLogs">
+    <h3 class="well">No logs found...</h3>
+ </div>
 
 <!-- /.box-header -->
 <section class="content" ng-show="loadedPage && !noLogs">
@@ -40,22 +40,22 @@
                     <span ng-show="[2, 42, 12, 22].lastIndexOf(log.eventType) !== -1"><i class="fa fa-minus my-red"/></span>
                     <span ng-show="log.eventType===13"><i class="fa fa-user"/></span>
                     <span ng-show="log.eventType===23"><i class="fa fa-sitemap"/></span>
-                    <span ng-show="[31, 54].lastIndexOf(log.eventType) !== -1"><i class="fa fa-envelope my-blue"/></span>
-                    <span ng-show="[32, 34, 52, 55].lastIndexOf(log.eventType) !== -1"><i class="fa fa-times my-red"/></span>
+                    <span ng-show="[31, 53].lastIndexOf(log.eventType) !== -1"><i class="fa fa-envelope my-blue"/></span>
+                    <span ng-show="[32, 34].lastIndexOf(log.eventType) !== -1"><i class="fa fa-times my-red"/></span>
                     <span ng-show="log.eventType===33"><i class="fa fa-user-plus my-green"/></span>
                     <span ng-show="log.eventType===35"><i class="fa fa-user-times my-red"/></span>
-                    <span ng-show="log.eventType===43"><i class="fa fa-arrow-up my-green"/></span>
+                    <span ng-show="[43, 54].lastIndexOf(log.eventType) !== -1"><i class="fa fa-arrow-up my-green"/></span>
                     <span ng-show="log.eventType===44"><i class="fa fa-arrow-down my-red"/></span>
                     <span ng-show="log.eventType===45"><i class="fa fa-eye"/></span>
                     <span ng-show="log.eventType===51"><i class="fa fa-chain my-blue"/></span>
-                    <span ng-show="log.eventType===53"><i class="fa fa-chain-broken"/></span>
+                    <span ng-show="log.eventType===52"><i class="fa fa-chain-broken"/></span>
                   </div>
 
                 </h3>
 
                 <!-- Description -->
-                <span ng-show="log.eventType===1">The {{log.orgOrigin.organisation}} was created</span>
-                <span ng-show="log.eventType===2">The {{log.orgOrigin.organisation}} was deleted</span>
+                <span ng-show="log.eventType===1">The {{log.orgOrigin.id.name}} was created</span>
+                <span ng-show="log.eventType===2">The {{log.orgOrigin.id.name}} was deleted</span>
                 <span ng-show="log.eventType===11">The user {{log.auxConnection.item.name}} joined Vicinity</span>
                 <span ng-show="log.eventType===12">The user {{log.auxConnection.item.name}} left Vicinity</span>
                 <span ng-show="log.eventType===13">The user {{log.auxConnection.item.name}} had its roles modified</span>
@@ -63,16 +63,16 @@
                 <span ng-show="log.eventType===22">The node {{log.auxConnection.item.name}} was removed</span>
                 <span ng-show="log.eventType===23">The node {{log.auxConnection.item.name}} was modified</span>
 
-                <span ng-show="log.eventType===31 && log.triggeredByMe===true">You have sent a partnership request to {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===32 && log.triggeredByMe===true">You have cancelled the partnership request to {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===33 && log.triggeredByMe===true">You have accepted the partnership request from {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===34 && log.triggeredByMe===true">You have rejected the partnership request from {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===35 && log.triggeredByMe===true">You have cancelled the partnership with {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===31 && log.triggeredByMe===false">You have received a partnership request from {{log.orgOrigin.organisation}}</span>
-                <span ng-show="log.eventType===32 && log.triggeredByMe===false">The partnership request from {{log.orgOrigin.organisation}} has been cancelled</span>
-                <span ng-show="log.eventType===33 && log.triggeredByMe===false">Your partnership request has been accepted by {{log.orgOrigin.organisation}}</span>
-                <span ng-show="log.eventType===34 && log.triggeredByMe===false">Your partnership request has been rejected by {{log.orgOrigin.organisation}}</span>
-                <span ng-show="log.eventType===35 && log.triggeredByMe===false">Your partnership with {{log.orgOrigin.organisation}} has been cancelled</span>
+                <span ng-show="log.eventType===31 && log.triggeredByMe===true">You have sent a partnership request to {{log.orgDest.id.name}}</span>
+                <span ng-show="log.eventType===32 && log.triggeredByMe===true">You have cancelled the partnership request to {{log.orgDest.id.name}}</span>
+                <span ng-show="log.eventType===33 && log.triggeredByMe===true">You have accepted the partnership request from {{log.orgDest.id.name}}</span>
+                <span ng-show="log.eventType===34 && log.triggeredByMe===true">You have rejected the partnership request from {{log.orgDest.id.name}}</span>
+                <span ng-show="log.eventType===35 && log.triggeredByMe===true">You have cancelled the partnership with {{log.orgDest.id.name}}</span>
+                <span ng-show="log.eventType===31 && log.triggeredByMe===false">You have received a partnership request from {{log.orgOrigin.id.name}}</span>
+                <span ng-show="log.eventType===32 && log.triggeredByMe===false">The partnership request from {{log.orgOrigin.id.name}} has been cancelled</span>
+                <span ng-show="log.eventType===33 && log.triggeredByMe===false">Your partnership request has been accepted by {{log.orgOrigin.id.name}}</span>
+                <span ng-show="log.eventType===34 && log.triggeredByMe===false">Your partnership request has been rejected by {{log.orgOrigin.id.name}}</span>
+                <span ng-show="log.eventType===35 && log.triggeredByMe===false">Your partnership with {{log.orgOrigin.id.name}} has been cancelled</span>
 
                 <span ng-show="log.eventType===41">The {{log.auxConnection.item.name}} was discovered</span>
                 <span ng-show="log.eventType===42">The {{log.auxConnection.item.name}} was deleted</span>
@@ -80,16 +80,10 @@
                 <span ng-show="log.eventType===44">The {{log.auxConnection.item.name}} was disabled</span>
                 <span ng-show="log.eventType===45">Privacy change: {{log.description}} </span>
 
-                <span ng-show="log.eventType===51 && log.triggeredByMe===true">You accepted the request from {{log.orgDest.organisation}} to access {{log.auxConnection.item.name}} data</span>
-                <span ng-show="log.eventType===52 && log.triggeredByMe===true">You rejected the request from {{log.orgDest.organisation}} to access {{log.auxConnection.item.name}} data</span>
-                <span ng-show="log.eventType===53 && log.triggeredByMe===true">You cancelled your data access to {{log.auxConnection.item.name}}</span>
-                <span ng-show="log.eventType===54 && log.triggeredByMe===true"> You requested access to {{log.auxConnection.item.name}} which belongs to {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===55 && log.triggeredByMe===true"> You cancelled your access request to {{log.auxConnection.item.name}} which belongs to {{log.orgDest.organisation}}</span>
-                <span ng-show="log.eventType===51 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} accepted your data access request to {{log.auxConnection.item.name}}</span>
-                <span ng-show="log.eventType===52 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} rejected your data access request to {{log.auxConnection.item.name}}</span>
-                <span ng-show="log.eventType===53 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} cancelled the connection with {{log.auxConnection.item.name}}</span>
-                <span ng-show="log.eventType===54 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} requests access to {{log.auxConnection.item.name}}</span>
-                <span ng-show="log.eventType===55 && log.triggeredByMe===false">{{log.orgOrigin.organisation}} cancelled the access request to {{log.auxConnection.item.name}}</span>
+                <span ng-show="log.eventType===51">Contract stablished between {{log.orgDest.id.name}} and {{log.orgOrigin.id.name}}</span>
+                <span ng-show="log.eventType===52">Contract cancelled between {{log.orgDest.id.name}} and {{log.orgOrigin.id.name}}</span>
+                <span ng-show="log.eventType===53">Contract request from {{log.orgOrigin.id.name}} to {{log.orgDest.id.name}}</span>
+                <span ng-show="log.eventType===54">Contract updated between {{log.orgDest.id.name}} and {{log.orgOrigin.id.name}}</span>
 
                 <br>
 

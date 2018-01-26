@@ -40,6 +40,14 @@
               <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="devEnabled && isMyItem"><i class="fa fa-minus-square"></i><b> Disable service</b></a>
               </div>
 
+              <!-- Requesting service -->
+              <div class="btn btn-success btn-block" ng-show="!isMyItem && !contracted" href="" ui-sref="root.main.requestService({companyAccountId: item.cid.id._id, serviceId: item._id})">
+                 <i class="fa fa-plus"></i>&nbsp;<b>Request service</b>
+              </div>
+              <div class="well centered" ng-show="!isMyItem && contracted">
+                 <i class="fa fa-bar-chart"></i>&nbsp;<b>Service in use</b>
+              </div>
+
 
               <!-- Item info -->
               <ul class="list-group list-group-unbordered">

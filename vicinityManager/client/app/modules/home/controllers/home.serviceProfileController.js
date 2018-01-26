@@ -18,6 +18,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
   $scope.item = {};
   $scope.devInfo = {};
   $scope.AL = 0;
+  $scope.contracted = false;
   $scope.imServiceProvider = false;
 
   initData();
@@ -54,7 +55,13 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
         $scope.ALcaption = aux[$scope.AL];
 
         $scope.isMyItem = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
-    }
+
+        for(var i = 0; i <  $scope.item.hasContracts.length; i++){
+          if($scope.item.hasContracts[i].contractingUser.toString() === $window.sessionStorage.userAccountId.toString()){
+            $scope.contracted = true;
+          }
+        }
+      }
 
     $scope.changeStatus = function(){
       var query = {};

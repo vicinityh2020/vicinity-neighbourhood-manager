@@ -6,7 +6,7 @@
   <div class="row" ng-show="loaded">
 
     <div ng-repeat="service in things" class="col-md-6 col-lg-4">
-      <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: device.id._id})">
+      <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile({deviceId: service.id._id})">
         <div style="z-index: -2" class="widget-user-header3 bg-service">
           <div class="round">
             <img ng-src="{{service.id.avatar}}" alt="Company Avatar">

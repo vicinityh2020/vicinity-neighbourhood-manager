@@ -132,7 +132,6 @@ function getItemWithAdd(req, res, next) {
         var friends = [];
         if(parsedData.knows != null){
             getIds(parsedData.knows, friends);
-            logger.debug(friends);
         }
 
         itemOp.find({_id: o_id}).populate('cid.id','name cid')
@@ -167,7 +166,7 @@ function getItemWithAdd(req, res, next) {
     var items = [];
     var friends = [];
 
-    userOp.findOne({_id: reqId}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid')
+    userOp.findOne({_id: reqId}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid avatar')
     .then(function(response){
       parsedData = response.toObject();
       items = parsedData.hasItems;
