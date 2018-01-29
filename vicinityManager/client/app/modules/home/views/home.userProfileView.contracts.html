@@ -30,13 +30,13 @@
       <div class="col-sm-2">
         <table style="width:100%">
           <tr><td><label> Service Provider </label></td></tr>
-          <tr><td><span ng-if="contract.readWrite">{{contract.serviceProvider.uid.extid}}</span></td></tr>
+          <tr><td><span>{{contract.serviceProvider.uid.extid}}</span></td></tr>
         </table>
       </div>
       <div class="col-sm-3 padded centered">
         <button ng-show="!contract.agreed"  ng-click="acceptContract(contract._id)"><i class="fa fa-check"></i></button>
-        <button ng-click="showDetails(contract._id)"><i class="fa fa-eye"></i></button>
-        <button ng-disabled="true" ng-click="editContract(contract._id)"><i class="fa fa-pencil"></i></button>
+        <button ng-click="showDetails(contract._id, false)"><i class="fa fa-eye"></i></button>
+        <button ng-disabled="contract.imServiceProv || contract.status !== 'accepted'" ng-click="showDetails(contract._id, true)"><i class="fa fa-pencil"></i></button>
         <button ng-click="removeContract(contract._id)"><i class="fa fa-times"></i></button>
       </div>
     </div>
@@ -44,18 +44,20 @@
     <div class="box box-body" ng-show="detailsShow">
       <div class="box-header with-border well">
           <h3 class="box-title">Main Info</h3>
-          <button class="pull-right" ng-click="closeDetails()"><i class="fa fa-times"></i></button>
+          <button class="pull-right paddedSides" ng-click="closeDetails()"><i class="fa fa-times"></i></button>
+          <button class="pull-right paddedSides" ng-show="edit" ng-click="editContract()">Update</button>
       </div>
       <div class="box-body">
         <p><b>ID:</b> {{wholeContract.ctid}}</p>
         <p><b>Service name:</b> {{wholeContract.serviceProvider.items[0].id.name}}</p>
         <p><b>Service owner:</b> {{wholeContract.serviceProvider.uid.extid}}</p>
         <p><b>Devices owner:</b> {{wholeContract.iotOwner.uid.extid}}</p>
-        <p><b>Access rights:</b>
-          <span class="label label-info" ng-show="!wholeContract.readWrite"> Read only</span>
-          <span class="label label-info" ng-show="wholeContract.readWrite"> Read/Write</span>
+        <p><b>Write rights:</b>
+          <input type="checkbox" checked="wholeContract.readWrite" ng-model="wholeContract.readWrite" ng-show="edit">
+          <span class="label label-info" ng-show="!wholeContract.readWrite && !edit"> No </span>
+          <span class="label label-info" ng-show="wholeContract.readWrite && !edit"> Yes </span>
         </p>
-        <p><b>Status:</b>
+        <p ng-show="!edit"><b>Status:</b>
           <span ng-show="wholeContract.status === 'pending'" class="label label-warning">{{wholeContract.status}}</span>
           <span ng-show="wholeContract.status === 'accepted'" class="label label-success">{{wholeContract.status}}</span>
         </p>
@@ -70,9 +72,12 @@
           <h3 class="box-title">Devices</h3>
       </div>
       <div class="box-body">
-      <div class="checkbox" ng-repeat="thing in wholeContract.iotOwner.items">
+      <div class="checkbox" ng-repeat="thing in alldevices">
         <ul>
-          <li>{{thing.id.name}} -- {{thing.id._id}}</li>
+          <li>
+            <input type="checkbox" checked="thing.status" ng-model="thing.status" ng-show="edit">
+            {{thing.id.name}} -- {{thing.id._id}}
+          </li>
         </ul>
       </div>
     </div>

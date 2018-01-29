@@ -4,10 +4,7 @@ var router = express.Router();
 var putHelper = require('./items/put.js');
 var getHelper = require('./items/get.js');
 var deleteHelper = require('./items/delete.js');
-var getContract = require('../helpers/contracts/get.js');
-var putContract = require('../helpers/contracts/put.js');
-var postContract = require('../helpers/contracts/post.js');
-var deleteContract = require('../helpers/contracts/delete.js');
+var contractHelper = require('./items/contracts.js');
 
 router
 // When we receive item id to process some action over it
@@ -16,12 +13,11 @@ router
   .post('/delete/:id', deleteHelper.deleteOne)
 
 // Contract and item sharing
-  .get('/contract/:id', getContract.fetchContract)
-  .get('/contract/:id/details', getContract.fetchContractDetails)
-  .post('/contract', postContract.createContract)
-  .put('/contract/:id/accept', putContract.acceptContract)
-  .put('/contract/:id/modify', putContract.modifyContract)
-  .delete('/contract/:id', deleteContract.removeContract)
+  .get('/contract/:id', contractHelper.fetchContract)
+  .post('/contract', contractHelper.createContract)
+  .put('/contract/:id/accept', contractHelper.acceptContract)
+  .put('/contract/:id/modify', contractHelper.modifyContract)
+  .delete('/contract/:id', contractHelper.removeContract)
 
 // When userAccount requires devices/services
   .get('/:cid/organisation/myItems', getHelper.getMyItems)

@@ -59,8 +59,8 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
       $scope.data.oidService = [$scope.service.oid];
       $scope.data.cidDevice = $scope.device.cid;
       $scope.data.uidDevice = {'id': $scope.requester.id, 'extid': $scope.requester.extid };
-      var count = $scope.countDevices();
       $scope.data.readWrite = $scope.readWrite;
+      var count = $scope.countDevices();
       if(count > 0){
         itemsAPIService.postContract($scope.data)
         .then(function(response){

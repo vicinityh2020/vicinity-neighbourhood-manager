@@ -49,10 +49,6 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.get(configuration.apiUrl + '/items/contract/' + id);
   };
 
-  itemsAPI.getContractDetails = function(id){
-    return $http.get(configuration.apiUrl + '/items/contract/' + id + '/details');
-  };
-
   itemsAPI.postContract = function(payload){
     return $http.post(configuration.apiUrl + '/items/contract', payload);
   };

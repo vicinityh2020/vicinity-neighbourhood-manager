@@ -8,7 +8,7 @@ var logger = require("../middlewares/logger");
 var notificationAPI = require('../routes/notifications/notifications');
 var sync = require('../helpers/asyncHandler/sync');
 var commServer = require('../helpers/commServer/request');
-var contractHelper = require('../helpers/contracts/delete');
+var ctHelper = require('../helpers/contracts/contracts');
 var audits = require('../routes/audit/put');
 
 // Public functions ================================
@@ -34,7 +34,7 @@ function removeFriend(my_id, friend_id){
         logger.debug('Start async handler...');
         sync.forEachAll(ctids,
           function(value, allresult, next) {
-            contractHelper.removing(value, function(value, result) {
+            ctHelper.removing(value, function(value, result) {
                 logger.debug('END execution with value =', value, 'and error =', result);
                 allresult.push({value: value, error: result});
                 next();

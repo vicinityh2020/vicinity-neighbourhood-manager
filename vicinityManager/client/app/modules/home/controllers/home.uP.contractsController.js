@@ -15,9 +15,11 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
   $scope.cid = { id: $window.sessionStorage.companyAccountId};
   $scope.uid = $window.sessionStorage.userAccountId;
   $scope.contracts = [];
+  $scope.contractItems = [];
   $scope.noItems = false;
   $scope.loaded = false;
   $scope.detailShow = false;
+  $scope.edit = false;
   $scope.mainTitle = "My Contracts";
 
   function init(){
@@ -32,7 +34,7 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
   function successCallback(response) {
     $scope.contracts = response.data.message;
     $scope.noItems = ($scope.contracts.length === 0);
-    if(!$scope.noItems){$scope.myContractDetails()};
+    if(!$scope.noItems){myContractDetails();}
     $scope.loaded = true;
   }
 
@@ -62,29 +64,82 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
       );
   };
 
-  $scope.showDetails = function(id){
-    itemsAPIService.getContractDetails(id)
-      .then(function(response){
-        $scope.wholeContract = response.data.message;
-        $scope.detailsShow = true;
+  $scope.showDetails = function(id,edit){
+    getOneContract(id);
+    getOnlyId();
+    $scope.edit = edit;
+    itemsAPIService.getUserItems($scope.wholeContract.iotOwner.uid.id, $scope.wholeContract.iotOwner.cid.id._id, $scope.wholeContract.serviceProvider.cid.id._id, 'device')
+    .then(function(response){
+      $scope.alldevices = response.data.message.items;
+      for(var i = 0; i < $scope.alldevices.length; i++){
+        if($scope.contractItems.indexOf($scope.alldevices[i].id._id) !== -1){
+            $scope.alldevices[i].status = true;
+        } else {
+          if(!edit){$scope.alldevices.splice(i,1);} // If not in contract show only for edit
+        }
+      }
+      if(edit){
+        $scope.mainTitle = "Edit Contract";
+      } else {
         $scope.mainTitle = "Contract Details";
-      },
-        function(error){ Notification.error("Problem retrieving contract details: " + error); }
-      );
+      }
+      $scope.detailsShow = true;
+    })
+    .catch(function(error){
+      Notification.error("Problem retrieving contract details: " + error);
+    });
   };
 
   $scope.closeDetails = function(){
     $scope.detailsShow = false;
+    $scope.wholeContract = {};
+    $scope.contractItems = [];
+    $scope.data = {};
     $scope.mainTitle = "My Contracts";
+    $scope.edit = false;
+    init();
   };
 
   $scope.editContract = function(id){
-
+    $scope.data = {};
+    $scope.data.cidService = {'extid': $scope.wholeContract.serviceProvider.cid.extid, 'id': $scope.wholeContract.serviceProvider.cid.id._id};
+    $scope.data.uidService = $scope.wholeContract.serviceProvider.uid;
+    $scope.data.oidService = [$scope.wholeContract.serviceProvider.items[0]];
+    $scope.data.cidDevice = {'extid': $scope.wholeContract.iotOwner.cid.extid, 'id': $scope.wholeContract.iotOwner.cid.id._id};
+    $scope.data.uidDevice = $scope.wholeContract.iotOwner.uid;
+    $scope.data.readWrite = $scope.wholeContract.readWrite;
+    var count = countDevices();
+    if(count > 0){
+      itemsAPIService.modifyContract($scope.wholeContract._id, $scope.data)
+      .then(function(response){
+        Notification.success('Contract sent for approval');
+        $scope.closeDetails();
+      })
+      .catch(function(error){
+        Notification.error('Problem processing the contract: ' + error);
+      });
+    } else {
+      Notification.warning('Select some device to proceed');
+    }
   };
 
-  // Functions
+  // Private Functions
 
-  $scope.myContractDetails = function(){
+  function getOnlyId(){
+    for(var i = 0; i < $scope.wholeContract.iotOwner.items.length; i++){
+      $scope.contractItems.push($scope.wholeContract.iotOwner.items[i].id._id);
+    }
+  }
+
+  function getOneContract(id){
+    for(var i = 0; i < $scope.contracts.length; i++){
+      if($scope.contracts[i]._id.toString() === id){
+        $scope.wholeContract = $scope.contracts[i];
+      }
+    }
+  }
+
+  function myContractDetails(){
     for(var i = 0; i < $scope.contracts.length; i++){
       $scope.contracts[i].imServiceProv = $scope.contracts[i].serviceProvider.uid.id.toString() === $scope.uid.toString();
       if($scope.contracts[i].imServiceProv){
@@ -93,6 +148,18 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
         $scope.contracts[i].agreed = $scope.contracts[i].iotOwner.termsAndConditions;
       }
     }
-  };
+  }
+
+  function countDevices(){
+    var n = 0;
+    $scope.data.oidDevices = [];
+    for(var i = 0; i < $scope.alldevices.length; i++){
+      if($scope.alldevices[i].status){
+        n++;
+        $scope.data.oidDevices.push({'id': $scope.alldevices[i].id._id, 'extid': $scope.alldevices[i].extid});
+      }
+    }
+    return n;
+  }
 
 });
