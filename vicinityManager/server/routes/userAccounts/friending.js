@@ -301,8 +301,14 @@ function cancelFriendship(req, res, next){
         friend.knows = findAndRemove(friend.knows, my_id);
         me.knows = findAndRemove(me.knows, friend_id);
 
+        friend.save()
+        .then( function(response){ return me.save(); })
+        .then( function(response){ return sharingRules.removeFriend(my_id, friend_id); })
+        .then( function(response){ logger.debug('out: ' + response); })
+        .catch( function(err){ logger.debug('Error: ' + err); });
+
         // Removes all items with FRIEND access level from the contracts of the company I am breaking the friendship with
-        sharingRules.removeFriend(my_id, friend_id);
+
 
         var notification = new notificationOp();
 
@@ -331,8 +337,6 @@ function cancelFriendship(req, res, next){
             eventType: 35 }
         );
 
-        friend.save();
-        me.save();
         logger.audit({user: req.body.userMail, action: 'cancelFriendship', orgOrigin: my_id, orgDest: friend_id});
         res.json({"error": false, "message": "Friending successful!"});
       }

@@ -65,6 +65,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
           "oid": $scope.device.oid,
           "cid": $scope.cid,
           "adid": $scope.device.adid,
+          "id": $scope.device._id,
           "password":"test",
           "accessLevel": 0, // Always 1 when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
@@ -78,6 +79,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
           "cid": $scope.cid,
           "oid": $scope.device.oid,
           "adid": $scope.device.adid,
+          "id": $scope.device._id,
           "password":"test",
           "accessLevel": 0, // Always 1 when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
@@ -138,7 +140,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         itemsAPIService.putOne($stateParams.deviceId,
           {accessLevel: $('select#editAccessName').val() - 1,
           myFriends: $scope.myFriends,
-          oid: $scope.device.oid,
+          id: $scope.device._id,
           oldAccessLevel: $scope.device.accessLevel })
           .then(
             function successCallback(response){

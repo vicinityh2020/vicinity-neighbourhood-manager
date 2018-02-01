@@ -131,7 +131,8 @@ Handles the accessLevel and other properties modifications
 function itemUpdate(uid,updates){
   return new Promise(
     function(resolve, reject) {
-      if(updates.accessLevel == null){
+      logger.debug(JSON.stringify(updates));
+      if(updates.accessLevel != null){
         if(!updates.status){
           query = { accessLevel: updates.accessLevel };
           logger.debug("Start update of accessLevel...");

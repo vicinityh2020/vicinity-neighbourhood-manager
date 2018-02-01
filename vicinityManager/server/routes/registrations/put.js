@@ -54,7 +54,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
         db.businessId = raw.businessId;
         db.organisation = raw.companyName;
         db.location = raw.companyLocation;
-        db.accountOf[0] = userData._id;
+        db.accountOf[0] = { id: userData._id, extid: userData.email};
         db.avatar = config.avatarOrg;
         db.cid = uuid();
 
@@ -109,7 +109,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: updates}, { new: true }, function 
                     eventType: 11 }
                 );
                 userAccountOp.findById(userAccountId, function(err, data2){
-                  var user_id = mongoose.Types.ObjectId(userData._id);
+                  var user_id = { id: mongoose.Types.ObjectId(userData._id), extid: userData.email};
                   if (err) {
                     response = {"error": true, "message": "Error fetching data"};
                     logger.debug('Error in saving new user!');

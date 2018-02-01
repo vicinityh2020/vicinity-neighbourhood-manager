@@ -73,6 +73,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "cid": $scope.cid,
           "oid": $scope.item.oid,
           "adid": $scope.item.adid,
+          "id": $scope.item._id,
           "password":"test",
           "accessLevel": 0,
           "oldAccessLevel" : $scope.item.accessLevel,
@@ -86,6 +87,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           "cid": $scope.cid,
           "oid": $scope.item.oid,
           "adid": $scope.item.adid,
+          "id": $scope.item._id,
           "password":"test",
           "accessLevel": 0,
           "oldAccessLevel" : $scope.item.accessLevel,
@@ -145,7 +147,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
         itemsAPIService.putOne($stateParams.serviceId,
             {accessLevel: $('select#editAccessName').val() - 1,
             myFriends: $scope.item.myFriends,
-            oid: $scope.item.oid,
+            id: $scope.item._id,
             oldAccessLevel: $scope.item.accessLevel })
           .then(
             function successCallback(response){

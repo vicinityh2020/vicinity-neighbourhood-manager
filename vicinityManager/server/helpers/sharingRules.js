@@ -21,27 +21,32 @@ my friend is using to share with me.
 */
 function removeFriend(my_id, friend_id){
   logger.debug('removing friend');
-  var ctids = [];
-  itemOp.find({'cid.id':my_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':friend_id}, {'hasContracts.id':1})
+  var items1, items2, items;
+
+  itemOp.find({'cid.id':my_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':friend_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
   .then(function(response){
-    for(var i=0; i<response.hasContracts.length; i++){ ctids.push(response.hasContracts[i].id); }
-    return itemOp.find({'cid.id':friend_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':my_id}, {'hasContracts.id':1});
+    if(response){ items1 = response; }
+    return itemOp.find({'cid.id':friend_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':my_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows');
   })
   .then(function(response){
-    for(var i=0; i<response.hasContracts.length; i++){ ctids.push(response.hasContracts[i].id); }
+    if(response){ items2 = response; }
     return new Promise(function(resolve, reject) {
-      if(ctids.length > 0){ // Check if there is any item to delete
+      items = items1.concat(items2);
+      // logger.debug('1: ' + JSON.stringify(items1));
+      // logger.debug('2: ' + JSON.stringify(items2));
+      logger.debug('3: ' + JSON.stringify(items));
+
+      if(items.length !== 0){ // Check if there is any item to delete
         logger.debug('Start async handler...');
-        sync.forEachAll(ctids,
+        sync.forEachAll(items,
           function(value, allresult, next) {
-            ctHelper.removing(value, function(value, result) {
-                logger.debug('END execution with value =', value, 'and error =', result);
+            ctHelper.removeDevice(value, function(value, result) {
                 allresult.push({value: value, error: result});
                 next();
             });
           },
           function(allresult) {
-            if(allresult.length === ctids.length){
+            if(allresult.length === items.length){
               logger.debug('Completed async handler: ' + JSON.stringify(allresult));
               resolve({"error": false, "message": allresult });
             }
@@ -49,15 +54,17 @@ function removeFriend(my_id, friend_id){
           false
         );
       } else {
+        logger.debug('Unfriending: No items to delete');
         // logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
         resolve({"error": false, "message": "Nothing to be removed..."});
       }
     });
   })
   .then(function(response){
-    return response; // response is already and object {error,message}
+    return {error: false, message: response}; // response is already and object {error,message}
   })
   .catch(function(error){
+    logger.debug('Error remove friend: ' + error);
     return {error: true, message: error};
   });
 }
@@ -70,7 +77,10 @@ function changePrivacy(updates){
   var oldStatus = Number(updates.oldAccessLevel);
   var newStatus = Number(updates.accessLevel);
   logger.debug(oldStatus + ' to ' + newStatus);
-  findCase(oldStatus, newStatus, updates); // TODO Capture and process possible errors generated in this function
+  findCase(oldStatus, newStatus, updates, function(error, result){
+      logger.debug('END change accessLevel');
+      logger.debug('Error: ' + error + ', Result: ' + result);
+  });
 }
 
 /*
@@ -137,24 +147,26 @@ function cancelContract(id){
 Find how to resolve the accessLevel change in the device
 Based on old and new accessLevel captions
 */
-function findCase(oldA, newA, updates){
+function findCase(oldA, newA, updates, callback){
   var friends = updates.myFriends; // _ids
-  var oid = updates.oid.id;
-  var ctids = [];
-  if(oldA === 2 && newA === 1) {
-    processAccessLevelChange(oid,friends,ctids);
-    // Notify and audit
-
-  } else if(oldA === 2 && newA === 0) {
-    processAccessLevelChange(oid,[],ctids); // Does not depend on the friends
-    // Notify and audit
-
-  } else if(oldA === 1 && newA === 0) {
-    processAccessLevelChange(oid,[],ctids); // Does not depend on the friends
-    // Notify and audit
-
+  var id = updates.id;
+  var item = {};
+  if((oldA === 2 && newA === 1) || (oldA === 2 && newA === 0) || (oldA === 1 && newA === 0)) {
+    itemOp.findOne({_id: id},{hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
+    .then( function(response){
+      item = response.toObject();
+      item.accessLevel = newA;
+      return ctHelper.removeDevice(item, function(value, result){
+        callback(false, result);
+      });
+    })
+    .catch(function(err){
+      logger.debug(err);
+      callback(true, err);
+    });
   } else {
     logger.debug("No action required!");
+    callback(false, 'Nothing');
   }
 }
 
@@ -187,55 +199,6 @@ function adding(oid, otherParams, callback){
   .catch(function(err){
       logger.error({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid, message: err });
       callback(oid, 'Error: ' + err);
-  });
-}
-
-/*
-Process change of the access level
-*/
-
-function processAccessLevelChange(oid, friends, ctids){
-  itemOp.find({_id: oid},{hasContracts:1})
-  .then(function(item){
-    if(item.hasContracts != null){
-      for(var i=0; i < item.hasContracts.length; i++){
-        if(friends.indexOf(item.hasContracts[i].id) === -1){
-          ctids.push(item.hasContracts[i].id);
-          item.hasContracts.splice(i, 1);
-        }
-      }
-      return item.save();
-    } else {
-      return false;
-    }
-  })
-  .then(function(response){
-    if(response){
-      return contractOp.find({_id:{$in: ctids}});
-    } else {
-      return false;
-    }
-  })
-  .then(function(item){
-    if(item){
-      for(var i=0; i < item.iotOwner.items.length; i++){
-        oid.push(item.iotOwner.items[i].id);
-        item.hasContracts.items.splice(i, 1);
-      }
-      for(var j=0; j < item.serviceProvider.items.length; j++){
-        oid.push(item.serviceProvider.items[j].id);
-        item.hasContracts.items.splice(j, 1);
-      }
-      return item.save();
-    } else {
-      return {};
-    }
-  })
-  .then(function(response){
-    logger.debug('Change of accessLevel processed...');
-  })
-  .catch(function(error){
-    logger.debug('Change of accessLevel error: ' + error);
   });
 }
 

@@ -8,6 +8,7 @@ var notificationOp = require('../../models/vicinityManager').notification;
 var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
 var sharingRules = require('../../helpers/sharingRules');
+var commServer = require('../../helpers/commServer/request');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
 //Functions
@@ -231,8 +232,63 @@ function removing(id, callback){
   });
 }
 
+function removeDevice(item, callback){
+  var ctids = [];
+  var mycid = item.cid.id._id;
+  var friends = [];
+  var notifs = [];
+  if(item.accessLevel === 0){
+    getOnlyId(ctids, item.hasContracts);
+    for(var j = 0; j < item.hasContracts.length; j++){
+      notifs.push({mycid: mycid, othercid: item.hasContracts[j].contractingParty, thing: item.hasContracts[j].id, type: 22});
+    }
+  } else {
+    getOnlyId(friends, item.cid.id.knows);
+    for(var i = 0; i < item.hasContracts.length; i++){
+      if(friends.indexOf(item.hasContracts[i].contractingParty) === -1){
+        ctids.push(item.hasContracts[i].id.toString());
+        notifs.push({mycid: mycid, othercid: item.hasContracts[i].contractingParty, thing: item.hasContracts[i].id, type: 22});
+      }
+    }
+  }
+
+  itemOp.update({_id: item._id}, {$pull: {hasContracts: {id: {$in: ctids}}}}, { multi: true })
+  .then(function(){ return contractOp.update({_id: {$in: ctids}}, {$pull: {'iotOwner.items' : {id: item._id}}}, { multi: true }); })
+  .then(function(){ return contractOp.update({_id: {$in: ctids}}, {$pull: {'serviceProvider.items' : {id: item._id}}}, { multi: true }); })
+  .then(function(){
+    for(var i = 0; i < item.hasContracts.length; i++){
+      if(ctids.indexOf(item.hasContracts[i].id.toString()) !== -1){
+        commServer.callCommServer({}, 'users/' + item.oid + '/groups/' + item.hasContracts[i].extid, 'DELETE');
+      }
+    }
+    return true;
+  })
+  .then(function(){
+    for(item in notifs){
+      createNotif(notifs[item].mycid, notifs[item].othercid, notifs[item].thing, notifs[item].type);
+    }
+    return true;
+  })
+  .then(function(){
+    callback(item.oid, 'success');
+  })
+  .catch(function(err){
+    callback(item.oid, err);
+  });
+}
 
 // Private Functions
+
+function createNotif(mycid, othercid, thing, type){
+  var notification = new notificationOp();
+  notification.addressedTo.push(othercid, mycid);
+  notification.sentBy = mycid;
+  // notification.userId = "";
+  notification.ctId = thing;
+  notification.type = type;
+  notification.status = 'info';
+  return notification.save();
+}
 
 function getOnlyOid(items, toAdd){
   for(var i = 0; i < toAdd.length; i++){
@@ -242,12 +298,13 @@ function getOnlyOid(items, toAdd){
 
 function getOnlyId(array, toAdd){
   for(var i = 0; i < toAdd.length; i++){
-    array.push(toAdd[i].id);
+    array.push(toAdd[i].id.toString());
   }
 }
 
 // modules exports
 
 module.exports.removing = removing;
+module.exports.removeDevice = removeDevice;
 module.exports.creating = creating;
 module.exports.accepting = accepting;
