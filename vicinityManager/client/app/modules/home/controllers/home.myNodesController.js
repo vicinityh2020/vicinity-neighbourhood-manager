@@ -44,20 +44,13 @@ angular.module('VicinityManagerApp.controllers').
 
 // ======== Main functions =========
 
-  $scope.deleteNode = function(id){
+  $scope.deleteNode = function(adid){
     if(confirm('Are you sure?')){
-    var nodeId = {adid: id};
-    nodeAPIService.pullIdFromOrganisation($window.sessionStorage.companyAccountId,nodeId) // Delete node ref in useraccounts
-      .then(
-        function successCallback(response){
-          nodeAPIService.updateOne(id, {status : "deleted"}) // upd status to removed of node in MONGO
-            .then(
-              function successCallback(response){
-                Notification.success("Node successfully removed!!");
-                myInit();
-              },
-              errorCallback
-            );
+      nodeAPIService.updateOne(adid, {status : "deleted"}) // upd status to removed of node in MONGO
+        .then(
+          function successCallback(response){
+            Notification.success("Node successfully removed!!");
+            myInit();
           },
           errorCallback
         );

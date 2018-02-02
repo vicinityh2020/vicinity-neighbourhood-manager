@@ -36,7 +36,7 @@ function getAll(req, res, next) {
       if(data){
         myNodes = getIds(JSON.parse(JSON.stringify(data)).hasNodes);
       }
-      nodeOp.find({_id: { $in: myNodes } }, {adid:1, name:1, eventUri:1, type:1, hasItems:1}, function(err,data){
+      nodeOp.find({_id: { $in: myNodes }, status: {$ne: "deleted"} }, {adid:1, name:1, eventUri:1, type:1, hasItems:1}, function(err,data){
         if (err) {
           response =  {"error": true, "message": "Error fetching data: " + err};
         } else {

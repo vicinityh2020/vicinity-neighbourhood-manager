@@ -1,6 +1,5 @@
 // Global Objects
 
-var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var notifOp = require('../../models/vicinityManager').notification;
 var nodeOp = require('../../models/vicinityManager').node;
@@ -18,7 +17,7 @@ var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 Save in Mongo dB all objects contained in the req.
 Message producing the req is sent by the agent with thingDescriptions
 */
-function postRegistration(req, res, next){
+function create(req, res, next){
   var objectsArray = req.body.thingDescriptions;
   var adid = req.body.adid;
 
@@ -299,7 +298,7 @@ function findType(objType, types){
 }
 
 // Export Functions
-module.exports.postRegistration = postRegistration;
+module.exports.create = create;
 
 /*
 TD contains a credentials field.

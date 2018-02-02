@@ -75,6 +75,7 @@ function remove(req, res, next) {
           // TODO uncomment/comment next 8 lines to test or have real behaviour
           companyData.location = "";
           companyData.hasNotifications = [];
+          companyData.hasNodes = [];
           companyData.knows = [];
           companyData.knowsRequestsTo = [];
           companyData.knowsRequestsFrom = [];
