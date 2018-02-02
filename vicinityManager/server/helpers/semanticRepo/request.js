@@ -55,7 +55,7 @@ function getTypes(typeOfItem){
   return request({
     method : "POST",
     headers: head,
-    uri: config.semanticRepoUrl + "sparql/",
+    uri: config.semanticRepoUrl + "sparql",
     body: payload
     // simple: true
   });
@@ -83,7 +83,7 @@ function getSubclass(thing){
   return request({
     method : "POST",
     headers: head,
-    uri: config.semanticRepoUrl + "sparql/",
+    uri: config.semanticRepoUrl + "sparql",
     body: payload
     // simple: true
   });
@@ -110,7 +110,7 @@ function getAllSubclass(thing){
   return request({
     method : "POST",
     headers: head,
-    uri: config.semanticRepoUrl + "sparql/",
+    uri: config.semanticRepoUrl + "sparql",
     body: payload
     // simple: true
   });
@@ -141,7 +141,7 @@ function getGraphOids(thing, predicate, getGraph){
   return request({
     method : "POST",
     headers: head,
-    uri: config.semanticRepoUrl + "sparql/",
+    uri: config.semanticRepoUrl + "sparql",
     body: payload
     // simple: true
   });
@@ -166,7 +166,7 @@ function registerItem(td){
   return request({
     method : "POST",
     headers: head,
-    uri: config.semanticRepoUrl + "register/",
+    uri: config.semanticRepoUrl + "td/create",
     body: payload
     // simple: true
   });
@@ -190,7 +190,7 @@ function removeItem(oid){
   return request({
     method : "DELETE",
     headers: head,
-    uri: config.semanticRepoUrl + "remove/" + oid
+    uri: config.semanticRepoUrl + "td/remove/" + oid
     // simple: true
   });
 

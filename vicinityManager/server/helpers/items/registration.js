@@ -17,9 +17,9 @@ var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 Save in Mongo dB all objects contained in the req.
 Message producing the req is sent by the agent with thingDescriptions
 */
-function create(req, res, next){
-  var objectsArray = req.body.thingDescriptions;
-  var adid = req.body.adid;
+function create(data, callback){
+  var objectsArray = data.thingDescriptions;
+  var adid = data.adid;
 
   console.time("ALL REGISTRATION EXECUTION");
   console.time("REGISTRATION FIX PART");
@@ -28,9 +28,9 @@ function create(req, res, next){
     function(err,data){
         if(err || !data){
           if(err){
-            res.json({"error": true, "message" : "Error in Mongo: " + err});
+            callback(true, "Error in Mongo: " + err);
           }else{
-            res.json({"error": true, "message" : "Invalid adid identificator"});
+            callback(true, "Invalid adid identificator");
           }
         } else {
           var nodeId = data._id;
@@ -49,8 +49,8 @@ function create(req, res, next){
               sync.forEachAll(objectsArray,
                 function(value, allresult, next, otherParams) { // Process all new items
                   saveDocuments(value, otherParams, function(value, result) {
-                      logger.debug('END execution with value =', value, 'and result =', result);
-                      allresult.push({value: value, result: result});
+                      //logger.debug('END execution with value =', value, 'and result =', result);
+                      allresult.push({data: value, result: result});
                       next();
                   });
                 },
@@ -64,10 +64,17 @@ function create(req, res, next){
                     .then(function(response){ return deviceActivityNotif(cid); })
                     .then(function(response){ return createAuditLogs(cid, allresult); })
                     .then(function(response){
-                                            res.json({"status": 200, "message": allresult});
+                                            for(var item in allresult){
+                                              if(allresult[item].result === "Success"){
+                                                delete allresult[item].data.id;
+                                                delete allresult[item].result;
+                                              }
+                                              else { allresult.splice(item, 1); }
+                                            }
+                                            callback(false, allresult);
                                             console.timeEnd("ALL REGISTRATION EXECUTION");
                                             })
-                    .catch(function(err){ res.json({"error": true, "message" : "Error in final steps: " + err}); });
+                    .catch(function(err){ callback(true, "Error in final steps: " + err); });
                   }
                 },
                 false,
@@ -75,7 +82,7 @@ function create(req, res, next){
               );
             }
           )
-          .catch(function(err){res.json({"error": true, "message" : "Error: " + err});});
+          .catch(function(err){callback(true, err); });
         }
       }
     );
@@ -88,11 +95,14 @@ Inserts or updates all oids in the request, depending on their previous existanc
 */
 function saveDocuments(objects, otherParams, callback){
   var obj = {};
+  var pwd = uuid(); // password for comm server credentials
+  var infra_id = objects["infrastructure-id"];
+  delete objects["infrastructure-id"]; // remove infrastructure-id, no need to pass it further
 
   // Create one item document
   obj.typeOfItem = findType(objects.type, otherParams.types); // Use collection of semanticTypes to find if service/device/unknown
   if(obj.typeOfItem === "unknown") {
-    callback({extid: "No OID", id: "No id"}, "Unknown type...");
+    callback({oid: "NONE", password: "NONE", "infrastructure-id": "NONE"}, "Unknown type...");
   } else {
     // Adding important fields for Vicinity
     obj.adid = {'id': otherParams.nodeId, 'extid': otherParams.adid};
@@ -100,33 +110,28 @@ function saveDocuments(objects, otherParams, callback){
     obj.cid = otherParams.cid; // CID, obtained from mongo
     obj.accessLevel = 0; // private by default
     obj.avatar = config.avatarItem; // Default avatar provided by VCNT
+    obj.infrastructureId = infra_id; // Need to map with agent
     obj.status = 'disabled';
     if(!objects.credentials && !objects.oid){ // Create a new instance in Mongo
       oidExist(uuid()) // Username in commServer & semanticRepo
       .then(function(response){
         obj.oid = response;
         objects.oid = response;
-        objects.uuid = response;
+        // objects.uuid = response;
         return semanticRepo.registerItem(objects); }) // Register TD in semantic repository
       .then(function(response){
         var repoAnswer = JSON.parse(response);
         if(!(repoAnswer.data.hasOwnProperty('errors'))) {
+          //logger.debug(repoAnswer);
           obj.info = JSON.parse(response).data.lifting; // Thing description obj, stores response from semanticRepo
-          createInstance(new itemOp(obj), callback);
+          createInstance(new itemOp(obj), pwd, infra_id, callback);
         } else { // If lifting ends with error ...
-          callback({extid: obj.oid, id: "No id"}, "Error: " + repoAnswer.data.errors);
+          callback({oid: obj.oid, password: "NONE", "infrastructure-id": "NONE"}, repoAnswer.data.errors);
         }
       })
-      .catch(function(err){callback({extid: obj.oid, id: "No id"}, "Error: " + err); });
-      //createInstance(obj, callback)
+      .catch(function(err){callback({oid: obj.oid, password: "NONE", "infrastructure-id": "NONE"}, err); });
     } else { // if the TD contains an OID, then we need to update the instance in Mongo (not create a new one)
-      callback({extid: "No OID", id: "No id"}, "Update service disabled, you cannot register TDs with OID");
-      // obj.oid = objects.credentials.oid;
-      // var pass = objects.credentials.password;
-      // delete(objects.credentials);
-      // obj.info = objects; // Thing description obj, might have different structures each time
-      // obj.info.oid = obj.oid;
-      // updateInstance(obj, pass, callback);
+      callback({oid: "NONE", password: "NONE", "infrastructure-id": "NONE"}, "Update service disabled, you cannot register TDs with OID");
     }
   }
 }
@@ -134,15 +139,17 @@ function saveDocuments(objects, otherParams, callback){
 /*
 Totally new TD --> Expects new instance to be created
 */
-function createInstance(obj, callback){
-  obj.save(
-    function(err, response){
-      if(err){
-        callback({extid: obj.oid, id: "No id"}, "Error Mongo Creating Instance: " + err);
-      } else {
-        callback({extid: obj.oid, id: response._id}, "Success");
-      }
-    });
+function createInstance(obj, pwd, infra_id, callback){
+  obj.save()
+  .then(function(response){
+    return commServerProcess(obj.oid, obj.name, pwd);
+  })
+  .then(function(response){
+    callback({oid: obj.oid, password: pwd, "infrastructure-id": infra_id, id: obj._id}, "Success");
+  })
+  .catch(function(err){
+    callback({oid: obj.oid, password: "NONE", infra_id: "NONE"}, err);
+  });
 }
 
 /*
@@ -180,16 +187,16 @@ function updateItemsList(items, allresult){
       if(items.length > 0){
         var itemsOid = []; //store a simple array of OIDs to compare
         for(i = 0; i < items.length; i++){
-            itemsOid.push(items[i].extid);
+            itemsOid.push(items[i].oid);
         }
         for(j = 0; j < allresult.length; j++){
-          if(itemsOid.indexOf(allresult[j].value.extid) === -1){
-            items.push(allresult[j].value);
+          if(itemsOid.indexOf(allresult[j].data.oid) === -1){
+            items.push({id: allresult[j].data.id, extid: allresult[j].data.oid});
           }
         }
       } else {
         for(j = 0; j < allresult.length; j++){
-          items.push(allresult[j].value);
+          items.push({id: allresult[j].data.id, extid: allresult[j].data.oid});
         }
       }
       resolve(items);
@@ -242,24 +249,14 @@ function createAuditLogs(cid, ids){
 }
 
 function creatingAudit(ids, data, callback){
-  data.auxConnection.item = ids.value.id;
-  var cid = data.orgOrigin;
-  audits.putAuditInt(ids,data)
+  logger.debug(ids);
+  data.auxConnection.item = ids.data.id;
+  var cid = data.orgOrigin.id.toString();
+  audits.putAuditInt(ids.data.id, data)
   .then(function(response){ return audits.putAuditInt(cid,data); })
-  .then(function(response){ callback(ids.value.extid,'Success');})
-  .catch(function(err){ callback(ids.value.extid, err); });
+  .then(function(response){ callback(ids.data.oid,'Success');})
+  .catch(function(err){ callback(ids.data.oid, err); });
 }
-
-/*
-Extract valid oids from allresult
-*/
-// function getIds(allresult, type){ // type indicates if I want the oid or the mongo id
-//   var oidArray = [];
-//   for(var i = 0; i < allresult.length; i++) {
-//     if(allresult[i].result === "Success"){oidArray.push(allresult[i].value[type]);}
-//   }
-//   return oidArray;
-// }
 
 /*
 Extract valuable info from the types request static service
@@ -297,68 +294,38 @@ function findType(objType, types){
     }
 }
 
-// Export Functions
-module.exports.create = create;
-
-/*
-TD contains a credentials field.
-Meaning: a) Agent sends old version of the TD (now NM should create OID)
-         b) Agent wants to update an existing TD
-*/
-// function updateInstance(obj, pass, callback){
-//   itemOp.update({oid: obj.oid} , { $set: obj }, { upsert: true },   // keep upsert in case the TD did not exist (control possible errors in the TD)
-//     function(err, data){
-//       if(err){
-//         logger.debug("Item " + obj.name + " was not saved...");
-//         callback(obj.oid, "error mongo" + err);
-//       } else {
-//         commServer.callCommServer({username: obj.oid, name: obj.name, password: pass}, 'users/' +  obj.oid, 'DELETE')
-//           .then(function(response){ callback(obj.oid, "Success"); })
-//           .catch(function(err){
-//               if(err.statusCode !== 404){
-//                 callback(obj.oid, "Error comm server: " + err);
-//               } else {
-//                 callback(obj.oid, "Success");
-//               }
-//             }
-//           );
-//         // commServerProcess(obj.oid, otherParams.adid, obj.name, creds.password, otherParams.cid)
-//         // .then(function(response){ callback(obj.oid, "Success"); })
-//         // .catch(function(err){ callback(obj.oid, err); });
-//       }
-//     }
-//   );
-// }
-
 /*
 Creates user in commServer
-Adds user to company and agent groups
+Adds user to communication server
 If the oid exists in the commServer is deleted and created anew
 */
-// function commServerProcess(docOid, docAdid, docName, docPassword, docOwner){
-//   var payload = {
-//     username : docOid,
-//     name: docName,
-//     password: docPassword,
-//     };
-//     return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
-//       .then(
-//         function(response){
-//           return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
-//           .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
+function commServerProcess(docOid, docName, docPassword){
+  var payload = {
+    username : docOid,
+    name: docName,
+    password: docPassword,
+    };
+    return commServer.callCommServer({}, 'users/' +  docOid, 'GET')
+      .then(
+        function(response){
+          return commServer.callCommServer(payload, 'users/' +  docOid, 'DELETE') // DELETE + POST instead of PUT because the OID might have changed the agent
+          .then(function(response){ return commServer.callCommServer(payload, 'users', 'POST');})
 //           .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
 //           .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
-//           .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
-//         },
-//         function(err){
-//           if(err.statusCode !== 404){
-//             return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); // return rejected promise because we got a non controlled error
-//           } else {
-//             return commServer.callCommServer(payload, 'users', 'POST')
+          .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+        },
+        function(err){
+          if(err.statusCode !== 404){
+            return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); // return rejected promise because we got a non controlled error
+          } else {
+            return commServer.callCommServer(payload, 'users', 'POST')
 //             .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docOwner + '_ownDevices', 'POST');}) // Add to company group
 //             .then(function(response){ return commServer.callCommServer({}, 'users/' + docOid + '/groups/' + docAdid, 'POST');}) // Add to agent group
-//             .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
-//           }
-//         }
-//       );
-//     }
+            .catch(function(err){ return new Promise(function(resolve, reject) { reject('Error in commServer: ' + err) ;} ); } );
+          }
+        }
+      );
+    }
+
+// Export Functions
+module.exports.create = create;
