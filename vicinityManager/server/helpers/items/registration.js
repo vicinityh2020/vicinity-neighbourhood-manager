@@ -59,21 +59,26 @@ function create(data, callback){
                   if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
                     logger.debug('Completed async handler: ' + JSON.stringify(allresult));
                     updateItemsList(data.hasItems, allresult)
-                    .then(function(response){ data.hasItems = response;
-                                              return data.save(); })
+                    .then(function(response){
+                      data.hasItems = response;
+                      return data.save();
+                    })
                     .then(function(response){ return deviceActivityNotif(cid); })
                     .then(function(response){ return createAuditLogs(cid, allresult); })
                     .then(function(response){
-                                            for(var item in allresult){
-                                              if(allresult[item].result === "Success"){
-                                                delete allresult[item].data.id;
-                                                delete allresult[item].result;
-                                              }
-                                              else { allresult.splice(item, 1); }
-                                            }
-                                            callback(false, allresult);
-                                            console.timeEnd("ALL REGISTRATION EXECUTION");
-                                            })
+                      var finalResult = [];
+                      for(var item in allresult){
+                        if(allresult[item].result === "Success"){
+                          finalResult.push({
+                            oid: allresult[item].data.oid,
+                            password: allresult[item].data.password,
+                            "infrastructure-id": allresult[item].data["infrastructure-id"]
+                          });
+                        }                      
+                      }
+                      callback(false, finalResult);
+                      console.timeEnd("ALL REGISTRATION EXECUTION");
+                    })
                     .catch(function(err){ callback(true, "Error in final steps: " + err); });
                   }
                 },
@@ -117,8 +122,7 @@ function saveDocuments(objects, otherParams, callback){
       .then(function(response){
         obj.oid = response;
         objects.oid = response;
-        // objects.uuid = response;
-        return semanticRepo.registerItem(objects); }) // Register TD in semantic repository
+        return semanticRepo.callSemanticRepo(objects, "td/create", "POST"); }) // Register TD in semantic repository
       .then(function(response){
         var repoAnswer = JSON.parse(response);
         if(!(repoAnswer.data.hasOwnProperty('errors'))) {
@@ -190,13 +194,15 @@ function updateItemsList(items, allresult){
             itemsOid.push(items[i].oid);
         }
         for(j = 0; j < allresult.length; j++){
-          if(itemsOid.indexOf(allresult[j].data.oid) === -1){
+          if(itemsOid.indexOf(allresult[j].data.oid) === -1 && allresult[j].result === "Success"){
             items.push({id: allresult[j].data.id, extid: allresult[j].data.oid});
           }
         }
       } else {
         for(j = 0; j < allresult.length; j++){
-          items.push({id: allresult[j].data.id, extid: allresult[j].data.oid});
+          if(allresult[j].result === "Success"){
+            items.push({id: allresult[j].data.id, extid: allresult[j].data.oid});
+          }
         }
       }
       resolve(items);

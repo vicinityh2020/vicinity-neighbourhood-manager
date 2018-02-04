@@ -62,16 +62,19 @@ function deleting(oid, otherParams, callback){
   };
   itemOp.findOne({oid:oid},
     function(err,data){
-      if( err || !data ){
+      if(err){
         logger.debug("Something went wrong: " + err);
         callback(oid, "error mongo" + err);
-      } else {
+      }else if(!data){
+        logger.debug("Object does not exist");
+        callback(oid, "Object does not exist");
+      }else{
         var cid = data.cid;
         var id = data._id;
 
         itemOp.update({oid:oid}, {$set: obj})
         .then(function(response){ return nodeOp.update({_id: data.adid.id}, {$pull: {hasItems: { extid : oid }}}); })
-        .then(function(response){ return semanticRepo.removeItem(oid); })
+        .then(function(response){ return semanticRepo.callSemanticRepo({}, "td/remove/" + oid, 'DELETE'); })
         .then(function(response){
           return audits.putAuditInt(
             id,
