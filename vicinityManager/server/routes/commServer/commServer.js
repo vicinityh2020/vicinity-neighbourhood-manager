@@ -3,6 +3,7 @@ var sRegistration = require("../../helpers/items/registration");
 var sSearch = require("../../helpers/items/search");
 var sDelItems = require("../../helpers/items/deleteItems");
 var sDelNode = require('../../helpers/nodes/processNode');
+var sGetNodeItems = require('../../helpers/nodes/get');
 
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -46,8 +47,10 @@ function updateItems(req, res){
 }
 
 function getAgentItems(req, res){
-  var data = req.body;
-  res.json({error :false, message:"not implemented"});
+  var id = req.params.adid;
+  sGetNodeItems.getNodeItems(id, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 function deleteAgent(req, res){
