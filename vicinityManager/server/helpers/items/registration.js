@@ -38,48 +38,54 @@ function create(data, callback){
           var semanticTypes = {};
           // Get available item types in the semantic repository
           semanticRepo.getTypes("Device")
-          .then(function(response){ return parseGetTypes(JSON.parse(response).data.results.bindings); })
-          .then(function(response){ semanticTypes.devices = response;
-                                    return semanticRepo.getTypes("Service"); })
-          .then(function(response){ return parseGetTypes(JSON.parse(response).data.results.bindings); })
           .then(function(response){
-              semanticTypes.services = response;
-              console.timeEnd("REGISTRATION FIX PART");
-              // Process new items internally
-              sync.forEachAll(objectsArray,
-                function(value, allresult, next, otherParams) { // Process all new items
-                  saveDocuments(value, otherParams, function(value, result) {
-                      //logger.debug('END execution with value =', value, 'and result =', result);
-                      allresult.push({data: value, result: result});
-                      next();
-                  });
-                },
-                function(allresult) {
-                  // Final part: Return results, update node and notify
-                  if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
-                    logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-                    updateItemsList(data.hasItems, allresult)
-                    .then(function(response){
-                      data.hasItems = response;
-                      return data.save();
-                    })
-                    .then(function(response){ return deviceActivityNotif(cid); })
-                    .then(function(response){ return createAuditLogs(cid, allresult); })
-                    .then(function(response){
-                      var finalResult = [];
-                      for(var item in allresult){
-                        if(allresult[item].result === "Success"){
-                          finalResult.push({
-                            oid: allresult[item].data.oid,
-                            password: allresult[item].data.password,
-                            "infrastructure-id": allresult[item].data["infrastructure-id"]
-                          });
-                        }                      
+            return parseGetTypes(JSON.parse(response).data.results.bindings);
+          })
+          .then(function(response){
+            semanticTypes.devices = response;
+            return semanticRepo.getTypes("Service");
+          })
+          .then(function(response){
+            return parseGetTypes(JSON.parse(response).data.results.bindings);
+          })
+          .then(function(response){
+            semanticTypes.services = response;
+            console.timeEnd("REGISTRATION FIX PART");
+            // Process new items internally
+            sync.forEachAll(objectsArray,
+              function(value, allresult, next, otherParams) { // Process all new items
+                saveDocuments(value, otherParams, function(value, result) {
+                    //logger.debug('END execution with value =', value, 'and result =', result);
+                    allresult.push({data: value, result: result});
+                    next();
+                });
+              },
+              function(allresult) {
+                // Final part: Return results, update node and notify
+                if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
+                  logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+                  updateItemsList(data.hasItems, allresult)
+                  .then(function(response){
+                    data.hasItems = response;
+                    return data.save();
+                  })
+                  .then(function(response){ return deviceActivityNotif(cid); })
+                  .then(function(response){ return createAuditLogs(cid, allresult, adid); })
+                  .then(function(response){
+                    var finalResult = [];
+                    for(var item in allresult){
+                      if(allresult[item].result === "Success"){
+                        finalResult.push({
+                          oid: allresult[item].data.oid,
+                          password: allresult[item].data.password,
+                          "infrastructure-id": allresult[item].data["infrastructure-id"]
+                        });
                       }
-                      callback(false, finalResult);
-                      console.timeEnd("ALL REGISTRATION EXECUTION");
-                    })
-                    .catch(function(err){ callback(true, "Error in final steps: " + err); });
+                    }
+                    callback(false, finalResult);
+                    console.timeEnd("ALL REGISTRATION EXECUTION");
+                  })
+                  .catch(function(err){ callback(true, "Error in final steps: " + err); });
                   }
                 },
                 false,
@@ -227,26 +233,30 @@ function deviceActivityNotif(cid){
 /*
 Creates audit logs for each registered item
 */
-function createAuditLogs(cid, ids){
+function createAuditLogs(cid, ids, adid){
   return new Promise(function(resolve, reject) {
     try{
       // var oidArray = getIds(allresult, 'id');
       sync.forEachAll(ids,
         function(value, allresult, next, otherParams) { // Process all new items
-          creatingAudit(value, otherParams, function(value, result) {
-              // logger.debug('END execution with value =', value, 'and result =', result);
-              allresult.push({value: value, result: result});
-              next();
-          });
+          if(value.result === 'Success'){
+            creatingAudit(value, otherParams, function(value, result) {
+                // logger.debug('END execution with value =', value, 'and result =', result);
+                allresult.push({value: value, result: result});
+                next();
+            });
+          } else {
+            next();
+          }
         },
-        function(allresult) {
+        function(allresult){
           // Final part: Return results, update node and notify
           if(allresult.length === ids.length){ // Only process final step if all the stack of tasks completed
             resolve('Audits created...');
           }
         },
         false,
-        {orgOrigin: cid, user: "Agent", eventType: 41, auxConnection: {kind: 'item'}}
+        {orgOrigin: cid, user: "Agent:" + adid, eventType: 41, auxConnection: {kind: 'item'}}
       );
     } catch(err){
       reject("Error creating audits: " + err);
@@ -291,13 +301,13 @@ function parseGetTypes(arr){
 Find main item type (device/service) based on the semantic repository types
 */
 function findType(objType, types){
-    if(types.devices.indexOf(objType) !== -1){
-      return("device");
-    } else if(types.services.indexOf(objType) !== -1){
-      return("service");
-    } else {
-      return("unknown");
-    }
+  if(types.devices.indexOf(objType) !== -1){
+    return("device");
+  } else if(types.services.indexOf(objType) !== -1){
+    return("service");
+  } else {
+    return("unknown");
+  }
 }
 
 /*

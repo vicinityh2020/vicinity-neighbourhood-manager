@@ -10,6 +10,9 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
 
 // Public functions
 
+/*
+Create items
+*/
 function registration(req, res){
   var data = req.body;
   sRegistration.create(data, function(err, response){
@@ -17,6 +20,11 @@ function registration(req, res){
   });
 }
 
+/*
+Search for items
+input oids
+output TDs
+*/
 function searchItems(req, res){
   var data = req.body;
   sSearch.searchItems(data, function(err, response){
@@ -24,28 +32,59 @@ function searchItems(req, res){
   });
 }
 
+/*
+Delete items
+input oids
+*/
 function deleteItems(req, res){
   var data = req.body.oids;
   sDelItems.deleteItems(data)
   .then(function(response){res.json({"error": false, "message": response});})
-  .catch(function(err){res.json({"error": true, "message": err});});
+  .catch(function(err){res.json({"error": err, "message": false});});
 }
 
+/*
+Enable items
+*/
 function enableItems(req, res){
   var data = req.body;
   res.json({error :false, message:"not implemented"});
 }
 
+/*
+Disable items
+*/
 function disableItems(req, res){
   var data = req.body;
   res.json({error :false, message:"not implemented"});
 }
 
+/*
+Update items
+Delete & create
+input idem as registration + oid
+*/
 function updateItems(req, res){
   var data = req.body;
-  res.json({error :false, message:"not implemented"});
+  var adid = data.adid;
+  var oids = [];
+  for(var i = 0; i < data.thingDescriptions.length; i++){
+    oids.push(data.thingDescriptions[i].oid);
+    delete data.thingDescriptions[i].oid;
+  }
+  sDelItems.deleteItems(oids, "Agent:" + adid)
+  .then(function(response){
+    return sRegistration.create(data, function(err, response){
+      res.json({error: err, message: response});
+    });
+  })
+  .catch(function(err){res.json({"error": err, "message": false});});
 }
 
+/*
+Get all items under Agent with TD
+Retrieve last agent status
+*/
 function getAgentItems(req, res){
   var id = req.params.adid;
   sGetNodeItems.getNodeItems(id, function(err, response){
@@ -53,6 +92,9 @@ function getAgentItems(req, res){
   });
 }
 
+/*
+Delete agent
+*/
 function deleteAgent(req, res){
   var adid = req.params.adid;
   var adids = [];
@@ -66,7 +108,7 @@ function deleteAgent(req, res){
       return sDelNode.deleteNode(adids);
     })
   .then(function(response){res.json({"error": false, "message": response});})
-  .catch(function(err){res.json({"error": true, "message": err});});
+  .catch(function(err){res.json({"error": err, "message": false});});
 }
 
 // Export modules
