@@ -61,34 +61,28 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         query = {
           "status":'disabled',
           "name":$scope.device.name,
-          "company_id": $scope.owner_id,
           "oid": $scope.device.oid,
-          "cid": $scope.cid,
+          "cid": $scope.device.cid,
           "adid": $scope.device.adid,
           "id": $scope.device._id,
-          "password":"test",
-          "accessLevel": 0, // Always 1 when enabling/disabling
+          "accessLevel": 0, // Always private when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
-          "myFriends": $scope.myFriends
         };
       }else{
         query = {
           "status":'enabled',
           "name":$scope.device.name,
-          "company_id": $scope.owner_id,
-          "cid": $scope.cid,
+          "cid": $scope.device.cid,
           "oid": $scope.device.oid,
           "adid": $scope.device.adid,
           "id": $scope.device._id,
-          "password":"test",
-          "accessLevel": 0, // Always 1 when enabling/disabling
+          "accessLevel": 0, // Always private when enabling/disabling
           "oldAccessLevel" : $scope.device.accessLevel,
-          "myFriends": $scope.myFriends
         };
       }
-      itemsAPIService.putOne($stateParams.deviceId, query)
+      itemsAPIService.putOne(query)
         .then(
-          function successCallback(){
+          function successCallback(response){
             Notification.success('Device status updated!!');
             initData();
           }
@@ -137,10 +131,10 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
 
   $scope.saveNewAccess = function () {
     if (Number($('select#editAccessName').val()) !== 0){
-        itemsAPIService.putOne($stateParams.deviceId,
+        itemsAPIService.putOne(
           {accessLevel: $('select#editAccessName').val() - 1,
-          myFriends: $scope.myFriends,
           id: $scope.device._id,
+          cid: $scope.device.cid,
           oldAccessLevel: $scope.device.accessLevel })
           .then(
             function successCallback(response){
@@ -154,78 +148,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
 
   // Serial Number
 
-  // $('a#serialEdit').show();
-  // $('a#serialSave').hide();
-  // $('a#serialCancel').hide();
-  // $('input#editSerialInput').hide();
-  // $('p#serialName').show();
-  //
-  // $scope.changeToInput1 = function () {
-  //   $('a#serialEdit').hide();
-  //   $('p#serialName').hide();
-  //   $('input#editSerialInput').show();
-  //   $('a#serialSave').fadeIn('slow');
-  //   $('a#serialCancel').fadeIn('slow');
-  // };
-  //
-  // $scope.backToEdit1 = function () {
-  //   $('a#serialCancel').fadeOut('slow');
-  //   $('a#serialSave').fadeOut('slow');
-  //   $('input#editSerialInput').fadeOut('slow');
-  //   setTimeout(function() {
-  //     $('a#serialEdit').fadeIn('fast');
-  //     $('p#serialName').fadeIn('fast');
-  //   }, 600);
-  // };
-  //
-  // $scope.saveNewSerial = function () {
-  //   if ($('input#editSerialInput').val() !== 0){
-  //       itemsAPIService.putOne($stateParams.deviceId, {"info.serial_number": $scope.devInfo.serial_number})
-  //         .then(
-  //           function successCallback(){
-  //             initData();
-  //             $scope.backToEdit1();
-  //           }
-  //         );
-  //       }
-  //     };
-  //
-  // // Location
-  // $('a#locationEdit').show();
-  // $('a#locationSave').hide();
-  // $('a#locationCancel').hide();
-  // $('input#editLocationInput').hide();
-  // $('p#locationName').show();
-  //
-  // $scope.changeToInput2 = function () {
-  //   $('a#locationEdit').hide();
-  //   $('p#locationName').hide();
-  //   $('input#editLocationInput').show();
-  //   $('a#locationSave').fadeIn('slow');
-  //   $('a#locationCancel').fadeIn('slow');
-  // };
-  //
-  // $scope.backToEdit2 = function () {
-  //   $('a#locationCancel').fadeOut('slow');
-  //   $('a#locationSave').fadeOut('slow');
-  //   $('input#editLocationInput').fadeOut('slow');
-  //   setTimeout(function() {
-  //     $('a#locationEdit').fadeIn('fast');
-  //     $('p#locationName').fadeIn('fast');
-  //   }, 600);
-  // };
-  //
-  // $scope.saveNewLocation = function () {
-  //   if ($('input#editLocationInput').val() !== 0){
-  //       itemsAPIService.putOne($stateParams.deviceId, {"info.location": $scope.devInfo.location})
-  //         .then(
-  //           function successCallback(){
-  //             initData();
-  //             $scope.backToEdit2();
-  //           }
-  //         );
-  //       }
-  //     };
+  // Location
 
 // Load picture mgmt =============================
 
@@ -269,7 +192,7 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne($stateParams.deviceId, {avatar: base64String})
+  itemsAPIService.putOne({avatar: base64String, id: $stateParams.deviceId, cid: $scope.device.cid})
     .then(
       function successCallback(response){
         itemsAPIService.getItemWithAdd($stateParams.deviceId)

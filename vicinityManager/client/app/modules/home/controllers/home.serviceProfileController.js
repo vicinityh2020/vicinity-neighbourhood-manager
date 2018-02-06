@@ -68,33 +68,27 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
       if($scope.item.status === 'enabled'){
         query = {
           "status":'disabled',
-          "name":$scope.item.name,
-          "company_id": $scope.owner_id,
-          "cid": $scope.cid,
+          "name": $scope.item.name,
+          "cid": $scope.item.cid,
           "oid": $scope.item.oid,
           "adid": $scope.item.adid,
           "id": $scope.item._id,
-          "password":"test",
-          "accessLevel": 0,
+          "accessLevel": 0, // Always private when enabling/disabling
           "oldAccessLevel" : $scope.item.accessLevel,
-          "myFriends": $scope.item.myFriends
         };
       }else{
         query = {
           "status":'enabled',
           "name":$scope.item.name,
-          "company_id": $scope.owner_id,
-          "cid": $scope.cid,
+          "cid": $scope.item.cid,
           "oid": $scope.item.oid,
           "adid": $scope.item.adid,
           "id": $scope.item._id,
-          "password":"test",
-          "accessLevel": 0,
+          "accessLevel": 0, // Always private when enabling/disabling
           "oldAccessLevel" : $scope.item.accessLevel,
-          "myFriends": $scope.item.myFriends
         };
       }
-      itemsAPIService.putOne($stateParams.serviceId, query)
+      itemsAPIService.putOne(query)
         .then(
           function successCallback(){
             Notification.success('Service status updated!!');
@@ -144,10 +138,10 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
 
   $scope.saveNewAccess = function () {
     if (Number($('select#editAccessName').val()) !== 0){
-        itemsAPIService.putOne($stateParams.serviceId,
+        itemsAPIService.putOne(
             {accessLevel: $('select#editAccessName').val() - 1,
-            myFriends: $scope.item.myFriends,
             id: $scope.item._id,
+            cid: $scope.device.cid,
             oldAccessLevel: $scope.item.accessLevel })
           .then(
             function successCallback(response){
@@ -159,78 +153,8 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
       };
 
   // Serial Number
-  $('a#serialEdit').show();
-  $('a#serialSave').hide();
-  $('a#serialCancel').hide();
-  $('input#editSerialInput').hide();
-  $('p#serialName').show();
-
-  $scope.changeToInput1 = function () {
-    $('a#serialEdit').hide();
-    $('p#serialName').hide();
-    $('input#editSerialInput').show();
-    $('a#serialSave').fadeIn('slow');
-    $('a#serialCancel').fadeIn('slow');
-  };
-
-  $scope.backToEdit1 = function () {
-    $('a#serialCancel').fadeOut('slow');
-    $('a#serialSave').fadeOut('slow');
-    $('input#editSerialInput').fadeOut('slow');
-    setTimeout(function() {
-      $('a#serialEdit').fadeIn('fast');
-      $('p#serialName').fadeIn('fast');
-    }, 600);
-  };
-
-  $scope.saveNewSerial = function () {
-    if ($('input#editSerialInput').val() !== 0){
-        itemsAPIService.putOne($stateParams.serviceId, {"info.serial_number": $scope.devInfo.serial_number})
-          .then(
-            function successCallback(){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
-              initData();
-              $scope.backToEdit1();
-            }
-          );
-        }
-      };
 
   // Location
-  $('a#locationEdit').show();
-  $('a#locationSave').hide();
-  $('a#locationCancel').hide();
-  $('input#editLocationInput').hide();
-  $('p#locationName').show();
-
-  $scope.changeToInput2 = function () {
-    $('a#locationEdit').hide();
-    $('p#locationName').hide();
-    $('input#editLocationInput').show();
-    $('a#locationSave').fadeIn('slow');
-    $('a#locationCancel').fadeIn('slow');
-  };
-
-  $scope.backToEdit2 = function () {
-    $('a#locationCancel').fadeOut('slow');
-    $('a#locationSave').fadeOut('slow');
-    $('input#editLocationInput').fadeOut('slow');
-    setTimeout(function() {
-      $('a#locationEdit').fadeIn('fast');
-      $('p#locationName').fadeIn('fast');
-    }, 600);
-  };
-
-  $scope.saveNewLocation = function () {
-    if ($('input#editLocationInput').val() !== 0){
-        itemsAPIService.putOne($stateParams.serviceId, {"info.location": $scope.devInfo.location})
-          .then(
-            function successCallback(){  //!!!!!!!!!! zmenit accessLevel na nove cislo, dorobit!!!
-              initData();
-              $scope.backToEdit2();
-            }
-          );
-        }
-      };
 
 // Load picture mgmt =============================
 
@@ -274,7 +198,7 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne($stateParams.serviceId, {avatar: base64String})
+  itemsAPIService.putOne({id:$stateParams.serviceId, avatar: base64String, cid: $scope.device.cid})
     .then(
       function successCallback(response){
         itemsAPIService.getItemWithAdd($stateParams.serviceId)

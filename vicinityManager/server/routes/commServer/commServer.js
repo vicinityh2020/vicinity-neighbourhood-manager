@@ -40,23 +40,25 @@ function deleteItems(req, res){
   var data = req.body.oids;
   sDelItems.deleteItems(data)
   .then(function(response){res.json({"error": false, "message": response});})
-  .catch(function(err){res.json({"error": err, "message": false});});
+  .catch(function(err){res.json({"error": true, "message": err});});
 }
 
 /*
 Enable items
+Not accessible out of the webApp at the moment
 */
 function enableItems(req, res){
   var data = req.body;
-  res.json({error :false, message:"not implemented"});
+  res.json({error:false, message:"not implemented"});
 }
 
 /*
 Disable items
+Not accessible out of the webApp at the moment
 */
 function disableItems(req, res){
   var data = req.body;
-  res.json({error :false, message:"not implemented"});
+  res.json({error:false, message:"not implemented"});
 }
 
 /*
@@ -78,7 +80,7 @@ function updateItems(req, res){
       res.json({error: err, message: response});
     });
   })
-  .catch(function(err){res.json({"error": err, "message": false});});
+  .catch(function(err){res.json({"error": true, "message": err});});
 }
 
 /*
@@ -108,7 +110,7 @@ function deleteAgent(req, res){
       return sDelNode.deleteNode(adids);
     })
   .then(function(response){res.json({"error": false, "message": response});})
-  .catch(function(err){res.json({"error": err, "message": false});});
+  .catch(function(err){res.json({"error": true, "message": err});});
 }
 
 // Export modules

@@ -9,7 +9,7 @@ var contractHelper = require('./items/contracts.js');
 router
 // When we receive item id to process some action over it
   .get('/:id', getHelper.getItemWithAdd)
-  .put('/:id', putHelper.putOne)
+  .put('/', putHelper.putOne)
   .post('/delete/:id', deleteHelper.deleteOne)
 
 // Contract and item sharing

@@ -11,10 +11,10 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   Get my items (Organisation items) - Offline filter in org profile to remove what I should not see
   Get all items I can see, based on restrictive filter (0 most to 7 less restrictive)
   */
-  itemsAPI.putOne = function(id, data) {
+  itemsAPI.putOne = function(data) {
     data.userMail = $window.sessionStorage.username;
     data.userId = $window.sessionStorage.userAccountId;
-    return $http.put(configuration.apiUrl +'/items/' + id, data);
+    return $http.put(configuration.apiUrl +'/items', data);
   };
 
   itemsAPI.deleteItem = function(id) {

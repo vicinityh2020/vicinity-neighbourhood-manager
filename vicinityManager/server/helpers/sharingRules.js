@@ -76,10 +76,14 @@ I need to remove/add from/to the commServer groups accordingly
 function changePrivacy(updates){
   var oldStatus = Number(updates.oldAccessLevel);
   var newStatus = Number(updates.accessLevel);
-  logger.debug(oldStatus + ' to ' + newStatus);
-  findCase(oldStatus, newStatus, updates, function(error, result){
+  return new Promise(
+    function(resolve, reject) {
+    logger.debug(oldStatus + ' to ' + newStatus);
+    findCase(oldStatus, newStatus, updates, function(error, result){
       logger.debug('END change accessLevel');
       logger.debug('Error: ' + error + ', Result: ' + result);
+      resolve({error: error, result:result});
+    });
   });
 }
 
@@ -148,7 +152,6 @@ Find how to resolve the accessLevel change in the device
 Based on old and new accessLevel captions
 */
 function findCase(oldA, newA, updates, callback){
-  var friends = updates.myFriends; // _ids
   var id = updates.id;
   var item = {};
   if((oldA === 2 && newA === 1) || (oldA === 2 && newA === 0) || (oldA === 1 && newA === 0)) {
