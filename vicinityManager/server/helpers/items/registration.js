@@ -10,6 +10,7 @@ var semanticRepo = require('../../helpers/semanticRepo/request');
 var sync = require('../../helpers/asyncHandler/sync');
 var audits = require('../../routes/audit/put');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
+var crypto = require('crypto');
 
 // Public Function -- Main
 
@@ -106,7 +107,7 @@ Inserts or updates all oids in the request, depending on their previous existanc
 */
 function saveDocuments(objects, otherParams, callback){
   var obj = {};
-  var pwd = uuid(); // password for comm server credentials
+  var pwd = crypto.randomBytes(32).toString('base64'); // password for comm server credentials
   var infra_id = objects["infrastructure-id"];
   delete objects["infrastructure-id"]; // remove infrastructure-id, no need to pass it further
 
@@ -239,15 +240,11 @@ function createAuditLogs(cid, ids, adid){
       // var oidArray = getIds(allresult, 'id');
       sync.forEachAll(ids,
         function(value, allresult, next, otherParams) { // Process all new items
-          if(value.result === 'Success'){
             creatingAudit(value, otherParams, function(value, result) {
                 // logger.debug('END execution with value =', value, 'and result =', result);
                 allresult.push({value: value, result: result});
                 next();
             });
-          } else {
-            next();
-          }
         },
         function(allresult){
           // Final part: Return results, update node and notify
@@ -265,13 +262,16 @@ function createAuditLogs(cid, ids, adid){
 }
 
 function creatingAudit(ids, data, callback){
-  logger.debug(ids);
-  data.auxConnection.item = ids.data.id;
-  var cid = data.orgOrigin.id.toString();
-  audits.putAuditInt(ids.data.id, data)
-  .then(function(response){ return audits.putAuditInt(cid,data); })
-  .then(function(response){ callback(ids.data.oid,'Success');})
-  .catch(function(err){ callback(ids.data.oid, err); });
+  if(ids.result === 'Success'){
+    data.auxConnection.item = ids.data.id;
+    var cid = data.orgOrigin.id.toString();
+    audits.putAuditInt(ids.data.id, data)
+    .then(function(response){ return audits.putAuditInt(cid,data); })
+    .then(function(response){ callback(ids.data.oid,'Success');})
+    .catch(function(err){ callback(ids.data.oid, err); });
+  }else{
+    callback(ids.data.oid, 'Oid not registered');
+  }
 }
 
 /*
