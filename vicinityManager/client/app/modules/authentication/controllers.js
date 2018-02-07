@@ -295,7 +295,7 @@ $(window).on('resize',function(){
 
              $scope.resetMyPwd = function(){
                if($scope.password1 === $scope.password2){
-                 var data = {'authentication.password' : $scope.password1};
+                 var data = {password : $scope.password1};
                  AuthenticationService.resetPwd($stateParams.userId, data)
                     .then(
                       function successCallback(response){

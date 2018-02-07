@@ -7,6 +7,7 @@ var uuid = require('uuid'); // Unique ID RFC4122 generator
 var audits = require('../../routes/audit/put');
 var commServer = require('../../helpers/commServer/request');
 var config = require('../../configuration/configuration');
+var bcrypt = require('bcrypt');
 
 var registrationOp = require('../../models/vicinityManager').registration;
 var notificationOp = require('../../models/vicinityManager').notification;
@@ -59,10 +60,13 @@ function findDuplicatesCompany(data, callback) {
 function requestReg(data, callback) {
   var db = new registrationOp();
   var dbNotif = new notificationOp();
+  var pwd = data.password;
+  var saltRounds = 10;
+  var salt = "";
+  var hash = "";
 
   db.userName = data.userName;
   db.email = data.email;
-  db.password = data.password;
   db.occupation = data.occupation;
   db.companyName = data.companyName;
   db.companyLocation = data.companyLocation;
@@ -74,7 +78,17 @@ function requestReg(data, callback) {
 
 // Saving a registration pending approval
 if(!data.status || data.status !== 'pending'){
-    db.save()
+    bcrypt.genSalt(saltRounds)
+    .then(function(response){
+      salt = response;
+      return bcrypt.hash(pwd, salt);
+    })
+    .then(function(response){
+      hash = response;
+      db.salt = salt;
+      db.hash = hash;
+      return db.save();
+    })
     .then(function(product){
       dbNotif.sentByReg = product._id;
       dbNotif.type = 1;
@@ -91,7 +105,17 @@ if(!data.status || data.status !== 'pending'){
 
 // Saving a resgistration ready to send mail to requester (Invited by other org)
   } else {
-    db.save()
+    bcrypt.genSalt(saltRounds)
+    .then(function(response){
+      salt = response;
+      return bcrypt.hash(pwd, salt);
+    })
+    .then(function(response){
+      hash = response;
+      db.salt = salt;
+      db.hash = hash;
+      return db.save();
+    })
     .then(function(product){
       var mailInfo;
       if(product.type === 'newUser'){
@@ -145,7 +169,8 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
   dbUser.avatar= config.avatarUser;
   dbUser.occupation =raw.occupation;
   dbUser.email =raw.email;
-  dbUser.authentication.password =raw.password;
+  dbUser.authentication.hash = raw.hash;
+  dbUser.authentication.salt = raw.salt;
   dbUser.authentication.principalRoles[0] ="user";
 
 // Case new company registration

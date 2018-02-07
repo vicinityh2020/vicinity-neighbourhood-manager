@@ -73,7 +73,8 @@ var user = new Schema({
   1 - Friends
   2 - Everyone */
   authentication: {
-    password: String,
+    hash: String,
+    salt: String,
     principalRoles: [ String ]
   },
   hasItems: [ oidSchema ], // Own items and foreign items under contract
@@ -130,7 +131,8 @@ var invitation = new Schema({
 var registration = new Schema({
     userName: String,
     email: String,
-    password: String,
+    hash: String,
+    salt: String,
     occupation: String,
     companyId: { type: ObjectId, ref: 'userAccount'},
     companyName: String,

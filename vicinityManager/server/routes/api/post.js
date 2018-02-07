@@ -8,7 +8,7 @@ var jwt = require('../../helpers/jwtHelper');
 var moment = require('moment');
 var logger = require("../../middlewares/logger");
 var mailing = require('../../helpers/mail/mailing');
-
+var bcrypt = require('bcrypt');
 
 // Main functions - Login process
 
@@ -18,7 +18,10 @@ function authenticate(req, res, next) {
   var response = {};
   var userName = req.body.username;
   var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
-  var password = req.body.password;
+  var pwd = req.body.password;
+  var saltRounds = 10;
+  var salt = "";
+  var hash = "";
 
   if (userName && password) {
     userOp.find({ email: { $regex: userRegex } }, function(error, result) {
@@ -26,25 +29,30 @@ function authenticate(req, res, next) {
         res.json({ success: false });
       } else {
 
-        if ((userName.toLowerCase() === result[0].email.toLowerCase()) && (password === result[0].authentication.password)) {
+        bcrypt.genSalt(saltRounds)
+        .then(function(response){
+          salt = response;
+          return bcrypt.hash(pwd, salt);
+        })
+        .then(function(response){
+          hash = response;
 
-            var o_id = mongoose.Types.ObjectId(result[0]._id);
+          if ((userName.toLowerCase() === result[0].email.toLowerCase()) && (hash === result[0].authentication.hash)) {
 
-            userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, function(error, result2) {
-            //TODO: test if exist result2
-            var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
+              var o_id = mongoose.Types.ObjectId(result[0]._id);
 
-            response = {
-              success: true,
-              message: credentials
-            };
-            res.json(response);
-            logger.audit({user: userName, action: 'login'});
-          });
-        } else {
-          logger.warn({user: userName, action: 'login', message: 'Wrong password'});
-          res.json({success: false});
-        }
+              userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, function(error, result2) {
+              var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
+              res.json({ success: true, message: credentials });
+              logger.audit({user: userName, action: 'login'});
+            });
+
+          } else {
+            logger.warn({user: userName, action: 'login', message: 'Wrong password'});
+            res.json({success: false});
+          }
+        });
+
       }
     });
   } else {
