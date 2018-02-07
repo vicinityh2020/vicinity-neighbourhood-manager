@@ -15,7 +15,7 @@ function updatePwd(req, res) {
 
   bcrypt.genSalt(saltRounds)
   .then(function(salt){
-    return bcrypt.hash(myPlaintextPassword, salt);
+    return bcrypt.hash(pwd, salt);
   })
   .then(function(hash){
     // Store hash in your password DB.
@@ -26,6 +26,7 @@ function updatePwd(req, res) {
     res.json({"error": false, "message": response});
   })
   .catch(function(err){
+    logger.debug(err);
     res.json({"error": true, "message": err});
   });
 }
