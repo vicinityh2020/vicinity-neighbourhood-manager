@@ -13,7 +13,7 @@ Get one registration
 */
 function getOne(req, res){
   var id = mongoose.Types.ObjectId(req.params.id);
-  sGet.getOne(id, function(response, err){
+  sGet.getOne(id, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -22,7 +22,7 @@ function getOne(req, res){
 Get all organisation registrations
 */
 function getAll(req, res, next) {
-  sGet.getAll("newCompany", function(response, err){
+  sGet.getAll("newCompany", function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -32,7 +32,7 @@ Request a user or organisation registration
 */
 function requestRegistration(req, res, next) {
   var data = req.body;
-  sRegister.requestReg(data, function(response, err){
+  sRegister.requestReg(data, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -43,7 +43,7 @@ Create a new user or organisation
 function createRegistration(req, res, next) {
   var id = req.params.id;
   var data = req.body;
-  sRegister.createReg(id, data, function(response, err){
+  sRegister.createReg(id, data, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -53,7 +53,7 @@ Looking for duplicates in user registration
 */
 function findDuplicatesUser(req, res, next) {
   var data = req.body;
-  sRegister.findDuplicatesUser(data, function(response, err){
+  sRegister.findDuplicatesUser(data, function(err, response){
     res.json({error: err, message: response});
   });
 }

@@ -1,3 +1,4 @@
+'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('rPregAdminController',
 function ($scope, $window, $stateParams, commonHelpers, $location, registrationsAPIService, Notification) {
@@ -21,7 +22,6 @@ function ($scope, $window, $stateParams, commonHelpers, $location, registrations
         $scope.userName = response.data.message.userName;
         $scope.email = response.data.message.email;
         $scope.occupation = response.data.message.occupation;
-    };
-
+    }
 
 });
