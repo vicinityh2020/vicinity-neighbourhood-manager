@@ -52,22 +52,22 @@ function requestReg(data, callback) {
   var db = new registrationOp();
   var dbNotif = new notificationOp();
 
-  db.userName = req.body.userName;
-  db.email = req.body.email;
-  db.password = req.body.password;
-  db.occupation = req.body.occupation;
-  db.companyName = req.body.companyName;
-  db.companyLocation = req.body.companyLocation;
-  db.companyId = req.body.companyId;
-  db.status = (!req.body.status || req.body.status !== 'pending') ? "open" : req.body.status;
-  db.businessId = req.body.businessId;
-  db.termsAndConditions = req.body.termsAndConditions;
-  db.type = req.body.type;
+  db.userName = data.userName;
+  db.email = data.email;
+  db.password = data.password;
+  db.occupation = data.occupation;
+  db.companyName = data.companyName;
+  db.companyLocation = data.companyLocation;
+  db.companyId = data.companyId;
+  db.status = (!data.status || data.status !== 'pending') ? "open" : data.status;
+  db.businessId = data.businessId;
+  db.termsAndConditions = data.termsAndConditions;
+  db.type = data.type;
 
 // Saving a registration pending approval
-if(!req.body.status || req.body.status !== 'pending'){
+if(!data.status || data.status !== 'pending'){
     db.save()
-    .then(function(response){
+    .then(function(product){
       dbNotif.sentByReg = product._id;
       dbNotif.type = 1;
       dbNotif.status = "waiting";
