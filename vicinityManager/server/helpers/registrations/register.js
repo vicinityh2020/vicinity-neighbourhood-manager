@@ -134,6 +134,9 @@ function createReg(id, data, callback) {
   var dbOrg = new userAccountOp();
   var dbUser = new userOp();
   var mailInfo = {};
+  var userData = {};
+  var orgData = {};
+  var userAccountId = "";
 
 registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (err, raw) {
 
@@ -151,7 +154,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
     dbUser.authentication.principalRoles[1] ="administrator"; // First or user always is admin
     dbUser.save()
     .then(function(response){
-      var userData = response;
+      userData = response;
       logger.debug('New user was successfuly saved!');
       dbOrg.businessId = raw.businessId;
       dbOrg.name = raw.companyName;
@@ -162,7 +165,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
       return dbOrg.save();
       })
     .then(function(response) {
-      var orgData = response;
+      orgData = response;
       userData.cid = {id: orgData._id, extid: orgData.cid}; // Adding the company id to the new user
       return userData.save();
     })
@@ -195,8 +198,8 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
         }else if ((raw.type == "newUser") && (raw.status == "verified")){
         dbUser.save()
         .then(function(response){
-          var userData = response;
-          var userAccountId = mongoose.Types.ObjectId(raw.companyId);
+          userData = response;
+          userAccountId = mongoose.Types.ObjectId(raw.companyId);
           return audits.putAuditInt(
             raw.companyId,
             { orgOrigin: raw.companyId,
@@ -208,7 +211,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
             return userAccountOp.findById(userAccountId);
           })
           .then(function(response){ // add user to organisation list of accounts
-            var orgData = response;
+            orgData = response;
             var user_id = { id: mongoose.Types.ObjectId(userData._id), extid: userData.email};
             orgData.accountOf.push(user_id);
             return orgData.save();
