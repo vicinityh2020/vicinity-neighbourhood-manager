@@ -24,7 +24,7 @@ function findDuplicatesUser(data, callback) {
     if (err) {
       callback(true, "Error fetching data");
     } else {
-      if(!data){
+      if(data.length === 0){
         callback(false, false); // No duplicates
       } else {
         callback(false, true); // Duplicates found
@@ -46,7 +46,7 @@ function findDuplicatesCompany(data, callback) {
     if (err) {
       callback(true, "Error fetching data");
     } else {
-      if(!data){
+      if(data.length === 0){
         callback(false, false); // No duplicates
       } else {
         callback(false, true); // Duplicates found

@@ -63,7 +63,7 @@ Looking for duplicates in company registration
 */
 function findDuplicatesCompany(req, res, next) {
   var data = req.body;
-  sRegister.findDuplicatesCompany(data, function(response, err){
+  sRegister.findDuplicatesCompany(data, function(err, response){
     res.json({error: err, message: response});
   });
 }
