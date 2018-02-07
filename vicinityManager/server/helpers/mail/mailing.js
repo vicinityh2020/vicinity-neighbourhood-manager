@@ -12,21 +12,20 @@ Mailing service
 When invoked needs to receive an object with the mail fields
 */
 function sendMail(mailInfo){
+  return new Promise(function(resolve, reject) {
+    var smtpConfig = {
+      host: 'vicinity.bavenir.eu',
+      auth: {
+          user: 'vicinitymailservice',
+          pass: '1nTer0Per4bilit715h3r3'
+        }
+      };
 
-  var smtpConfig = {
-
-    host: 'vicinity.bavenir.eu',
-    auth:
-    { user: 'vicinitymailservice',
-      pass: '1nTer0Per4bilit715h3r3' }
-    };
-
-  var transporter = nodemailer.createTransport(smtpConfig);
+    var transporter = nodemailer.createTransport(smtpConfig);
 
     fs.exists( __dirname + "/" + mailInfo.tmpName + ".html", function(isFile){
       if(isFile){
         fs.readFile( __dirname + "/" + mailInfo.tmpName + ".html", function(error, data) {
-
           var mailContent = String(data);
           if(mailInfo.name){mailContent = mailContent.replace("#name", mailInfo.name);}
           if(mailInfo.sentByName){mailContent = mailContent.replace("#sentByName", mailInfo.sentByName);}
@@ -42,16 +41,21 @@ function sendMail(mailInfo){
 
           transporter.sendMail(mailOptions, function(error, info){
             if(error){
-              logger.debug(error);
+              reject(error);
             } else {
-            logger.debug('Message sent: ' + info.response);
+              logger.debug('Message sent: ' + info.response);
+              resolve("Success");
             }
-	  }
-	);
-      });
-    }
-    else logger.debug("file not found");
+      	  });
+        });
+      }
+      else{
+        reject("Registration mail not sent, file not found");
+      }
+    });
   });
 }
+
+// Export functions
 
 module.exports.sendMail = sendMail;

@@ -1,17 +1,15 @@
 var express = require('express');
 var router = express.Router();
 
-var postHelper = require('./registrations/post.js');
-var getHelper = require('./registrations/get.js');
-var putHelper = require('./registrations/put.js');
+var regisController = require('./registrations/registrations.js');
 
 router
-  .post('/', postHelper.postOne)
-  .get('/', getHelper.getAll)
-  .get('/:id', getHelper.getOne)
-  .put('/:id', putHelper.putOne)
+  .post('/', regisController.requestRegistration)
+  .get('/', regisController.getAll)
+  .get('/:id', regisController.getOne)
+  .put('/:id', regisController.createRegistration)
   // look for duplicates
-  .post('/duplicatesUser', postHelper.findDuplicatesUser)
-  .post('/duplicatesCompany', postHelper.findDuplicatesCompany);
+  .post('/duplicatesUser', regisController.findDuplicatesUser)
+  .post('/duplicatesCompany', regisController.findDuplicatesCompany);
 
 module.exports = router;
