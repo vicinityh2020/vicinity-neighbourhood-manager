@@ -80,7 +80,7 @@ function requestReg(data, callback) {
 if(!data.status || data.status !== 'pending'){
     bcrypt.genSalt(saltRounds)
     .then(function(response){
-      salt = response;
+      salt = response.toString('hex');
       return bcrypt.hash(pwd, salt);
     })
     .then(function(response){
@@ -107,7 +107,7 @@ if(!data.status || data.status !== 'pending'){
   } else {
     bcrypt.genSalt(saltRounds)
     .then(function(response){
-      salt = response;
+      salt = response.toString('hex');
       return bcrypt.hash(pwd, salt);
     })
     .then(function(response){

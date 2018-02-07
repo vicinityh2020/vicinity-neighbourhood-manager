@@ -28,12 +28,8 @@ function authenticate(req, res, next) {
       if (error || !result || result.length !== 1){
         res.json({ success: false });
       } else {
-
-        bcrypt.genSalt(saltRounds)
-        .then(function(response){
-          salt = response;
-          return bcrypt.hash(pwd, salt);
-        })
+        salt = result.authentication.salt;
+        bcrypt.hash(pwd, salt)
         .then(function(response){
           hash = response;
 

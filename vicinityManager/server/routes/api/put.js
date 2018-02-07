@@ -14,13 +14,15 @@ function updatePwd(req, res) {
   var hash = "";
 
   bcrypt.genSalt(saltRounds)
-  .then(function(salt){
+  .then(function(response){
+    salt = response.toString('hex');
     return bcrypt.hash(pwd, salt);
   })
-  .then(function(hash){
+  .then(function(response){
     // Store hash in your password DB.
-  var updates = {'authentication.hash': hash, 'authentication.salt': salt};
-  return userOp.update({ "_id": o_id}, {$set: updates});
+    hash = response;
+    var updates = {'authentication.hash': hash, 'authentication.salt': salt};
+    return userOp.update({ "_id": o_id}, {$set: updates});
   })
   .then(function(response){
     res.json({"error": false, "message": response});
