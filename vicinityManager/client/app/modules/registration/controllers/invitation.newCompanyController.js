@@ -87,13 +87,13 @@ angular.module('Registration')
      registrationsAPIService.findDuplicatesUser({email: $scope.emailReg})
      .then(
        function successCallback(response){
-         if(response.data.message.length !== 0){
+         if(response.data.message){
            $scope.duplicities.push(response.data.message);
          }
          registrationsAPIService.findDuplicatesCompany({companyName: $scope.companynameReg, businessID: $scope.bidReg})
            .then(
              function successCallback(response){
-               if(response.data.message.length !== 0){
+               if(response.data.message){
                  $scope.duplicities.push(response.data.message);
                }
                $scope.regisComp();

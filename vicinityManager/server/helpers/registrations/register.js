@@ -24,7 +24,11 @@ function findDuplicatesUser(data, callback) {
     if (err) {
       callback(true, "Error fetching data");
     } else {
-      callback(false, data);
+      if(!data){
+        callback(false, false); // No duplicates
+      } else {
+        callback(false, true); // Duplicates found
+      }
     }
   });
 }
@@ -42,7 +46,11 @@ function findDuplicatesCompany(data, callback) {
     if (err) {
       callback(true, "Error fetching data");
     } else {
-      callback(false, data);
+      if(!data){
+        callback(false, false); // No duplicates
+      } else {
+        callback(false, true); // Duplicates found
+      }
     }
   });
 }

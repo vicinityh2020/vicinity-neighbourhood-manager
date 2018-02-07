@@ -80,7 +80,7 @@ angular.module('Registration')
     registrationsAPIService.findDuplicatesUser({email: $scope.emailUs})
     .then(
       function successCallback(response){
-        if(response.data.message.length !== 0){
+        if(response.data.message){
           $scope.duplicities.push(response.data.message);
         }
         $scope.regisUser();
