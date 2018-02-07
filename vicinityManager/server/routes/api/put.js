@@ -19,7 +19,7 @@ function updatePwd(req, res) {
   })
   .then(function(hash){
     // Store hash in your password DB.
-  var updates = {authentication: {hash: hash, salt: salt}};
+  var updates = {'authentication.hash': hash, 'authentication.salt': salt};
   return userOp.update({ "_id": o_id}, {$set: updates});
   })
   .then(function(response){
