@@ -22,7 +22,7 @@ function authenticate(req, res, next) {
   var o_id = "";
 
   if(userName && pwd){
-    userOp.find({ email: { $regex: userRegex } })
+    userOp.find({ email: { $regex: userRegex } }, {_id:1, email:1, authentication:1})
     .then(function(response){
       logger.debug(response[0]);
         if (!response || response.length !== 1){
@@ -37,7 +37,7 @@ function authenticate(req, res, next) {
       hash = response;
       if ((userName.toLowerCase() === myUser.email.toLowerCase()) && (hash === myUser.authentication.hash)){
         o_id = mongoose.Types.ObjectId(myUser._id);
-        return userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}});
+        return userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1});
       } else {
         logger.warn({user: userName, action: 'login', message: 'Wrong password'});
         res.json({success: false});
