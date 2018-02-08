@@ -16,6 +16,7 @@ function authenticate(req, res, next) {
   var userName = req.body.username;
   var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
   var pwd = req.body.password;
+  var myUser = {};
   var salt = "";
   var hash = "";
   var o_id = "";
@@ -27,15 +28,15 @@ function authenticate(req, res, next) {
         if (!response || response.length !== 1){
         res.json({ success: false });
       } else {
-        salt = response[0].authentication.salt;
+        myUser = response[0];
+        salt = myUser.authentication.salt;
         return bcrypt.hash(pwd, salt);
       }
     })
     .then(function(response){
       hash = response;
-      logger.debug(hash);
-      if ((userName.toLowerCase() === response[0].email.toLowerCase()) && (hash === response[0].authentication.hash)){
-        o_id = mongoose.Types.ObjectId(response[0]._id);
+      if ((userName.toLowerCase() === myUser.email.toLowerCase()) && (hash === myUser.authentication.hash)){
+        o_id = mongoose.Types.ObjectId(myUser._id);
         return userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}});
       } else {
         logger.warn({user: userName, action: 'login', message: 'Wrong password'});
@@ -43,7 +44,7 @@ function authenticate(req, res, next) {
       }
     })
     .then(function(response){
-      var credentials = jwt.jwtEncode(userName, response[0].authentication.principalRoles, response[0]._id, response[0]._id);
+      var credentials = jwt.jwtEncode(userName, myUser.authentication.principalRoles, myUser._id, response[0]._id);
       res.json({ success: true, message: credentials });
       logger.audit({user: userName, action: 'login'});
     })
@@ -57,6 +58,7 @@ function authenticate(req, res, next) {
     res.json({success: false});
   }
 }
+
 
 /* Recover password - Sends link to the provided mail */
 function findMail(req, res, next) {
