@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('userProfileController',
-function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAPIService, userAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, commonHelpers, userAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -59,47 +59,36 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAccountAP
 $scope.isMyProfile = ($window.sessionStorage.userAccountId.toString() === $stateParams.userAccountId.toString());
 $scope.sameCompany = ($stateParams.companyAccountId.toString() === $window.sessionStorage.companyAccountId.toString());
 
-userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+$scope.myInit = function(){
+  userAPIService.getUser($stateParams.userAccountId)
   .then(
     function successCallback(resource){
       updateScopeAttributes(resource);
+      $scope.loaded = true;
     },
     errorCallback
   );
+};
 
 // Updating resources
 
 function updateScopeAttributes(response){
-
-  var i=0;
-  var j=0;
-  while (i === 0){
-    if (response.data.message.accountOf[j].id._id.toString() === $stateParams.userAccountId.toString()){
-      $scope.name =response.data.message.accountOf[j].id.name;
-      $scope.occupation=response.data.message.accountOf[j].id.occupation;
-      $scope.avatar =response.data.message.accountOf[j].id.avatar;
-      $scope.userAccountId = $stateParams.userAccountId;
-      $scope.password = response.data.message.accountOf[j].id.authentication.password;
-      $scope.email = response.data.message.accountOf[j].id.email;
-      $scope.roles = response.data.message.accountOf[j].id.authentication.principalRoles;
-      $scope.accessLevel = Number(response.data.message.accountOf[j].id.accessLevel);
+      $scope.name =response.data.message.name;
+      $scope.occupation=response.data.message.occupation;
+      $scope.avatar =response.data.message.avatar;
+      $scope.email = response.data.message.email;
+      $scope.roles = response.data.message.authentication.principalRoles;
+      $scope.accessLevel = Number(response.data.message.accessLevel);
       $scope.accessLevelCaption = getCaption($scope.accessLevel);
-      i=1;
-    }
-    j++;
-  }
-
-  $scope.pass="";
-  for ( var k = 0; k < $scope.password.length; k++ ) {
-    $scope.pass += "*";
-  }
-  $scope.organisation = response.data.message.name;
-  $scope.orgId = response.data.message._id;
-  $scope.loaded = true;
 }
+
+  $scope.myInit();
 
 // Jquery functions -- Hide/show html
 
+/*
+NAME
+*/
   $scope.changeToInput = function () {
     $('a#nameButt').hide();
     $('p#myName').hide();
@@ -143,6 +132,9 @@ function updateScopeAttributes(response){
   );
 };
 
+/*
+OCCUPATION
+*/
 $scope.changeToInput1 = function () {
   $('a#nameButt1').hide();
   $('p#nameP1').hide();
@@ -185,6 +177,9 @@ $scope.backToEdit1 = function () {
     );
   };
 
+  /*
+  PASSWORD
+  */
   $scope.changeToInput3 = function () {
     $('p#passP').hide();
     $('a#passButt').hide();
@@ -201,89 +196,54 @@ $scope.backToEdit1 = function () {
     $('input#editPassOldInput').fadeOut('slow');
     $('input#editPassNew1Input').fadeOut('slow');
     $('input#editPassNew2Input').fadeOut('slow');
-
-    userAPIService.getUser($stateParams.userAccountId)
-      .then(
-        function successCallback(response) {
-     $scope.password = response.data.message.authentication.password;
-
-         $scope.pass="";
-         for (var k = 0; k < $scope.password.length; k++) {
-           $scope.pass += "*";
-         }
-     },
-     errorCallback
-   );
-    setTimeout(function() {
-      $('a#passButt').fadeIn('fast');
-      $('p#passP').fadeIn('fast');
-   }, 600);
+    $('a#passButt').fadeIn('fast');
  };
 
   $scope.saveNewPassport = function () {
-    // savedAlready2 = true;
+    var $pass = $("#editPassOldInput");
+    var $newPass1 = $("#editPassNew1Input");
+    var $newPass2 = $("#editPassNew2Input");
 
-    userAPIService.getUser($stateParams.userAccountId)
-      .then(
-        function successCallback(response) {
-         $scope.password = response.data.message.authentication.password;
-         if (($scope.pass1 === $scope.pass2) && ($scope.password === $scope.oldPass)){
+    if ($scope.pass1 === $scope.pass2){
+      userAPIService.updatePassword($stateParams.userAccountId,
+        {passwordNew: $scope.pass1, passwordOld: $scope.oldPass})
+        .then(function(response){
+          if(!response.data.success){
+            Notification.warning('Wrong user password!');
+          }else{
+            Notification.success('Password changed!');
+          }
 
-           userAPIService.editInfoAboutUser($stateParams.userAccountId, {"authentication.password": $scope.pass1})
-           .then(
-             function successCallback(response) {
-             userAPIService.getUser($stateParams.userAccountId)
-             .then(
-               function successCallback(response) {
-               $scope.password = response.data.message.authentication.password;
+          $('a#edits13').fadeOut('slow');
+          $('a#edits23').fadeOut('slow');
+          $('input#editPassOldInput').fadeOut('slow');
+          $('input#editPassNew1Input').fadeOut('slow');
+          $('input#editPassNew2Input').fadeOut('slow');
+          $('input#editPassOldInput').val("");
+          $('input#editPassNew1Input').val("");
+          $('input#editPassNew2Input').val("");
 
-               $scope.pass="";
-               for (var k = 0; k < $scope.password.length; k++) {
-                 $scope.pass += "*";
-               }
-
-               $('a#edits13').fadeOut('slow');
-               $('a#edits23').fadeOut('slow');
-               $('input#editPassOldInput').fadeOut('slow');
-               $('input#editPassNew1Input').fadeOut('slow');
-               $('input#editPassNew2Input').fadeOut('slow');
-
-               $("input#editPassOldInput").val("");
-               $('input#editPassNew1Input').val("");
-               $('input#editPassNew2Input').val("");
-
-               setTimeout(function() {
-                 $('a#passButt').fadeIn('fast');
-                 $('p#passP').fadeIn('fast');
-              }, 600);
-            },
-          errorCallback
-          );
-        },
-        errorCallback
-      );
-
-     }else{
-       var $user = $("#editPassOldInput");
-       var $pass = $("#editPassNew1Input");
-       var $pass1 = $("#editPassNew2Input");
-
-       $user.addClass("invalid");
-       $pass.addClass("invalid");
-       $pass1.addClass("invalid");
-
+          setTimeout(function() {
+            $('a#passButt').fadeIn('fast');
+         }, 600);
+        })
+        .catch(function(error){
+          Notification.error(error);
+        });
+    }else{
+       Notification.warning('New passwords do not match!');
+       $newPass1.addClass("invalid");
+       $newPass2.addClass("invalid");
        setTimeout(function() {
-        $user.removeClass("invalid");
-        $pass.removeClass("invalid");
-        $pass1.removeClass("invalid");
-      }, 2000);
-     }
-   },
-   errorCallback
- );
+          $newPass1.removeClass("invalid");
+          $newPass2.removeClass("invalid");
+      }, 1000);
+    }
 };
 
-/*ACCESS LEVEL*/
+/*
+ACCESS LEVEL
+*/
 $scope.changeToInputAL = function () {
   $('a#accessEdit').hide();
   $('p#accessName').hide();

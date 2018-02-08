@@ -81,11 +81,10 @@ if(!data.status || data.status !== 'pending'){
     bcrypt.genSalt(saltRounds)
     .then(function(response){
       salt = response.toString('hex');
-      return bcrypt.hash(pwd, salt);
+      return bcrypt.hash(pwd, salt); // Stores salt & hash in the hash field
     })
     .then(function(response){
       hash = response;
-      db.salt = salt;
       db.hash = hash;
       return db.save();
     })
@@ -108,11 +107,10 @@ if(!data.status || data.status !== 'pending'){
     bcrypt.genSalt(saltRounds)
     .then(function(response){
       salt = response.toString('hex');
-      return bcrypt.hash(pwd, salt);
+      return bcrypt.hash(pwd, salt); // Stores salt & hash in the hash field
     })
     .then(function(response){
       hash = response;
-      db.salt = salt;
       db.hash = hash;
       return db.save();
     })
@@ -170,7 +168,6 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
   dbUser.occupation =raw.occupation;
   dbUser.email =raw.email;
   dbUser.authentication.hash = raw.hash;
-  dbUser.authentication.salt = raw.salt;
   dbUser.authentication.principalRoles[0] ="user";
 
 // Case new company registration

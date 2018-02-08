@@ -74,7 +74,6 @@ var user = new Schema({
   2 - Everyone */
   authentication: {
     hash: String,
-    salt: String,
     principalRoles: [ String ]
   },
   hasItems: [ oidSchema ], // Own items and foreign items under contract

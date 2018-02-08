@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 var audits = require('../../routes/audit/put');
 var userOp = require('../../models/vicinityManager').user;
 var logger = require("../../middlewares/logger");
+var authHelper = require('../../helpers/authentication/update');
+var bcrypt = require('bcrypt');
 
 function putOne(req, res) {
   var response = {};
@@ -30,4 +32,32 @@ function putOne(req, res) {
   });
 }
 
+function putPassword(req, res){
+  var oldPwd = req.body.passwordOld;
+  var newPwd = req.body.passwordNew;
+  var id = req.params.id;
+  var hash = "";
+
+  userOp.findOne({_id:id},{authentication:1})
+  .then(function(response){
+    hash = response.authentication.hash;
+    logger.debug(hash);
+    return bcrypt.compare(oldPwd, hash); // True if valid pwd
+  })
+  .then(function(response){
+    logger.debug(response);
+    if(response){
+      authHelper.updatePwd(id, newPwd, function(err, response){
+        res.json({error: err, message: response, success: true});
+      });
+    } else {
+      res.json({error: false, message: "Wrong password", success: false});
+    }
+  })
+  .catch(function(err){
+    res.json({error: true, success: false, message: err});
+  });
+}
+
 module.exports.putOne = putOne;
+module.exports.putPassword = putPassword;

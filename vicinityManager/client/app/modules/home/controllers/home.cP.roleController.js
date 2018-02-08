@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cProleController',
-function ($scope, $window, commonHelpers, $stateParams, userAccountAPIService, userAPIService, Notification) {
+function ($scope, $window, commonHelpers, $stateParams, userAPIService, Notification) {
 
 // Initialize variables ========
 // ====== Triggers window resize to avoid bug =======
@@ -17,10 +17,10 @@ function ($scope, $window, commonHelpers, $stateParams, userAccountAPIService, u
   $scope.rev = false; // Initial sorting set to alphabetical
 
   $scope.myInit = function(){
-  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+  userAPIService.getAll($stateParams.companyAccountId)
     .then(
       function successCallback(response){
-        $scope.userAccounts = response.data.message.accountOf;
+        $scope.userAccounts = response.data.message;
         $scope.loadedPage = true;
       },
       function errorCallback(response){}

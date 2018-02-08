@@ -66,7 +66,7 @@ function getUserAccountFacade(req, res, next) {
     //TODO: Issue #6 Update userAcount profile wheather the autenticated user is friend with :id
     //TODO: Remove foreing users;
 
-      userAccountOp.findById(o_id).populate('knows.id').populate('accountOf.id', 'avatar name email occupation location authentication status accessLevel').exec(function (err, data) {
+      userAccountOp.findById(o_id).populate('knows.id').populate('accountOf.id', 'avatar name email occupation location status accessLevel').exec(function (err, data) {
 
         if (!data ) {
           logger.debug('There is no data!!!');

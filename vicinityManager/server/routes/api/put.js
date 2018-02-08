@@ -3,33 +3,12 @@ var userOp = require('../../models/vicinityManager').user;
 var rememberOp = require('../../models/vicinityManager').remember;
 var jwt = require('../../helpers/jwtHelper');
 var logger = require("../../middlewares/logger");
+var authHelper = require('../../helpers/authentication/update');
 var bcrypt = require('bcrypt');
 
 function updatePwd(req, res) {
-  var response = {};
-  var o_id = mongoose.Types.ObjectId(req.params.id);
-  var pwd = req.body.password;
-  var saltRounds = 10;
-  var salt = "";
-  var hash = "";
-
-  bcrypt.genSalt(saltRounds)
-  .then(function(response){
-    salt = response.toString('hex');
-    return bcrypt.hash(pwd, salt);
-  })
-  .then(function(response){
-    // Store hash in your password DB.
-    hash = response;
-    var updates = {'authentication.hash': hash, 'authentication.salt': salt};
-    return userOp.update({ "_id": o_id}, {$set: updates});
-  })
-  .then(function(response){
-    res.json({"error": false, "message": response});
-  })
-  .catch(function(err){
-    logger.debug(err);
-    res.json({"error": true, "message": err});
+  authHelper.updatePwd(req.params.id, req.body.password, function(err, response){
+    res.json({error: err, message: response});
   });
 }
 

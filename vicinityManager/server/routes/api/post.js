@@ -17,36 +17,32 @@ function authenticate(req, res, next) {
   var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
   var pwd = req.body.password;
   var myUser = {};
-  var salt = "";
   var hash = "";
   var o_id = "";
 
   if(userName && pwd){
     userOp.find({ email: { $regex: userRegex } }, {_id:1, email:1, authentication:1})
     .then(function(response){
-      logger.debug(response[0]);
         if (!response || response.length !== 1){
         res.json({ success: false });
       } else {
         myUser = response[0];
-        salt = myUser.authentication.salt;
-        return bcrypt.hash(pwd, salt);
+        hash = myUser.authentication.hash;
+        return bcrypt.compare(pwd, hash);
       }
     })
     .then(function(response){
-      hash = response;
-      if ((userName.toLowerCase() === myUser.email.toLowerCase()) && (hash === myUser.authentication.hash)){
+      if ((userName.toLowerCase() === myUser.email.toLowerCase()) && response){
         o_id = mongoose.Types.ObjectId(myUser._id);
-        return userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1});
+        userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1}, function(err, response){
+          var credentials = jwt.jwtEncode(userName, myUser.authentication.principalRoles, myUser._id, response[0]._id);
+          res.json({ success: true, message: credentials });
+          logger.audit({user: userName, action: 'login'});
+        });
       } else {
         logger.warn({user: userName, action: 'login', message: 'Wrong password'});
         res.json({success: false});
       }
-    })
-    .then(function(response){
-      var credentials = jwt.jwtEncode(userName, myUser.authentication.principalRoles, myUser._id, response[0]._id);
-      res.json({ success: true, message: credentials });
-      logger.audit({user: userName, action: 'login'});
     })
     .catch(function(err){
       logger.debug(err);

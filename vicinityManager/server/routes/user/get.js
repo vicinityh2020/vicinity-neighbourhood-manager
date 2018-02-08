@@ -9,7 +9,7 @@ function getOne(req, res, next) {
 //TODO: User authentic - Role check
   var response = {};
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  userOp.findById(o_id, function(err, data){
+  userOp.findById(o_id, {'authentication.hash':0},function(err, data){
     if (err) {
       response = {"error": true, "message": "Error fetching data"};
     } else {
@@ -24,13 +24,12 @@ function getAll(req, res, next) {
   var mycid = mongoose.Types.ObjectId(req.query.mycid);
   var friends = [], users = [];
 
-  userAccountOp.findById(othercid, {knows:1, accountOf:1}).populate('accountOf.id', 'avatar name email occupation location authentication status accessLevel')
+  userAccountOp.findById(othercid, {knows:1, accountOf:1}).populate('accountOf.id', 'avatar name email occupation authentication.principalRoles location status accessLevel')
   .then(function(response){
 
     var parsedData = response.toObject();
     friends = parsedData.knows;
     users = parsedData.accountOf;
-    // logger.debug(friends);
     var relation = myRelationWithOther(mycid, othercid, friends);
 
     if(relation === 1){
@@ -52,7 +51,6 @@ function myRelationWithOther(a,b,c){
   var d = getIds(c);
   d = d.join();
   d = d.split(',');
-  logger.debug(d);
   if(a.toString() === b.toString()){ return 0; } // Same company
   else if(d.indexOf(a.toString()) !== -1){ return 1; } // Friend company
   else { return 2; } // Other company
