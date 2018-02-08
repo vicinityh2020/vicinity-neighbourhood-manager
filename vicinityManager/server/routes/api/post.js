@@ -5,7 +5,6 @@ var userAccountsOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
 var rememberOp = require('../../models/vicinityManager').remember;
 var jwt = require('../../helpers/jwtHelper');
-var moment = require('moment');
 var logger = require("../../middlewares/logger");
 var mailing = require('../../helpers/mail/mailing');
 var bcrypt = require('bcrypt');
@@ -14,43 +13,45 @@ var bcrypt = require('bcrypt');
 
 /* Check user and password. */
 function authenticate(req, res, next) {
-
-  var response = {};
   var userName = req.body.username;
   var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
   var pwd = req.body.password;
-  var saltRounds = 10;
   var salt = "";
   var hash = "";
+  var o_id = "";
 
-  if (userName && password) {
-    userOp.find({ email: { $regex: userRegex } }, function(error, result) {
-      if (error || !result || result.length !== 1){
+  if(userName && pwd){
+    userOp.find({ email: { $regex: userRegex } })
+    .then(function(response){
+      logger.debug(response[0]);
+        if (!response || response.length !== 1){
         res.json({ success: false });
       } else {
-        salt = result.authentication.salt;
-        bcrypt.hash(pwd, salt)
-        .then(function(response){
-          hash = response;
-
-          if ((userName.toLowerCase() === result[0].email.toLowerCase()) && (hash === result[0].authentication.hash)) {
-
-              var o_id = mongoose.Types.ObjectId(result[0]._id);
-
-              userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, function(error, result2) {
-              var credentials = jwt.jwtEncode(userName, result[0].authentication.principalRoles, result[0]._id, result2[0]._id);
-              res.json({ success: true, message: credentials });
-              logger.audit({user: userName, action: 'login'});
-            });
-
-          } else {
-            logger.warn({user: userName, action: 'login', message: 'Wrong password'});
-            res.json({success: false});
-          }
-        });
-
+        salt = response[0].authentication.salt;
+        return bcrypt.hash(pwd, salt);
       }
+    })
+    .then(function(response){
+      hash = response;
+      logger.debug(hash);
+      if ((userName.toLowerCase() === response[0].email.toLowerCase()) && (hash === response[0].authentication.hash)){
+        o_id = mongoose.Types.ObjectId(response[0]._id);
+        return userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}});
+      } else {
+        logger.warn({user: userName, action: 'login', message: 'Wrong password'});
+        res.json({success: false});
+      }
+    })
+    .then(function(response){
+      var credentials = jwt.jwtEncode(userName, response[0].authentication.principalRoles, response[0]._id, response[0]._id);
+      res.json({ success: true, message: credentials });
+      logger.audit({user: userName, action: 'login'});
+    })
+    .catch(function(err){
+      logger.debug(err);
+      res.json({ success: false });
     });
+
   } else {
     logger.warn({user: userName, action: 'login', message: 'Missing fields'});
     res.json({success: false});

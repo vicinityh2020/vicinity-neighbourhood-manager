@@ -94,7 +94,7 @@ app.use(function(err, req, res, next) {
 // ENDING MIDDLEWARES ================
 
 // CONNECTING to MONGO
-mongoose.connect(process.env.VCNT_MNGR_DB, function(error){
+mongoose.connect(process.env.VCNT_MNGR_DB, { useMongoClient: true }, function(error){
   if (error){
     logger.error("VMModel: Couldn't connect to data source!" + error);
   } else {
