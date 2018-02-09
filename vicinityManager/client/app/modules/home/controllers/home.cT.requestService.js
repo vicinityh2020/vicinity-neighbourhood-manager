@@ -25,7 +25,7 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
 
   function initData(){
     // Get user items returns only items that I can chare with the other party
-    itemsAPIService.getUserItems($scope.requester.id, $scope.requester.cid, $scope.owner.cid, 'device')
+    itemsAPIService.getUserItems($scope.requester.id, $scope.requester.cid, $scope.owner.cid)
       .then(
         function (response){
           $scope.device.cid = response.data.message.cid;

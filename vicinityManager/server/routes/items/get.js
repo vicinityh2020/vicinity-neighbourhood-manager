@@ -160,7 +160,7 @@ function getItemWithAdd(req, res, next) {
     var reqId = mongoose.Types.ObjectId(req.body.reqId);
     var reqCid = mongoose.Types.ObjectId(req.body.reqCid);
     var ownerCid = req.body.ownCid;
-    var type = req.body.type;
+    var type = req.body.type === undefined ? "all" : req.body.type;
     var data = {};
     var parsedData = {};
     var items = [];
@@ -179,12 +179,20 @@ function getItemWithAdd(req, res, next) {
       getIds(parsedFriends.knows, friends);
       var relation = myRelationWithOther(ownerCid, reqCid, friends);
 
-      if(relation === 1){
-        items = items.filter(function(i){return i.id.accessLevel >= 1 && i.id.typeOfItem === type;});
-      } else if(relation === 2){
-        items = items.filter(function(i){return i.id.accessLevel === 2 && i.id.typeOfItem === type;});
+      if(type !== 'all'){
+        if(relation === 1){
+          items = items.filter(function(i){return i.id.accessLevel >= 1 && i.id.typeOfItem === type;});
+        } else if(relation === 2){
+          items = items.filter(function(i){return i.id.accessLevel === 2 && i.id.typeOfItem === type;});
+        } else {
+          items = items.filter(function(i){return i.id.typeOfItem === type;});
+        }
       } else {
-        items = items.filter(function(i){return i.id.typeOfItem === type;});
+        if(relation === 1){
+          items = items.filter(function(i){return i.id.accessLevel >= 1;});
+        } else if(relation === 2){
+          items = items.filter(function(i){return i.id.accessLevel === 2;});
+        }
       }
 
       data.items = items;

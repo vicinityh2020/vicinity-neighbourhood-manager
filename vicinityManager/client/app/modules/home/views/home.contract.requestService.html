@@ -23,7 +23,7 @@
     </div>
 
     <div class="box-header with-border well">
-        <h3 class="box-title">Choose devices</h3>
+        <h3 class="box-title">Choose devices and services</h3>
     </div>
     <div class="box-body">
       <form role="form">
@@ -31,7 +31,7 @@
           <div class="checkbox" ng-repeat="thing in things">
             <label>
               <input type="checkbox" ng-model="thing.id.status">
-              {{thing.id.name}} -- {{thing.id.accessLevelCaption}}
+              {{thing.id.name}} -- {{thing.id.accessLevelCaption}} -- {{thing.id.typeOfItem}}
             </label>
           </div>
         </div>

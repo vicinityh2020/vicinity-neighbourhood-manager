@@ -51,7 +51,7 @@
         <p><b>ID:</b> {{wholeContract.ctid}}</p>
         <p><b>Service name:</b> {{wholeContract.serviceProvider.items[0].id.name}}</p>
         <p><b>Service owner:</b> {{wholeContract.serviceProvider.uid.extid}}</p>
-        <p><b>Devices owner:</b> {{wholeContract.iotOwner.uid.extid}}</p>
+        <p><b>IoT owner:</b> {{wholeContract.iotOwner.uid.extid}}</p>
         <p><b>Write rights:</b>
           <input type="checkbox" checked="wholeContract.readWrite" ng-model="wholeContract.readWrite" ng-show="edit">
           <span class="label label-info" ng-show="!wholeContract.readWrite && !edit"> No </span>
@@ -69,14 +69,14 @@
         {{wholeContract.legalDescription}}
       </div>
       <div class="box-header with-border well">
-          <h3 class="box-title">Devices</h3>
+          <h3 class="box-title">IoT infrastructure components</h3>
       </div>
       <div class="box-body">
       <div class="checkbox" ng-repeat="thing in alldevices">
         <ul>
           <li>
             <input type="checkbox" checked="thing.status" ng-model="thing.status" ng-show="edit">
-            {{thing.id.name}} -- {{thing.id._id}}
+            {{thing.id.name}} -- {{thing.extid}} -- {{thing.id.typeOfItem}}
           </li>
         </ul>
       </div>
