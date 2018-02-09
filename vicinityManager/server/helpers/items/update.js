@@ -157,6 +157,13 @@ function updateItems(data, callback){
     return itemOp.findOneAndUpdate({ _id : o_id}, { $set: query });
   })
   .then(function(response){
+    if(data.hasOwnProperty('accessLevel')){
+      return sharingRules.changePrivacy(data);
+    } else {
+      return false;
+    }
+  })
+  .then(function(response){
     logger.debug("Item update process ended successfully...");
     logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
     callback(false, response);

@@ -227,7 +227,7 @@ function removing(id, callback){
     callback(finalResp, false);
   })
   .catch(function(error){
-    logger.debug(error);
+    logger.debug('Delete contract error: ' + error);
     callback(error, true);
   });
 }
@@ -270,6 +270,9 @@ function removeDevice(item, callback){
     return true;
   })
   .then(function(){
+    contractValidity(ctids);
+  })
+  .then(function(){
     callback(item.oid, 'success');
   })
   .catch(function(err){
@@ -300,6 +303,23 @@ function getOnlyId(array, toAdd){
   for(var i = 0; i < toAdd.length; i++){
     array.push(toAdd[i].id.toString());
   }
+}
+
+/*
+If contract does not have items, delete it
+*/
+function contractValidity(ctids){
+  contractOp.find({_id: {$in: ctids}}, {'serviceProvider.items':1, 'iotOwner.items':1})
+  .then(function(response){
+    for(var i = 0; i < ctids.length; i++){
+      if(response[i].serviceProvider.items.length * response[i].iotOwner.items.length === 0){
+        removing(ctids[i], function(resp,err){});
+      }
+    }
+  })
+  .catch(function(err){
+    logger.debug('Error checking contract validity: ' + err);
+  });
 }
 
 // modules exports

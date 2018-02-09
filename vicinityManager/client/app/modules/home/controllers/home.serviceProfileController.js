@@ -141,7 +141,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
         itemsAPIService.putOne(
             {accessLevel: $('select#editAccessName').val() - 1,
             id: $scope.item._id,
-            cid: $scope.device.cid,
+            cid: $scope.item.cid,
             oldAccessLevel: $scope.item.accessLevel })
           .then(
             function successCallback(response){

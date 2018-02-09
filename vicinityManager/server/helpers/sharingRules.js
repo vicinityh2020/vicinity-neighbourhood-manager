@@ -32,9 +32,6 @@ function removeFriend(my_id, friend_id){
     if(response){ items2 = response; }
     return new Promise(function(resolve, reject) {
       items = items1.concat(items2);
-      // logger.debug('1: ' + JSON.stringify(items1));
-      // logger.debug('2: ' + JSON.stringify(items2));
-      logger.debug('3: ' + JSON.stringify(items));
 
       if(items.length !== 0){ // Check if there is any item to delete
         logger.debug('Start async handler...');
