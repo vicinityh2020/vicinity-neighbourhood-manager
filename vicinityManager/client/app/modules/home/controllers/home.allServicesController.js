@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('allServicesController',
-   function ($scope, $window, itemsAPIService, commonHelpers, itemsHelpers){
+   function ($scope, $window, itemsAPIService, commonHelpers, itemsHelpers, tokenDecoder){
 
 // ====== Triggers window resize to avoid bug =======
      commonHelpers.triggerResize();
@@ -22,6 +22,14 @@ angular.module('VicinityManagerApp.controllers')
        $scope.filterNumber = 7;
        $scope.typeOfItem = "services";
        $scope.header = "All Services";
+       $scope.canRequestService = false;
+
+       var payload = tokenDecoder.deToken();
+       for(var i in payload.roles){
+         if(payload.roles[i] === 'infrastructure operator' || payload.roles[i] === 'service provider'){
+           $scope.canRequestService = true;
+         }
+       }
 
        init();
 

@@ -23,6 +23,8 @@ angular.module('VicinityManagerApp.controllers').
   $scope.notifs = [];
   $scope.notifsWithDate = [];
   $scope.tempNotifs = [];
+  $scope.userId = $window.sessionStorage.userAccountId;
+  $scope.orgId = $window.sessionStorage.companyAccountId;
 
 // ====== Checking if user is devOps =============
 $scope.isDev = false;

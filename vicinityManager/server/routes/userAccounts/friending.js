@@ -303,7 +303,7 @@ function cancelFriendship(req, res, next){
 
         friend.save()
         .then( function(response){ return me.save(); })
-        .then( function(response){ return sharingRules.removeFriend(my_id, friend_id); })
+        .then( function(response){ return sharingRules.removeFriend(my_id, friend_id, req.body.userMail); })
         .then( function(response){ logger.debug('out: ' + response); })
         .catch( function(err){ logger.debug('Error: ' + err); });
 

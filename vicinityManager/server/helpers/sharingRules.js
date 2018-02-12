@@ -19,7 +19,7 @@ I need to remove my devices with friend data access Level
 To do so, I remove the group which shares with my friend and the group which
 my friend is using to share with me.
 */
-function removeFriend(my_id, friend_id){
+function removeFriend(my_id, friend_id, email){
   logger.debug('removing friend');
   var items1, items2, items;
 
@@ -36,8 +36,8 @@ function removeFriend(my_id, friend_id){
       if(items.length !== 0){ // Check if there is any item to delete
         logger.debug('Start async handler...');
         sync.forEachAll(items,
-          function(value, allresult, next) {
-            ctHelper.removeDevice(value, function(value, result) {
+          function(value, allresult, next, otherParams) {
+            ctHelper.removeDevice(value, otherParams, function(value, result) {
                 allresult.push({value: value, error: result});
                 next();
             });
@@ -48,11 +48,12 @@ function removeFriend(my_id, friend_id){
               resolve({"error": false, "message": allresult });
             }
           },
-          false
+          false,
+          {email: email}
         );
       } else {
         logger.debug('Unfriending: No items to delete');
-        // logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
+        logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
         resolve({"error": false, "message": "Nothing to be removed..."});
       }
     });

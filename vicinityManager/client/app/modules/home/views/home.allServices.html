@@ -59,7 +59,7 @@
           <h5 class="widget-user-desc2" ng-show="it.isPrivate">Private data</h5>
         </div>
 
-        <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner && !it.contracted">
+        <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner && !it.contracted && canRequestService">
           <a href="" ui-sref="root.main.requestService({companyAccountId: it.cid.id._id, serviceId: it._id})" class=" btn-xs btn-success btn-block">
              <i class="fa fa-plus fa-lg"></i>
               &nbsp;<b>Request service</b>

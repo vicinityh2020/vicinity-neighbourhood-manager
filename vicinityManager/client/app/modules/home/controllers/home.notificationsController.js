@@ -13,7 +13,8 @@ function ($scope,
           registrationsHelpers,
           Notification) {
 
-  // $scope.me = {};
+  $scope.userId = $window.sessionStorage.userAccountId;
+  $scope.orgId = $window.sessionStorage.companyAccountId;
   $scope.tempNotifs = [];
   $scope.notifs = [];
   $scope.registrations = [];

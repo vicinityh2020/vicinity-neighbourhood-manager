@@ -32,10 +32,22 @@ function accepting(id, callback){
   })
   .then(function(response){
     var notification = new notificationOp();
-    notification.addressedTo.push(updItem.serviceProvider.cid.id, updItem.iotOwner.cid.id);
+    notification.addressedTo.push(updItem.iotOwner.cid.id);
     notification.sentBy = updItem.serviceProvider.cid.id;
-    // notification.userId = data.serviceProvider.uid.id;
+    notification.userId = [updItem.serviceProvider.uid.id, updItem.iotOwner.uid.id];
     notification.ctId = updItem._id;
+    notification.itemId = updItem.serviceProvider.items[0].id;
+    notification.type = 24;
+    notification.status = 'info';
+    return notification.save();
+  })
+  .then(function(response){
+    var notification = new notificationOp();
+    notification.addressedTo.push(updItem.serviceProvider.cid.id);
+    notification.sentBy = updItem.serviceProvider.cid.id;
+    notification.userId = [updItem.serviceProvider.uid.id, updItem.iotOwner.uid.id];
+    notification.ctId = updItem._id;
+    notification.itemId = updItem.serviceProvider.items[0].id;
     notification.type = 24;
     notification.status = 'info';
     return notification.save();
@@ -73,6 +85,8 @@ Create a contract request
 function creating(data, callback){
   var ct_id;
   var ct = new contractOp();
+  var idsService = [];
+  var idsDevice = [];
   // ct.ctid = data.ctid === undefined ? uuid() : data.ctid;
   ct.ctid = uuid();
   ct.serviceProvider = { cid: data.cidService, uid: data.uidService, termsAndConditions: false, items: data.oidService };
@@ -91,10 +105,8 @@ function creating(data, callback){
         var ctidService = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: data.uidDevice.id, approved: true };
         var ctidDevice = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: data.uidService.id, approved: true };
         var uidService = data.uidService.id;
-        var idsService = [];
         getOnlyId(idsService, data.oidService);
         var uidDevice = data.uidDevice.id;
-        var idsDevice = [];
         getOnlyId(idsDevice, data.oidDevices);
         userOp.update({_id: uidDevice}, { $push: {hasContracts: ctidDevice} })
         .then(function(response){
@@ -110,8 +122,9 @@ function creating(data, callback){
           var notification = new notificationOp();
           notification.addressedTo.push(data.cidService.id);
           notification.sentBy = data.cidDevice.id;
-          notification.userId = data.uidService.id;
+          notification.userId = [data.uidService.id, data.uidDevice.id] ;
           notification.ctId = ct_id;
+          notification.itemId = idsService[0];
           notification.type = 21;
           notification.status = 'info';
           return notification.save();
@@ -197,10 +210,22 @@ function removing(id, callback){
   })
   .then(function(response){
     var notification = new notificationOp();
-    notification.addressedTo.push(data.serviceProvider.cid.id, data.iotOwner.cid.id);
+    notification.addressedTo.push(data.serviceProvider.cid.id);
     // notification.sentBy = data.iotOwner.cid.id;
-    // notification.userId = data.serviceProvider.uid.id;
+    notification.userId = [data.serviceProvider.uid.id, data.iotOwner.uid.id];
     notification.ctId = data._id;
+    notification.itemId = data.serviceProvider.items[0].id;
+    notification.type = 23;
+    notification.status = 'info';
+    return notification.save();
+  })
+  .then(function(response){
+    var notification = new notificationOp();
+    notification.addressedTo.push(data.iotOwner.cid.id);
+    // notification.sentBy = data.iotOwner.cid.id;
+    notification.userId = [data.serviceProvider.uid.id, data.iotOwner.uid.id];
+    notification.ctId = data._id;
+    notification.itemId = data.serviceProvider.items[0].id;
     notification.type = 23;
     notification.status = 'info';
     return notification.save();
@@ -232,22 +257,22 @@ function removing(id, callback){
   });
 }
 
-function removeDevice(item, callback){
+function removeDevice(item, otherParams, callback){
   var ctids = [];
   var mycid = item.cid.id._id;
   var friends = [];
   var notifs = [];
   if(item.accessLevel === 0){
     getOnlyId(ctids, item.hasContracts);
-    for(var j = 0; j < item.hasContracts.length; j++){
-      notifs.push({mycid: mycid, othercid: item.hasContracts[j].contractingParty, thing: item.hasContracts[j].id, type: 22});
-    }
+    // for(var j = 0; j < item.hasContracts.length; j++){
+    //   notifs.push({mycid: mycid, othercid: item.hasContracts[j].contractingParty, thing: item.hasContracts[j].id, type: 22});
+    // }
   } else {
     getOnlyId(friends, item.cid.id.knows);
     for(var i = 0; i < item.hasContracts.length; i++){
       if(friends.indexOf(item.hasContracts[i].contractingParty) === -1){
         ctids.push(item.hasContracts[i].id.toString());
-        notifs.push({mycid: mycid, othercid: item.hasContracts[i].contractingParty, thing: item.hasContracts[i].id, type: 22});
+        // notifs.push({mycid: mycid, othercid: item.hasContracts[i].contractingParty, thing: item.hasContracts[i].id, type: 22});
       }
     }
   }
@@ -263,12 +288,12 @@ function removeDevice(item, callback){
     }
     return true;
   })
-  .then(function(){
-    for(item in notifs){
-      createNotif(notifs[item].mycid, notifs[item].othercid, notifs[item].thing, notifs[item].type);
-    }
-    return true;
-  })
+  // .then(function(){
+  //   for(item in notifs){
+  //     createNotif(notifs[item].mycid, notifs[item].othercid, notifs[item].thing, notifs[item].type);
+  //   }
+  //   return true;
+  // })
   .then(function(){
     contractValidity(ctids);
   })
@@ -282,16 +307,16 @@ function removeDevice(item, callback){
 
 // Private Functions
 
-function createNotif(mycid, othercid, thing, type){
-  var notification = new notificationOp();
-  notification.addressedTo.push(othercid, mycid);
-  notification.sentBy = mycid;
-  // notification.userId = "";
-  notification.ctId = thing;
-  notification.type = type;
-  notification.status = 'info';
-  return notification.save();
-}
+// function createNotif(mycid, othercid, thing, type){
+//   var notification = new notificationOp();
+//   notification.addressedTo.push(othercid, mycid);
+//   notification.sentBy = mycid;
+//   // notification.userId = "";
+//   notification.ctId = thing;
+//   notification.type = type;
+//   notification.status = 'info';
+//   return notification.save();
+// }
 
 function getOnlyOid(items, toAdd){
   for(var i = 0; i < toAdd.length; i++){
@@ -301,7 +326,11 @@ function getOnlyOid(items, toAdd){
 
 function getOnlyId(array, toAdd){
   for(var i = 0; i < toAdd.length; i++){
-    array.push(toAdd[i].id.toString());
+    if(toAdd[i].hasOwnProperty("id")){
+      array.push(toAdd[i].id.toString());
+    } else {
+      array.push(toAdd[i]._id.toString());
+    }
   }
 }
 

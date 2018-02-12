@@ -104,7 +104,7 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
     $scope.data = {};
     $scope.data.cidService = {'extid': $scope.wholeContract.serviceProvider.cid.extid, 'id': $scope.wholeContract.serviceProvider.cid.id._id};
     $scope.data.uidService = $scope.wholeContract.serviceProvider.uid;
-    $scope.data.oidService = [$scope.wholeContract.serviceProvider.items[0]];
+    $scope.data.oidService = [{'id': $scope.wholeContract.serviceProvider.items[0].id._id, 'extid': $scope.wholeContract.serviceProvider.items[0].id.extid}];
     $scope.data.cidDevice = {'extid': $scope.wholeContract.iotOwner.cid.extid, 'id': $scope.wholeContract.iotOwner.cid.id._id};
     $scope.data.uidDevice = $scope.wholeContract.iotOwner.uid;
     $scope.data.readWrite = $scope.wholeContract.readWrite;
