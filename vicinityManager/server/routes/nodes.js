@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 var logger = require("../middlewares/logger");
 
-var getHelper = require('./nodes/get.js');
-var postHelper = require('./nodes/post.js');
-var putHelper = require('./nodes/put.js');
+var getHelper = require('../controllers/nodes/get.js');
+var postHelper = require('../controllers/nodes/post.js');
+var putHelper = require('../controllers/nodes/put.js');
 
 router
   .get('/:id', getHelper.getAll)

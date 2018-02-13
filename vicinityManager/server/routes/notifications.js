@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var notifications = require('./notifications/notifications.js');
+var notifications = require('../controllers/notifications/notifications.js');
 
 router
   .get('/:id/userNotifications', notifications.getNotificationsOfUser)

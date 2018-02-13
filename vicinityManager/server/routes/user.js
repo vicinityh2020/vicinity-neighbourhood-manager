@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var putHelper = require('./user/put.js');
-var getHelper = require('./user/get.js');
-var deleteHelper = require('./user/delete.js');
-var postHelper = require('./user/post.js');
+var putHelper = require('../controllers/user/put.js');
+var getHelper = require('../controllers/user/get.js');
+var deleteHelper = require('../controllers/user/delete.js');
+var postHelper = require('../controllers/user/post.js');
 
 router
   .get('/:id', getHelper.getOne)

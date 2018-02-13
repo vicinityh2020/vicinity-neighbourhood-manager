@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var controllers = require('./commServer/commServer');
+var controllers = require('../controllers/commServer/commServer');
 
 // Endpoints accessible from the commServer
 

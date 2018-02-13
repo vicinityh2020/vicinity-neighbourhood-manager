@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 //var winston = require('winston');
 
 // ROUTES Import
-// var users = require('./routes/users');
+var login = require('./routes/login');
 var api = require('./routes/api');
 var audit = require('./routes/audit');
 var userAccounts = require('./routes/userAccounts');
@@ -21,7 +21,6 @@ var registrations = require('./routes/registrations');
 var nodes = require('./routes/nodes');
 var commServer = require('./routes/commServer');
 var search = require('./routes/search');
-//var userAccounts = require('./routes/companyAccounts');
 
 // Custom MIDDLEWARES Import === jwauth && Winston Debugger
 //var config = require("./configuration/configuration");
@@ -46,8 +45,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use('/', routes);
+
+/*
+Endpoints
+*/
+
+// Public API - TODO Oauth/JWT
 app.use('/api', api);
+// Agent endpoints through comm server
+app.use('/commServer', commServer);
+// App endpoints
+app.use('/login', login);
 app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup security
 app.use('/nodes', [jwtauth, nodes]);
 app.use('/items', [jwtauth, items]);  // TODO add JWAUTH back !!!
@@ -57,8 +65,10 @@ app.use('/search', [jwtauth, search]);
 app.use('/audit', [audit]);
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
-app.use('/commServer', commServer);
-//app.use('/usergroups', [jwtauth, userGroups]);
+
+/*
+Error and not found handlers
+*/
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -66,8 +76,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
-// error handlers
 
 // development error handler
 // will print stacktrace
@@ -101,5 +109,7 @@ mongoose.connect(process.env.VCNT_MNGR_DB, { useMongoClient: true }, function(er
     logger.info("VMModel: Datasource connection established!");
   }
 });
+
+// Export app module
 
 module.exports = app;

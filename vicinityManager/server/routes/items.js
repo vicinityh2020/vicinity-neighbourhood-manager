@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-var putHelper = require('./items/put.js');
-var getHelper = require('./items/get.js');
-var deleteHelper = require('./items/delete.js');
-var contractHelper = require('./items/contracts.js');
+var putHelper = require('../controllers/items/put.js');
+var getHelper = require('../controllers/items/get.js');
+var deleteHelper = require('../controllers/items/delete.js');
+var contractHelper = require('../controllers/items/contracts.js');
 
 router
 // When we receive item id to process some action over it

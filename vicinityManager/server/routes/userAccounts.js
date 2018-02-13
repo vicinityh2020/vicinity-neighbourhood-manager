@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-var friending = require('./userAccounts/friending');
-var userProfile = require('./userAccounts/userprofile');
-var configuration = require('./userAccounts/configuration');
+var friending = require('../controllers/userAccounts/friending');
+var userProfile = require('../controllers/userAccounts/userprofile');
+var configuration = require('../controllers/userAccounts/configuration');
 
 router
   /*

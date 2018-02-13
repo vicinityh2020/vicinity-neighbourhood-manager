@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var regisController = require('./registrations/registrations.js');
+var regisController = require('../controllers/registrations/registrations.js');
 
 router
   .post('/', regisController.requestRegistration)

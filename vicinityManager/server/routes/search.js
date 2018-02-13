@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var getHelper = require('../helpers/search/get.js');
+var getHelper = require('../controllers/search/get.js');
 
   router
     .get('/organisation', getHelper.searchOrganisation)
