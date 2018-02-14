@@ -36,16 +36,21 @@ var asyncHandler = require('../../services/asyncHandler/sync');
 
     userAccountOp.findById(cid, {knows:1})
     .then(function(response){
-      friends = response.knows;
-      query = {
-        $or :[
-        {$and: [ { 'cid.id': cid }, { accessLevel: 0 } ] },
-        {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: 1 } ] },
-        { accessLevel: 2 }
-      ],
-      name: {$regex: sT}
-      };
-      return userOp.find(query, {authentication:0});
+      var things = response.toObject();
+      if(things){
+        getOnlyId(friends, things.knows);
+        query = {
+          $or :[
+          {$and: [ { 'cid.id': cid.id }, { accessLevel: 0 } ] },
+          {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: 1 } ] },
+          { accessLevel: 2 }
+        ],
+        name: {$regex: sT}
+        };
+        return userOp.find(query, {authentication:0});
+      } else {
+        return "Nothing";
+      }
     })
     .then(function(response){
         callback(false, response);
@@ -61,13 +66,11 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   Access level restrictions apply!
   Text index are not used because do not support substring look up!
   */
-  function searchItem(sT, cid, callback) {
+  function searchItem(sT, cid, otherCids, callback) {
     var friends = []; // Will contain company partners and itself
-
     friends.push(cid);
-    var i = 0;
-    for(i; i < req.body.length; i++){
-      friends.push(mongoose.Types.ObjectId(req.body[i]));
+    for(var i = 0; i < otherCids.length; i++){
+      friends.push(mongoose.Types.ObjectId(otherCids[i]));
     }
 
     var query = {
@@ -193,6 +196,16 @@ function findUnique(arr, withGraph){
     }
   }
   return myArray;
+}
+
+function getOnlyId(array, toAdd){
+  for(var i = 0; i < toAdd.length; i++){
+    if(toAdd[i].hasOwnProperty("id")){
+      array.push(toAdd[i].id.toString());
+    } else {
+      array.push(toAdd[i]._id.toString());
+    }
+  }
 }
 
 // Export modules

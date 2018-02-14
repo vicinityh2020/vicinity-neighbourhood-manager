@@ -58,7 +58,7 @@ $(window).on('resize',function(){
                     var $user = $("#user");
                     var $pass = $("#pass");
 
-                     if(response.data.success){
+                     if(!response.error){
                       //  Notification.success("Welcome to Vicinity!");
                        AuthenticationService.SetCredentials(response.data.message);
                        if($scope.rememberMe){AuthenticationService.SetRememberMeCookie(response.data.message);}

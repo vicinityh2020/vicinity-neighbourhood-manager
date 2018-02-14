@@ -9,15 +9,15 @@ angular.module('Authentication')
           var service = {};
 
           service.recover = function(data) {
-            return $http.post(configuration.apiUrl + '/api/recovery',data);
+            return $http.post(configuration.apiUrl + '/login/recovery',data);
           };
 
           service.resetPwd = function(id, data) {
-            return $http.put(configuration.apiUrl + '/api/recovery/' + id ,data);
+            return $http.put(configuration.apiUrl + '/login/recovery/' + id ,data);
           };
 
           service.Login = function(username, password) {
-            return $http.post(configuration.apiUrl + '/api/authenticate',{ username: username, password: password});
+            return $http.post(configuration.apiUrl + '/login/authenticate',{ username: username, password: password});
           };
 
           service.signout = function(path){
@@ -56,7 +56,7 @@ angular.module('Authentication')
           service.wasCookie = function(){
             var myCookie = $cookies.getObject("rM_V");
             if(myCookie){
-              $http.put(configuration.apiUrl + '/api/remember/' + myCookie.id, {token : myCookie.token})
+              $http.put(configuration.apiUrl + '/login/remember/' + myCookie.id, {token : myCookie.token})
                 .then(
                     function successCallback(response){
                       if(!response.data.error){
@@ -75,7 +75,7 @@ angular.module('Authentication')
             };
 
           service.SetRememberMeCookie = function(data){
-            $http.post(configuration.apiUrl + '/api/remember', data).then(
+            $http.post(configuration.apiUrl + '/login/remember', data).then(
               function successCallback(response){
                 var content = {id: response.data.message._id, token:response.data.message.token};
                 $cookies.remove("rM_V");

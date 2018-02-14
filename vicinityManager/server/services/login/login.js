@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var userOp = require('../../models/vicinityManager').user;
 var rememberOp = require('../../models/vicinityManager').remember;
+var userAccountsOp = require('../../models/vicinityManager').userAccount;
 var jwt = require('../../services/jwtHelper');
 var logger = require("../../middlewares/logger");
 var mailing = require('../../services/mail/mailing');
@@ -26,11 +27,14 @@ function authenticate(userName, userRegex, pwd, callback) {
       }
     })
     .then(function(response){
+      logger.debug(userName);
+      logger.debug(myUser.email);
+      logger.debug(response);
       if ((userName.toLowerCase() === myUser.email.toLowerCase()) && response){
         o_id = mongoose.Types.ObjectId(myUser._id);
         userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1}, function(err, response){
           var credentials = jwt.jwtEncode(userName, myUser.authentication.principalRoles, myUser._id, response[0]._id);
-          callback(true, credentials);
+          callback(false, credentials);
           logger.audit({user: userName, action: 'login'});
         });
       } else {

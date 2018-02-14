@@ -14,10 +14,9 @@ var sGet = require("../../services/search/get");
   function searchOrganisation(req, res, next) {
     var searchTerm = req.query.searchTerm;
     var sT = new RegExp(searchTerm, 'i');
-    sGet.searchOrganisation(sT, function(err, res){
-      res.json({error: err, message: res});
+    sGet.searchOrganisation(sT, function(err, response){
+      res.json({error: err, message: response});
     });
-
   }
 
   /*
@@ -27,11 +26,10 @@ var sGet = require("../../services/search/get");
   */
   function searchUser(req, res, next) {
     var searchTerm = req.query.searchTerm;
-    var cid = mongoose.Types.ObjectId(req.query.cid);
+    var cid = req.query.cid;
     var sT = new RegExp(searchTerm, 'i');
-
-    sGet.searchUser(sT, cid, function(err, res){
-      res.json({error: err, message: res});
+    sGet.searchUser(sT, cid, function(err, response){
+      res.json({error: err, message: response});
     });
   }
 
@@ -43,11 +41,11 @@ var sGet = require("../../services/search/get");
   */
   function searchItem(req, res, next) {
     var searchTerm = req.query.searchTerm;
+    var otherCids = req.body;
     var cid = mongoose.Types.ObjectId(req.params.cid);
     var sT = new RegExp(searchTerm, 'i');
-
-    sGet.searchItem(sT, cid, function(err, res){
-      res.json({error: err, message: res});
+    sGet.searchItem(sT, cid, otherCids, function(err, response){
+      res.json({error: err, message: response});
     });
   }
 
@@ -57,8 +55,8 @@ var sGet = require("../../services/search/get");
   */
   function searchInOntology(req, res, next){
     var searchTerm = req.query.searchTerm;
-    sGet.searchInOntology(searchTerm, function(err, res){
-      res.json({error: err, message: res});
+    sGet.searchInOntology(searchTerm, function(err, response){
+      res.json({error: err, message: response});
     });
   }
 
@@ -68,8 +66,8 @@ var sGet = require("../../services/search/get");
   */
   function searchInOntologyWithInferences(req, res, next){
     var searchTerm = req.query.searchTerm;
-    sGet.searchInOntologyWithInferences(searchTerm, function(err, res){
-      res.json({error: err, message: res});
+    sGet.searchInOntologyWithInferences(searchTerm, function(err, response){
+      res.json({error: err, message: response});
     });
   }
 
@@ -81,8 +79,8 @@ var sGet = require("../../services/search/get");
     var searchTerms = req.body.searchTerm;
     var predicate = req.body.predicate;
     var getGraph = req.body.getGraph;
-    sGet.getOidFromOntology(searchTerms, predicate, getGraph, function(err, res){
-      res.json({error: err, message: res});
+    sGet.getOidFromOntology(searchTerms, predicate, getGraph, function(err, response){
+      res.json({error: err, message: response});
     });
   }
 

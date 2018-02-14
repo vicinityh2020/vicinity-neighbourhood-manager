@@ -18,7 +18,6 @@ router
   .get('/users/:id/items', apiController.getUserItems)
   .post('/users/', apiController.createUser)
   .put('/users/:id', apiController.updateUser) // enable: true or false; Let other updates?
-  .put('/users/:id/enabled', apiController.enableItem)
   .delete('/users/:id', apiController.removeUser)
 //Items
   .get('/items/:id', apiController.getItem)
@@ -29,11 +28,11 @@ router
   .get('/agents/:id/items', apiController.getAgentUsers)
   .post('/agents/', apiController.createAgent)
   .delete('/agents/:id', apiController.removeAgent)
-//Contracts
+//Friending
   .get('/partnership', apiController.partnershipFeeds)
   .post('/partnership', apiController.requestPartnership)
   .put('/partnership', apiController.managePartnership) // In payload --> accept, reject, cancel
-//Friending
+//Contracts
   .get('/contract', apiController.contractFeeds)
   .post('/contract', apiController.requestContract)
   .put('/contract', apiController.manageContract); // In payload --> accept, reject, cancel
