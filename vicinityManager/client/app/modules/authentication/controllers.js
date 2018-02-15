@@ -58,7 +58,7 @@ $(window).on('resize',function(){
                     var $user = $("#user");
                     var $pass = $("#pass");
 
-                     if(!response.error){
+                     if(!response.data.error){
                       //  Notification.success("Welcome to Vicinity!");
                        AuthenticationService.SetCredentials(response.data.message);
                        if($scope.rememberMe){AuthenticationService.SetRememberMeCookie(response.data.message);}
@@ -81,7 +81,20 @@ $(window).on('resize',function(){
                       }, 2000);
                      }
                   },
-                  function errorCallback(response){}
+                  function errorCallback(err){
+                    $scope.error = "Server error";
+
+                   //  Notification.error("Incorrect email or password");
+                    $scope.isError = true;
+                    $scope.dataLoading = false;
+                    $scope.password = "";
+
+                    setTimeout(function() {
+                      $user.removeClass("invalid");
+                      $pass.removeClass("invalid");
+                      $scope.dataLoading = false;
+                   }, 2000);
+                  }
                   );
                 };
 

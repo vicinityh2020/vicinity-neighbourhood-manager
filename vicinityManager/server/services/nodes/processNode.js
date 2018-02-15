@@ -125,8 +125,8 @@ function deletingNodes(adid, otherParams, callback){
     itemsRes = response;
   return commServer.callCommServer({}, 'users/' + adid, 'DELETE'); // Update node in commServer
   })
-  .then(function(response){
-    return commServer.callCommServer({}, 'groups/' + adid, 'DELETE'); })
+  // .then(function(response){
+  //   return commServer.callCommServer({}, 'groups/' + adid, 'DELETE'); })
   .then(function(response){
     logger.audit({user: otherParams.userMail, action: 'deleteNodes', item: adid });
     callback(adid, {'status':'success', 'items': itemsRes}) ;

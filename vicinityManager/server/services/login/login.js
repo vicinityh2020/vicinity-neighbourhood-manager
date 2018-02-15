@@ -27,9 +27,6 @@ function authenticate(userName, userRegex, pwd, callback) {
       }
     })
     .then(function(response){
-      logger.debug(userName);
-      logger.debug(myUser.email);
-      logger.debug(response);
       if ((userName.toLowerCase() === myUser.email.toLowerCase()) && response){
         o_id = mongoose.Types.ObjectId(myUser._id);
         userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1}, function(err, response){

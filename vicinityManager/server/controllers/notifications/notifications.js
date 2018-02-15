@@ -2,54 +2,38 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var notificationOp = require('../../models/vicinityManager').notification;
-var notifHelper = require('../../services/notifications/notificationsHelper');
 
-// FUNCTIONS accessed from frontend
+var notifHelper = require('../../services/notifications/notificationsHelper');
 
 /*
 Get notifications of user
 */
 function getNotificationsOfUser(req,res){
-
   var o_id = mongoose.Types.ObjectId(req.params.id);
-
-  notificationOp.find({addressedTo: {$in : [o_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentBy','avatar name').populate('addressedTo','name').populate('itemId','avatar name').exec(function(err,data){
-      if(err){
-        res.json({"error": true, "message": "Error fetching data"});
-      } else {
-        res.json({"error": false, "message": data});
-      }
-    });
+  notifHelper.getNotificationsOfUser(o_id, function(err,response){
+    res.json({error: err, message: response});
+  });
 }
 
 /*
 Get notifications of registrations
 */
 function getNotificationsOfRegistration(req,res){
-
-   notificationOp.find({type: 1, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
-     if(err){
-       res.json({"error": true, "message": "Error fetching data"});
-     } else {
-       res.json({"error": false, "message": data});
-     }
-   });
+  notifHelper.getNotificationsOfRegistration(function(err,response){
+    res.json({error: err, message: response});
+  });
 }
 
 /*
 Get notifications of user based on date
 */
 function getAllUserNotifications(req,res){
+  var searchDate = req.query.hasOwnProperty('searchDate') ? req.query.searchDate : new Date(2017, 1, 1);
 
-  var dateFrom = notifHelper.objectIdWithTimestamp(req.query.searchDate);
-
+  var dateFrom = notifHelper.objectIdWithTimestamp(searchDate);
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar name').populate('addressedTo','name').populate('itemId','avatar name').exec(function(err,data){
-    if(err){
-      res.json({"error": true, "message": "Error fetching data"});
-    } else {
-      res.json({"error": false, "message": data});
-    }
+  notifHelper.getAllUserNotifications(o_id, dateFrom, function(err,response){
+    res.json({error: err, message: response});
   });
 }
 
@@ -57,28 +41,18 @@ function getAllUserNotifications(req,res){
 Get notifications of registrations based on date
 */
 function getAllRegistrations(req,res){
-
   var dateFrom = notifHelper.objectIdWithTimestamp(req.query.searchDate);
-
-  notificationOp.find({type: 1, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
-    if(err){
-      res.json({"error": true, "message": "Error fetching data"});
-    } else {
-      res.json({"error": false, "message": data});
-    }
+  notifHelper.getAllRegistrations(dateFrom, function(err,response){
+    res.json({error: err, message: response});
   });
 }
 
 // Functions to manipulate notifications
 function changeToResponded(req,res){
-var o_id = mongoose.Types.ObjectId(req.params.id);
-var stat = req.query.status;
-  notificationOp.findByIdAndUpdate(o_id, { $set: { status: stat, isUnread: false }}, { new: true }, function (err, notif) {
-    if (err) {
-      res.json({"error": true, "message": "Error fetching data"});
-    } else {
-      res.json({"error": false, "message": notif});
-    }
+  var o_id = mongoose.Types.ObjectId(req.params.id);
+  var stat = req.query.status;
+  notifHelper.changeToResponded(o_id, stat, function(err,response){
+    res.json({error: err, message: response});
   });
 }
 
@@ -86,19 +60,11 @@ var stat = req.query.status;
 // Accepts single string or array
 
 function changeIsUnreadToFalse(req, res){
-  var o_id = [];
-  if(req.params.id && req.params.id !== '0'){
-    o_id.push(mongoose.Types.ObjectId(req.params.id));
-    notifHelper.setAsRead(o_id)
-    .then(function(response){res.json({"error": false, "message": "Notifications processed succesfully!"});})
-    .catch(function(error){res.json({"error": true, "message": "Error fetching data"});});
-  } else if(req.body.ids){
-    notifHelper.setAsRead(req.body.ids)
-    .then(function(response){res.json({"error": false, "message": "Notifications processed succesfully!"});})
-    .catch(function(error){res.json({"error": true, "message": "Error fetching data"});});
-  } else {
-    res.json({"error": true, "message": "Error fetching data"});
-  }
+  var id = req.params.id;
+  var ids = req.body.ids;
+  notifHelper.changeIsUnreadToFalse(id, ids, function(err,response){
+    res.json({error: err, message: response});
+  });
 }
 
 

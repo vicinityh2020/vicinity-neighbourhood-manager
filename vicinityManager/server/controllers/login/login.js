@@ -12,8 +12,6 @@ function authenticate(req, res, next) {
   var userName = req.body.username;
   var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
   var pwd = req.body.password;
-  logger.debug(req.headers);
-  logger.debug(req.body);
   sLogin.authenticate(userName, userRegex, pwd, function(err, response){
     res.json({error: err, message: response});
   });

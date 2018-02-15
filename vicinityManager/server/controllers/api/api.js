@@ -4,14 +4,24 @@ var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 
 var sLogin = require('../../services/login/login');
+var sRegister = require("../../services/registrations/register.js");
+var sGetNodeItems = require("../../services/nodes/get.js");
 
 // Main functions - VCNT API
 
 /*
-Authenticate
+Authenticate --------------------------------------------------
 */
 
 /* Check user and password. */
+
+/**
+ * Authenticates a user
+ *
+ * @param {Object} data
+ * password, userName
+ * @return {String} token
+ */
 function authenticate(req, res, next) {
   var userName = req.body.username;
   var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
@@ -22,7 +32,7 @@ function authenticate(req, res, next) {
 }
 
 /*
-Organisations
+Organisations --------------------------------------------------
 */
 
 function getFriends(req, res, next) {
@@ -41,8 +51,19 @@ function getServices(req, res, next) {
     res.json({error: false, message: "Endpoint under development..."});
 }
 
+/**
+ * Creates a registration request that needs to be approved
+ *
+ * @param {Object} data
+ * password, userName, email, occupation, companyName, companyLocation, status = open,
+ * businessId, termsAndConditions, type = newCompany
+ * @return {String} Acknowledgement
+ */
 function createOrganisation(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var data = req.body;
+  sRegister.requestReg(data, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 function removeOrganisation(req, res, next) {
@@ -50,7 +71,7 @@ function removeOrganisation(req, res, next) {
 }
 
 /*
-Users
+Users --------------------------------------------------
 */
 
 function getUser(req, res, next) {
@@ -61,8 +82,19 @@ function getUserItems(req, res, next) {
     res.json({error: false, message: "Endpoint under development..."});
 }
 
+/**
+ * Creates a new user
+ *
+ * @param {Object} data
+ * password, userName, email, occupation, companyName, companyLocation, status = pending,
+ * businessId, termsAndConditions, type = newUser
+ * @return {String} Acknowledgement
+ */
 function createUser(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var data = req.body;
+  sRegister.requestReg(data, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 function updateUser(req, res, next) {
@@ -74,7 +106,7 @@ function removeUser(req, res, next) {
 }
 
 /*
-Items
+Items --------------------------------------------------
 */
 
 function getItem(req, res, next) {
@@ -94,11 +126,22 @@ function removeItem(req, res, next) {
 }
 
 /*
-Agents
+Agents --------------------------------------------------
 */
 
+/**
+ * Creates a new user
+ *
+ * @param {Object} data
+ * adid
+ * @return {Object} TDs -- Array of Objects, adid -- String
+ */
 function getAgentUsers(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var adid = req.body;
+  // TODO check if the requester org is authorized to see the agent items
+  sGetNodeItems.getNodeItems(adid, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 function createAgent(req, res, next) {
@@ -110,7 +153,7 @@ function removeAgent(req, res, next) {
 }
 
 /*
-Contracts
+Friending --------------------------------------------------
 */
 
 function partnershipFeeds(req, res, next) {
@@ -126,7 +169,7 @@ function managePartnership(req, res, next) {
 }
 
 /*
-Friending
+Contracts --------------------------------------------------
 */
 
 function contractFeeds(req, res, next) {
@@ -141,7 +184,7 @@ function manageContract(req, res, next) {
     res.json({error: false, message: "Endpoint under development..."});
 }
 
-// Export functions
+// Export functions --------------------------------------------------
 
 module.exports.authenticate = authenticate;
 
