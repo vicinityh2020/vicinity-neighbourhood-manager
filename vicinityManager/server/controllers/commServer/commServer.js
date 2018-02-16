@@ -68,7 +68,7 @@ input idem as registration + oid
 */
 function updateItems(req, res){
   var data = req.body;
-  var adid = data.adid;
+  var adid = data.agid;
   var oids = [];
   for(var i = 0; i < data.thingDescriptions.length; i++){
     oids.push(data.thingDescriptions[i].oid);

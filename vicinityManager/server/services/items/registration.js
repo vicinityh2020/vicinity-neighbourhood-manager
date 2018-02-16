@@ -20,7 +20,7 @@ Message producing the req is sent by the agent with thingDescriptions
 */
 function create(data, callback){
   var objectsArray = data.thingDescriptions;
-  var adid = data.adid;
+  var adid = data.adid !== undefined ? data.adid : data.agid;
 
   console.time("ALL REGISTRATION EXECUTION");
   console.time("REGISTRATION FIX PART");
