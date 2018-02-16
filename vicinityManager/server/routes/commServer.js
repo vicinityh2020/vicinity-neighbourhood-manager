@@ -3,7 +3,7 @@ var router = express.Router();
 
 var controllers = require('../controllers/commServer/commServer');
 
-// Endpoints accessible from the commServer
+// Endpoints accessible from the gateway
 
 router
 // items

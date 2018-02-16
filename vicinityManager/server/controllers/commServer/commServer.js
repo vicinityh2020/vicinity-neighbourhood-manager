@@ -10,21 +10,31 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
 
 // Public functions
 
-/*
-Create items
-*/
+/**
+ * Create items
+ *
+ * @param {Object} data
+ * adid (string), TDs (array of objects) without OID
+ * @return {Array}
+ * array of {oid, infra-id, password, id}
+ */
 function registration(req, res){
+  logger.debug('You are REGISTERING...');
   var data = req.body;
   sRegistration.create(data, function(err, response){
     res.json({error: err, message: response});
   });
 }
 
-/*
-Search for items
-input oids
-output TDs
-*/
+
+/**
+ * Search for items
+ *
+ * @param {Array} oids
+ *
+ * @return {Array} TDs
+ *
+ */
 function searchItems(req, res){
   var data = req.body;
   sSearch.searchItems(data, function(err, response){
@@ -32,15 +42,32 @@ function searchItems(req, res){
   });
 }
 
-/*
-Delete items
-input oids
-*/
+/**
+ * Delete items
+ *
+ * @param {Array} oids
+ * @param {String} agid
+ * @return {String} success/error
+ *
+ */
 function deleteItems(req, res){
+  logger.debug('You are DELETING...');
+  var adid = req.body.agid;
   var data = req.body.oids;
-  sDelItems.deleteItems(data)
-  .then(function(response){res.json({"error": false, "message": response});})
-  .catch(function(err){res.json({"error": true, "message": err});});
+  nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
+  .then(function(response){
+    var toRemove = [];
+    for(var i = 0; i < data.length; i++){
+      for(var j = 0; j < response.hasItems.length; j++){
+        if(data[i] === response.hasItems[j].extid){
+          toRemove.push(data[i]);
+        }
+      }
+    }
+    return sDelItems.deleteItems(toRemove); // TODO send toRemove
+  })
+  .then(function(response){ res.json({"error": false, "message": response});})
+  .catch(function(err){ res.json({"error": true, "message": err});});
 }
 
 /*
@@ -61,12 +88,18 @@ function disableItems(req, res){
   res.json({error:false, message:"not implemented"});
 }
 
-/*
-Update items
-Delete & create
-input idem as registration + oid
-*/
+ /**
+ *  Update items
+ *  Delete & create
+ *  input idem as registration + oid
+ *
+ * @param {Object} data
+ * adid (string), TDs (array of objects) with OID
+ * @return {Array}
+ * array of {oid, infra-id, password, id}
+ */
 function updateItems(req, res){
+  logger.debug('You are UPDATING...');
   var data = req.body;
   var adid = data.agid;
   var oids = [];
@@ -83,11 +116,16 @@ function updateItems(req, res){
   .catch(function(err){res.json({"error": true, "message": err});});
 }
 
-/*
-Get all items under Agent with TD
-Retrieve last agent status
+/**
+* Get all items under Agent with TD
+* Retrieve last agent status
+* @param {String} agid
+* adid (string), TDs (array of objects) without OID
+* @return {Array}
+* array of {TDs
 */
 function getAgentItems(req, res){
+  logger.debug('You are getting the CONFIG...');
   var id = req.params.adid;
   sGetNodeItems.getNodeItems(id, function(err, response){
     res.json({error: err, message: response});
