@@ -31,9 +31,10 @@ angular.module('Authentication')
             if (authResponse) {
               $window.sessionStorage.token = (authResponse.token) || {};
               var tok = tokenDecoder.deToken();
-              $window.sessionStorage.username = (tok.name) || {};
+              $window.sessionStorage.username = (tok.sub) || {};
               $window.sessionStorage.userAccountId = (tok.uid) || {};
-              $window.sessionStorage.companyAccountId = (tok.cid) || {};
+              $window.sessionStorage.companyAccountId = (tok.orgid) || {};
+              $window.sessionStorage.cid = (tok.cid) || {};
               $http.defaults.headers.common['x-access-token'] = $window.sessionStorage.token;
             }
           };
@@ -41,6 +42,9 @@ angular.module('Authentication')
           service.ClearCredentials = function(){
             $window.sessionStorage.removeItem('token');
             $window.sessionStorage.removeItem('username');
+            $window.sessionStorage.removeItem('userAccountId');
+            $window.sessionStorage.removeItem('companyAccountId');
+            $window.sessionStorage.removeItem('cid');
             $http.defaults.headers.common['x-access-token'] = "";
           };
 

@@ -20,7 +20,7 @@ function processFriendRequest(req, res, next) {
   //TODO: Issue #6 check double requests;
   //TODO: Issue #6 check transactions;
     var friend_id = mongoose.Types.ObjectId(req.params.id);
-    var my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+    var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var me, friend;
 
     companyAccountOp.findById(my_id)
@@ -88,7 +88,7 @@ function acceptFriendRequest(req, res, next) {
     //TODO: Issue #6 update friendship counts.
 
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var me, friend;
 
     companyAccountOp.findById(my_id)
@@ -157,7 +157,7 @@ function rejectFriendRequest(req, res, next) {
     //TODO: Issue #6 update friendship counts.
 
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var me, friend;
 
     companyAccountOp.findById(my_id)
@@ -219,7 +219,7 @@ function rejectFriendRequest(req, res, next) {
 function cancelFriendRequest(req, res, next){
 
   friend_id = mongoose.Types.ObjectId(req.params.id);
-  my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+  my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var me, friend;
 
   companyAccountOp.findById(my_id)
@@ -284,7 +284,7 @@ function cancelFriendship(req, res, next){
 
     // console.log("Running cancelation of friendship!");
     friend_id = mongoose.Types.ObjectId(req.params.id);
-    my_id = mongoose.Types.ObjectId(req.body.decoded_token.cid);
+    my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var me, friend;
 
     companyAccountOp.findById(my_id)

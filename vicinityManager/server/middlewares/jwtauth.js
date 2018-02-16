@@ -15,7 +15,6 @@ module.exports = function(req, res, next) {
       } else {
         req.body.token = token;
         req.body.decoded_token = decoded;
-
         return next();
       }
     } catch (err) {

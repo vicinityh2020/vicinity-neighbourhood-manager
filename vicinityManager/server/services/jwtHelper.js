@@ -2,26 +2,20 @@ var jwt = require('jwt-simple');
 var config = require('../configuration/configuration');
 var moment = require('moment');
 
-module.exports.jwtEncode = function(username, roles, userAccountId, companyAccountId){
+module.exports.jwtEncode = function(userAccountId, email, roles, companyAccountId, cid){
 
     var key = config.jwtTokenSecret;
     var expires = moment().add(7, 'days').valueOf();
     var token = jwt.encode({
         iss: 'vicinityManager',
-        sub: username,
+        sub: email,
         exp: expires,
         roles: roles,
-        name: username,
         uid: userAccountId,
-        cid: companyAccountId
-        // context: {name: username, uid: userAccountId, cid: companyAccountId}
+        orgid: companyAccountId,
+        cid: cid
     }, config.jwtTokenSecret);
-    var response = {
-      token: token};
-      // expires: expires,
-      // username: username,
-      // userAccountId: userAccountId,
-      // companyAccountId: companyAccountId};
+    var response = {token: token};
     return response;
   };
 

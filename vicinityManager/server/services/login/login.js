@@ -29,8 +29,8 @@ function authenticate(userName, userRegex, pwd, callback) {
     .then(function(response){
       if ((userName.toLowerCase() === myUser.email.toLowerCase()) && response){
         o_id = mongoose.Types.ObjectId(myUser._id);
-        userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1}, function(err, response){
-          var credentials = jwt.jwtEncode(userName, myUser.authentication.principalRoles, myUser._id, response[0]._id);
+        userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1, cid:1}, function(err, response){
+          var credentials = jwt.jwtEncode(myUser._id, userName, myUser.authentication.principalRoles, response[0]._id, response[0].cid);
           callback(false, credentials);
           logger.audit({user: userName, action: 'login'});
         });
@@ -125,7 +125,7 @@ function updateCookie(o_id_cookie, token, updates, callback) {
   var decoded = jwt.jwtDecode(token);
   var o_id_user = mongoose.Types.ObjectId(decoded.uid);
   userOp.findById(o_id_user, function(err, dataUser){  // Load roles from user collection because they may change during a session
-    var newToken = jwt.jwtEncode(dataUser.email, dataUser.authentication.principalRoles, decoded.uid, decoded.cid);
+    var newToken = jwt.jwtEncode(decoded.uid, dataUser.email, dataUser.authentication.principalRoles, decoded.orgid, decoded.cid);
     updates.token = newToken.token;
     rememberOp.findByIdAndUpdate(o_id_cookie, {$set: updates}, { new: true }, function(err, data){
       if(!err){

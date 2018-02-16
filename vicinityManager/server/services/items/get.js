@@ -19,7 +19,7 @@ Receives following parameters:
 - Type of item of interest: device or service
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
-function getMyItems(oid, type, offset, cid, callback) {
+function getMyItems(o_id, type, offset, cid, callback) {
   var query;
 
   userAccountOp.findOne(o_id, {knows: 1})

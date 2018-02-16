@@ -80,7 +80,7 @@ function getUserAccountFacade(req, res, next) {
             var requestsFrom = parsedData.knowsRequestsFrom;
             var requestTo = parsedData.knowsRequestsTo;
 
-              if (req.params.id === req.body.decoded_token.cid){
+              if (req.params.id === req.body.decoded_token.orgid){
                   isNeighbour = false;
                   canSendNeighbourRequest = false;
                   canCancelNeighbourRequest = false;
@@ -89,7 +89,7 @@ function getUserAccountFacade(req, res, next) {
               } else {
                   // Check wheather we are neihbours
                   for(var index = 0; index < myNeighbors.length; index++){
-                      if (myNeighbors[index].id._id.toString() === req.body.decoded_token.cid.toString()) {
+                      if (myNeighbors[index].id._id.toString() === req.body.decoded_token.orgid.toString()) {
                           isNeighbour = true;
                           canSendNeighbourRequest = false;
                       }
@@ -97,7 +97,7 @@ function getUserAccountFacade(req, res, next) {
                   //Check whether authenticated user received or sent neighbour request to requested profile
                   //Check whether authenticated user can be canceled sent neighbour request to requested profile
                     for (index = 0; index < requestsFrom.length; index++) {
-                      if (requestsFrom[index].id.toString() === req.body.decoded_token.cid.toString()) {
+                      if (requestsFrom[index].id.toString() === req.body.decoded_token.orgid.toString()) {
                         canSendNeighbourRequest = false;
                         canCancelNeighbourRequest = true;
                       }
@@ -105,7 +105,7 @@ function getUserAccountFacade(req, res, next) {
 
                   //Check whether authenticated user can cancel sent request
                     for (index = 0; index < requestTo.length; index++) {
-                      if (requestTo[index].id.toString() === req.body.decoded_token.cid.toString()) {
+                      if (requestTo[index].id.toString() === req.body.decoded_token.orgid.toString()) {
                         canSendNeighbourRequest = false;
                         canAnswerNeighbourRequest = true;
                       }

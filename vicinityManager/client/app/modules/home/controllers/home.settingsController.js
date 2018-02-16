@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('settingsController',
-function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, userAccountAPIService, itemsAPIService, invitationsAPIService, userAPIService, AuthenticationService, notificationsAPIService, Notification) {
+function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, tokenDecoder, userAccountAPIService, invitationsAPIService, userAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -35,11 +35,9 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, use
         var index = 0;
         for (index in $scope.comp.accountOf){
           if ($scope.comp.accountOf[index].id._id.toString() === $window.sessionStorage.userAccountId.toString()){
-            var index2 = 0;
-            for (index2 in $scope.comp.accountOf[index].id.authentication.principalRoles){
-              if ($scope.comp.accountOf[index].id.authentication.principalRoles[index2] == "administrator"){
-                $scope.isAdmin = true;
-              }
+            var payload = tokenDecoder.deToken();
+            if(payload.roles.indexOf('administrator') !== -1){
+              $scope.isAdmin = true;
             }
           }
         }
