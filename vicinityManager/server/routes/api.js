@@ -29,9 +29,9 @@ router
   .post('/agents/', apiController.createAgent)
   .delete('/agents/:id', apiController.removeAgent)
 //Friending
-  .get('/partnership', apiController.partnershipFeeds)
-  .post('/partnership', apiController.requestPartnership)
-  .put('/partnership', apiController.managePartnership) // In payload --> accept, reject, cancel
+  .get('/partnership', jwt, apiController.partnershipFeeds)
+  .post('/partnership', jwt, apiController.requestPartnership)
+  .put('/partnership', jwt, apiController.managePartnership) // In payload --> accept, reject, cancel
 //Contracts
   .get('/contract', apiController.contractFeeds)
   .post('/contract', apiController.requestContract)

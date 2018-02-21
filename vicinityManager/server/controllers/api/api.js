@@ -7,6 +7,7 @@ var sLogin = require('../../services/login/login');
 var sRegister = require("../../services/registrations/register.js");
 var sInviteUser = require("../../services/invitations/invitations.js");
 var sGetNodeItems = require("../../services/nodes/get.js");
+var sFriending = require("../../services/organisations/friending");
 
 // Main functions - VCNT API
 
@@ -160,16 +161,75 @@ function removeAgent(req, res, next) {
 Friending --------------------------------------------------
 */
 
+/**
+ * Get friendship notifications
+ *
+ * @param null
+ *
+ * @return {Object} Friendship notifications
+ */
 function partnershipFeeds(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  sFriending.friendshipFeeds(my_id, function(err, response){
+    res.json({"error": err, "message": response});
+  });
 }
 
+/**
+ * Get friendship notifications
+ *
+ * @param {String} friend_id
+ *
+ * @return {String} Acknowledgement
+ */
 function requestPartnership(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var friend_id = mongoose.Types.ObjectId(req.body.id);
+  var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var my_mail = req.body.decoded_token.sub;
+  sFriending.processFriendRequest(friend_id, my_id, my_mail, function(err, response){
+    res.json({"error": err, "message": response});
+  });
 }
 
+/**
+ * Get friendship notifications
+ *
+ * @param {String} friend_id
+ * @param {String} type
+ *
+ * @return {String} Acknowledgement
+ */
 function managePartnership(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var friend_id = mongoose.Types.ObjectId(req.body.id);
+  var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var my_mail = req.body.decoded_token.sub;
+  var type = req.body.type;
+
+  switch(type) {
+    case "accept":
+        sFriending.acceptFriendRequest(friend_id, my_id, my_mail, function(err, response){
+          res.json({"error": err, "message": response});
+        });
+        break;
+    case "reject":
+        sFriending.rejectFriendRequest(friend_id, my_id, my_mail, function(err, response){
+          res.json({"error": err, "message": response});
+        });
+        break;
+    case "cancelRequest":
+        sFriending.cancelFriendRequest(friend_id, my_id, my_mail, function(err, response){
+          res.json({"error": err, "message": response});
+        });
+        break;
+    case "cancel":
+        sFriending.cancelFriendship(friend_id, my_id, my_mail, function(err, response){
+          res.json({"error": err, "message": response});
+        });
+        break;
+    default:
+      res.json({"error": true, "message": "Wrong type"});
+      break;
+    }
 }
 
 /*
