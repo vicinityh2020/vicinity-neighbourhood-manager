@@ -237,7 +237,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
           .then(function(response){ // add user to organisation list of accounts
             orgData = response;
             var user_id = { id: mongoose.Types.ObjectId(userData._id), extid: userData.email};
-            orgData.accountOf.push(user_id);
+            orgData.accountOf.push(dbUser.cid);
             return orgData.save();
           })
           .then(function(response){ // add organisation cid schema to user
