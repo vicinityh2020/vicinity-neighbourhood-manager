@@ -169,6 +169,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
   dbUser.email =raw.email;
   dbUser.authentication.hash = raw.hash;
   dbUser.authentication.principalRoles[0] ="user";
+  dbUser.cid = {id: raw.companyId, extid: raw.cid};
 
 // Case new company registration
 

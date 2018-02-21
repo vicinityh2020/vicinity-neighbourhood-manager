@@ -4,13 +4,13 @@ var logger = require("../../middlewares/logger");
 
 function postOne(req, res, next) {
   var userName = req.body.decoded_token.name;
-  // var cid = req.body.decoded_token.cid;
-  // var companyId = req.body.decoded_token.orgid;
+  var cid = req.body.decoded_token.cid;
+  var companyId = req.body.decoded_token.orgid;
   var organisation = req.body.organisation;
   var emailTo = req.body.emailTo;
   var nameTo = req.body.nameTo;
   var type = req.body.type;
-  sInvitations.postOne(userName, organisation, emailTo, nameTo, type, function(err, data){
+  sInvitations.postOne(userName, companyId, cid, organisation, emailTo, nameTo, type, function(err, data){
       res.json({"error": err, "message": data});
   });
 }

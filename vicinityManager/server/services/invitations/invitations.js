@@ -14,21 +14,21 @@ function getOne(o_id, callback) {
   });
 }
 
-function postOne(userName, organisation, emailTo, nameTo, type, callback) {
+function postOne(userName, companyId, cid, organisation, emailTo, nameTo, type, callback) {
   var db = new invitationOp();
   var mailInfo;
   var thisLink, thisTmp, thisName, thisOrg;
 
-  db.emailTo = req.body.emailTo;
-  db.nameTo = req.body.nameTo;
+  db.emailTo = emailTo;
+  db.nameTo = nameTo;
   db.sentBy =
       {
-        // companyId: companyId,
-        // cid: cid,
+        companyId: companyId,
+        cid: cid,
         organisation: organisation,
         email: userName
       };
-  db.type = req.body.type;
+  db.type = type;
 
   db.save()
   .then(function(product){

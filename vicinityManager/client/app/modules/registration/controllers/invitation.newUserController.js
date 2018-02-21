@@ -35,6 +35,7 @@ angular.module('Registration')
        var results = response.data.message;
        $scope.companynameUs = results.sentBy.organisation;
        $scope.companyIdUs = results.sentBy.companyId;
+       $scope.cid = results.sentBy.cid;
      },
       function errorCallback(response){}
     );
@@ -49,7 +50,7 @@ angular.module('Registration')
   if ($scope.password1Us){
     if ($scope.password1Us === $scope.password2Us){
       if($scope.duplicities.length === 0){
-      registrationsAPIService.postOne({userName: $scope.nameUs, email: $scope.emailUs, password: $scope.password1Us, occupation: $scope.occupationUs, companyName: $scope.companynameUs , companyId:$scope.companyIdUs ,companyLocation: "", status: "pending", type: "newUser"})
+      registrationsAPIService.postOne({userName: $scope.nameUs, email: $scope.emailUs, password: $scope.password1Us, occupation: $scope.occupationUs, companyName: $scope.companynameUs ,companyId:$scope.companyIdUs, cid: $scope.cid, companyLocation: "", status: "pending", type: "newUser"})
         .then(
           function successCallback(response){
             $('div#newUserInfo').fadeOut('slow');
