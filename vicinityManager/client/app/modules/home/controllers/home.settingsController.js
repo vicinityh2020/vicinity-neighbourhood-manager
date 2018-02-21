@@ -72,11 +72,7 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, tok
       var data = {
           emailTo: $scope.emailCompany,
           nameTo: $scope.nameCompany,
-          sentBy:
-            {name: $scope.user.name,
-              companyId: $window.sessionStorage.companyAccountId,
-              organisation: $scope.comp.organisation,
-              email: $scope.user.email},
+          organisation: $scope.comp.organisation,
           type: "newCompany"};
       invitationsAPIService.postOne(data)
       .then(
@@ -98,11 +94,7 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, tok
       var data = {
           emailTo: $scope.emailUser,
           nameTo: $scope.nameUser,
-          sentBy:
-            {name: $scope.user.name,
-              companyId: $window.sessionStorage.companyAccountId,
-              organisation: $scope.comp.organisation,
-              email: $scope.user.email},
+          organisation: $scope.comp.organisation,
           type: "newUser"};
 
       invitationsAPIService.postOne(data)

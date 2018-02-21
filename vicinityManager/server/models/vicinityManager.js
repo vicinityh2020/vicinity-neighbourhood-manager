@@ -119,11 +119,12 @@ var invitation = new Schema({
     emailTo: String,
     nameTo: String,
     sentBy: {
-        name: String,
         companyId: { type: ObjectId, ref: 'userAccount'},
+        cid: String,
         organisation: String,
         email: String
     },
+    used: {type: Boolean, default: false },
     type: {type: String, enum: ['newCompany','newUser']}
 });
 

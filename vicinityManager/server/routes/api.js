@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var jwt = require("../middlewares/jwtauth");
 var apiController = require('../controllers/api/api.js');
 
 router
@@ -16,7 +16,7 @@ router
 //Users
   .get('/users/:id', apiController.getUser)
   .get('/users/:id/items', apiController.getUserItems)
-  .post('/users/', apiController.createUser)
+  .post('/users/', jwt, apiController.createUser)
   .put('/users/:id', apiController.updateUser) // enable: true or false; Let other updates?
   .delete('/users/:id', apiController.removeUser)
 //Items

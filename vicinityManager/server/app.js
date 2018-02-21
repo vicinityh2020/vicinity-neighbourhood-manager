@@ -62,8 +62,8 @@ app.use('/items', [jwtauth, items]);  // TODO add JWAUTH back !!!
 app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
 app.use('/search', [jwtauth, search]);
-app.use('/audit', [audit]);
-app.use('/invitations', [invitations]);
+app.use('/audit', [jwtauth, audit]);
+app.use('/invitations', [jwtauth, invitations]);
 app.use('/registrations', [registrations]);
 
 /*

@@ -5,6 +5,7 @@ var logger = require("../../middlewares/logger");
 
 var sLogin = require('../../services/login/login');
 var sRegister = require("../../services/registrations/register.js");
+var sInviteUser = require("../../services/invitations/invitations.js");
 var sGetNodeItems = require("../../services/nodes/get.js");
 
 // Main functions - VCNT API
@@ -13,10 +14,8 @@ var sGetNodeItems = require("../../services/nodes/get.js");
 Authenticate --------------------------------------------------
 */
 
-/* Check user and password. */
-
 /**
- * Authenticates a user
+ * Authenticates a user. Check user and password.
  *
  * @param {Object} data
  * password, userName
@@ -55,7 +54,7 @@ function getServices(req, res, next) {
  * Creates a registration request that needs to be approved
  *
  * @param {Object} data
- * password, userName, email, occupation, companyName, companyLocation, status = open,
+ * password, userName, email, occupation, companyName, companyLocation,
  * businessId, termsAndConditions, type = newCompany
  * @return {String} Acknowledgement
  */
@@ -83,16 +82,21 @@ function getUserItems(req, res, next) {
 }
 
 /**
- * Creates a new user
+ * Invites a user
  *
  * @param {Object} data
- * password, userName, email, occupation, companyName, companyLocation, status = pending,
- * businessId, termsAndConditions, type = newUser
+ * organisation, emailTo, nameTo
  * @return {String} Acknowledgement
  */
 function createUser(req, res, next) {
-  var data = req.body;
-  sRegister.requestReg(data, function(err, response){
+  var userName = req.body.decoded_token.name;
+  // var cid = req.body.decoded_token.cid;
+  // var companyId = req.body.decoded_token.orgid;
+  var organisation = req.body.organisation; // name
+  var emailTo = req.body.emailTo;
+  var nameTo = req.body.nameTo;
+  var type = "newUser";
+  sInviteUser.postOne(userName, organisation, emailTo, nameTo, type, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -130,7 +134,7 @@ Agents --------------------------------------------------
 */
 
 /**
- * Creates a new user
+ * Get agent items
  *
  * @param {Object} data
  * adid

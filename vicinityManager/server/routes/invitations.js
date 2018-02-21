@@ -5,9 +5,7 @@ var postHelper = require('../controllers/invitations/post.js');
 var getHelper = require('../controllers/invitations/get.js');
 
 router
-
   .post('/', postHelper.postOne)
-  .get('/', getHelper.getAll)
   .get('/:id', getHelper.getOne);
 
 module.exports = router;
