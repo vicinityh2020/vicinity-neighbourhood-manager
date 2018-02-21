@@ -135,6 +135,7 @@ var registration = new Schema({
     salt: String,
     occupation: String,
     companyId: { type: ObjectId, ref: 'userAccount'},
+    cid: String,
     companyName: String,
     companyLocation: String,
     termsAndConditions: Boolean,

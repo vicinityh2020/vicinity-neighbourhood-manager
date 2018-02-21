@@ -71,6 +71,7 @@ function requestReg(data, callback) {
   db.companyName = data.companyName;
   db.companyLocation = data.companyLocation;
   db.companyId = data.companyId; // Only when registering new user
+  db.cid = data.cid; // Only when registering new user
   db.status = (!data.status || data.status !== 'pending') ? "open" : data.status;
   db.businessId = data.businessId;
   db.termsAndConditions = data.termsAndConditions;
