@@ -33,6 +33,7 @@ angular.module('Registration')
       .then(
        function successCallback(response){
        var results = response.data.message;
+       $scope.alreadyUsed = results.used;
        $scope.companynameUs = results.sentBy.organisation;
        $scope.companyIdUs = results.sentBy.companyId;
        $scope.cid = results.sentBy.cid;

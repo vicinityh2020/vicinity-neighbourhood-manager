@@ -5,7 +5,7 @@ var logger = require("../../middlewares/logger");
 
 function getOne(o_id, callback) {
   // Not set the flag {new: true} --> returns old doc!
-  invitationOp.findByIdAndUpdate(o_id, {$set: {used: true}}, function(err, data){
+  invitationOp.findByIdAndUpdate(o_id, {$set: {used: true}}, {new: false}, function(err, data){
     if (err) {
       callback(true, err);
     } else {

@@ -36,6 +36,7 @@ angular.module('Registration')
           .then(
            function successCallback(response){
            var results = response.data.message;
+           $scope.alreadyUsed = results.used;
            $scope.companynameReg = results.nameTo;
            $scope.emailReg = results.emailTo;
            $scope.companyIdUs = results.sentBy.companyId;

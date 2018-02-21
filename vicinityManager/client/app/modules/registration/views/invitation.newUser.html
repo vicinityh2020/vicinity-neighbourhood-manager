@@ -1,4 +1,4 @@
-<div class="login-box">
+<div class="login-box" ng-show="!alreadyUsed">
   <div class="login-logo">
     <img src="img/logos/vicinity_logo.png"/>
   </div>
@@ -67,6 +67,15 @@
 
     </div>
   </div>
+
+<div ng-show="alreadyUsed">
+  <div class="login-logo">
+    <img src="img/logos/vicinity_logo.png"/>
+  </div>
+  <div>
+    <h3 style="color: green" class="login-box-msg" >This invitation has expired <i class="fa fa-times fa-3x" style="color: red"></i></h3>
+  </div>
+</div>
 
   <!-- Terms and conditions -->
 
