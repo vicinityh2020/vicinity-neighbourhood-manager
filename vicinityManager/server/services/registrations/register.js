@@ -226,7 +226,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
           userAccountId = mongoose.Types.ObjectId(raw.companyId);
           return audits.putAuditInt(
             raw.companyId,
-            { orgOrigin: raw.companyId,
+            { orgOrigin: {id: raw.companyId, extid: raw.cid},
               user: userData.email,
               auxConnection: {kind: 'user', item: userData._id},
               eventType: 11 });
