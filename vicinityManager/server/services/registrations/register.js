@@ -236,12 +236,12 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
           })
           .then(function(response){ // add user to organisation list of accounts
             orgData = response;
-            var user_id = { id: mongoose.Types.ObjectId(userData._id), extid: userData.email};
-            orgData.accountOf.push(dbUser.cid);
+            var user_id = {id: userData._id, extid: userData.email};
+            orgData.accountOf.push(user_id);
             return orgData.save();
           })
           .then(function(response){ // add organisation cid schema to user
-            userData.cid = {id: mongoose.Types.ObjectId(raw.companyId), extid: orgData.cid};
+            userData.cid = {id: raw.companyId, extid: orgData.cid};
             return userData.save();
           })
           .then(function(response){
