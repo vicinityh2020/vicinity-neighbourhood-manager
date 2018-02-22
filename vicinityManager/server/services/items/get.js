@@ -19,32 +19,40 @@ Receives following parameters:
 - Type of item of interest: device or service
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
-function getMyItems(o_id, type, offset, cid, callback) {
+function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
   var query;
 
-  userAccountOp.findOne(o_id, {knows: 1})
+  userAccountOp.findOne(cid, {knows: 1})
   .then(function(response){
     var parsedData = response.toObject();
     var friends = [];
     if(parsedData.knows != null){
         getIds(parsedData.knows, friends);
     }
-    if(o_id.toString() === cid.toString()){ // Need to compare strings instead of BSON
-      query = { typeOfItem: type, 'cid.id': o_id, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
+
+    if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
+      query = {'cid.id': cid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
     } else {
-      if(friends.indexOf(cid) !== -1) {
-        query = { typeOfItem: type, 'cid.id': o_id, accessLevel: { $gte:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
+      if(friends.indexOf(mycid) !== -1) {
+        query = {'cid.id': cid, accessLevel: { $gte:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
       } else {
-        query = { typeOfItem: type, 'cid.id': o_id, accessLevel: { $gte:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
+        query = {'cid.id': cid, accessLevel: { $gte:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
       }
     }
-    itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
-      var dataWithAdditional = itemProperties.getAdditional(data,o_id,friends); // Not necessary to know friends because I am always owner
+
+    if( type !== "all" ){ query.typeOfItem = type; }
+
+    itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
         callback(true, err);
       } else {
-        callback(false, dataWithAdditional);
+        if(api){
+          callback(false, data);
+        } else {
+          var dataWithAdditional = itemProperties.getAdditional(data,cid,friends); // Not necessary to know friends because I am always owner
+          callback(false, dataWithAdditional);
+        }
       }
     });
   })
@@ -237,6 +245,6 @@ function updateQueryWithFilterNumber(q, fN, cid){
 // Function exports ================================
 
 module.exports.getAllItems = getAllItems;
-module.exports.getMyItems = getMyItems;
+module.exports.getOrgItems = getOrgItems;
 module.exports.getItemWithAdd = getItemWithAdd;
 module.exports.getUserItems = getUserItems;

@@ -18,11 +18,13 @@ Receives following parameters:
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
 function getMyItems(req, res) {
-  var oid = mongoose.Types.ObjectId(req.params.cid);
+  var cid = mongoose.Types.ObjectId(req.params.cid);
   var type = req.query.type;
   var offset = req.query.offset;
-  var cid = mongoose.Types.ObjectId(req.query.cid);
-  sGet.getMyItems(oid, type, offset, cid, function(err, response){
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var limit = 12; // Default valur for the webApp
+  var api = false; // Call origin api or webApp
+  sGet.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
     res.json({error: err, message: response});
   });
 }

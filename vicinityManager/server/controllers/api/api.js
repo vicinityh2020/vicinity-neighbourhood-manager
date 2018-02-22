@@ -41,16 +41,31 @@ function getFriends(req, res, next) {
     res.json({error: false, message: "Endpoint under development..."});
 }
 
+/**
+ * Get organisation users
+ *
+ * @param {String} cid
+ *
+ * @return {Object} Array of users
+ */
 function getUsers(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var othercid = mongoose.Types.ObjectId(req.params.id);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  sGetUser.getAll(othercid, mycid, function(err,response){
+    res.json({error: err, message: response});
+  });
 }
 
-function getDevices(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
-}
-
-function getServices(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+function getItems(req, res, next) {
+  var cid = mongoose.Types.ObjectId(req.params.id);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var limit = req.query.limit === undefined ? 0 : req.query.limit;
+  var offset = req.query.offset === undefined ? 0 : req.query.offset;
+  var type = (req.query.type === undefined || (req.query.type !== "device" && req.query.type !== "service")) ? "all" : req.query.type;
+  var api = true; // Call origin api or webApp
+  sGetItems.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 /**
@@ -76,19 +91,8 @@ function removeOrganisation(req, res, next) {
 Users --------------------------------------------------
 */
 
-/**
- * Get organisation users
- *
- * @param {String} cid
- *
- * @return {Object} Array of users
- */
 function getUser(req, res, next) {
-  var othercid = mongoose.Types.ObjectId(req.params.id);
-  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  sGetUser.getAll(othercid, mycid, function(err,response){
-    res.json({error: err, message: response});
-  });
+  res.json({error: false, message: "Endpoint under development..."});
 }
 
 /**
@@ -281,8 +285,7 @@ module.exports.authenticate = authenticate;
 
 module.exports.getFriends = getFriends;
 module.exports.getUsers = getUsers;
-module.exports.getDevices = getDevices;
-module.exports.getServices = getServices;
+module.exports.getItems = getItems;
 module.exports.createOrganisation = createOrganisation;
 module.exports.removeOrganisation = removeOrganisation;
 

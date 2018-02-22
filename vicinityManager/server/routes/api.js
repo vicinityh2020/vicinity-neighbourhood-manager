@@ -7,10 +7,9 @@ router
 //Authenticate
   .post('/authenticate', apiController.authenticate)
 //Organisation
-  .get('/organisation/:id/friends', apiController.getFriends)
-  .get('/organisation/:id/users', apiController.getUsers)
-  .get('/organisation/:id/devices', apiController.getDevices)
-  .get('/organisation/:id/services', apiController.getServices)
+  .get('/organisation/:id/friends', jwt, apiController.getFriends)
+  .get('/organisation/:id/users', jwt, apiController.getUsers)
+  .get('/organisation/:id/items', jwt, apiController.getItems)
   .post('/organisation', apiController.createOrganisation)
   .delete('/organisation', apiController.removeOrganisation)
 //Users
