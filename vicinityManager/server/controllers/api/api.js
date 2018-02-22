@@ -10,6 +10,8 @@ var sGetNodeItems = require("../../services/nodes/get.js");
 var sFriending = require("../../services/organisations/friending");
 var sGetUser = require("../../services/users/getUsers");
 var sGetItems = require("../../services/items/get");
+var sGetOrganisation = require("../../services/organisations/get");
+
 
 // Main functions - VCNT API
 
@@ -37,8 +39,34 @@ function authenticate(req, res, next) {
 Organisations --------------------------------------------------
 */
 
+/**
+ * Get all organisations
+ *
+ * @param null
+ *
+ * @return {Object} Array of organisations
+ */
+function getOrganisations(req, res, next) {
+  var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var type = 0; // 0 all, 1 friends, else not friends
+  sGetOrganisation.getAll(cid, type, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/**
+ * Get organisation friends
+ *
+ * @param null
+ *
+ * @return {Object} Array of organisations
+ */
 function getFriends(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var type = 1; // 0 all, 1 friends, else not friends
+  sGetOrganisation.getAll(cid, type, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 /**
@@ -56,6 +84,16 @@ function getUsers(req, res, next) {
   });
 }
 
+/**
+ * Get organisation users
+ *
+ * @param {String} id
+ * @param {String} type (query)
+ * @param {String} offset (query)
+ * @param {String} limit (query)
+ *
+ * @return {Object} Array of items
+ */
 function getItems(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.params.id);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
@@ -283,6 +321,7 @@ function manageContract(req, res, next) {
 
 module.exports.authenticate = authenticate;
 
+module.exports.getOrganisations = getOrganisations;
 module.exports.getFriends = getFriends;
 module.exports.getUsers = getUsers;
 module.exports.getItems = getItems;
