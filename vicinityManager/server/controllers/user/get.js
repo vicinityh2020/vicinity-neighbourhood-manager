@@ -15,7 +15,7 @@ function getOne(req, res, next) {
 
 function getAll(req, res, next) {
   var othercid = mongoose.Types.ObjectId(req.params.id);
-  var mycid = mongoose.Types.ObjectId(req.query.mycid);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   sGetUser.getAll(othercid, mycid, function(err,response){
     res.json({error: err, message: response});
   });

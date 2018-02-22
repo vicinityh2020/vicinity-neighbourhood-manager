@@ -8,6 +8,7 @@ var sRegister = require("../../services/registrations/register.js");
 var sInviteUser = require("../../services/invitations/invitations.js");
 var sGetNodeItems = require("../../services/nodes/get.js");
 var sFriending = require("../../services/organisations/friending");
+var sGetUser = require('../../services/users/getUsers');
 
 // Main functions - VCNT API
 
@@ -75,7 +76,11 @@ Users --------------------------------------------------
 */
 
 function getUser(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var othercid = mongoose.Types.ObjectId(req.params.id);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  sGetUser.getAll(othercid, mycid, function(err,response){
+    res.json({error: err, message: response});
+  });
 }
 
 function getUserItems(req, res, next) {

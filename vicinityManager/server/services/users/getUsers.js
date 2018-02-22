@@ -19,7 +19,7 @@ function getOne(o_id, callback) {
 
 function getAll(othercid, mycid, callback) {
   var friends = [], users = [];
-  userAccountOp.findById(othercid, {knows:1, accountOf:1}).populate('accountOf.id', 'avatar name email occupation authentication.principalRoles location status accessLevel')
+  userAccountOp.findById(othercid, {knows:1, 'accountOf.id':1}).populate('accountOf.id', 'avatar name email occupation authentication.principalRoles location status accessLevel')
   .then(function(response){
     var parsedData = response.toObject();
     friends = parsedData.knows;
