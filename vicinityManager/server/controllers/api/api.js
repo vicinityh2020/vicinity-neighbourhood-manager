@@ -3,12 +3,13 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 
-var sLogin = require('../../services/login/login');
+var sLogin = require("../../services/login/login");
 var sRegister = require("../../services/registrations/register.js");
 var sInviteUser = require("../../services/invitations/invitations.js");
 var sGetNodeItems = require("../../services/nodes/get.js");
 var sFriending = require("../../services/organisations/friending");
-var sGetUser = require('../../services/users/getUsers');
+var sGetUser = require("../../services/users/getUsers");
+var sGetItems = require("../../services/items/get");
 
 // Main functions - VCNT API
 
@@ -75,6 +76,13 @@ function removeOrganisation(req, res, next) {
 Users --------------------------------------------------
 */
 
+/**
+ * Get organisation users
+ *
+ * @param {String} cid
+ *
+ * @return {Object} Array of users
+ */
 function getUser(req, res, next) {
   var othercid = mongoose.Types.ObjectId(req.params.id);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
@@ -83,8 +91,22 @@ function getUser(req, res, next) {
   });
 }
 
+/**
+ * Get user items
+ *
+ * @param {String} uid
+ * @param {String} cid
+ * @param {String} type (query)
+ * @return {Object} Array of items
+ */
 function getUserItems(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var reqId = mongoose.Types.ObjectId(req.params.uid);
+  var reqCid = mongoose.Types.ObjectId(req.params.cid);
+  var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var type = (req.query.type === undefined || (req.query.type !== "device" && req.query.type !== "service")) ? "all" : req.query.type;
+  sGetItems.getUserItems(reqId, reqCid, myCid, type, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 /**

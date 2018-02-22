@@ -161,7 +161,7 @@ function getItemWithAdd(oid, cid, callback) {
 
       if(type !== 'all'){
         if(relation === 1){
-          items = items.filter(function(i){return i.id.accessLevel >= 1 && i.id.typeOfItem === type;});
+          items = items.filter(function(i){return  i.id.typeOfItem === type;});
         } else if(relation === 2){
           items = items.filter(function(i){return i.id.accessLevel === 2 && i.id.typeOfItem === type;});
         } else {

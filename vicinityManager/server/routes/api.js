@@ -15,7 +15,7 @@ router
   .delete('/organisation', apiController.removeOrganisation)
 //Users
   .get('/users/:id', jwt, apiController.getUser)
-  .get('/users/:id/items', jwt, apiController.getUserItems)
+  .get('/users/:cid/items/:uid', jwt, apiController.getUserItems)
   .post('/users/', jwt, apiController.createUser)
   .put('/users/:id', apiController.updateUser) // enable: true or false; Let other updates?
   .delete('/users/:id', apiController.removeUser)

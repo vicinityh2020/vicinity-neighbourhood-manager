@@ -68,10 +68,9 @@ function getItemWithAdd(req, res, next) {
   function getUserItems(req, res, next){
     var reqId = mongoose.Types.ObjectId(req.body.reqId);
     var reqCid = mongoose.Types.ObjectId(req.body.reqCid);
-    var ownerCid = req.body.ownCid;
-    var type = req.body.type === undefined ? "all" : req.body.type;
-
-    sGet.getUserItems(reqId, reqCid, ownerCid, type, function(err, response){
+    var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+    var type = (req.query.type === undefined || (req.query.type !== "device" && req.query.type !== "service")) ? "all" : req.query.type;
+    sGet.getUserItems(reqId, reqCid, myCid, type, function(err, response){
       res.json({error: err, message: response});
     });
   }
