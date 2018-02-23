@@ -5,10 +5,12 @@ var logger = require("../../middlewares/logger");
 
 var sLogin = require("../../services/login/login");
 var sRegister = require("../../services/registrations/register.js");
-var sInviteUser = require("../../services/invitations/invitations.js");
 var sGetNodeItems = require("../../services/nodes/get.js");
 var sFriending = require("../../services/organisations/friending");
 var sGetUser = require("../../services/users/getUsers");
+var sInviteUser = require("../../services/invitations/invitations.js");
+var delUser = require('../../services/users/deleteUsers');
+var sGetNodeItems = require("../../services/nodes/get.js");
 var sGetItems = require("../../services/items/get");
 var sGetOrganisation = require("../../services/organisations/get");
 var sGetSearch = require("../../services/search/get");
@@ -77,7 +79,7 @@ function getFriends(req, res, next) {
  * @return {Object} Array of users
  */
 function getUsers(req, res, next) {
-  var othercid = mongoose.Types.ObjectId(req.params.id);
+  var othercid = mongoose.Types.ObjectId(req.params.cid);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   sGetUser.getAll(othercid, mycid, function(err,response){
     res.json({error: err, message: response});
@@ -95,7 +97,7 @@ function getUsers(req, res, next) {
  * @return {Object} Array of items
  */
 function getItems(req, res, next) {
-  var cid = mongoose.Types.ObjectId(req.params.id);
+  var cid = mongoose.Types.ObjectId(req.params.cid);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var limit = req.query.limit === undefined ? 0 : req.query.limit;
   var offset = req.query.offset === undefined ? 0 : req.query.offset;
@@ -176,8 +178,30 @@ function updateUser(req, res, next) {
     res.json({error: false, message: "Endpoint under development..."});
 }
 
+/**
+ * Deletes a user
+ *
+ * @param {String} uid
+ *
+ * @return {String} Acknowledgement
+ */
 function removeUser(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var uid = [];
+  var email = req.body.decoded_token.sub;
+  uid.push(mongoose.Types.ObjectId(req.params.uid));
+  if(req.body.decoded_token.roles.indexOf('admin')){
+    res.json({'error': false, 'message': "Need admin privileges to remove a user..."});
+  } else if(req.params.uid === req.body.decoded_token.sub){
+    res.json({'error': false, 'message': "You cannot remove yourself..."});
+  } else {
+    delUser.deleteAllUsers(uid, email)
+    .then(function(response){
+      res.json({'error': false, 'message': 'User removed'});
+    })
+    .catch(function(err){
+        res.json({'error': true, 'message': err});
+    });
+  }
 }
 
 /*

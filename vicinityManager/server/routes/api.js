@@ -9,16 +9,16 @@ router
 //Organisation
   .get('/organisation/all', jwt, apiController.getOrganisations)
   .get('/organisation/friends', jwt, apiController.getFriends)
-  .get('/organisation/:id/users', jwt, apiController.getUsers)
-  .get('/organisation/:id/items', jwt, apiController.getItems)
+  .get('/organisation/:cid/users', jwt, apiController.getUsers)
+  .get('/organisation/:cid/items', jwt, apiController.getItems)
   .post('/organisation', apiController.createOrganisation)
   .delete('/organisation', apiController.removeOrganisation)
 //Users
-  .get('/users/:id', jwt, apiController.getUser)
+  .get('/users/:uid', jwt, apiController.getUser)
   .get('/users/:cid/items/:uid', jwt, apiController.getUserItems)
   .post('/users/', jwt, apiController.createUser)
-  .put('/users/:id', apiController.updateUser) // enable: true or false; Let other updates?
-  .delete('/users/:id', apiController.removeUser)
+  .put('/users/:uid', apiController.updateUser) // enable: true or false; Let other updates?
+  .delete('/users/:uid', jwt, apiController.removeUser)
 //Items
   .get('/items/:id', apiController.getItem)
   .post('/items', apiController.createItem)
