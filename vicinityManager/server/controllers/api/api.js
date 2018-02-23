@@ -136,7 +136,7 @@ function removeOrganisation(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var mail = req.body.decoded_token.sub;
   if(req.body.decoded_token.roles.indexOf('admin') === -1){
-    res.json({'error': false, 'message': "Need admin privileges to remove a user..."});
+    res.json({'error': false, 'message': "Need admin privileges to remove an organisation..."});
   } else {
     sOrgConfiguration.remove(cid, mail, function(err, data){
       res.json({"error": err, "message": data});
