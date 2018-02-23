@@ -14,6 +14,7 @@ var sGetNodeItems = require("../../services/nodes/get.js");
 var sGetItems = require("../../services/items/get");
 var sGetOrganisation = require("../../services/organisations/get");
 var sGetSearch = require("../../services/search/get");
+var sOrgConfiguration = require('../../services/organisations/configuration');
 
 // Main functions - VCNT API
 
@@ -124,8 +125,23 @@ function createOrganisation(req, res, next) {
   });
 }
 
+/**
+ * Removes an organisation
+ *
+ * @param {Object} null
+ *
+ * @return {String} Acknowledgement
+ */
 function removeOrganisation(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var mail = req.body.decoded_token.sub;
+  if(req.body.decoded_token.roles.indexOf('admin') === -1){
+    res.json({'error': false, 'message': "Need admin privileges to remove a user..."});
+  } else {
+    sOrgConfiguration.remove(cid, mail, function(err, data){
+      res.json({"error": err, "message": data});
+    });
+  }
 }
 
 /*
@@ -189,7 +205,7 @@ function removeUser(req, res, next) {
   var uid = [];
   var email = req.body.decoded_token.sub;
   uid.push(mongoose.Types.ObjectId(req.params.uid));
-  if(req.body.decoded_token.roles.indexOf('admin')){
+  if(req.body.decoded_token.roles.indexOf('admin') === -1){
     res.json({'error': false, 'message': "Need admin privileges to remove a user..."});
   } else if(req.params.uid === req.body.decoded_token.sub){
     res.json({'error': false, 'message': "You cannot remove yourself..."});
