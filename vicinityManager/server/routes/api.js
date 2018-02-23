@@ -12,7 +12,7 @@ router
   .get('/organisation/:cid/users', jwt, apiController.getUsers)
   .get('/organisation/:cid/items', jwt, apiController.getItems)
   .post('/organisation', apiController.createOrganisation)
-  .delete('/organisation', apiController.removeOrganisation)
+  .delete('/organisation', jwt, apiController.removeOrganisation)
 //Users
   .get('/users/:uid', jwt, apiController.getUser)
   .get('/users/:cid/items/:uid', jwt, apiController.getUserItems)
@@ -37,8 +37,8 @@ router
   .post('/contract', apiController.requestContract)
   .put('/contract', apiController.manageContract) // In payload --> accept, reject, cancel
 //Search
-  .get('/search', apiController.searchOrgs)
-  .get('/search', apiController.searchUsers)
-  .get('/search', apiController.searchItems);
+  .get('/search/organisations', jwt, apiController.searchOrgs)
+  .get('/search/users', jwt, apiController.searchUsers)
+  .get('/search/items', jwt, apiController.searchItems);
 
 module.exports = router;
