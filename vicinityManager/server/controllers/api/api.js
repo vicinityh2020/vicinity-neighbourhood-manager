@@ -11,7 +11,7 @@ var sFriending = require("../../services/organisations/friending");
 var sGetUser = require("../../services/users/getUsers");
 var sGetItems = require("../../services/items/get");
 var sGetOrganisation = require("../../services/organisations/get");
-
+var sGetSearch = require("../../services/search/get");
 
 // Main functions - VCNT API
 
@@ -111,11 +111,12 @@ function getItems(req, res, next) {
  *
  * @param {Object} data
  * password, userName, email, occupation, companyName, companyLocation,
- * businessId, termsAndConditions, type = newCompany
+ * businessId, termsAndConditions
  * @return {String} Acknowledgement
  */
 function createOrganisation(req, res, next) {
   var data = req.body;
+  data.type = "newCompany";
   sRegister.requestReg(data, function(err, response){
     res.json({error: err, message: response});
   });
@@ -184,19 +185,19 @@ Items --------------------------------------------------
 */
 
 function getItem(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+    res.json({error: false, message: "Use agent..."});
 }
 
 function createItem(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+    res.json({error: false, message: "Use agent..."});
 }
 
 function updateItem(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+    res.json({error: false, message: "Use agent..."});
 }
 
 function removeItem(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+    res.json({error: false, message: "Use agent..."});
 }
 
 /*
@@ -219,11 +220,11 @@ function getAgentUsers(req, res, next) {
 }
 
 function createAgent(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+    res.json({error: false, message: "Use agent..."});
 }
 
 function removeAgent(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+    res.json({error: false, message: "Use agent..."});
 }
 
 /*
@@ -245,7 +246,7 @@ function partnershipFeeds(req, res, next) {
 }
 
 /**
- * Get friendship notifications
+ * Request fiendship
  *
  * @param {String} friend_id
  *
@@ -261,7 +262,7 @@ function requestPartnership(req, res, next) {
 }
 
 /**
- * Get friendship notifications
+ * Manage friendships
  *
  * @param {String} friend_id
  * @param {String} type
@@ -317,6 +318,57 @@ function manageContract(req, res, next) {
     res.json({error: false, message: "Endpoint under development..."});
 }
 
+/*
+Contracts --------------------------------------------------
+*/
+/**
+ * Search organisations
+ *
+ * @param {String} searchTerm (query)
+ *
+ * @return {Object} Array of orgs
+ */
+function searchOrgs(req, res, next) {
+  var searchTerm = req.query.searchTerm;
+  var sT = new RegExp(searchTerm, 'i');
+  sGetSearch.searchOrganisation(sT, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/**
+ * Search users
+ *
+ * @param {String} searchTerm (query)
+ *
+ * @return {Object} Array of users
+ */
+function searchUsers(req, res, next) {
+  var searchTerm = req.query.searchTerm;
+  var cid =  mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var sT = new RegExp(searchTerm, 'i');
+  sGetSearch.searchUser(sT, cid, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/**
+ * Search items
+ *
+ * @param {String} searchTerm (query)
+ *
+ * @return {Object} Array of items
+ */
+function searchItems(req, res, next) {
+  var searchTerm = req.query.searchTerm;
+  var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var sT = new RegExp(searchTerm, 'i');
+  var api = true; // Call origin api or webApp
+  sGetSearch.searchItem(sT, cid, api, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
 // Export functions --------------------------------------------------
 
 module.exports.authenticate = authenticate;
@@ -350,3 +402,7 @@ module.exports.managePartnership = managePartnership;
 module.exports.contractFeeds = contractFeeds;
 module.exports.requestContract = requestContract;
 module.exports.manageContract = manageContract;
+
+module.exports.searchOrgs = searchOrgs;
+module.exports.searchUsers = searchUsers;
+module.exports.searchItems = searchItems;

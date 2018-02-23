@@ -35,6 +35,10 @@ router
 //Contracts
   .get('/contract', apiController.contractFeeds)
   .post('/contract', apiController.requestContract)
-  .put('/contract', apiController.manageContract); // In payload --> accept, reject, cancel
+  .put('/contract', apiController.manageContract) // In payload --> accept, reject, cancel
+//Search
+  .get('/search', apiController.searchOrgs)
+  .get('/search', apiController.searchUsers)
+  .get('/search', apiController.searchItems);
 
 module.exports = router;

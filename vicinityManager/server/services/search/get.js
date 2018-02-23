@@ -37,26 +37,25 @@ var asyncHandler = require('../../services/asyncHandler/sync');
     userAccountOp.findById(cid, {knows:1})
     .then(function(response){
       var things = response.toObject();
-      if(things){
-        getOnlyId(friends, things.knows);
-        query = {
-          $or :[
-          {$and: [ { 'cid.id': cid.id }, { accessLevel: 0 } ] },
-          {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: 1 } ] },
-          { accessLevel: 2 }
-        ],
-        name: {$regex: sT}
-        };
-        return userOp.find(query, {authentication:0});
-      } else {
-        return "Nothing";
-      }
+      if(!things){ things.knows = []; }
+      getOnlyId(friends, things.knows);
+      query = {
+        $or :[
+        {$and: [ { 'cid.id': cid }, { accessLevel: { $gte:0 } } ] },
+        {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: { $gte:1 } } ] },
+        { accessLevel: { $gte:2 } }
+      ],
+      name: {$regex: sT}
+      };
+      logger.debug(query);
+      return userOp.find(query, {authentication:0});
     })
     .then(function(response){
-        callback(false, response);
+      callback(false, response);
     })
     .catch(function(err){
-        callback(true, err);
+      logger.debug(err);
+      callback(true, err);
     });
   }
 
@@ -66,29 +65,35 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   Access level restrictions apply!
   Text index are not used because do not support substring look up!
   */
-  function searchItem(sT, cid, otherCids, callback) {
-    var friends = []; // Will contain company partners and itself
-    friends.push(cid);
-    for(var i = 0; i < otherCids.length; i++){
-      friends.push(mongoose.Types.ObjectId(otherCids[i]));
-    }
-
-    var query = {
-      name: sT,
-      $or :[
-      {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: { $gt:0 } } ] },
-      { accessLevel: { $gt:1 } },
-      {$and: [ { 'cid.id': cid}, {accessLevel: 0} ] }
-      ]
-    };
-
-    itemOp.find({$query: query ,$hint: { name : 1 }}).populate('cid.id','name').exec(function(err, data){
-      if (!data || err) {
-        callback(true, err);
+  function searchItem(sT, cid, api, callback) {
+    var friends = [], query = {}; // Will contain company partners and itself
+    userAccountOp.findById(cid, {knows:1})
+    .then(function(response){
+      var things = response.toObject();
+      if(!things){ things.knows = []; }
+      getOnlyId(friends, things.knows);
+      query = {
+        $or :[
+        {$and: [ { 'cid.id': cid }, { accessLevel: { $gte:0 } } ] },
+        {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: { $gte:1 } } ] },
+        { accessLevel: { $gte:2 } }
+      ],
+      name: {$regex: sT}
+      };
+      logger.debug(query);
+      return itemOp.find(query).populate('cid.id','name');
+    })
+    .then(function(data){
+      if(api){
+        callback(false, data);
       } else {
         var dataWithAdditional = itemProperties.getAdditional(data,cid,friends);
         callback(false, dataWithAdditional);
       }
+    })
+    .catch(function(err){
+      logger.debug(err);
+      callback(true, err);
     });
   }
 

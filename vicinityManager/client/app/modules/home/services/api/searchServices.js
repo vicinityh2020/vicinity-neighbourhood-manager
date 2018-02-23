@@ -22,12 +22,11 @@ factory('searchAPIService', ['$http', 'configuration', '$window', function($http
   };
 
   searchAPI.searchUser = function(filter) {
-    var cid = $window.sessionStorage.companyAccountId.toString();
-    return $http.get(configuration.apiUrl + '/search/user?searchTerm=' + filter + '&cid=' + cid);
+    return $http.get(configuration.apiUrl + '/search/user?searchTerm=' + filter);
   };
 
-  searchAPI.searchItem = function(cid, filter, data) {
-    return $http.post(configuration.apiUrl + '/search/item/' + cid + '?searchTerm=' + filter, data );
+  searchAPI.searchItem = function(filter) {
+    return $http.get(configuration.apiUrl + '/search/item/?searchTerm=' + filter);
   };
 
   return searchAPI;
