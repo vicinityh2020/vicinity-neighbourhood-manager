@@ -120,8 +120,20 @@ function getItems(req, res, next) {
 function createOrganisation(req, res, next) {
   var data = req.body;
   data.type = "newCompany";
-  sRegister.requestReg(data, function(err, response){
-    res.json({error: err, message: response});
+  sRegister.findDuplicatesUser(data.email, function(err, dup){
+    if(!dup){
+      sRegister.findDuplicatesCompany(data.companyName, data.businessID, function(err, dup){
+        if(!dup){
+          sRegister.requestReg(data, function(err, response){
+            res.json({error: err, message: response});
+          });
+        }else{
+          res.json({error: false, message: "Company name or business ID already exist"});
+        }
+      });
+    }else{
+      res.json({error: false, message: "Mail already registered"});
+    }
   });
 }
 
