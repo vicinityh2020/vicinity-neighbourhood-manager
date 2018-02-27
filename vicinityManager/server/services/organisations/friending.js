@@ -334,9 +334,15 @@ function friendshipStatus(my_id, friend_id, callback){
   var finalResponse = {};
   companyAccountOp.findById(my_id, {knows:1, knowsRequestsTo:1, knowsRequestsFrom:1})
   .then(function(response){
-    finalResponse.imFriend = (response.knows.indexOf(friend_id) !== -1);
-    finalResponse.sentReq = (response.knowsRequestsTo.indexOf(friend_id) !== -1);
-    finalResponse.haveReq = (response.knowsRequestsFrom.indexOf(friend_id) !== -1);
+    var knows = [];
+    var knowsRequestsTo = [];
+    var knowsRequestsFrom = [];
+    getIds(response.knows, knows);
+    getIds(response.knowsRequestsTo, knowsRequestsTo);
+    getIds(response.knowsRequestsFrom, knowsRequestsFrom);
+    finalResponse.imFriend = (knows.indexOf(friend_id) !== -1);
+    finalResponse.sentReq = (knowsRequestsTo.indexOf(friend_id) !== -1);
+    finalResponse.haveReq = (knowsRequestsFrom.indexOf(friend_id) !== -1);
     callback(false, finalResponse);
   })
   .catch(function(err){
@@ -357,6 +363,11 @@ var findAndRemove = function(array, value){
     return array;
   };
 
+  function getIds(array, things){
+    for(var i = 0; i < array.length; i++){
+      things.push(array[i].id.toString());
+    }
+  }
 
 /*
 Export functions

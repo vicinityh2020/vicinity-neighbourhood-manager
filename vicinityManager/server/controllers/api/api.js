@@ -325,7 +325,7 @@ function requestPartnership(req, res, next) {
   var friend_id = mongoose.Types.ObjectId(req.body.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
-  sFriending.friendshipStatus(my_id, friend_id, function(err, response){
+  sFriending.friendshipStatus(my_id, friend_id.toString(), function(err, response){
     if(err){
       res.json({"error": true, "message": err });
     } else if(response.imFriend){
@@ -354,7 +354,7 @@ function managePartnership(req, res, next) {
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
   var type = req.body.type;
-  sFriending.friendshipStatus(my_id, friend_id, function(err, response){
+  sFriending.friendshipStatus(my_id, friend_id.toString(), function(err, response){
     if(err){
       logger.debug(response);
       res.json({"error": true, "message": err });
