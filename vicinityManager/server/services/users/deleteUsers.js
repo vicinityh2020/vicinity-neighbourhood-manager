@@ -41,6 +41,13 @@ function deleteAllUsers(users, mail){
   });
 }
 
+function isMyUser(cid, uid){
+  return new Promise(function(resolve, reject) {
+    userOp.findOne({_id: uid}, {cid:1},function(err, response){
+
+    });
+  });
+}
 // Private functions
 
 /*
@@ -52,7 +59,6 @@ function deleting(id, otherParams, callback){
   var cid;
   var obj = {
     avatar: "",
-    name: "",
     occupation: "",
     location: "",
     status: "deleted",
@@ -64,7 +70,7 @@ function deleting(id, otherParams, callback){
   userOp.findOne({_id: id})
   .then(function(response){
     cid = response.cid;
-    userOp.update({_id: id}, { $set: obj });
+    return userOp.update({_id: id}, { $set: obj });
   })
   .then(function(response){
     return audits.putAuditInt(
