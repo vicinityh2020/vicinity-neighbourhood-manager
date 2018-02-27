@@ -119,21 +119,27 @@ function getItems(req, res, next) {
  */
 function createOrganisation(req, res, next) {
   var data = req.body;
+  var finalRes = {};
   data.type = "newCompany";
-  sRegister.findDuplicatesUser(data.email, function(err, dup){
+  sRegister.findDuplicatesUser(data.email)
+  .then(function(dup){
     if(!dup){
-      sRegister.findDuplicatesCompany(data.companyName, data.businessID, function(err, dup){
-        if(!dup){
-          sRegister.requestReg(data, function(err, response){
-            res.json({error: err, message: response});
-          });
-        }else{
-          res.json({error: false, message: "Company name or business ID already exist"});
-        }
+      return sRegister.findDuplicatesCompany(data.companyName, data.businessID);
+    }else{
+      finalRes = {error: false, message: "Mail already registered"};
+      return true; // Duplicates found at mail stage
+    }
+  }).then(function(dup){
+    if(!dup){
+      sRegister.requestReg(data, function(err, response){
+        res.json({error: err, message: response});
       });
     }else{
-      res.json({error: false, message: "Mail already registered"});
+      if(finalRes === {}){ finalRes = {error: false, message: "Company name or business ID already exist"}; } // Dups found at org stage
+      res.json(finalRes);
     }
+  }).catch(function(err){
+    res.json({error: true, message: err});
   });
 }
 
@@ -308,9 +314,20 @@ function requestPartnership(req, res, next) {
   var friend_id = mongoose.Types.ObjectId(req.body.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
-  sFriending.processFriendRequest(friend_id, my_id, my_mail, function(err, response){
-    res.json({"error": err, "message": response});
+  sFriending.friendshipStatus(my_id, friend_id, function(err, response){
+    if(err){
+      res.json({"error": true, "message": err });
+    } else if(response.imFriend){
+      res.json({"error": false, "message": "You are already friend with " + friend_id });
+    } else if(response.sentReq || response.haveReq){
+      res.json({"error": false, "message": "You already have an open friending process with " + friend_id });
+    } else {
+      sFriending.processFriendRequest(friend_id, my_id, my_mail, function(err, response){
+        res.json({"error": err, "message": response});
+      });
+    }
   });
+
 }
 
 /**
@@ -326,32 +343,53 @@ function managePartnership(req, res, next) {
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
   var type = req.body.type;
-
-  switch(type) {
-    case "accept":
-        sFriending.acceptFriendRequest(friend_id, my_id, my_mail, function(err, response){
-          res.json({"error": err, "message": response});
-        });
-        break;
-    case "reject":
-        sFriending.rejectFriendRequest(friend_id, my_id, my_mail, function(err, response){
-          res.json({"error": err, "message": response});
-        });
-        break;
-    case "cancelRequest":
-        sFriending.cancelFriendRequest(friend_id, my_id, my_mail, function(err, response){
-          res.json({"error": err, "message": response});
-        });
-        break;
-    case "cancel":
-        sFriending.cancelFriendship(friend_id, my_id, my_mail, function(err, response){
-          res.json({"error": err, "message": response});
-        });
-        break;
-    default:
-      res.json({"error": true, "message": "Wrong type"});
-      break;
-    }
+  sFriending.friendshipStatus(my_id, friend_id, function(err, response){
+    if(err){
+      res.json({"error": true, "message": err });
+    } else {
+      switch(type) {
+        case "accept":
+            if(response.haveReq){
+              sFriending.acceptFriendRequest(friend_id, my_id, my_mail, function(err, response){
+                res.json({"error": err, "message": response});
+              });
+            } else {
+              res.json({"error": false, "message": "You do not have friend requests from " + friend_id});
+            }
+            break;
+        case "reject":
+          if(response.haveReq){
+              sFriending.rejectFriendRequest(friend_id, my_id, my_mail, function(err, response){
+                res.json({"error": err, "message": response});
+              });
+            } else {
+              res.json({"error": false, "message": "You do not have friend requests from " + friend_id});
+            }
+            break;
+        case "cancelRequest":
+            if(response.sentReq){
+              sFriending.cancelFriendRequest(friend_id, my_id, my_mail, function(err, response){
+                res.json({"error": err, "message": response});
+              });
+            } else {
+              res.json({"error": false, "message": "You have not sent requests to " + friend_id});
+            }
+            break;
+        case "cancel":
+            if(response.imFriend){
+              sFriending.cancelFriendship(friend_id, my_id, my_mail, function(err, response){
+                res.json({"error": err, "message": response});
+              });
+            } else {
+              res.json({"error": false, "message": "You do not have a friendship with " + friend_id});
+            }
+            break;
+        default:
+          res.json({"error": false, "message": "Wrong type"});
+          break;
+        }
+      }
+    });
 }
 
 /*

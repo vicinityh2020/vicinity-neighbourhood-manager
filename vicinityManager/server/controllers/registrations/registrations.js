@@ -53,8 +53,12 @@ Looking for duplicates in user registration
 */
 function findDuplicatesUser(req, res, next) {
   var data = req.body;
-  sRegister.findDuplicatesUser(data, function(err, response){
-    res.json({error: err, message: response});
+  sRegister.findDuplicatesUser(data)
+  .then(function(response){
+    res.json({error: false, message: response});
+  })
+  .catch(function(err){
+    res.json({error: true, message: err});
   });
 }
 
@@ -63,10 +67,14 @@ Looking for duplicates in company registration
 */
 function findDuplicatesCompany(req, res, next) {
   var data = req.body;
-  sRegister.findDuplicatesCompany(data, function(err, response){
-    res.json({error: err, message: response});
-  });
-}
+  sRegister.findDuplicatesCompany(data)
+    .then(function(response){
+      res.json({error: false, message: response});
+    })
+    .catch(function(err){
+      res.json({error: true, message: err});
+    });
+  }
 
 // Export functions
 

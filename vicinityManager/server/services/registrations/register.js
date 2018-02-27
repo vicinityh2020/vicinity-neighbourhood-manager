@@ -19,18 +19,20 @@ var userOp = require('../../models/vicinityManager').user;
 /*
 Looking for duplicates in user registration
 */
-function findDuplicatesUser(data, callback) {
+function findDuplicatesUser(data) {
   var email = data.email;
-  userOp.find({"email":email}, function(err, data) {
-    if (err) {
-      callback(true, "Error fetching data");
-    } else {
-      if(data.length === 0){
-        callback(false, false); // No duplicates
+  return new Promise(function(resolve, reject) {
+    userOp.find({"email":email}, {email:1}, function(err, data) {
+      if (err) {
+        reject(err);
       } else {
-        callback(false, true); // Duplicates found
+        if(data.length === 0){
+          resolve(false); // No duplicates
+        } else {
+          resolve(true); // Duplicates found
+        }
       }
-    }
+    });
   });
 }
 
@@ -43,16 +45,18 @@ function findDuplicatesCompany(data, callback) {
   var query = {
     $or:[ {"organisation":companyName},
           {"businessID":bid} ] };
-  userAccountOp.find(query, function(err, data) {
-    if (err) {
-      callback(true, "Error fetching data");
-    } else {
-      if(data.length === 0){
-        callback(false, false); // No duplicates
+  return new Promise(function(resolve, reject) {
+    userAccountOp.find(query, {cid:1}, function(err, data) {
+      if (err) {
+        reject(err);
       } else {
-        callback(false, true); // Duplicates found
+        if(data.length === 0){
+          resolve(false); // No duplicates
+        } else {
+          resolve(true); // Duplicates found
+        }
       }
-    }
+    });
   });
 }
 
