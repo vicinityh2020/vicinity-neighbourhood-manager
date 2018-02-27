@@ -222,15 +222,26 @@ function updateUser(req, res, next) {
 function removeUser(req, res, next) {
   var uid = [];
   var email = req.body.decoded_token.sub;
+  var my_id = req.body.decoded_token.orgid;
+  var finalResp;
   uid.push(mongoose.Types.ObjectId(req.params.uid));
   if(req.body.decoded_token.roles.indexOf('administrator') === -1){
     res.json({'error': false, 'message': "Need admin privileges to remove a user..."});
   } else if(req.params.uid === req.body.decoded_token.sub){
     res.json({'error': false, 'message': "You cannot remove yourself..."});
   } else {
-    delUser.deleteAllUsers(uid, email)
+    delUser.isMyUser(my_id, req.params.uid) // Check if user belongs to me
     .then(function(response){
-      res.json({'error': false, 'message': 'User removed'});
+      if(response){
+        finalRes = "User removed";
+        return delUser.deleteAllUsers(uid, email);
+      } else {
+        finalRes = "User does not belong to you";
+        return false; // User does not belong to you
+      }
+    })
+    .then(function(response){
+      res.json({'error': false, 'message': finalRes});
     })
     .catch(function(err){
         res.json({'error': true, 'message': err});

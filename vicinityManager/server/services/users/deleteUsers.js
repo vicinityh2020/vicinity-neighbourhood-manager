@@ -41,10 +41,17 @@ function deleteAllUsers(users, mail){
   });
 }
 
+// Checks if the user belongs to my org and thus I can delete it
 function isMyUser(cid, uid){
   return new Promise(function(resolve, reject) {
     userOp.findOne({_id: uid}, {cid:1},function(err, response){
-
+      if(err){
+        reject(err);
+      } else if(response.cid.id.toString() === cid.toString()) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
     });
   });
 }
