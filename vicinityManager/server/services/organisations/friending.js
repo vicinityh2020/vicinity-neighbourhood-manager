@@ -332,7 +332,7 @@ function friendshipFeeds(my_id, callback){
 
 function friendshipStatus(my_id, friend_id, callback){
   var finalResponse = {};
-  companyAccountOp.findById(my_id, {knows:1, knowsRequestsTo:1, knowRqstFrom:1})
+  companyAccountOp.findById(my_id, {knows:1, knowsRequestsTo:1, knowsRequestsFrom:1})
   .then(function(response){
     finalResponse.imFriend = (response.knows.indexOf(friend_id) !== -1);
     finalResponse.sentReq = (response.knowsRequestsTo.indexOf(friend_id) !== -1);
@@ -368,3 +368,4 @@ module.exports.rejectFriendRequest = rejectFriendRequest;
 module.exports.cancelFriendRequest = cancelFriendRequest;
 module.exports.cancelFriendship = cancelFriendship;
 module.exports.friendshipFeeds = friendshipFeeds;
+module.exports.friendshipStatus = friendshipStatus;

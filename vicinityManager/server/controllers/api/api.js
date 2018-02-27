@@ -119,12 +119,12 @@ function getItems(req, res, next) {
  */
 function createOrganisation(req, res, next) {
   var data = req.body;
-  var finalRes = {};
+  var finalRes;
   data.type = "newCompany";
-  sRegister.findDuplicatesUser(data.email)
+  sRegister.findDuplicatesUser(data)
   .then(function(dup){
     if(!dup){
-      return sRegister.findDuplicatesCompany(data.companyName, data.businessID);
+      return sRegister.findDuplicatesCompany(data);
     }else{
       finalRes = {error: false, message: "Mail already registered"};
       return true; // Duplicates found at mail stage
@@ -135,7 +135,7 @@ function createOrganisation(req, res, next) {
         res.json({error: err, message: response});
       });
     }else{
-      if(finalRes === {}){ finalRes = {error: false, message: "Company name or business ID already exist"}; } // Dups found at org stage
+      if(typeof finalRes !== "object"){ finalRes = {error: false, message: "Company name or business ID already exist"}; } // Dups found at org stage
       res.json(finalRes);
     }
   }).catch(function(err){
@@ -356,6 +356,7 @@ function managePartnership(req, res, next) {
   var type = req.body.type;
   sFriending.friendshipStatus(my_id, friend_id, function(err, response){
     if(err){
+      logger.debug(response);
       res.json({"error": true, "message": err });
     } else {
       switch(type) {

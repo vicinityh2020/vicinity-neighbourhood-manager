@@ -22,11 +22,11 @@ Looking for duplicates in user registration
 function findDuplicatesUser(data) {
   var email = data.email;
   return new Promise(function(resolve, reject) {
-    userOp.find({"email":email}, {email:1}, function(err, data) {
+    userOp.find({email: email}, {email:1}, function(err, output) {
       if (err) {
         reject(err);
       } else {
-        if(data.length === 0){
+        if(output.length === 0){
           resolve(false); // No duplicates
         } else {
           resolve(true); // Duplicates found
@@ -39,18 +39,18 @@ function findDuplicatesUser(data) {
 /*
 Looking for duplicates in company registration
 */
-function findDuplicatesCompany(data, callback) {
-  var companyName = data.companyName;
-  var bid = data.businessID;
+function findDuplicatesCompany(data) {
+  companyName = data.companyName;
+  bid = data.businessId;
   var query = {
-    $or:[ {"organisation":companyName},
-          {"businessID":bid} ] };
+    $or:[ {name: companyName},
+          {businessId: bid} ] };
   return new Promise(function(resolve, reject) {
-    userAccountOp.find(query, {cid:1}, function(err, data) {
+    userAccountOp.find(query, {cid:1}, function(err, output) {
       if (err) {
         reject(err);
       } else {
-        if(data.length === 0){
+        if(output.length === 0){
           resolve(false); // No duplicates
         } else {
           resolve(true); // Duplicates found

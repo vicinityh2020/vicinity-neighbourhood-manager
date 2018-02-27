@@ -102,3 +102,4 @@ function deleting(id, otherParams, callback){
 // Export modules
 
 module.exports.deleteAllUsers = deleteAllUsers;
+module.exports.isMyUser = isMyUser;
