@@ -68,6 +68,64 @@ function removeFriend(my_id, friend_id, email){
 }
 
 /*
+A user changes its access level
+I need check that all devices have an AL below users AL
+If not, I need to update all items and contracts accordingly
+*/
+function changeUserAccessLevel(uid, newAccessLevel, email){
+  var items = [], updItems = [];
+
+  itemOp.find({'uid.id':uid, accessLevel: {$gt: newAccessLevel}}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
+  .then(function(items){
+    var aux = {}, ids = [];
+    for(var i = 0; i < items.length; i++){
+      aux = items[i].toObject();
+      ids.push(aux._id);
+      aux.accessLevel = newAccessLevel;
+      updItems.push(aux);
+    }
+    return itemOp.update({_id: {$in: ids}}, {$set: {accessLevel: newAccessLevel}},{multi:true});
+  })
+  .then(function(response){
+
+    return new Promise(function(resolve, reject) {
+
+      if(updItems.length !== 0){ // Check if there is any item to delete
+        logger.debug('Start async handler...');
+        sync.forEachAll(updItems,
+          function(value, allresult, next, otherParams) {
+            ctHelper.removeDevice(value, otherParams, function(value, result) {
+                allresult.push({value: value, error: result});
+                next();
+            });
+          },
+          function(allresult) {
+            if(allresult.length === updItems.length){
+              logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+              resolve({"error": false, "message": allresult });
+            }
+          },
+          false,
+          {email: email}
+        );
+      } else {
+        logger.debug('Unfriending: No items to delete');
+        logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
+        resolve({"error": false, "message": "Nothing to be removed..."});
+      }
+    });
+  })
+  .then(function(response){
+    logger.debug("Devices accessLevel reduced due to user privacy changes");
+    return {error: false, message: response}; // response is already and object {error,message}
+  })
+  .catch(function(error){
+    logger.debug('Error remove friend: ' + error);
+    return {error: true, message: error};
+  });
+}
+
+/*
 A device changes its accessLevel
 I need to remove/add from/to the commServer groups accordingly
 */
@@ -157,7 +215,7 @@ function findCase(oldA, newA, updates, callback){
     .then( function(response){
       item = response.toObject();
       item.accessLevel = newA;
-      return ctHelper.removeDevice(item, function(value, result){
+      return ctHelper.removeDevice(item, {}, function(value, result){
         callback(false, result);
       });
     })
@@ -210,3 +268,4 @@ module.exports.changePrivacy = changePrivacy;
 module.exports.createContract = createContract;
 module.exports.cancelContract = cancelContract;
 module.exports.addItemsToContract = addItemsToContract;
+module.exports.changeUserAccessLevel = changeUserAccessLevel;

@@ -3,10 +3,20 @@ var audits = require('../../controllers/audit/put');
 var userOp = require('../../models/vicinityManager').user;
 var logger = require("../../middlewares/logger");
 var authHelper = require('../../services/login/login');
+var sharingRules = require('../../services/sharingRules');
 var bcrypt = require('bcrypt');
 
+/*
+Update a user
+*/
 function putOne(o_id, updates, userMail, callback) {
   var updItem;
+
+  if(updates.hasOwnProperty('accessLevel')){
+    sharingRules.changeUserAccessLevel(o_id, updates.accessLevel, userMail);
+    // TODO notify successful action
+  }
+
   userOp.findOneAndUpdate( { "_id": o_id}, {$set: updates}, {new: true})
   .then(function(response){
     updItem = response;
@@ -27,6 +37,9 @@ function putOne(o_id, updates, userMail, callback) {
   });
 }
 
+/*
+Change the user password
+*/
 function putPassword(id, oldPwd, newPwd, callback){
   var hash = "";
 

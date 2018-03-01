@@ -5,12 +5,10 @@ factory('userAPIService', ['$http', 'configuration', '$window', function($http, 
   var userAPI = {};
 
   userAPI.editInfoAboutUser = function(id, data) {
-    data.userMail = $window.sessionStorage.username;
     return $http.put(configuration.apiUrl +'/user/' + id, data);
   };
 
   userAPI.updatePassword = function(id, data) {
-    data.userMail = $window.sessionStorage.username;
     return $http.put(configuration.apiUrl +'/user/password/' + id, data);
   };
 

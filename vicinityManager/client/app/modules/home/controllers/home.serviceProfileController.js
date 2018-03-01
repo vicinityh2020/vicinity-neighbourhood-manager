@@ -198,19 +198,19 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne({id:$stateParams.serviceId, avatar: base64String, cid: $scope.device.cid})
+  itemsAPIService.putOne({id:$scope.item._id, avatar: base64String, cid: $scope.item.cid})
     .then(
       function successCallback(response){
         itemsAPIService.getItemWithAdd($stateParams.serviceId)
           .then(
             function successCallback(response) {
-              $scope.device = response.data.message;
+              $scope.item = response.data.message;
               $('#editCancel1').fadeOut('slow');
               $('#editUpload2').fadeOut('slow');
               $('#input1').fadeOut('slow');
               $('img#pic').fadeOut('slow');
               setTimeout(function() {
-                $("img#pic").prop("src",$scope.device.avatar);
+                $("img#pic").prop("src",$scope.item.avatar);
                 $('img#pic').fadeIn('slow');
              }, 600);
            }
