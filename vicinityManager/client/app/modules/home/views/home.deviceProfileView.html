@@ -16,14 +16,14 @@
 
               <!-- Profile Image -->
               <!--  IMAGE -->
-              <div ng-show="!isMyDevice" style="width: 200px; text-align: center; margin: 0 auto">                 <!--      class="profile-user-img img-responsive img-circle" -->
-                <img ng-src="{{device.avatar}}" class="img-circle" alt="Device profile picture" style="height:120px; width:120px; text-align: center; border: 3px solid; border-color: #d2d6de">
+              <div ng-show="!isMyItem" style="width: 200px; text-align: center; margin: 0 auto">                 <!--      class="profile-user-img img-responsive img-circle" -->
+                <img ng-src="{{item.avatar}}" class="img-circle" alt="Device profile picture" style="height:120px; width:120px; text-align: center; border: 3px solid; border-color: #d2d6de">
               </div>
 
-              <div ng-show="isMyDevice" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
+              <div ng-show="isMyItem" id="changeAvatar" style="width: 200px; text-align: center; margin: 0 auto">
                 <span style="position: absolute">+ Change avatar</span>
                 <a href="" ng-click="showLoadPic()">
-                  <img id="pic" class="img-circle" ng-src="{{device.avatar}}" alt="Device profile picture" style="height:120px; width:120px;  text-align: center; border: 3px solid; border-color: #d2d6de">
+                  <img id="pic" class="img-circle" ng-src="{{item.avatar}}" alt="Device profile picture" style="height:120px; width:120px;  text-align: center; border: 3px solid; border-color: #d2d6de">
                 </a>
               </div>
 
@@ -32,12 +32,12 @@
               <a id="editUpload2" ng-show="showInput" ng-click="uploadPic()" class=" btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Upload</a>
 
               <!-- Device Name -->
-              <h3 class="profile-username text-center" style="margin-top: 15px">{{device.name}}</h3>
+              <h3 class="profile-username text-center" style="margin-top: 15px">{{item.name}}</h3>
 
               <!-- Enable/Disable device -->
-              <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" ng-show="imDeviceOwner">
-                <a ng-click="changeStatus()" class="btn btn-primary btn-block" ng-show="!devEnabled && isMyDevice"><i class="fa fa-plus-square"></i><b> Enable device</b></a>
-                <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="devEnabled && isMyDevice"><i class="fa fa-minus-square"></i><b> Disable device</b></a>
+              <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" ng-show="imItemOperator">
+                <a ng-click="changeStatus()" class="btn btn-primary btn-block" ng-show="!itemEnabled && isMyOrgItem"><i class="fa fa-plus-square"></i><b> Enable device</b></a>
+                <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="itemEnabled && isMyItem"><i class="fa fa-minus-square"></i><b> Disable device</b></a>
               </div>
 
 
@@ -45,10 +45,10 @@
               <ul class="list-group list-group-unbordered">
 
                 <!-- Access Level -->
-                <li class="list-group-item" ng-show="devEnabled">
-
-                  <b>Access level</b>
-                     <a ng-show="isMyDevice" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInput()">Edit</a>
+                <li class="list-group-item" ng-show="itemEnabled">
+                  <i class="fa fa-eye margin-r-5"></i>
+                  <strong>Access level</strong>
+                     <a ng-show="isMyItem" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInput()">Edit</a>
                      <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
                      <a ng-click="backToEdit()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
 
@@ -67,10 +67,13 @@
 
                   <!-- Ownership -->
                   <li class="list-group-item">
-                    <p ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> <b>Owner</b></p>
-                    <a ng-show="!isMyDevice" ui-sref="root.main.companyProfile.devices({companyAccountId: owner_id})"> {{owner}} </a>
-                    <p ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> <b>Owner</b></p>
-                    <a ng-show="isMyDevice" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> Me </a>
+                    <i class="fa fa-briefcase margin-r-5"></i>
+                    <strong>Owner</strong>
+                    <br>
+                    <a ui-sref="root.main.companyProfile.devices({companyAccountId: item.cid.id._id})">{{name}}</a>
+                    <br>
+                    <a ng-show="itemEnabled" ui-sref="root.main.userProfile.devices({companyAccountId: item.cid.id._id, userAccountId: item.uid.id})">{{owner}}</a>
+                    <a class="text-muted" ng-show="!itemEnabled">Unassigned</a>
                   </li>
 
                   <!-- Serial Number -->
@@ -78,8 +81,9 @@
                   <!-- Location -->
 
                   <!-- Delete button -->
-                  <li class="list-group-item" ng-show="imDeviceOwner && isMyDevice">
-                    <b>Remove device</b>
+                  <li class="list-group-item" ng-show="isMyItem">
+                    <i class="fa fa-times margin-r-5"></i>
+                    <strong>Remove device</strong>
                     <a ng-click="deleteItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Delete </a>
                   </li>
 

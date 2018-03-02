@@ -10,7 +10,7 @@ router
 // When we receive item id to process some action over it
   .get('/:id', getHelper.getItemWithAdd)
   .put('/', putHelper.putOne)
-  .post('/delete/:id', deleteHelper.deleteOne)
+  .delete('/delete/:id', deleteHelper.deleteOne)
 
 // Contract and item sharing
   .get('/contract/:id', contractHelper.fetchContract)

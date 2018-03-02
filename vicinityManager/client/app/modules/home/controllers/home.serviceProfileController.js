@@ -4,22 +4,19 @@ angular.module('VicinityManagerApp.controllers')
 function ($scope, $window, $state, $stateParams, $location, tokenDecoder, commonHelpers, itemsAPIService, Notification) {
 
   $scope.locationPrefix = $location.path();
-  // console.log("location:" + $location.path());
 
 // Initialize variables and data =====================
 // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
-  $scope.devEnabled = false;
+  $scope.itemEnabled = false;
   $scope.showInput = false;
   $scope.isMyItem = false;
-  $scope.loaded = false;
-  $scope.canSeeData = false;
-  $scope.item = {};
-  $scope.devInfo = {};
-  $scope.AL = 0;
-  $scope.contracted = false;
+  $scope.isMyOrgItem = false;
   $scope.imServiceProvider = false;
+  $scope.loaded = false;
+  $scope.item = {};
+  $scope.contracted = false;
 
   initData();
 
@@ -27,6 +24,9 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
     itemsAPIService.getItemWithAdd($stateParams.serviceId)
       .then(
         function successCallback(response){
+          $scope.isMyItem = false;
+          $scope.isMyOrgItem = false;
+          $scope.loaded = false;
           updateScopeAttributes(response);
           $scope.loaded = true;
         },
@@ -43,22 +43,22 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
 
     function updateScopeAttributes(response){
         $scope.item = response.data.message[0];
-        $scope.devInfo = $scope.item.info;
-        $scope.owner = $scope.item.cid.id.name;
-        $scope.owner_id = $scope.item.cid.id._id;
-        $scope.cid = $scope.item.cid;
-        $scope.AL = $scope.item.accessLevel;
-        $scope.devEnabled = ($scope.item.status === 'enabled');
-        $scope.canSeeData = $scope.item.seeData;
+        $scope.name = $scope.item.cid.id.name;
+        $scope.owner = $scope.item.uid.extid;
+        $scope.itemEnabled = ($scope.item.status === 'enabled');
 
         var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
-        $scope.ALcaption = aux[$scope.AL];
+        $scope.ALcaption = aux[$scope.item.accessLevel];
 
-        $scope.isMyItem = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
+        if($scope.itemEnabled) $scope.isMyItem = ($window.sessionStorage.userAccountId.toString() === $scope.item.uid.id.toString());
+        $scope.isMyOrgItem = ($window.sessionStorage.companyAccountId.toString() === $scope.item.cid.id._id.toString());
 
+        $scope.nContracts = 0;
+        $scope.contracted = false;
         for(var i = 0; i <  $scope.item.hasContracts.length; i++){
           if($scope.item.hasContracts[i].contractingUser.toString() === $window.sessionStorage.userAccountId.toString()){
             $scope.contracted = true;
+            $scope.nContracts = $scope.nContracts + 1;
           }
         }
       }

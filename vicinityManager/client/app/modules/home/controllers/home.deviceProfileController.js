@@ -9,15 +9,13 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
 
   commonHelpers.triggerResize(); // Triggers window resize to avoid bug
 
-  $scope.devEnabled = false;
+  $scope.itemEnabled = false;
   $scope.showInput = false;
-  $scope.isMyDevice = false;
+  $scope.isMyItem = false;
+  $scope.isMyOrgItem = false;
+  $scope.imItemOperator = false;
   $scope.loaded = false;
-  $scope.canSeeData = false;
-  $scope.device = {};
-  $scope.devInfo = {};
-  $scope.AL = 0;
-  $scope.imDeviceOwner = false;
+  $scope.item = {};
 
   initData();
 
@@ -25,6 +23,9 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
     itemsAPIService.getItemWithAdd($stateParams.deviceId)
       .then(
         function successCallback(response){
+          $scope.isMyItem = false;
+          $scope.isMyOrgItem = false;
+          $scope.loaded = false;
           updateScopeAttributes(response);
           $scope.loaded = true;
         },
@@ -34,50 +35,47 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
       var payload = tokenDecoder.deToken();
       for(var i in payload.roles){
         if(payload.roles[i] === 'infrastructure operator'){
-          $scope.imDeviceOwner = true;
+          $scope.imItemOperator = true;
         }
       }
     }
 
     function updateScopeAttributes(response){
-        $scope.device = response.data.message[0];
-        $scope.devInfo = $scope.device.info;
-        $scope.owner = $scope.device.cid.id.name;
-        $scope.owner_id = $scope.device.cid.id._id;
-        $scope.cid = $scope.device.cid;
-        $scope.AL = $scope.device.accessLevel;
-        $scope.devEnabled = ($scope.device.status === 'enabled');
-        $scope.canSeeData = $scope.device.seeData;
-        $scope.myFriends = $scope.device.myFriends;
-        var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
-        $scope.ALcaption = aux[$scope.AL];
+        $scope.item = response.data.message[0];
+        $scope.name = $scope.item.cid.id.name;
+        $scope.owner = $scope.item.uid.extid;
+        $scope.itemEnabled = ($scope.item.status === 'enabled');
 
-        $scope.isMyDevice = ($window.sessionStorage.companyAccountId.toString() === $scope.owner_id.toString());
+        var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
+        $scope.ALcaption = aux[$scope.item.accessLevel];
+
+        if($scope.itemEnabled) $scope.isMyItem = ($window.sessionStorage.userAccountId.toString() === $scope.item.uid.id.toString());
+        $scope.isMyOrgItem = ($window.sessionStorage.companyAccountId.toString() === $scope.item.cid.id._id.toString());
     }
 
     $scope.changeStatus = function(){
       var query = {};
-      if($scope.device.status === 'enabled'){
+      if($scope.item.status === 'enabled'){
         query = {
           "status":'disabled',
-          "name":$scope.device.name,
-          "oid": $scope.device.oid,
-          "cid": $scope.device.cid,
-          "adid": $scope.device.adid,
-          "id": $scope.device._id,
+          "name":$scope.item.name,
+          "oid": $scope.item.oid,
+          "cid": $scope.item.cid,
+          "adid": $scope.item.adid,
+          "id": $scope.item._id,
           "accessLevel": 0, // Always private when enabling/disabling
-          "oldAccessLevel" : $scope.device.accessLevel,
+          "oldAccessLevel" : $scope.item.accessLevel,
         };
       }else{
         query = {
           "status":'enabled',
-          "name":$scope.device.name,
-          "cid": $scope.device.cid,
-          "oid": $scope.device.oid,
-          "adid": $scope.device.adid,
-          "id": $scope.device._id,
+          "name":$scope.item.name,
+          "cid": $scope.item.cid,
+          "oid": $scope.item.oid,
+          "adid": $scope.item.adid,
+          "id": $scope.item._id,
           "accessLevel": 0, // Always private when enabling/disabling
-          "oldAccessLevel" : $scope.device.accessLevel,
+          "oldAccessLevel" : $scope.item.accessLevel,
         };
       }
       itemsAPIService.putOne(query)
@@ -91,7 +89,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
 
   $scope.deleteItem = function(){
     if(confirm('Are you sure?')){
-      itemsAPIService.deleteItem($scope.device.oid)
+      itemsAPIService.deleteItem($scope.item.oid)
         .then(
           function successCallback(response){
             Notification.success('Device deleted');
@@ -133,9 +131,9 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
     if (Number($('select#editAccessName').val()) !== 0){
         itemsAPIService.putOne(
           {accessLevel: $('select#editAccessName').val() - 1,
-          id: $scope.device._id,
-          cid: $scope.device.cid,
-          oldAccessLevel: $scope.device.accessLevel })
+          id: $scope.item._id,
+          cid: $scope.item.cid,
+          oldAccessLevel: $scope.item.accessLevel })
           .then(
             function successCallback(response){
               initData();
@@ -186,25 +184,25 @@ $scope.cancelLoadPic = function(){
   $('#input1').fadeOut('slow');
   $('img#pic').fadeOut('slow');
   setTimeout(function() {
-    $("img#pic").prop("src",$scope.device.avatar);
+    $("img#pic").prop("src",$scope.item.avatar);
     $('img#pic').fadeIn('slow');
  }, 600);
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne({avatar: base64String, id: $stateParams.deviceId, cid: $scope.device.cid})
+  itemsAPIService.putOne({avatar: base64String, id: $stateParams.deviceId, cid: $scope.item.cid})
     .then(
       function successCallback(response){
         itemsAPIService.getItemWithAdd($stateParams.deviceId)
           .then(
             function successCallback(response) {
-              $scope.device = response.data.message;
+              $scope.item = response.data.message;
               $('#editCancel1').fadeOut('slow');
               $('#editUpload2').fadeOut('slow');
               $('#input1').fadeOut('slow');
               $('img#pic').fadeOut('slow');
               setTimeout(function() {
-                $("img#pic").prop("src",$scope.device.avatar);
+                $("img#pic").prop("src",$scope.item.avatar);
                 $('img#pic').fadeIn('slow');
              }, 600);
            }

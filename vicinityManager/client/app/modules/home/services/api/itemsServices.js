@@ -12,20 +12,15 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   Get all items I can see, based on restrictive filter (0 most to 7 less restrictive)
   */
   itemsAPI.putOne = function(data) {
-    data.userMail = $window.sessionStorage.username;
-    data.userId = $window.sessionStorage.userAccountId;
     return $http.put(configuration.apiUrl +'/items', data);
   };
 
   itemsAPI.deleteItem = function(id) {
-    var data = {};
-    data.userMail = $window.sessionStorage.username;
-    return $http.post(configuration.apiUrl + '/items/delete/' + id, data);
+    return $http.delete(configuration.apiUrl + '/items/delete/' + id);
   };
 
   itemsAPI.getItemWithAdd = function(id){
-    var cid = $window.sessionStorage.companyAccountId;
-    return $http.get(configuration.apiUrl + '/items/' + id + '?cid=' + cid);
+    return $http.get(configuration.apiUrl + '/items/' + id);
   };
 
   itemsAPI.getMyItems = function(id, filter, offset, cid) {
@@ -37,8 +32,8 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.post(configuration.apiUrl + '/items/' + id + '/organisation/allItems', payload);
   };
 
-  itemsAPI.getUserItems = function(reqId, reqCid, ownCid, type){
-    var payload = { reqId: reqId, reqCid: reqCid, ownCid: ownCid, type: type};
+  itemsAPI.getUserItems = function(reqId, reqCid, type){
+    var payload = { reqId: reqId, reqCid: reqCid, type: type};
     return $http.post(configuration.apiUrl + '/items/user', payload);
   };
 

@@ -68,7 +68,7 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
     getOneContract(id);
     getOnlyId();
     $scope.edit = edit;
-    itemsAPIService.getUserItems($scope.wholeContract.iotOwner.uid.id, $scope.wholeContract.iotOwner.cid.id._id, $scope.wholeContract.serviceProvider.cid.id._id)
+    itemsAPIService.getUserItems($scope.wholeContract.iotOwner.uid.id, $scope.wholeContract.iotOwner.cid.id._id)
     .then(function(response){
       $scope.alldevices = response.data.message.items;
       for(var i = 0; i < $scope.alldevices.length; i++){

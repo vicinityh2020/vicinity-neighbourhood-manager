@@ -20,7 +20,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   $scope.loaded = false;
 
   function init(){
-    itemsAPIService.getUserItems($stateParams.userAccountId, $stateParams.companyAccountId, $scope.cid.id, 'service')
+    itemsAPIService.getUserItems($stateParams.userAccountId, $stateParams.companyAccountId, 'service')
       .then(successCallback, errorCallback);
   }
 

@@ -36,26 +36,28 @@
 
               <!-- Enable/Disable item -->
               <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" ng-show="imServiceProvider">
-              <a ng-click="changeStatus()" class="btn btn-primary btn-block" ng-show="!devEnabled && isMyItem"><i class="fa fa-plus-square"></i><b> Enable service</b></a>
-              <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="devEnabled && isMyItem"><i class="fa fa-minus-square"></i><b> Disable service</b></a>
+              <a ng-click="changeStatus()" class="btn btn-primary btn-block" ng-show="!itemEnabled && isMyOrgItem"><i class="fa fa-plus-square"></i><b> Enable service</b></a>
+              <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="itemEnabled && isMyItem"><i class="fa fa-minus-square"></i><b> Disable service</b></a>
               </div>
 
               <!-- Requesting service -->
-              <div class="btn btn-success btn-block" ng-show="!isMyItem && !contracted" href="" ui-sref="root.main.requestService({companyAccountId: item.cid.id._id, serviceId: item._id})">
-                 <i class="fa fa-plus"></i>&nbsp;<b>Request service</b>
+              <div ng-show="itemEnabled && !isMyItem" style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px">
+                <div class="btn btn-success btn-block" href="" ui-sref="root.main.requestService({companyAccountId: item.cid.id._id, serviceId: item._id})">
+                   <i class="fa fa-plus"></i>&nbsp;<b>Request service</b>
+                </div>
               </div>
               <div class="well centered" ng-show="!isMyItem && contracted">
-                 <i class="fa fa-bar-chart"></i>&nbsp;<b>Service in use</b>
+                 <i class="fa fa-bar-chart"></i>&nbsp;<p class="text-muted">You have {{nContracts}} active contract(s) with this sevice</p>
               </div>
-
 
               <!-- Item info -->
               <ul class="list-group list-group-unbordered">
 
                 <!-- Access Level -->
-                <li class="list-group-item" ng-show="devEnabled">
+                <li class="list-group-item" ng-show="itemEnabled">
 
-                  <b>Access level</b>
+                  <i class="fa fa-eye margin-r-5"></i>
+                  <strong>Access level</strong>
                      <a ng-show="isMyItem" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInput()">Edit</a>
                      <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
                      <a ng-click="backToEdit()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
@@ -75,10 +77,13 @@
 
                   <!-- Ownership -->
                   <li class="list-group-item">
-                    <p ng-show="!isMyItem" ui-sref="root.main.companyProfile.items({companyAccountId: owner_id})"> <b>Owner</b></p>
-                    <a ng-show="!isMyItem" ui-sref="root.main.companyProfile.items({companyAccountId: owner_id})"> {{owner}} </a>
-                    <p ng-show="isMyItem" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> <b>Owner</b></p>
-                    <a ng-show="isMyItem" ui-sref="root.main.companyProfile.friends({companyAccountId: owner_id})"> Me </a>
+                    <i class="fa fa-briefcase margin-r-5"></i>
+                    <strong>Owner</strong>
+                    <br>
+                    <a ui-sref="root.main.companyProfile.devices({companyAccountId: item.cid.id._id})">{{name}}</a>
+                    <br>
+                    <a ng-show="itemEnabled" ui-sref="root.main.userProfile.devices({companyAccountId: item.cid.id._id, userAccountId: item.uid.id})">{{owner}}</a>
+                    <a class="text-muted" ng-show="!itemEnabled">Unassigned</a>
                   </li>
 
                   <!-- Serial Number -->
@@ -86,7 +91,7 @@
                   <!-- Location -->
 
                   <!-- Delete button -->
-                  <li class="list-group-item" ng-show="imServiceProvider">
+                  <li class="list-group-item" ng-show="isMyItem">
                     <b>Remove service</b>
                     <a ng-click="deleteItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Delete</a>
                   </li>

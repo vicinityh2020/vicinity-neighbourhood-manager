@@ -55,7 +55,7 @@ Receives following parameters:
 */
 function getItemWithAdd(req, res, next) {
   var oid = mongoose.Types.ObjectId(req.params.id);
-  var cid = mongoose.Types.ObjectId(req.query.cid);
+  var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   sGet.getItemWithAdd(oid, cid, function(err, response){
     res.json({error: err, message: response});
   });
