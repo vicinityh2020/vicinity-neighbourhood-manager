@@ -7,33 +7,19 @@ function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $
   commonHelpers.triggerResize();
 
   $scope.locationPrefix = $location.path();
-  // console.log("location:" + $location.path());
-  $scope.name = {};
-  $scope.avatar = {};
-  $scope.occupation = {};
-  $scope.bid = {};
-  $scope.companyAccountId = {};
+
   $scope.isMyProfile = true;
   $scope.imAdmin = false;
   $scope.canSendNeighbourRequest = false;
   $scope.canCancelNeighbourRequest = false;
   $scope.canAnswerNeighbourRequest = false;
   $scope.isNeighbour = false;
-  $scope.location = {};
-  $scope.badges = {};
-  $scope.notes = {};
   $scope.friends = [];
   $scope.users = [];
   $scope.devices = [];
   $scope.services = [];
   $scope.loaded = false;
   $scope.showInput = false;
-
-
-  // $scope.organisationNew = '';
-  $scope.locationNew = "";
-  $scope.notesNew = "";
-  // $scope.bidNew = "";
 
   // Initializa DOM elements
   $('p#org1').show();
@@ -116,65 +102,6 @@ $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.c
 var payload = tokenDecoder.deToken();
 var keyword = new RegExp('administrator');
 $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
-
-// Avatar change functions ==============
-
-var base64String = "";
-
-$("input#input1").on('change',function(evt) {
-
-  var tgt = evt.target || window.event.srcElement,
-        files = tgt.files;
-
-  if (FileReader && files && files.length) {
-        var fr = new FileReader();
-        fr.onload = function () {
-            // $("img#pic").src = fr.result;
-            $("img#pic").prop("src",fr.result);
-            base64String = fr.result;
-        };
-        fr.readAsDataURL(files[0]);
-    }else{
-        // fallback -- perhaps submit the input to an iframe and temporarily store
-        // them on the server until the user's session ends.
-    }
-});
-
-$scope.showLoadPic = function(){
-  $scope.showInput = true;
-  $('#editCancel1').fadeIn('slow');
-  $('#editUpload2').fadeIn('slow');
-  $('#input1').fadeIn('slow');
-};
-
-$scope.cancelLoadPic = function(){
-  $('#editCancel1').fadeOut('slow');
-  $('#editUpload2').fadeOut('slow');
-  $('#input1').fadeOut('slow');
-  $('img#pic').fadeOut('slow');
-  setTimeout(function() {
-    $("img#pic").prop("src",$scope.avatar);
-    $('img#pic').fadeIn('slow');
- }, 600);
-};
-
-$scope.uploadPic = function(){
-    userAccountAPIService.updateUserAccounts($window.sessionStorage.companyAccountId,{avatar: base64String})
-    .then(
-      function successCallback(response){
-        $scope.avatar = response.data.message.avatar;
-        $('#editCancel1').fadeOut('slow');
-        $('#editUpload2').fadeOut('slow');
-        $('#input1').fadeOut('slow');
-        $('img#pic').fadeOut('slow');
-        setTimeout(function() {
-          $("img#pic").prop("src",$scope.avatar);
-          $('img#pic').fadeIn('slow');
-       }, 600);
-      },
-      function errorCallback(response){}
-    );
-};
 
 // Functions Neighbours ==================
 
@@ -272,7 +199,6 @@ $scope.uploadPic = function(){
       $scope.occupation = response.data.message.accountOf.occupation;
       $scope.companyAccountId = response.data.message._id;
       $scope.location = response.data.message.location;
-      $scope.badges = response.data.message.badges;
       $scope.notes = response.data.message.notes;
       $scope.bid = response.data.message.businessId;
       $scope.canSendNeighbourRequest = response.data.message.canSendNeighbourRequest;
@@ -381,6 +307,65 @@ $scope.updateCompany = function(data){
         }
       );
     }
+  };
+  
+  // Avatar change functions ==============
+
+  var base64String = "";
+
+  $("input#input1").on('change',function(evt) {
+
+    var tgt = evt.target || window.event.srcElement,
+          files = tgt.files;
+
+    if (FileReader && files && files.length) {
+          var fr = new FileReader();
+          fr.onload = function () {
+              // $("img#pic").src = fr.result;
+              $("img#pic").prop("src",fr.result);
+              base64String = fr.result;
+          };
+          fr.readAsDataURL(files[0]);
+      }else{
+          // fallback -- perhaps submit the input to an iframe and temporarily store
+          // them on the server until the user's session ends.
+      }
+  });
+
+  $scope.showLoadPic = function(){
+    $scope.showInput = true;
+    $('#editCancel1').fadeIn('slow');
+    $('#editUpload2').fadeIn('slow');
+    $('#input1').fadeIn('slow');
+  };
+
+  $scope.cancelLoadPic = function(){
+    $('#editCancel1').fadeOut('slow');
+    $('#editUpload2').fadeOut('slow');
+    $('#input1').fadeOut('slow');
+    $('img#pic').fadeOut('slow');
+    setTimeout(function() {
+      $("img#pic").prop("src",$scope.avatar);
+      $('img#pic').fadeIn('slow');
+   }, 600);
+  };
+
+  $scope.uploadPic = function(){
+      userAccountAPIService.updateUserAccounts($window.sessionStorage.companyAccountId,{avatar: base64String})
+      .then(
+        function successCallback(response){
+          $scope.avatar = response.data.message.avatar;
+          $('#editCancel1').fadeOut('slow');
+          $('#editUpload2').fadeOut('slow');
+          $('#input1').fadeOut('slow');
+          $('img#pic').fadeOut('slow');
+          setTimeout(function() {
+            $("img#pic").prop("src",$scope.avatar);
+            $('img#pic').fadeIn('slow');
+         }, 600);
+        },
+        function errorCallback(response){}
+      );
   };
 
 });

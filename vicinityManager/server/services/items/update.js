@@ -142,10 +142,10 @@ function updateItems(data, callback){
 
     userOp.findOne({_id:userId}, {accessLevel:1}, function(err, response){
       if(err){
-        callback(true, err);
+        callback(true, err, false);
       } else if(Number(response.accessLevel) < Number(data.accessLevel)){
         logger.debug("User privacy is too low...");
-        callback(false, "User privacy is too low...");
+        callback(false, "User privacy is too low...",false);
       } else {
         query = {accessLevel: data.accessLevel};
         itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
@@ -164,11 +164,11 @@ function updateItems(data, callback){
         .then(function(response){
           logger.debug("Item update process ended successfully...");
           logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
-          callback(false, response);
+          callback(false, response, true);
         })
         .catch(function(err){
           logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
-          callback(true, err);
+          callback(true, err, false);
         });
       }
     });
@@ -180,11 +180,11 @@ function updateItems(data, callback){
     .then(function(response){
       logger.debug("Item update process ended successfully...");
       logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
-      callback(false, response);
+      callback(false, response, true);
     })
     .catch(function(err){
       logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
-      callback(true, err);
+      callback(true, err, false);
     });
 
   }

@@ -145,10 +145,18 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
             oldAccessLevel: $scope.item.accessLevel })
           .then(
             function successCallback(response){
+              if(response.data.success){
+                Notification.success("Access level updated");
+              } else {
+                Notification.warning("User access level is too low...");
+              }
               initData();
               $scope.backToEdit();
             }
-          );
+          )
+          .catch(function(err){
+            Notification.error(err);
+          });
         }
       };
 

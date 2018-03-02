@@ -90,3 +90,9 @@
 {"user":"mars@bavenir.eu","action":"EnableItem","item":"5a61ffacc2cd2a504e5935aa","level":"audit","message":"","timestamp":"2018-03-02T12:14:13.501Z"}
 {"user":"mars@bavenir.eu","action":"DisableItem","item":"5a61ffacc2cd2a504e5935aa","level":"audit","message":"","timestamp":"2018-03-02T12:18:06.906Z"}
 {"user":"mars@bavenir.eu","action":"EnableItem","item":"5a61ffacc2cd2a504e5935aa","level":"audit","message":"","timestamp":"2018-03-02T12:18:15.810Z"}
+{"user":"moon@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-02T13:47:21.316Z"}
+{"user":"moon@bavenir.eu","action":"removeContract","message":"Nothing to be removed","level":"warn","timestamp":"2018-03-02T13:54:16.958Z"}
+{"user":"moon@bavenir.eu","action":"updateUser","item":{"_bsontype":"ObjectID","id":{"0":90,"1":38,"2":96,"3":77,"4":250,"5":200,"6":171,"7":247,"8":253,"9":39,"10":58,"11":126}},"level":"audit","message":"","timestamp":"2018-03-02T13:54:16.964Z"}
+{"user":"moon@bavenir.eu","action":"itemUpdate","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-02T13:54:28.104Z"}
+{"user":"moon@bavenir.eu","action":"itemUpdate","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-02T13:55:21.581Z"}
+{"user":"moon@bavenir.eu","action":"itemUpdate","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-02T13:55:45.300Z"}

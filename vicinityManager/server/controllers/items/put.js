@@ -19,8 +19,8 @@ function putOne(req, res) {
       res.json({error: err, message: response});
     });
   }else{
-    sItemUpdate.updateItems(req.body, function(err, response){
-      res.json({error: err, message: response});
+    sItemUpdate.updateItems(req.body, function(err, response, success){
+      res.json({error: err, message: response, success: success});
     });
   }
 }
