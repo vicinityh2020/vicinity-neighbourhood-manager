@@ -52,6 +52,7 @@
 
           <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})">{{it.name}}</a></h3>
           <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.services({companyAccountId: it.cid.id._id})">{{it.cid.id.name}}</a></h5>
+          <h5 class="widget-user-desc2" ng-show="!it.isOwner && it.contracted > 0">Contracted {{it.contracted}} time(s)</h5>
           <h5 class="widget-user-desc2" ng-show="it.status === 'enabled'">Enabled</h5>
           <h5 class="widget-user-desc2" ng-show="it.status === 'disabled'">Disabled</h5>
           <h5 class="widget-user-desc2" ng-show="it.isPublic">Service is public</h5>
@@ -59,7 +60,7 @@
           <h5 class="widget-user-desc2" ng-show="it.isPrivate">Private data</h5>
         </div>
 
-        <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner && !it.contracted && canRequestService">
+        <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner && canRequestService">
           <a href="" ui-sref="root.main.requestService({companyAccountId: it.cid.id._id, serviceId: it._id})" class=" btn-xs btn-success btn-block">
              <i class="fa fa-plus fa-lg"></i>
               &nbsp;<b>Request service</b>

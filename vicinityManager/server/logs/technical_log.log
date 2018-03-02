@@ -96,3 +96,4 @@
 {"user":"moon@bavenir.eu","action":"itemUpdate","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-02T13:54:28.104Z"}
 {"user":"moon@bavenir.eu","action":"itemUpdate","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-02T13:55:21.581Z"}
 {"user":"moon@bavenir.eu","action":"itemUpdate","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-02T13:55:45.300Z"}
+{"user":"mars@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-02T14:11:48.310Z"}

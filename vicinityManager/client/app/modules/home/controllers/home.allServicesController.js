@@ -40,7 +40,7 @@ angular.module('VicinityManagerApp.controllers')
           for(var i = 0; i < response.data.message.length; i++){
             for(var j = 0; j < response.data.message[i].hasContracts.length; j++){
               if(response.data.message[i].hasContracts[j].contractingUser.toString() === $scope.myUserId.toString()){
-                response.data.message[i].contracted = true;
+                response.data.message[i].contracted += 1;
               }
             }
               $scope.items.push(response.data.message[i]);
