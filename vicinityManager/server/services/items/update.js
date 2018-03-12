@@ -10,6 +10,7 @@ var logger = require("../../middlewares/logger");
 var commServer = require('../../services/commServer/request');
 var sharingRules = require('../../services/sharingRules');
 var audits = require('../../controllers/audit/put');
+var sync = require('../../services/asyncHandler/sync');
 
 var itemOp = require('../../models/vicinityManager').item;
 var userOp = require('../../models/vicinityManager').user;
@@ -18,175 +19,228 @@ var notificationOp = require('../../models/vicinityManager').notification;
 //Public functions
 
 /*
+Update several items
+Can choose to execute any of the actions below for each item.
+OPTIONS: Enable, disable, update metadata/accessLevel/avatar ...
+*/
+function updateManyItems(items, roles, email, cid, c_id, uid, callback){
+
+  if(items.length !== 0){ // Check if there is any item to update
+    logger.debug('Start async handler...');
+    sync.forEachAll(items,
+      function(value, allresult, next, otherParams) {
+        if(value.status === 'enabled'){
+          enableItem(value, otherParams, function(value, result, success) {
+            allresult.push({value: value, error: result, success: success});
+            next();
+          });
+        }else if(value.status === 'disabled'){
+          disableItem(value, otherParams, function(value, result, success) {
+            allresult.push({value: value, error: result, success: success});
+            next();
+          });
+        } else {
+          updateItem(value, otherParams, function(value, result, success) {
+            allresult.push({value: value, error: result, success: success});
+            next();
+          });
+        }
+      },
+      function(allresult) {
+        if(allresult.length === items.length){
+          logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+          callback(false, allresult);
+        }
+      },
+      false,
+      {roles: roles, email: email, cid:cid, c_id:c_id, uid:uid}
+    );
+  }
+}
+
+/*
 Enable items
 */
-function enableItems(data, callback){
-  var cid = data.cid.extid;
-  var c_id = data.cid.id._id;
+function enableItem(data, otherParams, callback){
+  var cid = otherParams.cid;
+  var c_id = otherParams.orgid;
   var oid = data.oid;
-  var o_id = data.id;
-  var adid = data.adid;
-  var userId = mongoose.Types.ObjectId(data.decoded_token.uid);
-  var userMail = data.decoded_token.sub;
+  var o_id = data.o_id;
+  var userId = otherParams.uid;
+  var userMail = otherParams.email;
+  var canChange = checkUserAuth(otherParams.roles, otherParams.email, data.typeOfItem, data.uid);
 
-  commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
-    .then(function(response){ return deviceActivityNotif(o_id, c_id, 'Enabled', 11);})
-    .then(function(response){
-      return audits.putAuditInt(
-        o_id,
-        {
-          orgOrigin: c_id,
-          user: userMail,
-          auxConnection: {kind: 'item', item: o_id},
-          eventType: 43
-        }
-      );
-    })
-    .then(function(response){
-      return audits.putAuditInt(
-        c_id,
-        {
-          orgOrigin: c_id,
-          user: userMail,
-          auxConnection: {kind: 'item', item: o_id},
-          eventType: 43
-        }
-      );
-    })
-    .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'enabled'); })
-    .then(function(response){
-       var query = {status: data.status, accessLevel: data.accessLevel};
-       return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
-     })
-    .then(function(response){
-      return sharingRules.changePrivacy(data);
+  if(canChange){
+    commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
+      .then(function(response){ return deviceActivityNotif(o_id, c_id, 'Enabled', 11);})
+      .then(function(response){
+        return audits.putAuditInt(
+          o_id,
+          {
+            orgOrigin: c_id,
+            user: userMail,
+            auxConnection: {kind: 'item', item: o_id},
+            eventType: 43
+          }
+        );
       })
-    .then(function(response){
-      logger.debug("Item update process ended successfully...");
-      logger.audit({user: userMail, action: 'EnableItem', item: o_id });
-      callback(false, response);
-    })
-    .catch(function(err){
-      logger.error({user: userMail, action: 'EnableItem', item: o_id, message: err});
-      callback(true, err);
-    });
+      .then(function(response){
+        return audits.putAuditInt(
+          c_id,
+          {
+            orgOrigin: c_id,
+            user: userMail,
+            auxConnection: {kind: 'item', item: o_id},
+            eventType: 43
+          }
+        );
+      })
+      .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'enabled'); })
+      .then(function(response){
+         var query = {status: data.status, accessLevel: data.accessLevel};
+         return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
+       })
+      .then(function(response){
+        return sharingRules.changePrivacy(data);
+        })
+      .then(function(response){
+        logger.debug("Item update process ended successfully...");
+        logger.audit({user: userMail, action: 'EnableItem', item: o_id });
+        callback(false, response, true);
+      })
+      .catch(function(err){
+        logger.error({user: userMail, action: 'EnableItem', item: o_id, message: err});
+        callback(true, err, false);
+      });
+    } else {
+      callback(false, 'User not authorized', false);
+    }
 }
 
 /*
 Disable items
 */
-function disableItems(data, callback){
-  var cid = data.cid.extid;
-  var c_id = data.cid.id._id;
+function disableItem(data, otherParams, callback){
+  var cid = otherParams.cid;
+  var c_id = otherParams.orgid;
   var oid = data.oid;
-  var o_id = data.id;
-  var adid = data.adid;
-  var userId = mongoose.Types.ObjectId(data.decoded_token.uid);
-  var userMail = data.decoded_token.sub;
+  var o_id = data.o_id;
+  var userId = otherParams.uid;
+  var userMail = otherParams.email;
+  var canChange = checkUserAuth(otherParams.roles, otherParams.email, data.typeOfItem, data.uid);
 
-  commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
-    .then(function(response){ return deviceActivityNotif(o_id, c_id, 'Disabled', 12);})
-    .then(function(response){
-      return audits.putAuditInt(
-        o_id,
-        {
-          orgOrigin: cid,
-          user: userMail,
-          auxConnection: {kind: 'item', item: o_id},
-          eventType: 44
-        }
-      );
-    })
-    .then(function(response){
-      return audits.putAuditInt(
-        cid,
-        {
-          orgOrigin: cid,
-          user: userMail,
-          auxConnection: {kind: 'item', item: o_id},
-          eventType: 44
-        }
-      );
-    })
-    .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'disabled'); })
-    .then(function(response){
-       var query = {status: data.status, accessLevel: data.accessLevel};
-       return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
-     })
-    .then(function(response){
-      return sharingRules.changePrivacy(data);
+  if(canChange){
+    commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
+      .then(function(response){ return deviceActivityNotif(o_id, c_id, 'Disabled', 12);})
+      .then(function(response){
+        return audits.putAuditInt(
+          o_id,
+          {
+            orgOrigin: cid,
+            user: userMail,
+            auxConnection: {kind: 'item', item: o_id},
+            eventType: 44
+          }
+        );
       })
-    .then(function(response){
-      logger.debug("Item update process ended successfully...");
-      logger.audit({user: userMail, action: 'DisableItem', item: o_id });
-      callback(false, response);
-    })
-    .catch(function(err){
-      logger.error({user: userMail, action: 'DisableItem', item: o_id, message: err});
-      callback(true, err);
-    });
+      .then(function(response){
+        return audits.putAuditInt(
+          cid,
+          {
+            orgOrigin: cid,
+            user: userMail,
+            auxConnection: {kind: 'item', item: o_id},
+            eventType: 44
+          }
+        );
+      })
+      .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'disabled'); })
+      .then(function(response){
+         var query = {status: data.status, accessLevel: data.accessLevel};
+         return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
+       })
+      .then(function(response){
+        return sharingRules.changePrivacy(data);
+        })
+      .then(function(response){
+        logger.debug("Item update process ended successfully...");
+        logger.audit({user: userMail, action: 'DisableItem', item: o_id });
+        callback(false, response, true);
+      })
+      .catch(function(err){
+        logger.error({user: userMail, action: 'DisableItem', item: o_id, message: err});
+        callback(true, err, false);
+      });
+    } else {
+      callback(false, 'User not authorized', false);
+    }
 }
 
 /*
 Update items
 */
-function updateItems(data, callback){
-  var cid = data.cid.extid;
-  var c_id = data.cid.id._id;
-  var o_id = data.id;
-  var userId = mongoose.Types.ObjectId(data.decoded_token.uid);
-  var userMail = data.decoded_token.sub;
+function updateItem(data, otherParams, callback){
+  var cid = otherParams.cid;
+  var c_id = otherParams.c_id;
+  var oid = data.oid;
+  var o_id = data.o_id;
+  var userId = otherParams.uid;
+  var userMail = otherParams.email;
   var query = {};
+  var canChange = checkUserAuth(otherParams.roles, otherParams.email, data.typeOfItem, data.uid);
 
-  if(data.hasOwnProperty('accessLevel')){
+  if(canChange){
+    if(data.hasOwnProperty('accessLevel')){
 
-    userOp.findOne({_id:userId}, {accessLevel:1}, function(err, response){
-      if(err){
-        callback(true, err, false);
-      } else if(Number(response.accessLevel) < Number(data.accessLevel)){
-        logger.debug("User privacy is too low...");
-        callback(false, "User privacy is too low...",false);
-      } else {
-        query = {accessLevel: data.accessLevel};
-        itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
-        .then(function(response){
-          return sharingRules.changePrivacy(data);
-        })
-        .then(function(response){
-          audits.putAuditInt(o_id,
-          { orgOrigin: cid,
-            auxConnection: {kind: 'item', item: o_id},
-            user: userMail,
-            eventType: 45,
-            description: "From " + clasify(Number(data.oldAccessLevel)) + " to " + clasify(Number(data.accessLevel))
-          });
-        })
-        .then(function(response){
-          logger.debug("Item update process ended successfully...");
-          logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
-          callback(false, response, true);
-        })
-        .catch(function(err){
-          logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
+      userOp.findOne({_id:userId}, {accessLevel:1}, function(err, response){
+        if(err){
           callback(true, err, false);
-        });
-      }
-    });
+        } else if(Number(response.accessLevel) < Number(data.accessLevel)){
+          logger.debug("User privacy is too low...");
+          callback(false, "User privacy is too low...", false);
+        } else {
+          query = {accessLevel: data.accessLevel};
+          itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
+          .then(function(response){
+            return sharingRules.changePrivacy(data);
+          })
+          .then(function(response){
+            audits.putAuditInt(o_id,
+            { orgOrigin: cid,
+              auxConnection: {kind: 'item', item: o_id},
+              user: userMail,
+              eventType: 45,
+              description: "From " + clasify(Number(data.oldAccessLevel)) + " to " + clasify(Number(data.accessLevel))
+            });
+          })
+          .then(function(response){
+            logger.debug("Item update process ended successfully...");
+            logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
+            callback(false, response, true);
+          })
+          .catch(function(err){
+            logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
+            callback(true, err, false);
+          });
+        }
+      });
 
+    } else {
+
+      if(data.hasOwnProperty('avatar')){ query = {avatar: data.avatar}; }
+      itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
+      .then(function(response){
+        logger.debug("Item update process ended successfully...");
+        logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
+        callback(false, response, true);
+      })
+      .catch(function(err){
+        logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
+        callback(true, err, false);
+      });
+    }
   } else {
-
-    if(data.hasOwnProperty('avatar')){ query = {avatar: data.avatar}; }
-    itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
-    .then(function(response){
-      logger.debug("Item update process ended successfully...");
-      logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
-      callback(false, response, true);
-    })
-    .catch(function(err){
-      logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
-      callback(true, err, false);
-    });
-
+    callback(false, 'User not authorized', false);
   }
 }
 
@@ -252,8 +306,24 @@ function clasify(lvl){
     return caption;
 }
 
+/*
+Check if user can update a device based on its roles
+*/
+function checkUserAuth(roles, tokenUser, typeOfItem, itemUser){
+  var imAdmin = roles.indexOf('administrator') !== -1;
+  var canChangeSer, canChangeDev;
+  if(tokenUser === itemUser){
+    canChangeDev = (roles.indexOf('infrastructure operator') !== -1 && typeOfItem === 'device');
+    canChangeSer = (roles.indexOf('service provider') !== -1 && typeOfItem === 'service');
+  } else {
+    canChangeDev = canChangeSer = false;
+  }
+  return imAdmin || canChangeSer || canChangeDev;
+}
+
 // Module exports
 
-module.exports.enableItems = enableItems;
-module.exports.disableItems = disableItems;
-module.exports.updateItems = updateItems;
+module.exports.enableItem = enableItem;
+module.exports.disableItem = disableItem;
+module.exports.updateItem = updateItem;
+module.exports.updateManyItems = updateManyItems;

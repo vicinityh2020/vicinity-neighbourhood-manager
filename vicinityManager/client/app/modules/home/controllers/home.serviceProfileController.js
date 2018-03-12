@@ -31,6 +31,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           $scope.loaded = true;
         },
         function errorCallback(response){
+          Notification.error('Problem fetching data');
         }
       );
       var payload = tokenDecoder.deToken();
@@ -68,31 +69,35 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
       if($scope.item.status === 'enabled'){
         query = {
           "status":'disabled',
-          "name": $scope.item.name,
-          "cid": $scope.item.cid,
+          "o_id": $scope.item._id,
           "oid": $scope.item.oid,
-          "adid": $scope.item.adid,
-          "id": $scope.item._id,
+          "uid": $scope.owner,
+          "typeOfItem": "service",
           "accessLevel": 0, // Always private when enabling/disabling
           "oldAccessLevel" : $scope.item.accessLevel,
         };
       }else{
         query = {
           "status":'enabled',
-          "name":$scope.item.name,
-          "cid": $scope.item.cid,
+          "o_id": $scope.item._id,
           "oid": $scope.item.oid,
-          "adid": $scope.item.adid,
-          "id": $scope.item._id,
+          "uid": $scope.owner,
+          "typeOfItem": "service",
           "accessLevel": 0, // Always private when enabling/disabling
           "oldAccessLevel" : $scope.item.accessLevel,
         };
       }
       itemsAPIService.putOne(query)
         .then(
-          function successCallback(){
-            Notification.success('Service status updated!!');
-            initData();
+          function successCallback(response){
+            if(response.data.success){
+              Notification.success('Service status updated!!');
+              initData();
+            } else {
+              Notification.warning('Unauthorized');
+            }
+          },
+          function errorCallback(response){
           }
         );
     };
@@ -104,6 +109,9 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           function successCallback(response){
             Notification.success('service deleted');
             $state.go("root.main.allServices");
+          },
+          function errorCallback(response){
+            Notification.error('Problem deleting item');
           }
         );
       }
@@ -140,8 +148,10 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
     if (Number($('select#editAccessName').val()) !== 0){
         itemsAPIService.putOne(
             {accessLevel: $('select#editAccessName').val() - 1,
-            id: $scope.item._id,
-            cid: $scope.item.cid,
+            typeOfItem: "service",
+            o_id: $scope.item._id,
+            oid: $scope.item.oid,
+            uid: $scope.owner,
             oldAccessLevel: $scope.item.accessLevel })
           .then(
             function successCallback(response){
@@ -206,21 +216,29 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne({id:$scope.item._id, avatar: base64String, cid: $scope.item.cid})
+  itemsAPIService.putOne({o_id:$scope.item._id, avatar: base64String, typeOfItem: "service", uid: $scope.owner, cid: $scope.item.cid})
     .then(
       function successCallback(response){
         itemsAPIService.getItemWithAdd($stateParams.serviceId)
           .then(
-            function successCallback(response) {
-              $scope.item = response.data.message;
-              $('#editCancel1').fadeOut('slow');
-              $('#editUpload2').fadeOut('slow');
-              $('#input1').fadeOut('slow');
-              $('img#pic').fadeOut('slow');
-              setTimeout(function() {
-                $("img#pic").prop("src",$scope.item.avatar);
-                $('img#pic').fadeIn('slow');
-             }, 600);
+            function successCallback(response){
+              if(response.data.success){
+                Notification.success('Service status updated!!');
+                $scope.item = response.data.message;
+                $('#editCancel1').fadeOut('slow');
+                $('#editUpload2').fadeOut('slow');
+                $('#input1').fadeOut('slow');
+                $('img#pic').fadeOut('slow');
+                setTimeout(function() {
+                  $("img#pic").prop("src",$scope.item.avatar);
+                  $('img#pic').fadeIn('slow');
+               }, 600);
+             } else {
+               Notification.warning('Unauthorized');
+             }
+           },
+           function errorCallback(response){
+             Notification.error(response);
            }
          );
       }

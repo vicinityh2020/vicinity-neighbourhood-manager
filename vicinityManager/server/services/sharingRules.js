@@ -22,21 +22,21 @@ my friend is using to share with me.
 function removeFriend(my_id, friend_id, email){
   logger.debug('removing friend');
   var items1, items2, items;
+  return new Promise(function(resolve, reject) {
+    itemOp.find({'cid.id':my_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':friend_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
+    .then(function(response){
+      if(response){ items1 = response; }
+      return itemOp.find({'cid.id':friend_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':my_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows');
+    })
+    .then(function(response){
+      if(response){ items2 = response; }
+        items = items1.concat(items2);
 
-  itemOp.find({'cid.id':my_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':friend_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
-  .then(function(response){
-    if(response){ items1 = response; }
-    return itemOp.find({'cid.id':friend_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':my_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows');
-  })
-  .then(function(response){
-    if(response){ items2 = response; }
-    return new Promise(function(resolve, reject) {
-      items = items1.concat(items2);
-
-      if(items.length !== 0){ // Check if there is any item to delete
+      if(items.length !== 0){ // Check if there is any item to modify
         logger.debug('Start async handler...');
         sync.forEachAll(items,
           function(value, allresult, next, otherParams) {
+            // Removes invalid contracts from all affected devices
             ctHelper.removeDevice(value, otherParams, function(value, result) {
                 allresult.push({value: value, error: result});
                 next();
@@ -56,14 +56,11 @@ function removeFriend(my_id, friend_id, email){
         logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
         resolve({"error": false, "message": "Nothing to be removed..."});
       }
+    })
+    .catch(function(error){
+      logger.debug('Error remove friend: ' + error);
+      reject({error: true, message: error});
     });
-  })
-  .then(function(response){
-    return {error: false, message: response}; // response is already and object {error,message}
-  })
-  .catch(function(error){
-    logger.debug('Error remove friend: ' + error);
-    return {error: true, message: error};
   });
 }
 
@@ -74,26 +71,25 @@ If not, I need to update all items and contracts accordingly
 */
 function changeUserAccessLevel(uid, newAccessLevel, email){
   var items = [], updItems = [];
+  return new Promise(function(resolve, reject) {
 
-  itemOp.find({'uid.id':uid, accessLevel: {$gt: newAccessLevel}}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
-  .then(function(items){
-    var aux = {}, ids = [];
-    for(var i = 0; i < items.length; i++){
-      aux = items[i].toObject();
-      ids.push(aux._id);
-      aux.accessLevel = newAccessLevel;
-      updItems.push(aux);
-    }
-    return itemOp.update({_id: {$in: ids}}, {$set: {accessLevel: newAccessLevel}},{multi:true});
-  })
-  .then(function(response){
-
-    return new Promise(function(resolve, reject) {
-
-      if(updItems.length !== 0){ // Check if there is any item to delete
+    itemOp.find({'uid.id':uid, accessLevel: {$gt: newAccessLevel}}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
+    .then(function(items){
+      var aux = {}, ids = [];
+      for(var i = 0; i < items.length; i++){
+        aux = items[i].toObject();
+        ids.push(aux._id);
+        aux.accessLevel = newAccessLevel;
+        updItems.push(aux);
+      }
+      return itemOp.update({_id: {$in: ids}}, {$set: {accessLevel: newAccessLevel}},{multi:true});
+    })
+    .then(function(response){
+      if(updItems.length !== 0){ // Check if there is any item to modify
         logger.debug('Start async handler...');
         sync.forEachAll(updItems,
           function(value, allresult, next, otherParams) {
+            // Removes invalid contracts from all affected devices
             ctHelper.removeDevice(value, otherParams, function(value, result) {
                 allresult.push({value: value, error: result});
                 next();
@@ -109,19 +105,16 @@ function changeUserAccessLevel(uid, newAccessLevel, email){
           {email: email}
         );
       } else {
-        logger.debug('Unfriending: No items to delete');
+        logger.debug('Change user accessLevel: No items to reduce accessLevel');
         logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
         resolve({"error": false, "message": "Nothing to be removed..."});
       }
+    })
+    .catch(function(error){
+      logger.debug('Error remove friend: ' + error);
+      reject({error: true, message: error});
     });
-  })
-  .then(function(response){
-    logger.debug("Devices accessLevel reduced due to user privacy changes");
-    return {error: false, message: response}; // response is already and object {error,message}
-  })
-  .catch(function(error){
-    logger.debug('Error remove friend: ' + error);
-    return {error: true, message: error};
+
   });
 }
 
@@ -208,7 +201,7 @@ Find how to resolve the accessLevel change in the device
 Based on old and new accessLevel captions
 */
 function findCase(oldA, newA, updates, callback){
-  var id = updates.id;
+  var id = updates.id || updates.o_id;
   var item = {};
   if((oldA === 2 && newA === 1) || (oldA === 2 && newA === 0) || (oldA === 1 && newA === 0)) {
     itemOp.findOne({_id: id},{hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')

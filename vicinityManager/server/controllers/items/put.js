@@ -1,6 +1,7 @@
 // Global objects and variables
 var sItemUpdate = require('../../services/items/update');
 var logger = require("../../middlewares/logger");
+var mongoose = require('mongoose');
 
 /*
 Controls any possible object modification
@@ -9,17 +10,25 @@ Controls any possible object modification
 - Change of accessLevel
 */
 function putOne(req, res) {
-  // logger.debug(req.body);
-  if(req.body.status === 'enabled'){
-    sItemUpdate.enableItems(req.body, function(err, response){
-      res.json({error: err, message: response});
+  var email = req.body.decoded_token.sub;
+  var cid = req.body.decoded_token.cid;
+  var c_id = req.body.decoded_token.orgid;
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+
+  if(req.body.multi){
+   sItemUpdate.updateManyItems(req.body.items, req.body.decoded_token.roles, req.body.decoded_token.sub, req.body.decoded_token.cid, req.body.decoded_token.orgid, req.body.decoded_token.uid, function(err, response, success){
+    res.json({error: err, message: response, success: success});
+   });
+  }else if(req.body.status === 'enabled'){
+    sItemUpdate.enableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+      res.json({error: err, message: response, success: success});
     });
   }else if(req.body.status === 'disabled'){
-    sItemUpdate.disableItems(req.body, function(err, response){
-      res.json({error: err, message: response});
+    sItemUpdate.disableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+      res.json({error: err, message: response, success: success});
     });
   }else{
-    sItemUpdate.updateItems(req.body, function(err, response, success){
+    sItemUpdate.updateItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
       res.json({error: err, message: response, success: success});
     });
   }

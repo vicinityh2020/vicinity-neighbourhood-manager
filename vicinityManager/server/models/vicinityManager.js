@@ -75,6 +75,15 @@ var user = new Schema({
   authentication: {
     hash: String,
     principalRoles: [ String ]
+    /* principalRoles: {type: String,
+                        enum: [
+                          "user",
+                          "administrator", 
+                          "infrastructure operator",
+                          "service provider",
+                          "system integrator",
+                          "devOps"]}
+    */
   },
   hasItems: [ oidSchema ], // Own items and foreign items under contract
   hasContracts: [ ctidSchema ]
