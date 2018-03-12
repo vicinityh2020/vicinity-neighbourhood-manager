@@ -51,6 +51,7 @@
           <h3 class="box-title">Main Info</h3>
           <button class="pull-right paddedSides" ng-click="closeDetails()"><i class="fa fa-times"></i></button>
           <button class="pull-right paddedSides" ng-show="edit" ng-click="editContract()">Update</button>
+          <button class="pull-right paddedSides" ng-show="!wholeContract.agreed && wholeContract.imServiceProv" ng-click="acceptContract(wholeContract._id)">Accept</button>
       </div>
       <div class="box-body">
         <p><b>ID:</b> {{wholeContract.ctid}}</p>

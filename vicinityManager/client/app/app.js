@@ -354,7 +354,8 @@ angular.module('VicinityManagerApp', [
         })
 
         .state('root.main.userProfile.contracts', {
-          url: '/contracts',
+          url: '/contracts?contractId',
+          reloadOnSearch : false,
           views: {
             'tabPanel@root.main.userProfile':
             {

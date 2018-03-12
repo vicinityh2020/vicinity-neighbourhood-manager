@@ -8,7 +8,7 @@ Filters the items based on the following rules:
   . if I am partner of the company, also items flagged for friends
 */
 .controller('uPcontractsController',
-function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notification) {
+function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIService,  Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -21,6 +21,8 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
   $scope.detailShow = false;
   $scope.edit = false;
   $scope.mainTitle = "My Contracts";
+
+  $scope.searchParam = $location.search(); // GET
 
   function init(){
     itemsAPIService.getContracts($stateParams.userAccountId)
@@ -36,6 +38,9 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
     $scope.noItems = ($scope.contracts.length === 0);
     if(!$scope.noItems){myContractDetails();}
     $scope.loaded = true;
+    if($scope.searchParam){
+      $scope.showDetails($scope.searchParam.contractId, false);
+    }
   }
 
   function errorCallback(error){
@@ -65,6 +70,7 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
   };
 
   $scope.showDetails = function(id,edit){
+    $location.search('contractId', id); // SET
     getOneContract(id);
     getOnlyId();
     $scope.edit = edit;
@@ -91,6 +97,7 @@ function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notifi
   };
 
   $scope.closeDetails = function(){
+    $location.search('contractId', null); // SET
     $scope.detailsShow = false;
     $scope.wholeContract = {};
     $scope.contractItems = [];

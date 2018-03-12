@@ -191,3 +191,18 @@
 {"user":"moon@bavenir.eu","action":"EnableItem","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-12T11:18:32.725Z"}
 {"user":"moon@bavenir.eu","action":"DisableItem","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-12T11:18:46.312Z"}
 {"user":"moon@bavenir.eu","action":"EnableItem","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-12T11:18:51.670Z"}
+{"user":"moon@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-12T13:22:57.100Z"}
+{"user":"moon@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-12T13:29:34.317Z"}
+{"user":"mars@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-12T13:52:38.976Z"}
+{"user":"mars@bavenir.eu","action":"itemUpdate","item":"5a61ffacc2cd2a504e5935aa","level":"audit","message":"","timestamp":"2018-03-12T13:52:59.651Z"}
+{"user":"moon@bavenir.eu","action":"removeContract","message":"Nothing to be removed","level":"warn","timestamp":"2018-03-12T13:53:26.736Z"}
+{"user":"moon@bavenir.eu","action":"updateUser","item":{"_bsontype":"ObjectID","id":{"0":90,"1":38,"2":96,"3":77,"4":250,"5":200,"6":171,"7":247,"8":253,"9":39,"10":58,"11":126}},"level":"audit","message":"","timestamp":"2018-03-12T13:53:27.307Z"}
+{"user":"moon@bavenir.eu","action":"itemUpdate","item":"5a61fc0dc2cd2a504e593599","level":"audit","message":"","timestamp":"2018-03-12T13:53:40.214Z"}
+{"user":"moon@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-12T14:17:27.164Z"}
+{"user":"mars@bavenir.eu","action":"addItemToContract","item":"e43c2d2e-595b-4b7e-92ab-07d68ba7ba47","contract":"7f4d8aa9-e6b8-491f-9987-db665f1b16cf","level":"audit","message":"","timestamp":"2018-03-12T14:21:44.951Z"}
+{"user":"mars@bavenir.eu","action":"addItemToContract","item":"feaefcb1-ece0-40de-86a4-b88efa4ea65d","contract":"7f4d8aa9-e6b8-491f-9987-db665f1b16cf","level":"audit","message":"","timestamp":"2018-03-12T14:21:44.966Z"}
+{"user":"moon@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-12T14:26:16.061Z"}
+{"user":"mars@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-12T14:33:10.035Z"}
+{"user":"moon@bavenir.eu","action":"login","level":"audit","message":"","timestamp":"2018-03-12T14:33:22.250Z"}
+{"user":"moon@bavenir.eu","action":"addItemToContract","item":"feaefcb1-ece0-40de-86a4-b88efa4ea65d","contract":"af2df71c-77a3-4edc-861f-d7cca411cba4","level":"audit","message":"","timestamp":"2018-03-12T14:52:13.050Z"}
+{"user":"moon@bavenir.eu","action":"addItemToContract","item":"e43c2d2e-595b-4b7e-92ab-07d68ba7ba47","contract":"af2df71c-77a3-4edc-861f-d7cca411cba4","level":"audit","message":"","timestamp":"2018-03-12T14:52:13.058Z"}
