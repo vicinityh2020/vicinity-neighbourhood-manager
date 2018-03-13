@@ -11,8 +11,8 @@
     <!-- Contracts summary -->
     <div class="box-body box" ng-repeat="contract in contracts" ng-show="!detailsShow">
       <div class="col-sm-1">
-        <i class="fa fa-arrow-left fa-4x my-red" ng-show="!contract.imServiceProv" aria-hidden="true"></i>
-        <i class="fa fa-arrow-right fa-4x my-green" ng-show="contract.imServiceProv" aria-hidden="true"></i>
+        <i class="fa fa-arrow-right fa-4x my-green" ng-show="!contract.imServiceProv" aria-hidden="true"></i>
+        <i class="fa fa-arrow-left fa-4x my-red" ng-show="contract.imServiceProv" aria-hidden="true"></i>
       </div>
       <div class="col-sm-2">
         <label> Service Name </label>

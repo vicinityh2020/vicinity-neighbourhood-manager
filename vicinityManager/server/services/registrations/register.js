@@ -8,9 +8,9 @@ var audits = require('../../controllers/audit/put');
 var commServer = require('../../services/commServer/request');
 var config = require('../../configuration/configuration');
 var bcrypt = require('bcrypt');
+var notificationAPI = require('../../services/notifications/notificationsHelper');
 
 var registrationOp = require('../../models/vicinityManager').registration;
-var notificationOp = require('../../models/vicinityManager').notification;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
 
@@ -63,7 +63,6 @@ function findDuplicatesCompany(data) {
 
 function requestReg(data, callback) {
   var db = new registrationOp();
-  var dbNotif = new notificationOp();
   var pwd = data.password;
   var saltRounds = 10;
   var salt = "";
@@ -94,11 +93,11 @@ if(!data.status || data.status !== 'pending'){
       return db.save();
     })
     .then(function(product){
-      dbNotif.sentByReg = product._id;
-      dbNotif.type = 1;
-      dbNotif.status = "waiting";
-      dbNotif.isUnread = true;
-      return dbNotif.save();
+      return notifHelper.createNotification(
+        { kind: 'registration', item: product._id, extid: null },
+        { kind: 'registration', item: product._id, extid: null },
+        { kind: 'registration', item: product._id, extid: null },
+        'waiting', 1, null);
     })
     .then(function(response){
       callback(false, "Registration request created");

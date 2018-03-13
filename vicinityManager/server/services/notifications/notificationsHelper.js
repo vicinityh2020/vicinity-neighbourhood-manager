@@ -2,43 +2,73 @@
 
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
+var userOp = require('../../models/vicinityManager').user;
+var userAccountOp = require('../../models/vicinityManager').userAccount;
 var notificationOp = require('../../models/vicinityManager').notification;
 var asyncHandler = require('../../services/asyncHandler/sync');
 
-
 /*
-Get notifications of user
+Get notifications
 */
-function getNotificationsOfUser(o_id, callback){
-  notificationOp.find({addressedTo: {$in : [o_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentBy','avatar name').populate('addressedTo','name').populate('itemId','avatar name').exec(function(err,data){
-      if(err){ callback(true, err); } else { callback(false, data); }
+function getNotifications(u_id, c_id, cid, mail, isAdmin, all, searchDate, callback){
+  var notifs = [];
+  var query = {};
+  // Set query based on user rights and specifications
+  if(!all){ query = { $or: [{isUnread: true}, {status: 'waiting'}] }; }
+  else{ query._id = { $gt: searchDate }; }
+  if(!isAdmin) query.type = {$ne: 1};
+
+  userAccountOp.findOne({_id: c_id}, {hasNotifications:1})
+  .populate({
+    path: 'hasNotifications',
+    match: query,
+    // select: '-_id'
+  })
+  .then(function(data){
+    notifs.push(data.hasNotifications);
+    return user.findOne({_id: u_id}, {hasNotifications:1})
+    .populate({
+      path: 'hasNotifications',
+      match: query,
+      // select: '-_id'
     });
-  }
-
-/*
-Get notifications of registrations
-*/
-function getNotificationsOfRegistration(callback){
-   notificationOp.find({type: 1, $or: [{isUnread: true}, {status: 'waiting'}]}).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
-     if(err){ callback(true, err); } else { callback(false, data); }
-   });
- }
-
-/*
-Get notifications of user based on date
-*/
-function getAllUserNotifications(o_id, dateFrom, callback){
-  notificationOp.find({addressedTo: {$in : [o_id]}, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentBy','avatar name').populate('addressedTo','name').populate('itemId','avatar name').exec(function(err,data){
-    if(err){ callback(true, err); } else { callback(false, data); }
+  })
+  .then(function(data){
+    notifs.push(data.hasNotifications);
+    callback(false, notifs);
+  })
+  .catch(function(error){
+    callback(true, error);
   });
 }
 
 /*
-Get notifications of registrations based on date
+Create a notification
 */
-function getAllRegistrations(dateFrom, callback){
-  notificationOp.find({type: 1, _id: { $gt: dateFrom } }).sort({ _id: -1 }).populate('sentByReg','companyName').exec(function(err,data){
-    if(err){ callback(true, err); } else { callback(false, data); }
+function createNotification(actor, target, object, status, type, message){
+  return new Promise(function(resolve, reject) {
+    var notif = new notificationOp();
+    notif.actor = actor;
+    notif.target = target;
+    notif.object = object;
+    notif.status = status;
+    notif.type = type;
+    notif.message = message;
+    notif.save(function(err, response){
+      if(err){
+        reject(err);
+      } else {
+        if(target.kind === 'user'){
+          userOp.update({_id: target.item}, {$push: {hasNotifications: response_id}}, function(err, response){
+            if(err){ reject(err); } else { resolve(true); }
+          });
+        } else {
+          userAccountOp.update({_id: target.item}, {$push: {hasNotifications: response_id}}, function(err, response){
+            if(err){ reject(err); } else { resolve(true); }
+          });
+        }
+      }
+    });
   });
 }
 
@@ -67,6 +97,35 @@ function changeIsUnreadToFalse(id, ids, callback){
     callback(true, "Error fetching data");
   }
 }
+
+/*
+Functions accessed from backend
+*/
+function changeNotificationStatus(targetId, objectId, type, other){
+    // Build the query only with the relevant keys
+    var query = { 'type': type, 'status': 'waiting' };
+    other = typeof other !== 'undefined' ? other : {};
+    if(senderId !== ""){ query.target.item = targetId; }
+    if(recepId !== ""){ query.object.item = objectId; }
+    // if(other.hasOwnProperty('itemId')){ query.itemId = other.itemId; }
+    if(other.hasOwnProperty('sentByReg')){ query.actor.item = other.sentByReg; }
+    // Change status of found notifs
+    notificationOp.find(query,
+      function(err, notif){
+        if(err){
+          logger.debug("Error changing status of notification!!");
+        } else if(!(notif)){
+          logger.debug("Notif not found in changing status of notification!!");
+        } else {
+          for(var n = 0; n < notif.length; n++){
+            notif[n].status = 'responded';
+            notif[n].isUnread = false;
+            notif[n].save();
+          }
+        }
+      }
+    );
+  }
 
 /*
 Private functions
@@ -119,11 +178,10 @@ function readOne(idToRead, callback){
 
 
 // Export functions
-module.exports.getNotificationsOfUser = getNotificationsOfUser;
-module.exports.getNotificationsOfRegistration = getNotificationsOfRegistration;
-module.exports.getAllUserNotifications = getAllUserNotifications;
-module.exports.getAllRegistrations = getAllRegistrations;
+module.exports.getNotifications = getNotifications;
+module.exports.createNotification = createNotification;
 module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.changeToResponded = changeToResponded;
 module.exports.objectIdWithTimestamp = objectIdWithTimestamp;
 module.exports.setAsRead = setAsRead;
+module.exports.changeNotificationStatus = changeNotificationStatus;

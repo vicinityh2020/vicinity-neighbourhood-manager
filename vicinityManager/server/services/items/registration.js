@@ -1,8 +1,8 @@
 // Global Objects
 
 var itemOp = require('../../models/vicinityManager').item;
-var notifOp = require('../../models/vicinityManager').notification;
 var nodeOp = require('../../models/vicinityManager').node;
+var notifHelper = require('../../services/notifications/notificationsHelper');
 var logger = require('../../middlewares/logger');
 var config = require('../../configuration/configuration');
 var commServer = require('../../services/commServer/request');
@@ -223,12 +223,11 @@ function updateItemsList(items, allresult){
 Sends a notification to the organisation after successful discovery
 */
 function deviceActivityNotif(cid){
-  var dbNotif = new notifOp();
-  dbNotif.addressedTo = cid.id;
-  dbNotif.sentBy = cid.id;
-  dbNotif.type = 13;
-  dbNotif.status = "info";
-  return dbNotif.save();
+  return notifHelper.createNotification(
+    { kind: 'userAccount', item: cid.id, extid: cid.extid },
+    { kind: 'userAccount', item: cid.id, extid: cid.extid },
+    { kind: 'userAccount', item: cid.id, extid: cid.extid },
+    'info', 13, null);
 }
 
 /*

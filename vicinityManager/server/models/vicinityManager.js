@@ -78,13 +78,14 @@ var user = new Schema({
     /* principalRoles: {type: String,
                         enum: [
                           "user",
-                          "administrator", 
+                          "administrator",
                           "infrastructure operator",
                           "service provider",
                           "system integrator",
                           "devOps"]}
     */
   },
+  hasNotifications: [{ type: ObjectId, ref: 'notification' }],
   hasItems: [ oidSchema ], // Own items and foreign items under contract
   hasContracts: [ ctidSchema ]
 });
@@ -154,14 +155,24 @@ var registration = new Schema({
 });
 
 var notification = new Schema({
-    addressedTo: [{ type: ObjectId, ref: 'userAccount' }],
-    sentBy: { type: ObjectId, ref: 'userAccount' },
-    sentByReg: { type: ObjectId, ref: 'registration' },
-    itemId: { type: ObjectId, ref: 'item' },
-    ctId: { type: ObjectId, ref: 'contract' },
-    userId: [{ type: ObjectId, ref: 'user' }],
+    actor: {
+      kind: String,
+      item: { type: ObjectId, refPath: 'actor.kind' },
+      extid: String
+    },
+    target: {
+      kind: String,
+      item: { type: ObjectId, refPath: 'target.kind' },
+      extid: String
+    },
+    object: {
+      kind: String,
+      item: { type: ObjectId, refPath: 'object.kind' },
+      extid: String
+    },
+    message: String, // Enable personal messages possibility
     isUnread: { type: Boolean, default: true },
-    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded'], required: true},
+    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected'], required: true},
     type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 24, 31, 32, 33, 34, 35, 36], required: true}
     /*
     1 - registrationRequest - toAnswer

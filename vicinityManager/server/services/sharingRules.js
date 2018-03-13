@@ -5,7 +5,6 @@ var itemOp = require('../models/vicinityManager').item;
 var userAccountOp = require('../models/vicinityManager').userAccount;
 var contractOp = require('../models/vicinityManager').contract;
 var logger = require("../middlewares/logger");
-var notificationAPI = require('../controllers/notifications/notifications');
 var sync = require('../services/asyncHandler/sync');
 var commServer = require('../services/commServer/request');
 var ctHelper = require('../services/contracts/contracts');

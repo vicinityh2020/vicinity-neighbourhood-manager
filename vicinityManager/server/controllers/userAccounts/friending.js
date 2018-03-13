@@ -15,7 +15,8 @@ function processFriendRequest(req, res, next) {
   var friend_id = mongoose.Types.ObjectId(req.params.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
-  sFriending.processFriendRequest(friend_id, my_id, my_mail, function(err, response){
+  var my_uid = req.body.decoded_token.uid;
+  sFriending.processFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
     res.json({"error": err, "message": response});
   });
 }
@@ -24,7 +25,8 @@ function acceptFriendRequest(req, res, next) {
   var friend_id = mongoose.Types.ObjectId(req.params.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
-  sFriending.acceptFriendRequest(friend_id, my_id, my_mail, function(err, response){
+  var my_uid = req.body.decoded_token.uid;
+  sFriending.acceptFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
     res.json({"error": err, "message": response});
   });
 }
@@ -33,7 +35,8 @@ function rejectFriendRequest(req, res, next) {
   var friend_id = mongoose.Types.ObjectId(req.params.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
-  sFriending.rejectFriendRequest(friend_id, my_id, my_mail, function(err, response){
+  var my_uid = req.body.decoded_token.uid;
+  sFriending.rejectFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
     res.json({"error": err, "message": response});
   });
 }
@@ -42,7 +45,8 @@ function cancelFriendRequest(req, res, next){
   var friend_id = mongoose.Types.ObjectId(req.params.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
-  sFriending.cancelFriendRequest(friend_id, my_id, my_mail, function(err, response){
+  var my_uid = req.body.decoded_token.uid;
+  sFriending.cancelFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
     res.json({"error": err, "message": response});
   });
 }
@@ -52,7 +56,8 @@ function cancelFriendship(req, res, next){
   var friend_id = mongoose.Types.ObjectId(req.params.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
-  sFriending.cancelFriendship(friend_id, my_id, my_mail, function(err, response){
+  var my_uid = req.body.decoded_token.uid;
+  sFriending.cancelFriendship(friend_id, my_id, my_mail, my_uid, function(err, response){
     res.json({"error": err, "message": response});
   });
 }

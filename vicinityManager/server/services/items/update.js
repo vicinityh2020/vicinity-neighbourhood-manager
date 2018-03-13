@@ -14,7 +14,7 @@ var sync = require('../../services/asyncHandler/sync');
 
 var itemOp = require('../../models/vicinityManager').item;
 var userOp = require('../../models/vicinityManager').user;
-var notificationOp = require('../../models/vicinityManager').notification;
+var notifHelper = require('../../services/notifications/notificationsHelper');
 
 //Public functions
 
@@ -72,7 +72,7 @@ function enableItem(data, otherParams, callback){
 
   if(canChange){
     commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
-      .then(function(response){ return deviceActivityNotif(o_id, c_id, 'Enabled', 11);})
+      .then(function(response){ return deviceActivityNotif({id: userId, extid: userMail}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Enabled', 11);})
       .then(function(response){
         return audits.putAuditInt(
           o_id,
@@ -131,7 +131,7 @@ function disableItem(data, otherParams, callback){
 
   if(canChange){
     commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
-      .then(function(response){ return deviceActivityNotif(o_id, c_id, 'Disabled', 12);})
+      .then(function(response){ return deviceActivityNotif({id: userId, extid: userMail}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Disabled', 12);})
       .then(function(response){
         return audits.putAuditInt(
           o_id,
@@ -263,27 +263,12 @@ function manageUserItems(oid, uid, email, userId, type){
 /*
 Sends a notification on change of status
 */
-function deviceActivityNotif(did,cid,state,typ){
-  var dbNotif = new notificationOp();
-  return new Promise(
-    function(resolve, reject) {
-      dbNotif.addressedTo = cid;
-      dbNotif.sentBy = cid;
-      dbNotif.itemId = did;
-      dbNotif.type = typ;
-      dbNotif.status = "info";
-      dbNotif.save(
-        function(err,data){
-          if(err){
-            logger.debug("Error creating the notification");
-            reject("Error");
-          } else {
-            resolve("Done");
-          }
-        }
-      );
-    }
-  );
+function deviceActivityNotif(uid,oid,cid,state,typ){
+  return notifHelper.createNotification(
+    { kind: 'user', item: uid.id, extid: uid.extid },
+    { kind: 'userAccount', item: cid.id, extid: cid.extid },
+    { kind: 'item', item: oid.id, extid: oid.extid },
+    'info', typ, null);
 }
 
 /*

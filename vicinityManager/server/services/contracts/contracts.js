@@ -4,9 +4,9 @@ var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var audits = require('../../controllers/audit/put');
 var contractOp = require('../../models/vicinityManager').contract;
-var notificationOp = require('../../models/vicinityManager').notification;
 var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
+var notifHelper = require('../../services/notifications/notificationsHelper');
 var sharingRules = require('../../services/sharingRules');
 var commServer = require('../../services/commServer/request');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
@@ -17,6 +17,7 @@ var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 Accept a contract request
 */
 function accepting(id, callback){
+  // TODO enable option to accept contract by iotOwner
   var updItem = {};
   var query = { $set: {"serviceProvider.termsAndConditions": true, status: 'accepted'} };
   contractOp.findOneAndUpdate( { "_id": id}, query, {new: true})
@@ -31,26 +32,11 @@ function accepting(id, callback){
     return sharingRules.addItemsToContract(updItem, items);
   })
   .then(function(response){
-    var notification = new notificationOp();
-    notification.addressedTo.push(updItem.iotOwner.cid.id);
-    notification.sentBy = updItem.serviceProvider.cid.id;
-    notification.userId = [updItem.serviceProvider.uid.id, updItem.iotOwner.uid.id];
-    notification.ctId = updItem._id;
-    notification.itemId = updItem.serviceProvider.items[0].id;
-    notification.type = 24;
-    notification.status = 'info';
-    return notification.save();
-  })
-  .then(function(response){
-    var notification = new notificationOp();
-    notification.addressedTo.push(updItem.serviceProvider.cid.id);
-    notification.sentBy = updItem.serviceProvider.cid.id;
-    notification.userId = [updItem.serviceProvider.uid.id, updItem.iotOwner.uid.id];
-    notification.ctId = updItem._id;
-    notification.itemId = updItem.serviceProvider.items[0].id;
-    notification.type = 24;
-    notification.status = 'info';
-    return notification.save();
+    return notifHelper.createNotification(
+      { kind: 'user', item: updItem.serviceProvider.uid.id, extid: updItem.serviceProvider.uid.extid },
+      { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
+      { kind: 'contract', item: updItem._id, extid: updItem.ctid },
+      'info', 24, null);
   })
   .then(function(response){
     return audits.putAuditInt(
@@ -83,7 +69,8 @@ function accepting(id, callback){
 Create a contract request
 */
 function creating(data, callback){
-  var ct_id;
+  // TODO service provider can post a contract
+  var ct_id, ctid;
   var ct = new contractOp();
   var idsService = [];
   var idsDevice = [];
@@ -100,6 +87,7 @@ function creating(data, callback){
         res.json({error: true, message: error});
       } else {
         ct_id = response._id;
+        ctid = response.ctid;
         var cidService = data.cidService.extid;
         var cidDevice = data.cidDevice.extid;
         var ctidService = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: data.uidDevice.id, approved: true };
@@ -119,15 +107,11 @@ function creating(data, callback){
           return itemOp.update({_id: {$in: idsService }}, { $push: {hasContracts: ctidService} }, { multi: true });
         })
         .then(function(response){
-          var notification = new notificationOp();
-          notification.addressedTo.push(data.cidService.id);
-          notification.sentBy = data.cidDevice.id;
-          notification.userId = [data.uidService.id, data.uidDevice.id] ;
-          notification.ctId = ct_id;
-          notification.itemId = idsService[0];
-          notification.type = 21;
-          notification.status = 'info';
-          return notification.save();
+          return notifHelper.createNotification(
+            { kind: 'user', item: data.uidDevice.id, extid: data.uidDevice.extid },
+            { kind: 'user', item: data.uidService.id, extid: data.uidService.extid },
+            { kind: 'contract', item: ct_id, extid: ctid },
+            'info', 21, null);
         })
         .then(function(response){
           return audits.putAuditInt(
@@ -200,7 +184,7 @@ function removing(id, callback){
     return userOp.update({_id: uidDevice}, { $pull: {hasContracts: ctid} });
   })
   .then(function(response){
-      return itemOp.update({_id: {$in: idsDevice }}, { $pull: {hasContracts: ctid} }, { multi: true });
+    return itemOp.update({_id: {$in: idsDevice }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
     return userOp.update({_id: uidService}, { $pull: {hasContracts: ctid} });
@@ -209,26 +193,18 @@ function removing(id, callback){
     return itemOp.update({_id: {$in: idsService }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
-    var notification = new notificationOp();
-    notification.addressedTo.push(data.serviceProvider.cid.id);
-    // notification.sentBy = data.iotOwner.cid.id;
-    notification.userId = [data.serviceProvider.uid.id, data.iotOwner.uid.id];
-    notification.ctId = data._id;
-    notification.itemId = data.serviceProvider.items[0].id;
-    notification.type = 23;
-    notification.status = 'info';
-    return notification.save();
+    return notifHelper.createNotification(
+      { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
+      { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
+      { kind: 'contract', item: ctid.id, extid: ctid.extid },
+      'info', 23, null);
   })
   .then(function(response){
-    var notification = new notificationOp();
-    notification.addressedTo.push(data.iotOwner.cid.id);
-    // notification.sentBy = data.iotOwner.cid.id;
-    notification.userId = [data.serviceProvider.uid.id, data.iotOwner.uid.id];
-    notification.ctId = data._id;
-    notification.itemId = data.serviceProvider.items[0].id;
-    notification.type = 23;
-    notification.status = 'info';
-    return notification.save();
+    return notifHelper.createNotification(
+      { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
+      { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
+      { kind: 'contract', item: ctid.id, extid: ctid.extid },
+      'info', 23, null);
   })
   .then(function(response){
     return audits.putAuditInt(
