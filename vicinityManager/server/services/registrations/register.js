@@ -8,7 +8,7 @@ var audits = require('../../controllers/audit/put');
 var commServer = require('../../services/commServer/request');
 var config = require('../../configuration/configuration');
 var bcrypt = require('bcrypt');
-var notificationAPI = require('../../services/notifications/notificationsHelper');
+var notifHelper = require('../../services/notifications/notificationsHelper');
 
 var registrationOp = require('../../models/vicinityManager').registration;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -94,9 +94,9 @@ if(!data.status || data.status !== 'pending'){
     })
     .then(function(product){
       return notifHelper.createNotification(
-        { kind: 'registration', item: product._id, extid: null },
-        { kind: 'registration', item: product._id, extid: null },
-        { kind: 'registration', item: product._id, extid: null },
+        { kind: 'registration', item: product._id, extid: "NA" },
+        { kind: 'registration', item: product._id, extid: "NA" },
+        { kind: 'registration', item: product._id, extid: "NA" },
         'waiting', 1, null);
     })
     .then(function(response){

@@ -17,7 +17,7 @@ function getNotifications(req,res){
   var all = req.query.hasOwnProperty('all') ? true : false;
   var searchDate = req.query.hasOwnProperty('searchDate') ? notifHelper.objectIdWithTimestamp(req.query.searchDate) : new Date(2017,1,1);
   notifHelper.getNotifications(u_id, c_id, cid, mail, isDevOps, all, searchDate, function(err,response){
-    logger.debug({error: err, message: response.length});
+    // logger.debug({error: err, message: response.length});
     res.json({error: err, message: response});
   });
 }
