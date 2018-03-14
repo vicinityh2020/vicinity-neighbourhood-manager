@@ -172,7 +172,7 @@ var notification = new Schema({
     },
     message: String, // Enable personal messages possibility
     isUnread: { type: Boolean, default: true },
-    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected'], required: true},
+    status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded'], required: true},
     type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 24, 31, 32, 33, 34, 35, 36], required: true}
     /*
     1 - registrationRequest - toAnswer

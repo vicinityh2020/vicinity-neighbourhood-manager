@@ -22,7 +22,6 @@ angular.module('VicinityManagerApp.controllers').
   $scope.myOrderBy = 'date';
   $scope.notifs = [];
   $scope.notifsWithDate = [];
-  $scope.tempNotifs = [];
   $scope.userId = $window.sessionStorage.userAccountId;
   $scope.orgId = $window.sessionStorage.companyAccountId;
 
@@ -45,40 +44,18 @@ $scope.period = 'week';
     $scope.loadedPage = false;
     $scope.dates = [];
     $scope.notifsWithDate = [];
-    notificationsAPIService.getAllUserNotifications($window.sessionStorage.companyAccountId, $scope.dateFrom)
+    notificationsAPIService.getNotifications(1, $scope.dateFrom)
     .then(getNotifs, commonHelpers.errorCallback);
   }
 
   function getNotifs(response){
-      $scope.tempNotifs = response.data.message;
-      if($scope.isDev){
-        notificationsAPIService.getAllRegistrations($scope.dateFrom)
-        .then(
-          function successCallback(response){
-            if(response.data.message.length === 0){
-              $scope.notifs = $scope.tempNotifs;
-            } else {
-              for(var index in response.data.message){
-                $scope.notifs = $scope.tempNotifs.concat(index);
-              }
-            }
-            commonHelpers.addTimestamp($scope.notifs, function(array, dates){
-              $scope.dates = dates;
-              $scope.notifsWithDate = array;
-              $scope.loadedPage = true;
-            });
-          },
-          commonHelpers.errorCallback
-        );
-      }else{
-        $scope.notifs = $scope.tempNotifs;
-        commonHelpers.addTimestamp($scope.notifs, function(array, dates){
-          $scope.dates = dates;
-          $scope.notifsWithDate = array;
-          $scope.loadedPage = true;
-        });
-      }
-    }
+    $scope.notifs = response.data.message;
+    commonHelpers.addTimestamp($scope.notifs, function(array, dates){
+      $scope.dates = dates;
+      $scope.notifsWithDate = array;
+      $scope.loadedPage = true;
+    });
+  }
 
 // --------------------------------------------------
 
@@ -115,26 +92,26 @@ $scope.period = 'week';
     .catch(userAccountsHelpers.errorCallback);
   };
 
-  $scope.acceptDataRequest = function (dev_id, notifId) {
-    itemsHelpers.acceptDataRequest(dev_id, notifId)
-    .then(init,itemsHelpers.errorCallback)
-    .catch(itemsHelpers.errorCallback);
-  };
+  // $scope.acceptDataRequest = function (dev_id, notifId) {
+  //   itemsHelpers.acceptDataRequest(dev_id, notifId)
+  //   .then(init,itemsHelpers.errorCallback)
+  //   .catch(itemsHelpers.errorCallback);
+  // };
+  //
+  // $scope.rejectDataRequest = function (dev_id, notifId) {
+  //   itemsHelpers.rejectDataRequest(dev_id, notifId)
+  //   .then(init,itemsHelpers.errorCallback)
+  //   .catch(itemsHelpers.errorCallback);
+  // };
 
-  $scope.rejectDataRequest = function (dev_id, notifId) {
-    itemsHelpers.rejectDataRequest(dev_id, notifId)
-    .then(init,itemsHelpers.errorCallback)
-    .catch(itemsHelpers.errorCallback);
-  };
-
-  $scope.acceptRegistration = function (reg_id, notifId) {
+  $scope.acceptRegistration = function (notifId, reg_id) {
    registrationsHelpers.acceptRegistration(reg_id)
     .then(init,registrationsHelpers.errorCallback)
     .catch(registrationsHelpers.errorCallback);
   };
 
 
-  $scope.rejectRegistration = function (reg_id, notifId) {
+  $scope.rejectRegistration = function (notifId, reg_id) {
     registrationsHelpers.rejectRegistration(reg_id)
       .then(init,registrationsHelpers.errorCallback)
       .catch(registrationsHelpers.errorCallback);

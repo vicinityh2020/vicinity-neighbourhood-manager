@@ -87,61 +87,61 @@
                   </h3>
 
                   <!-- Description -->
-                  <span class="padded" ng-show="notif.type === 1"><b>{{notif.sentByReg.companyName}}</b> wants to register in Vicinity</span>
+                  <span class="padded" ng-show="notif.type === 1"><b>{{notif.actor.item.companyName}}</b> wants to register in Vicinity</span>
                   <span class="padded" ng-show="notif.type === 13">New device(s) have been discovered!</span>
-                  <span class="padded" ng-show="notif.type === 11"><b>{{notif.itemId.name}}</b> has been enabled.</span>
-                  <span class="padded" ng-show="notif.type === 12"><b>{{notif.itemId.name}}</b> has been disabled.</span>
+                  <span class="padded" ng-show="notif.type === 11"><b>{{notif.object.item.name}}</b> has been enabled.</span>
+                  <span class="padded" ng-show="notif.type === 12"><b>{{notif.object.item.name}}</b> has been disabled.</span>
 
-                  <span class="padded" ng-show="notif.type === 21">There is a contract request for the service <b>{{notif.itemId.name}}</b>.</span>
-                  <span class="padded" ng-show="notif.type === 22">A contract with the service <b>{{notif.itemId.name}}</b> was modified.</span>
-                  <span class="padded" ng-show="notif.type === 23">A contract with the service <b>{{notif.itemId.name}}</b> was cancelled.</span>
-                  <span class="padded" ng-show="notif.type === 24">A contract with the service <b>{{notif.itemId.name}}</b> was established.</span>
+                  <span class="padded" ng-show="notif.type === 21">There is a contract request from the user <b>{{notif.actor.item.name}}</b>.</span>
+                  <span class="padded" ng-show="notif.type === 22">A contract with the user <b>{{notif.actor.item.name}}</b> was modified.</span>
+                  <span class="padded" ng-show="notif.type === 23">A contract with the user <b>{{notif.actor.item.name}}</b> was cancelled.</span>
+                  <span class="padded" ng-show="notif.type === 24">A contract with the user <b>{{notif.actor.item.name}}</b> was established.</span>
 
-                  <span class="padded" ng-show="notif.type === 31 && (notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.sentBy.name}}</b> wants to partner with you.</span>
-                  <span class="padded" ng-show="notif.type === 32">The partnership between <b>{{notif.addressedTo[0].name}}</b> and <b>{{notif.addressedTo[1].name}}</b> was cancelled by <b>{{notif.sentBy.name}}</b>.</span>
-                  <span class="padded" ng-show="[33, 34].lastIndexOf(notif.type) >= 0 && !(notif.status=== 'waiting')"><b>{{notif.sentBy.name}}</b> responded our partnership request.<b>{{notif.itemId.name}}</b></span>
-                  <span class="padded" ng-show="notif.type === 35">You have sent a partnership request to <b>{{notif.sentBy.name}}</b>.</span>
+                  <span class="padded" ng-show="notif.type === 31 && (notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.object.item.name}}</b> wants to partner with you.</span>
+                  <span class="padded" ng-show="notif.type === 32">The partnership between <b>{{notif.target.item.name}}</b> and <b>{{notif.object.item.name}}</b> was cancelled by <b>{{notif.actor.item.name}}</b>.</span>
+                  <span class="padded" ng-show="[33, 34].lastIndexOf(notif.type) >= 0 && !(notif.status=== 'waiting')"><b>{{notif.object.item.name}}</b> responded our partnership request.</b></span>
+                  <span class="padded" ng-show="notif.type === 35">You have sent a partnership request to <b>{{notif.object.item.name}}</b>.</span>
                   <!-- <span class="padded" ng-show="notif.type === 36">Partnership request cancelled.</span> -->
 
                   <span class="ciara" ng-class="bckColor"></span>
 
                   <div class="centered" ng-show="notif.type === 31">
                     <span ng-if="notif.status === 'waiting'" >
-                      <i ng-click="acceptNeighbourRequest(notif._id, notif.sentBy._id)" class="fa fa-check fa-lg fontGreen paddedSides"></i>
-                      <i ng-click="rejectNeighbourRequest(notif._id, notif.sentBy._id)" class="fa fa-close fa-lg fontRed paddedSides"></i>
-                      <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})"><i class="fa fa-search fa-lg paddedSides"></i></a>
+                      <i ng-click="acceptNeighbourRequest(notif._id, notif.object.item._id)" class="fa fa-check fa-lg fontGreen paddedSides"></i>
+                      <i ng-click="rejectNeighbourRequest(notif._id, notif.object.item._id)" class="fa fa-close fa-lg fontRed paddedSides"></i>
+                      <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.object.item._id})"><i class="fa fa-search fa-lg paddedSides"></i></a>
                     </span>
                     <span ng-if="notif.status !== 'waiting'" >
-                      <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})"><i class="fa fa-search fa-lg"></i></a>
+                      <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.object.item._id})"><i class="fa fa-search fa-lg"></i></a>
                     </span>
                   </div>
 
                   <div class="centered" ng-show="notif.type === 1">
                     <span ng-if="notif.status === 'waiting'" >
-                      <i ng-click="acceptRegistration(notif.sentByReg._id, notif._id)" class="fa fa-check fa-lg  fontGreen paddedSides"></i>
-                      <i ng-click="rejectRegistration(notif.sentByReg._id, notif._id)" class="fa fa-close fa-lg  fontRed paddedSides"></i>
-                      <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><i class="fa fa-search fa-lg paddedSides"></i></a>
+                      <i ng-click="acceptRegistration(notif._id, notif.actor.item._id)" class="fa fa-check fa-lg  fontGreen paddedSides"></i>
+                      <i ng-click="rejectRegistration(notif._id, notif.actor.item._id)" class="fa fa-close fa-lg  fontRed paddedSides"></i>
+                      <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.actor.item._id})"><i class="fa fa-search fa-lg paddedSides"></i></a>
                     </span>
                     <span ng-if="notif.status !== 'waiting'" >
-                      <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.sentByReg._id})"><i class="fa fa-search fa-lg"></i></a>
+                      <a ui-sref="root.main.registrationProfile.regAdmin({registrationId: reg.actor.item._id})"><i class="fa fa-search fa-lg"></i></a>
                     </span>
                   </div>
 
                   <div class="centered" ng-show="[11, 12, 13].indexOf(notif.type) !== -1">
                     <span>
-                      <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.itemId._id})"><i class="fa fa-search fa-lg "></i></a>
+                      <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.object.item._id})"><i class="fa fa-search fa-lg "></i></a>
                     </span>
                   </div>
 
                   <div class="centered" ng-show="[21, 22, 23, 24].indexOf(notif.type) !== -1">
                     <span>
-                      <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId,userAccountId: userId})"><i class="fa fa-search fa-lg "></i></a>
+                      <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId,userAccountId: userId, contractId: notif.object.item._id})"><i class="fa fa-search fa-lg "></i></a>
                     </span>
                   </div>
 
                   <div class="centered" ng-show="[32, 33, 34, 35, 36].indexOf(notif.type) !== -1">
                     <span>
-                      <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.sentBy._id})"><i class="fa fa-search fa-lg "></i></a>
+                      <a ui-sref="root.main.companyProfile.devices({companyAccountId: notif.object.item._id})"><i class="fa fa-search fa-lg "></i></a>
                     </span>
                   </div>
 

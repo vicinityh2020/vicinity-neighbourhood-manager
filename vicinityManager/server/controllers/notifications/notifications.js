@@ -13,10 +13,11 @@ function getNotifications(req,res){
   var c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var cid = req.body.decoded_token.cid;
   var mail = req.body.decoded_token.sub;
-  var isAdmin = req.body.decoded_token.roles.indexOf('administrator') !== -1;
+  var isDevOps = req.body.decoded_token.roles.indexOf('devOps') !== -1;
   var all = req.query.hasOwnProperty('all') ? true : false;
   var searchDate = req.query.hasOwnProperty('searchDate') ? notifHelper.objectIdWithTimestamp(req.query.searchDate) : new Date(2017,1,1);
-  notifHelper.getNotifications(u_id, c_id, cid, mail, isAdmin, all, searchDate, function(err,response){
+  notifHelper.getNotifications(u_id, c_id, cid, mail, isDevOps, all, searchDate, function(err,response){
+    logger.debug({error: err, message: response.length});
     res.json({error: err, message: response});
   });
 }

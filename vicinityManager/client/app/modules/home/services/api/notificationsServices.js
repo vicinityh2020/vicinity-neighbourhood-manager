@@ -4,20 +4,12 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
 
   var notificationsAPI = {};
 
-  notificationsAPI.getNotificationsOfUser = function(id) {
-    return $http.get(configuration.apiUrl + '/notifications/' + id + '/userNotifications');
-  };
-
-  notificationsAPI.getNotificationsOfRegistration = function() {
-    return $http.get(configuration.apiUrl + '/notifications/registrations');
-  };
-
-  notificationsAPI.getAllUserNotifications = function(id, filter) {
-    return $http.get(configuration.apiUrl + '/notifications/' + id + '/allUserNotifications' + '?searchDate=' + filter);
-  };
-
-  notificationsAPI.getAllRegistrations = function(filter) {
-    return $http.get(configuration.apiUrl + '/notifications/allRegistrations' + '?searchDate=' + filter);
+  notificationsAPI.getNotifications = function(all, searchDate) {
+    if(all){
+      return $http.get(configuration.apiUrl + '/notifications?all=' + all + '&searchDate=' + searchDate);
+    } else {
+      return $http.get(configuration.apiUrl + '/notifications/');
+    }
   };
 
   notificationsAPI.changeIsUnreadToFalse = function(id, data) {

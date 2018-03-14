@@ -15,9 +15,9 @@ function ($scope,
 
   $scope.userId = $window.sessionStorage.userAccountId;
   $scope.orgId = $window.sessionStorage.companyAccountId;
-  $scope.tempNotifs = [];
   $scope.notifs = [];
-  $scope.registrations = [];
+  $scope.tempNotifs = [];
+  $scope.notifCount = 0;
   $scope.oneNotif = false;
   $scope.zeroNotif = false;
   $scope.newNotifs = false;
@@ -41,58 +41,26 @@ $scope.$on('$destroy', function(){
   }
 );
 
-// Checking if user is devOps =========================
-
-$scope.isDev = false;
-var payload = tokenDecoder.deToken();
-var keyword = new RegExp('devOps');
-$scope.isDev = keyword.test(payload.roles);
-
 // ====== Getting notifications onLoad (read and unread)
 
   init();
 
   function init(){
     $scope.tempNotifs = [];
-    $scope.registrations = [];
-    notificationsAPIService.getNotificationsOfUser($window.sessionStorage.companyAccountId)
-      .then(getNotifs, commonHelpers.errorCallback);
-    }
+    notificationsAPIService.getNotifications(null, null)
+    .then(getNotifs, commonHelpers.errorCallback);
+  }
 
-    function getNotifs(response){
-      $scope.tempNotifs = response.data.message;
-      numberOfUnreadNotifs();
-      if($scope.isDev){
-        notificationsAPIService.getNotificationsOfRegistration()
-          .then(function successCallback(response){
-            $scope.registrations = response.data.message;
-            $scope.tempNotifs = $scope.tempNotifs.concat($scope.registrations);
-            sortNotifs();
-            numberOfUnreadNotifs();
-            if($scope.notifs.length !== 0 && $scope.newNotifs != $scope.notifs.length){
-              Notification.success('You have ' + String($scope.notifs.length) + ' new notifications!');
-              $scope.newNotifs = $scope.notifs.length;
-            }
-          },
-          commonHelpers.errorCallback
-        );
-      }else{
-        sortNotifs();
-        if($scope.notifs.length !== 0 && $scope.newNotifs != $scope.notifs.length){
-          Notification.success('You have ' + String($scope.notifs.length) + ' new notifications!');
-          $scope.newNotifs = $scope.notifs.length;
-        }
-      }
+  function getNotifs(response){
+    $scope.tempNotifs = response.data.message;
+    numberOfUnreadNotifs();
+    if($scope.notifCount < $scope.tempNotifs.length){
+      var count = Number($scope.tempNotifs.length) - $scope.notifCount;
+      Notification.success('You have ' + String($scope.tempNotifs.length) + ' new notifications!');
     }
-
-      function updateScopeAttributes(response){ // Need to be hoisted
-        var index = 0;
-        for (index in $scope.notifs){
-          if ($scope.notifs[index]._id.toString() === response.data.message._id.toString()){        //updatne len tu notif., ktory potrebujeme
-              $scope.notifs[index]=response.data.message;
-          }
-        }
-      }
+    sortNotifs();
+    $scope.notifCount = $scope.notifs.length;
+  }
 
     // ========= Other Functions ===============
 
@@ -102,17 +70,20 @@ $scope.isDev = keyword.test(payload.roles);
     }
 
     $scope.changeIsUnreadAndResponded = function(notifID){   // Need to be call external, no need for hoisting
+      $scope.notifCount = $scope.notifCount - 1;
       notificationsAPIService.changeIsUnreadToFalse(notifID)
         .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'), commonHelpers.errorCallback)
         .then(init(), commonHelpers.errorCallback);
     };
 
     $scope.changeIsUnread = function(notifID){
+      $scope.notifCount = $scope.notifCount - 1;
       notificationsAPIService.changeIsUnreadToFalse(notifID)
         .then(init(),commonHelpers.errorCallback);
     };
 
     $scope.seeAll = function(){
+      $scope.notifCount = 0;
       var allNotifs = [];
       retrieveAllNotifs($scope.notifs, allNotifs);
       notificationsAPIService.changeIsUnreadToFalse('0',{ids: allNotifs})
@@ -133,12 +104,14 @@ $scope.isDev = keyword.test(payload.roles);
   // Accept / Reject requests ======================
 
   $scope.acceptNeighbourRequest = function (notifId, friendId){
+    $scope.notifCount = $scope.notifCount - 1;
     userAccountsHelpers.acceptNeighbourRequest(friendId)
     .then(init(), userAccountsHelpers.errorCallback)
     .catch(userAccountsHelpers.errorCallback);
   };
 
-    $scope.rejectNeighbourRequest = function(notifId, friendId) {
+    $scope.rejectNeighbourRequest = function(notifId, friendId){
+      $scope.notifCount = $scope.notifCount - 1;
       userAccountsHelpers.rejectNeighbourRequest(friendId)
       .then(init(),userAccountsHelpers.errorCallback)
       .catch(userAccountsHelpers.errorCallback);
@@ -164,13 +137,15 @@ $scope.isDev = keyword.test(payload.roles);
     //     );
     // };
 
-    $scope.acceptRegistration = function (reg_id, notifId) {
+    $scope.acceptRegistration = function (notifId, reg_id){
+      $scope.notifCount = $scope.notifCount - 1;
      registrationsHelpers.acceptRegistration(reg_id)
       .then(init(),registrationsHelpers.errorCallback)
       .catch(registrationsHelpers.errorCallback);
     };
 
-    $scope.rejectRegistration = function (reg_id, notifId) {
+    $scope.rejectRegistration = function (notifId, reg_id){
+      $scope.notifCount = $scope.notifCount - 1;
       registrationsHelpers.rejectRegistration(reg_id)
         .then(init(),registrationsHelpers.errorCallback)
         .catch(registrationsHelpers.errorCallback);

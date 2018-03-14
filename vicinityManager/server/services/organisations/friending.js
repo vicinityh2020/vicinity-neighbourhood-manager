@@ -270,7 +270,7 @@ function cancelFriendship(friend_id, my_id, my_mail, my_uid, callback){
         friend.save()
         .then( function(response){ return me.save(); })
         .then( function(response){ return sharingRules.removeFriend(my_id, friend_id, my_mail); })
-        .then( function(response){ logger.debug('out: ' + response); })
+        .then( function(response){ logger.debug('out: ' + JSON.stringify(response)); })
         .catch( function(err){ logger.debug('Error: ' + err); });
 
         notifHelper.createNotification(

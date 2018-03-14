@@ -10,31 +10,50 @@ var asyncHandler = require('../../services/asyncHandler/sync');
 /*
 Get notifications
 */
-function getNotifications(u_id, c_id, cid, mail, isAdmin, all, searchDate, callback){
+function getNotifications(u_id, c_id, cid, mail, isDevOps, all, searchDate, callback){
   var notifs = [];
   var query = {};
   // Set query based on user rights and specifications
   if(!all){ query = { $or: [{isUnread: true}, {status: 'waiting'}] }; }
   else{ query._id = { $gt: searchDate }; }
-  if(!isAdmin) query.type = {$ne: 1};
 
   userAccountOp.findOne({_id: c_id}, {hasNotifications:1})
   .populate({
     path: 'hasNotifications',
     match: query,
+    populate: [
+      { path:'actor.item', select: 'avatar name'},
+      { path:'target.item', select: 'avatar name'},
+      { path:'object.item'}
+    ]
     // select: '-_id'
   })
   .then(function(data){
-    notifs.push(data.hasNotifications);
-    return user.findOne({_id: u_id}, {hasNotifications:1})
+    notifs = notifs.concat(data.hasNotifications);
+    return userOp.findOne({_id: u_id}, {hasNotifications:1})
     .populate({
       path: 'hasNotifications',
       match: query,
+      populate: [
+        { path:'actor.item', select: 'avatar name'},
+        { path:'target.item', select: 'avatar name'},
+        { path:'object.item'}
+      ]
       // select: '-_id'
     });
   })
   .then(function(data){
-    notifs.push(data.hasNotifications);
+    notifs = notifs.concat(data.hasNotifications);
+    if(isDevOps){
+      return notificationOp.find({type: 1, status: 'waiting'}).populate('actor.item');
+    } else {
+      return false;
+    }
+  })
+  .then(function(data){
+    if(data && data.length > 0){
+      notifs = notifs.concat(data);
+    }
     callback(false, notifs);
   })
   .catch(function(error){
@@ -59,11 +78,11 @@ function createNotification(actor, target, object, status, type, message){
         reject(err);
       } else {
         if(target.kind === 'user'){
-          userOp.update({_id: target.item}, {$push: {hasNotifications: response_id}}, function(err, response){
+          userOp.update({_id: target.item}, {$push: {hasNotifications: response._id}}, function(err, response){
             if(err){ reject(err); } else { resolve(true); }
           });
         } else {
-          userAccountOp.update({_id: target.item}, {$push: {hasNotifications: response_id}}, function(err, response){
+          userAccountOp.update({_id: target.item}, {$push: {hasNotifications: response._id}}, function(err, response){
             if(err){ reject(err); } else { resolve(true); }
           });
         }
@@ -102,25 +121,29 @@ function changeIsUnreadToFalse(id, ids, callback){
 Functions accessed from backend
 */
 function changeNotificationStatus(targetId, objectId, type, other){
+
     // Build the query only with the relevant keys
     var query = { 'type': type, 'status': 'waiting' };
     other = typeof other !== 'undefined' ? other : {};
-    if(senderId !== ""){ query.target.item = targetId; }
-    if(recepId !== ""){ query.object.item = objectId; }
+    if(targetId !== ""){ query['target.item'] = targetId; }
+    if(objectId !== ""){ query['object.item'] = objectId; }
     // if(other.hasOwnProperty('itemId')){ query.itemId = other.itemId; }
-    if(other.hasOwnProperty('sentByReg')){ query.actor.item = other.sentByReg; }
+    if(other.hasOwnProperty('sentByReg')){ query['actor.item'] = other.sentByReg; }
     // Change status of found notifs
     notificationOp.find(query,
       function(err, notif){
         if(err){
           logger.debug("Error changing status of notification!!");
+
         } else if(!(notif)){
           logger.debug("Notif not found in changing status of notification!!");
         } else {
           for(var n = 0; n < notif.length; n++){
             notif[n].status = 'responded';
             notif[n].isUnread = false;
-            notif[n].save();
+            notif[n].save(function(err,response){
+              if(err) logger.debug('Could not change status: ' + err);
+            });
           }
         }
       }
