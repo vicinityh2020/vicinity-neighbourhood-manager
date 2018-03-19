@@ -7,7 +7,8 @@ var sGet = require("../../services/organisations/get");
 Get all organisations meeting the  user request (All, friends, no friends)
 */
 function getAll(req, res, next) {
-  var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var cid = mongoose.Types.ObjectId(req.params.id);
+  // var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = req.query.type; // 0 all, 1 friends, else not friends
   sGet.getAll(cid, Number(type), function(err, response){
     res.json({error: err, message: response});
