@@ -51,12 +51,12 @@ angular.module('Authentication')
 
           service.ClearCredentialsAndInvalidateToken = function(){
             //TODO: Invalidate token
-//            $http.post("http://localhost:3000/api/authenticate/invalidate",{token: $window.sessionStorage.token});
+            // $http.post("http://localhost:3000/api/authenticate/invalidate",{token: $window.sessionStorage.token});
             service.ClearCredentials();
           };
 
-// If there is a cookie, look if it has assigned an id and if so refresh token and log the user
-// If the token in the cookie is faked or expired, the refresh token process will fail
+          // If there is a cookie, look if it has assigned an id and if so refresh token and log the user
+          // If the token in the cookie is faked or expired, the refresh token process will fail
           service.wasCookie = function(){
             var myCookie = $cookies.getObject("rM_V");
             if(myCookie){
@@ -181,24 +181,24 @@ angular.module('Authentication')
 
 // ======= INITIALIZE token interceptor =======
 
-.factory('jwtTokenHttpInterceptor',
-        ['Base64',
-        function(Base64){
-  console.log('Begin: Inicialized jwtTokenHttpInterceptor');
-
-  var tokenInjector = {
-    request: function(config) {
-      var auth = Base64.encode('vicinity-nm:VredesteinLatexMliekoNaDefekt500ml');
-      // config.headers['Authorization'] = 'Basic d2VudHdvcnRobWFuOkNoYW5nZV9tZQ==';
-      config.headers.Authorization = 'Basic ' + auth;
-      return config;
-    }
-  };
-
-  console.log('End: Inicialized jwtTokenHttpInterceptor');
-  return tokenInjector;
-
-}])
+// .factory('jwtTokenHttpInterceptor',
+//         ['Base64',
+//         function(Base64){
+//   console.log('Begin: Inicialized jwtTokenHttpInterceptor');
+//
+//   var tokenInjector = {
+//     request: function(config) {
+//       var auth = Base64.encode(' ... ');
+//       // config.headers['Authorization'] = 'Basic ... ';
+//       config.headers.Authorization = 'Basic ' + auth;
+//       return config;
+//     }
+//   };
+//
+//   console.log('End: Inicialized jwtTokenHttpInterceptor');
+//   return tokenInjector;
+//
+// }])
 
 // ======= Decode token as a service =======
 
