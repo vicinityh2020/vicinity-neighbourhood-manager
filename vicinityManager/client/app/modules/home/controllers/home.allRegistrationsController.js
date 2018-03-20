@@ -5,7 +5,6 @@ angular.module('VicinityManagerApp.controllers').
             commonHelpers,
             $window,
             registrationsAPIService,
-            registrationsListService,
             notificationsAPIService,
             Notification) {
 
@@ -14,21 +13,15 @@ angular.module('VicinityManagerApp.controllers').
 // ====== Triggers window resize to avoid bug =======
     commonHelpers.triggerResize();
 
-    // Ensure scroll on top onLoad
-        $window.scrollTo(0, 0);
-
-    $scope.imMobile = Number($window.innerWidth) < 768;
-    $(window).on('resize',function(){
-      $scope.imMobile = Number($window.innerWidth) < 768;
-    });
-
     $scope.loadedPage = false;
     $scope.regisList = [];
     $scope.rev = false;
     $scope.myOrderBy = 'companyName';
 
-    $scope.myInit = function(){
-    registrationsListService.getCompanies()
+    init();
+
+    function init(){
+    registrationsAPIService.getAll()
       .then(
         function successCallback(response){
           $scope.regisList = response.data.message;
@@ -36,47 +29,47 @@ angular.module('VicinityManagerApp.controllers').
         },
         function errorCallback(response){}
       );
-    };
-
-    $scope.myInit();
+    }
 
 // Functions
 
-      $scope.verifyAction = function(reg){
-        $scope.id = reg._id;
-        registrationsAPIService.putOne(reg._id,{userName: reg.userName, email: reg.email, companyName: reg.companynameReg , type: "newCompany", status: "pending" })
-          .then(
-            function successCallback(response){
-              Notification.success("Verification mail was sent to the company!");
-              notificationsAPIService.updateNotificationOfRegistration($scope.id);
-              $scope.myInit();
-            },
-            function errorCallback(response){Notification.error("It was not possible to send the mail...");}
-          );
-        };
-
-      $scope.declineAction = function(reg){
-        $scope.id = reg._id;
-        registrationsAPIService.putOne(reg._id,{userName: reg.userName, email: reg.email, companyName: reg.companynameReg, type: "newCompany", status: "declined" })
-          .then(
-            function successCallback(response){
-              Notification.success("Company was rejected!");
-              notificationsAPIService.updateNotificationOfRegistration($scope.id);
-              $scope.myInit();
-            },
-            function errorCallback(response){Notification.error("It was not possible to send the mail...");}
-          );
-        };
-
-      $scope.orderByMe = function(x) {
-        if($scope.myOrderBy === x){
-          $scope.rev=!($scope.rev);
-        }
-        $scope.myOrderBy = x;
-      };
-
-      $scope.onSort = function(order){
-        $scope.rev = order;
-      };
-
+  $scope.verifyAction = function(){
+  registrationsAPIService.putOne($scope.id,{status: "pending" })
+  .then(function(response){
+    Notification.success("Verification mail was sent to the company!");
+    $scope.status = 'pending';
+    init();
+  })
+  .catch(function(err){
+    errorCallback(err);
   });
+  };
+
+  $scope.declineAction = function(){
+  registrationsAPIService.putOne($scope.id,{status: "declined" })
+    .then(function(response){
+      Notification.success("Company was rejected!");
+      $scope.status = 'declined';
+      init();
+    })
+    .catch(function(err){
+      errorCallback(err);
+    });
+  };
+
+  $scope.orderByMe = function(x) {
+    if($scope.myOrderBy === x){
+      $scope.rev=!($scope.rev);
+    }
+    $scope.myOrderBy = x;
+  };
+
+  $scope.onSort = function(order){
+    $scope.rev = order;
+  };
+
+  function errorCallback(err){
+    Notification.warning("Something went wrong..." + err);
+  }
+
+});

@@ -41,15 +41,15 @@ function ($scope,
 
   $scope.verifyAction = function(){
   registrationsAPIService.putOne($scope.id,{status: "pending" })
-  .then(function(response){
-    Notification.success("Verification mail was sent to the company!");
-    $scope.status = 'pending';
-    init();
-  })
-  .catch(function(err){
-    errorCallback(err);
-  });
-};
+    .then(function(response){
+      Notification.success("Verification mail was sent to the company!");
+      $scope.status = 'pending';
+      init();
+    })
+    .catch(function(err){
+      errorCallback(err);
+    });
+  };
 
   $scope.declineAction = function(){
   registrationsAPIService.putOne($scope.id,{status: "declined" })
