@@ -33,8 +33,8 @@ angular.module('VicinityManagerApp.controllers').
 
 // Functions
 
-  $scope.verifyAction = function(){
-  registrationsAPIService.putOne($scope.id,{status: "pending" })
+  $scope.verifyAction = function(id){
+  registrationsAPIService.putOne(id,{status: "pending" })
   .then(function(response){
     Notification.success("Verification mail was sent to the company!");
     $scope.status = 'pending';
@@ -45,8 +45,8 @@ angular.module('VicinityManagerApp.controllers').
   });
   };
 
-  $scope.declineAction = function(){
-  registrationsAPIService.putOne($scope.id,{status: "declined" })
+  $scope.declineAction = function(id){
+  registrationsAPIService.putOne(id,{status: "declined" })
     .then(function(response){
       Notification.success("Company was rejected!");
       $scope.status = 'declined';
@@ -69,7 +69,7 @@ angular.module('VicinityManagerApp.controllers').
   };
 
   function errorCallback(err){
-    Notification.warning("Something went wrong..." + err);
+    Notification.error("Something went wrong..." + JSON.stringify(err));
   }
 
 });
