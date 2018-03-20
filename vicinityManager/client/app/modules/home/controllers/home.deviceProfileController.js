@@ -43,6 +43,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
     function updateScopeAttributes(response){
         $scope.item = response.data.message[0];
         $scope.name = $scope.item.cid.id.name;
+        $scope.item.uid = $scope.item.uid === undefined ? {} : $scope.item.uid; // Case device disabled
         $scope.owner = $scope.item.uid.extid;
         $scope.itemEnabled = ($scope.item.status === 'enabled');
 
