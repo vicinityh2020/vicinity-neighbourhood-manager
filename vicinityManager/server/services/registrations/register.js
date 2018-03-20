@@ -175,6 +175,9 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
   dbUser.authentication.principalRoles[0] ="user";
   dbUser.cid = {id: raw.companyId, extid: raw.cid};
 
+// Set related notification to responded
+  notifHelper.changeNotificationStatus("", "", 1, {sentByReg: o_id});
+
 // Case new company registration
 
   if ((raw.type == "newCompany") && (raw.status == "verified")){

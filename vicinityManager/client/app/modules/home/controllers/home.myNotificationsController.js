@@ -105,14 +105,14 @@ $scope.period = 'week';
   // };
 
   $scope.acceptRegistration = function (notifId, reg_id) {
-   registrationsHelpers.acceptRegistration(reg_id)
+   registrationsHelpers.acceptRegistration(reg_id, notifId)
     .then(init,registrationsHelpers.errorCallback)
     .catch(registrationsHelpers.errorCallback);
   };
 
 
   $scope.rejectRegistration = function (notifId, reg_id) {
-    registrationsHelpers.rejectRegistration(reg_id)
+    registrationsHelpers.rejectRegistration(reg_id, notifId)
       .then(init,registrationsHelpers.errorCallback)
       .catch(registrationsHelpers.errorCallback);
   };

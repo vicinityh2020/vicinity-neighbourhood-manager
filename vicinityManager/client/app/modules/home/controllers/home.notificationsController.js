@@ -137,17 +137,17 @@ $scope.$on('$destroy', function(){
     //     );
     // };
 
-    $scope.acceptRegistration = function (notifId, reg_id){
+    $scope.acceptRegistration = function (notifId, reg_id) {
       $scope.notifCount = $scope.notifCount - 1;
-     registrationsHelpers.acceptRegistration(reg_id)
-      .then(init(),registrationsHelpers.errorCallback)
-      .catch(registrationsHelpers.errorCallback);
+      registrationsHelpers.acceptRegistration(reg_id, notifId)
+        .then(init,registrationsHelpers.errorCallback)
+        .catch(registrationsHelpers.errorCallback);
     };
 
-    $scope.rejectRegistration = function (notifId, reg_id){
+    $scope.rejectRegistration = function (notifId, reg_id) {
       $scope.notifCount = $scope.notifCount - 1;
-      registrationsHelpers.rejectRegistration(reg_id)
-        .then(init(),registrationsHelpers.errorCallback)
+      registrationsHelpers.rejectRegistration(reg_id, notifId)
+        .then(init,registrationsHelpers.errorCallback)
         .catch(registrationsHelpers.errorCallback);
     };
 
