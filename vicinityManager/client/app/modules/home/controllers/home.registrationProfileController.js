@@ -15,7 +15,10 @@ function ($scope,
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
-  registrationsAPIService.getOne($stateParams.registrationId)
+  init();
+
+  function init(){
+    registrationsAPIService.getOne($stateParams.registrationId)
     .then(
       function successCallback(response){
         updateScopeAttributes(response);
@@ -23,6 +26,7 @@ function ($scope,
       },
       errorCallback
     );
+  }
 
   function updateScopeAttributes(response){
       $scope.id = response.data.message._id;
@@ -37,28 +41,30 @@ function ($scope,
 
   $scope.verifyAction = function(){
   registrationsAPIService.putOne($scope.id,{status: "pending" })
-    .then(verifyCallback,errorCallback);
-  };
+  .then(function(response){
+    Notification.success("Verification mail was sent to the company!");
+    $scope.status = 'pending';
+    init();
+  })
+  .catch(function(err){
+    errorCallback(err);
+  });
+};
 
   $scope.declineAction = function(){
   registrationsAPIService.putOne($scope.id,{status: "declined" })
-    .then(declineCallback,errorCallback);
+    .then(function(response){
+      Notification.success("Company was rejected!");
+      $scope.status = 'declined';
+      init();
+    })
+    .catch(function(err){
+      errorCallback(err);
+    });
   };
 
-  function verifyCallback(response){
-    Notification.success("Verification mail was sent to the company!");
-    $scope.status = 'pending';
-    notificationsAPIService.updateNotificationOfRegistration($scope.id);
-    }
-
-  function declineCallback(response){
-    Notification.success("Company was rejected!");
-    $scope.status = 'declined';
-    notificationsAPIService.updateNotificationOfRegistration($scope.id);
-    }
-
   function errorCallback(err){
-    Notification.warning("Something went wrong...");
+    Notification.warning("Something went wrong..." + err);
   }
 
 });

@@ -14,16 +14,14 @@ factory('registrationsHelpers', ['Notification', 'registrationsAPIService',
      */
      helpers.acceptRegistration = function(reg_id){
        return registrationsAPIService.putOne(reg_id, {status: "pending" })
-           .then(
-             function successCallback(response){
-               if (response.error) {
-                   Notification.error("Registration process failed...");
-               } else {
-                  Notification.success("Verification mail was sent to the company!");
-               }
-           },
-           helpers.errorCallback
-         );
+         .then(function successCallback(response){
+           if (response.error) {
+             Notification.error("Registration process failed...");
+           } else {
+              Notification.success("Verification mail was sent to the company!");
+           }
+          })
+         .catch(helpers.errorCallback);
        };
 
      /*
@@ -31,17 +29,15 @@ factory('registrationsHelpers', ['Notification', 'registrationsAPIService',
      */
      helpers.rejectRegistration = function(reg_id){
        return registrationsAPIService.putOne(reg_id, {status: "declined" })
-           .then(
-             function successCallback(response){
-               if (response.error) {
-                   Notification.error("Registration process failed...");
-               } else {
-                   Notification.success("Company was rejected!");
-               }
-           },
-           helpers.errorCallback
-         );
-       };
+         .then(function successCallback(response){
+           if (response.error) {
+             Notification.error("Registration process failed...");
+           } else {
+             Notification.success("Company was rejected!");
+           }
+         })
+        .catch(helpers.errorCallback);
+      };
 
     /*
     Error Callback handler
