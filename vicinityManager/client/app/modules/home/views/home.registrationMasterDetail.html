@@ -38,8 +38,8 @@
           </div>
         </td>
         <td>
-          <i ng-if="regis.status === 'open' " ng-click="verifyAction(regis)" style="color: green; padding-left:10%" class="fa fa-check fa-lg col-sm-4"></i>
-          <i ng-if="regis.status === 'open' " ng-click="declineAction(regis)" style="color: red; padding-left:10%" class="fa fa-close fa-lg col-sm-4"></i>
+          <i ng-if="regis.status === 'open' " ng-click="verifyAction(regis._id)" style="color: green; padding-left:10%" class="fa fa-check fa-lg col-sm-4"></i>
+          <i ng-if="regis.status === 'open' " ng-click="declineAction(regis._id)" style="color: red; padding-left:10%" class="fa fa-close fa-lg col-sm-4"></i>
           <a ng-if="regis.status === 'open' " ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"><i style="padding-left:10%" class="fa fa-search fa-lg col-sm-4"></i></a>
           <a ng-if="regis.status !== 'open' " ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})"><i style="padding-left:40%" class="fa fa-search fa-lg col-sm-4"></i></a>
         </td>
@@ -80,8 +80,8 @@
       <div ng-if="regis.status === 'declined'"><b>Status: </b>Declined</div>
     </div>
     <div class="centered" style="padding:5%">
-      <button ng-if="regis.status === 'open' " ng-click="verifyAction(regis)" class="btn btn-block btn-success pull-right">Verify</button><hr ng-if="regis.status === 'open' ">
-      <button ng-if="regis.status === 'open' " ng-click="declineAction(regis)" class="btn btn-block btn-danger pull-right">Decline</button><hr ng-if="regis.status === 'open' ">
+      <button ng-if="regis.status === 'open' " ng-click="verifyAction(regis._id)" class="btn btn-block btn-success pull-right">Verify</button><hr ng-if="regis.status === 'open' ">
+      <button ng-if="regis.status === 'open' " ng-click="declineAction(regis._id)" class="btn btn-block btn-danger pull-right">Decline</button><hr ng-if="regis.status === 'open' ">
       <button ng-if="regis.status === 'open' " ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})" class="btn btn-block btn-info pull-right">View</button>
       <button ng-if="regis.status !== 'open' " ui-sref="root.main.registrationProfile.regAdmin({registrationId: regis._id})" class="btn btn-block btn-info pull-right">View</button>
     </div>
