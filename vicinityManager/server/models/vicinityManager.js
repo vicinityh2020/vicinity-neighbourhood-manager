@@ -26,6 +26,11 @@ var oidSchema = Schema({
   extid: String
 },{ _id : false });
 
+var auditSchema = Schema({
+  id: {type: ObjectId, ref: 'auditLog'},
+  extid: String
+},{ _id : false });
+
 var ctidSchema = Schema({
   id: {type: ObjectId, ref: 'contract'},
   extid: String,
@@ -53,6 +58,7 @@ var userAccount = new Schema({
   knowsRequestsTo:[ cidSchema ],
   hasNodes:[ adidSchema ],
   hasNotifications: [{ type: ObjectId, ref: 'notification' }],
+  hasAudits: [ auditSchema ],
   skinColor: {type: String, enum: ['blue', 'red', 'green', 'purple', 'yellow', 'black']},
   avatar: String,
   location: String,
@@ -86,6 +92,7 @@ var user = new Schema({
     */
   },
   hasNotifications: [{ type: ObjectId, ref: 'notification' }],
+  hasAudits: [ auditSchema ],
   hasItems: [ oidSchema ], // Own items and foreign items under contract
   hasContracts: [ ctidSchema ]
 });
@@ -109,6 +116,7 @@ var item = new Schema({
   cid: cidSchema,
   uid: uidSchema,
   hasContracts: [ ctidSchema ],
+  hasAudits: [ auditSchema ],
   accessLevel: {type: Number, enum: [0, 1, 2], default: 0},
   typeOfItem: {type: String, enum: ['device','service']},
   status: {type: String, enum: ['disabled', 'enabled', 'deleted'], default: 'disabled'}, // Enabled, disabled or deleted
@@ -170,6 +178,7 @@ var notification = new Schema({
       item: { type: ObjectId, refPath: 'object.kind' },
       extid: String
     },
+    date: { type: Date, default: Date.now },
     message: String, // Enable personal messages possibility
     isUnread: { type: Boolean, default: true },
     status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded'], required: true},
@@ -193,25 +202,25 @@ var notification = new Schema({
     */
 });
 
-var remember = new Schema({
-  token: {type: String, required: true},
-});
-
 var auditLog = new Schema({
-  auditId: {type: String, required: true}, // Can be oid or cid (extid)
-  data: [ {
-    creationDate: { type: Date, default: Date.now },
-    triggeredByMe: { type: Boolean, default: true }, // Was the audit triggered by an event in your organisation??
-    user: { type: String, default: "Unknown" }, // User generating the event
-    orgOrigin: cidSchema, // Organisation generating the event
-    orgDest: cidSchema, // Organisation receiving the event
-    auxConnection: { // Depending on the audit, we need another connection to user, org, item or node
-      kind: String,
-      item: { type: ObjectId, refPath: 'data.auxConnection.kind' },
-      extid: String
-    },
-    description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
-    eventType: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
+  audid: {type: String, required: true}, // extid
+  date: { type: Date, default: Date.now },
+  actor: {  // Always a user has to trigger an audit event
+    item: { type: ObjectId, ref: 'user' },
+    extid: String
+  },
+  target: {
+    kind: String,
+    item: { type: ObjectId, refPath: 'target.kind' },
+    extid: String
+  },
+  object: { // Depending on the audit, we need another connection to user, org, item or node
+    kind: String,
+    item: { type: ObjectId, refPath: 'object.kind' },
+    extid: String
+  },
+  description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
+  type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
     /*
     Organisation:
     1 - Created ->
@@ -239,7 +248,10 @@ var auditLog = new Schema({
     54 - Update contract <->
     ...
     */
-  } ]
+});
+
+var remember = new Schema({
+  token: {type: String, required: true},
 });
 
 // Set schema options ==================================
