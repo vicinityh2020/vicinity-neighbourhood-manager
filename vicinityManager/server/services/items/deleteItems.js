@@ -4,6 +4,7 @@
 var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var nodeOp = require('../../models/vicinityManager').node;
+var userOp = require('../../models/vicinityManager').user;
 var logger = require('../../middlewares/logger');
 var commServer = require('../../services/commServer/request');
 var semanticRepo = require('../../services/semanticRepo/request');
@@ -74,6 +75,7 @@ function deleting(oid, otherParams, callback){
 
         itemOp.update({oid:oid}, {$set: obj})
         .then(function(response){ return nodeOp.update({_id: data.adid.id}, {$pull: {hasItems: { extid : oid }}}); })
+        .then(function(response){ return userOp.update({_id: data.uid.id}, {$pull: {hasItems: { extid : oid }}}); })
         .then(function(response){ return semanticRepo.callSemanticRepo({}, "td/remove/" + oid, 'DELETE'); })
         .then(function(response){
           return audits.putAuditInt(
