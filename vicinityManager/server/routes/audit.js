@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-var getHelper = require('../controllers/audit/get.js');
-var putHelper = require('../controllers/audit/put.js');
+var auditHelper = require('../controllers/audit/audit.js');
 
 router
-  .get('/:id', getHelper.getAudit)
-  .put('/:id', putHelper.putAuditExt);
+  .get('/:id', auditHelper.getAudit)
+  .post('/:id', auditHelper.postAudit);
 
 module.exports = router;

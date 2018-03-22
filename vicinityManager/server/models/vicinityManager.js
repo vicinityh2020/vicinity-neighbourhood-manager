@@ -206,7 +206,7 @@ var auditLog = new Schema({
   audid: {type: String, required: true}, // extid
   date: { type: Date, default: Date.now },
   actor: {  // Always a user has to trigger an audit event
-    item: { type: ObjectId, ref: 'user' },
+    id: { type: ObjectId, ref: 'user' },
     extid: String
   },
   target: {
