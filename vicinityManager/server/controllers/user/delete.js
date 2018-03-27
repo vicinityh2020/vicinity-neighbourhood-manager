@@ -7,9 +7,10 @@ var logger = require('../../middlewares/logger');
 // Public functions
 function deleteUser(req, res, next) {
   var uid = [];
-  var email = req.body.decoded_token.sub;
+  var userMail = req.body.decoded_token.sub;
+  var userId = req.body.decoded_token.uid;
   uid.push(mongoose.Types.ObjectId(req.params.id));
-  delUser.deleteAllUsers(uid, email)
+  delUser.deleteAllUsers(uid, userMail, userId)
   .then(
     function(response){
       logger.debug("Users deleted...");

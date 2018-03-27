@@ -7,7 +7,7 @@ var myItems = require('../../services/items/deleteItems');
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var sync = require('../../services/asyncHandler/sync');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 
 // Public functions
 
@@ -16,7 +16,7 @@ Change node status to deleted in MONGO
 Remove node from commServer
 Remove all oids under node from commServer AND MONGO
 */
-function deleteNode(adids, email){
+function deleteNode(adids, email, userId){
 
   return new Promise(function(resolve, reject) {
     if(adids.length > 0){ // Check if there is any item to delete
@@ -36,7 +36,7 @@ function deleteNode(adids, email){
           }
         },
         false,
-        {userMail:email}
+        {userMail:email, userId: userId}
       );
     } else {
       logger.warn({user: email, action: 'deleteNodes', message: "No nodes found to be removed"});
@@ -49,7 +49,7 @@ function deleteNode(adids, email){
 On node saved successfully in MONGO,
 the update process continues in the commServer
 */
-  function updateNode(data, email){
+  function updateNode(data, email, userId){
     return new Promise(function(resolve, reject) {
       var payload = {
         name: data.name,
@@ -67,13 +67,11 @@ the update process continues in the commServer
         .then(function(response){ return nodeOp.findOne({adid: data.adid}); })
         .then(
           function(response){
-            return audits.putAuditInt(
-              response.organisation,
-              { orgOrigin: response.organisation,
-                auxConnection: {kind: 'node', item: response._id},
-                user: email,
-                eventType: 23 }
-            );
+            return audits.create(
+              { kind: 'user', item: userId, extid: email },
+              { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
+              { kind: 'node', item: response._id, extid: response.adid },
+              23, null);
           })
         .then(function(response){
           logger.audit({user: email, action: 'updateNode', item: response._id });
@@ -109,13 +107,11 @@ function deletingNodes(adid, otherParams, callback){
   })
   .then(
   function(response){
-    return audits.putAuditInt(
-      aux.cid.id,
-      { orgOrigin: aux.cid.extid,
-        auxConnection: {kind: 'node', item: aux._id},
-        user: otherParams.userMail,
-        eventType: 22 }
-    );
+    return audits.create(
+      { kind: 'user', item: otherParams.userId, extid: otherParams.userMail },
+      { kind: 'userAccount', item: aux.cid.id, extid: aux.cid.extid },
+      { kind: 'node', item: aux._id, extid: aux.adid },
+      22, null);
   })
   .then(function(response){
     var friends = [];

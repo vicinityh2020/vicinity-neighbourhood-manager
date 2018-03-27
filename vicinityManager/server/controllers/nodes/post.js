@@ -2,12 +2,7 @@
 // Global objects
 
 var mongoose = require('mongoose');
-var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
-var nodeOp = require('../../models/vicinityManager').node;
-var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
-var commServer = require('../../services/commServer/request');
-var audits = require('../../controllers/audit/put');
 
 var sNodePost = require('../../services/nodes/post');
 

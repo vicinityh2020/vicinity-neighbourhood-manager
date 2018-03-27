@@ -7,7 +7,7 @@ var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 var commServer = require('../../services/commServer/request');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 
 /*
 Creates a node for an organisation
@@ -17,7 +17,8 @@ Receives request from client
 function postOne(raw, company_id, callback){
   var db = new nodeOp();
   var cid = raw.cid;
-  var userMail = raw.userMail !== undefined ? raw.userMail : "unknown";
+  var userMail = raw.decoded_token !== undefined ? raw.decoded_token.sub : "unknown";
+  var userId = raw.decoded_token !== undefined ? raw.decoded_token.uid : "unknown";
   db.name = raw.name;
   db.eventUri = raw.eventUri;
   db.agent = raw.agent;
@@ -37,13 +38,11 @@ function postOne(raw, company_id, callback){
     // .then( function(response){ return commServer.callCommServer(groupData, 'groups/', 'POST'); }) // Create node group in commServer
     .then( function(response){ return userAccountOp.update( { _id: company_id}, {$push: {hasNodes: {"id": data._id, "extid": data.adid}}}); }) // Add node to company in MONGO
     .then( function(response){
-      return audits.putAuditInt(
-        data.organisation,
-        { orgOrigin: data.organisation,
-          user: userMail,
-          auxConnection: {kind: 'node', item: data._id},
-          eventType: 21 }
-        );
+      return audits.create(
+        { kind: 'user', item: userId, extid: userMail },
+        { kind: 'userAccount', item: cid.id, extid: cid.extid },
+        { kind: 'node', item: data._id, extid: data.adid },
+        21, null);
       })
     .then(function(response){
       logger.audit({user: userMail, action: 'createNode', item: data._id });

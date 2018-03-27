@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var commServer = require('../../services/commServer/request');
 var sharingRules = require('../../services/sharingRules');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 var sync = require('../../services/asyncHandler/sync');
 
 var itemOp = require('../../models/vicinityManager').item;
@@ -74,26 +74,11 @@ function enableItem(data, otherParams, callback){
     commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
       .then(function(response){ return deviceActivityNotif({id: userId, extid: userMail}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Enabled', 11);})
       .then(function(response){
-        return audits.putAuditInt(
-          o_id,
-          {
-            orgOrigin: c_id,
-            user: userMail,
-            auxConnection: {kind: 'item', item: o_id},
-            eventType: 43
-          }
-        );
-      })
-      .then(function(response){
-        return audits.putAuditInt(
-          c_id,
-          {
-            orgOrigin: c_id,
-            user: userMail,
-            auxConnection: {kind: 'item', item: o_id},
-            eventType: 43
-          }
-        );
+        return audits.create(
+          { kind: 'user', item: userId, extid: userMail },
+          { kind: 'item', item: o_id, extid: oid },
+          { },
+          43, null);
       })
       .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'enabled'); })
       .then(function(response){
@@ -133,26 +118,11 @@ function disableItem(data, otherParams, callback){
     commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
       .then(function(response){ return deviceActivityNotif({id: userId, extid: userMail}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Disabled', 12);})
       .then(function(response){
-        return audits.putAuditInt(
-          o_id,
-          {
-            orgOrigin: cid,
-            user: userMail,
-            auxConnection: {kind: 'item', item: o_id},
-            eventType: 44
-          }
-        );
-      })
-      .then(function(response){
-        return audits.putAuditInt(
-          cid,
-          {
-            orgOrigin: cid,
-            user: userMail,
-            auxConnection: {kind: 'item', item: o_id},
-            eventType: 44
-          }
-        );
+        return audits.create(
+          { kind: 'user', item: userId, extid: userMail },
+          { kind: 'item', item: o_id, extid: oid },
+          { },
+          44, null);
       })
       .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'disabled'); })
       .then(function(response){
@@ -205,13 +175,13 @@ function updateItem(data, otherParams, callback){
             return sharingRules.changePrivacy(data);
           })
           .then(function(response){
-            audits.putAuditInt(o_id,
-            { orgOrigin: cid,
-              auxConnection: {kind: 'item', item: o_id},
-              user: userMail,
-              eventType: 45,
-              description: "From " + clasify(Number(data.oldAccessLevel)) + " to " + clasify(Number(data.accessLevel))
-            });
+            return audits.create(
+              { kind: 'user', item: userId, extid: userMail },
+              { kind: 'item', item: o_id, extid: oid },
+              { },
+              45,
+              "From " + clasify(Number(data.oldAccessLevel)) + " to " + clasify(Number(data.accessLevel))
+            );
           })
           .then(function(response){
             logger.debug("Item update process ended successfully...");

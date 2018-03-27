@@ -217,7 +217,8 @@ var auditLog = new Schema({
   object: { // Depending on the audit, we need another connection to user, org, item or node
     kind: String,
     item: { type: ObjectId, refPath: 'object.kind' },
-    extid: String
+    extid: String,
+    name: String
   },
   description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
   type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
@@ -246,7 +247,7 @@ var auditLog = new Schema({
     52 - Cancel contract <->
     53 - Request contract <->
     54 - Update contract <->
-    ...
+    User:
     */
 });
 

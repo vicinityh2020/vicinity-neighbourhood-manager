@@ -2,7 +2,7 @@
 // Global objects and variables
 var mongoose = require('mongoose');
 var logger = require('../../middlewares/logger');
-var auditHelper = require('../../services/audit');
+var auditHelper = require('../../services/audit/audit');
 
 function getAudit(req, res){
   var c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);

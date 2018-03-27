@@ -11,7 +11,7 @@ var logger = require("../../middlewares/logger");
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var delUser = require('../../services/users/deleteUsers');
 var myNode = require('../../services/nodes/processNode');
-var audits = require('../../controllers/audit/put');
+// var audits = require('../../services/audit/audit');
 
 // Public functions
 
@@ -64,14 +64,14 @@ function remove(cid, mail, callback) {
           companyData.status = "deleted";
           return companyData.save();
         })
-        .then(function(response){
-          return audits.putAuditInt(
-            cid,
-            { orgOrigin: companyData.cid, // extid
-              user: mail,
-              eventType: 2 }
-          );
-        })
+        // .then(function(response){ // TODO Decide if necessary - Nobody to log the audit to
+        //   return audits.putAuditInt(
+        //     cid,
+        //     { orgOrigin: companyData.cid, // extid
+        //       user: mail,
+        //       eventType: 2 }
+        //   );
+        // })
         .then(function(response){
           deletingResults.organisation = {cid: cid, result: 'Success'};
           logger.audit({user: mail, action: 'deleteOrganisation', item: cid });

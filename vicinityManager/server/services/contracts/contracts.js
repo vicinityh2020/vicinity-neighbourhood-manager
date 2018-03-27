@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 var contractOp = require('../../models/vicinityManager').contract;
 var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
@@ -13,8 +13,9 @@ var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
 //Functions
 
-/*
+/**
 Accept a contract request
+* @return {Callback}
 */
 function accepting(id, callback){
   // TODO enable option to accept contract by iotOwner
@@ -39,22 +40,11 @@ function accepting(id, callback){
       'info', 24, null);
   })
   .then(function(response){
-    return audits.putAuditInt(
-      updItem.iotOwner.cid.id,
-      { orgOrigin: updItem.serviceProvider.cid,
-        orgDest: updItem.iotOwner.cid,
-        auxConnection: {kind: 'contract', item: updItem._id, extid: updItem.ctid},
-        eventType: 51 }
-    );
-  })
-  .then(function(response){
-    return audits.putAuditInt(
-      updItem.serviceProvider.cid.id,
-      { orgOrigin: updItem.serviceProvider.cid,
-        orgDest: updItem.iotOwner.cid,
-        auxConnection: {kind: 'contract', item: updItem._id, extid: updItem.ctid},
-        eventType: 51 }
-    );
+    return audits.create(
+      { kind: 'user', item: updItem.serviceProvider.uid.id, extid: updItem.serviceProvider.uid.extid },
+      { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
+      { kind: 'contract', item: updItem._id, extid: updItem.ctid },
+      51, null);
   })
   .then(function(response){
     callback(updItem, false);
@@ -65,8 +55,9 @@ function accepting(id, callback){
   });
 }
 
-/*
+/**
 Create a contract request
+* @return {Callback}
 */
 function creating(data, callback){
   // TODO service provider can post a contract
@@ -114,22 +105,11 @@ function creating(data, callback){
             'info', 21, null);
         })
         .then(function(response){
-          return audits.putAuditInt(
-            data.cidDevice.id,
-            { orgOrigin: data.cidDevice,
-              orgDest: data.cidService,
-              auxConnection: {kind: 'contract', item: ct_id, extid: ct.ctid},
-              eventType: 53 }
-          );
-        })
-        .then(function(response){
-          return audits.putAuditInt(
-            data.cidService.id,
-            { orgOrigin: data.cidDevice,
-              orgDest: data.cidService,
-              auxConnection: {kind: 'contract', item: ct_id, extid: ct.ctid},
-              eventType: 53 }
-          );
+          return audits.create(
+            { kind: 'user', item: data.uidDevice.id, extid: data.uidDevice.extid },
+            { kind: 'user', item: data.uidService.id, extid: data.uidService.extid },
+            { kind: 'contract', item: ct_id, extid: ctid },
+            53, null);
         })
         .then(function(response){
           callback({}, false);
@@ -143,8 +123,9 @@ function creating(data, callback){
   );
 }
 
-/*
+/**
 Remove a contract
+* @return {Callback}
 */
 function removing(id, callback){
   var finalResp;
@@ -207,22 +188,11 @@ function removing(id, callback){
       'info', 23, null);
   })
   .then(function(response){
-    return audits.putAuditInt(
-      data.iotOwner.cid.id,
-      { orgOrigin: data.iotOwner.cid,
-        orgDest: data.serviceProvider.cid,
-        auxConnection: {kind: 'contract', item: data._id, extid: data.ctid},
-        eventType: 52 }
-    );
-  })
-  .then(function(response){
-    return audits.putAuditInt(
-      data.serviceProvider.cid.id,
-      { orgOrigin: data.iotOwner.cid,
-        orgDest: data.serviceProvider.cid,
-        auxConnection: {kind: 'contract', item: data._id, extid: data.ctid},
-        eventType: 52 }
-    );
+    return audits.create(
+      { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
+      { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
+      { kind: 'contract', item: ctid.id, extid: ctid.extid },
+      52, null);
   })
   .then(function(response){
     callback(finalResp, false);
@@ -233,6 +203,10 @@ function removing(id, callback){
   });
 }
 
+/**
+Modify contracts related with removed device
+* @return {Callback}
+*/
 function removeDevice(item, otherParams, callback){
   var ctids = [];
   var mycid = item.cid.id._id;
@@ -281,7 +255,7 @@ function removeDevice(item, otherParams, callback){
   });
 }
 
-// Private Functions
+// Private Functions --------------------------------
 
 // function createNotif(mycid, othercid, thing, type){
 //   var notification = new notificationOp();

@@ -8,7 +8,7 @@ var logger = require("../middlewares/logger");
 var sync = require('../services/asyncHandler/sync');
 var commServer = require('../services/commServer/request');
 var ctHelper = require('../services/contracts/contracts');
-var audits = require('../controllers/audit/put');
+var audits = require('../services/audit/audit');
 
 // Public functions ================================
 

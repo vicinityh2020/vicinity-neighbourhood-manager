@@ -6,7 +6,7 @@ var itemOp = require('../../models/vicinityManager').item;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require('../../middlewares/logger');
 var sync = require('../../services/asyncHandler/sync');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 var commServer = require('../../services/commServer/request');
 var ctService = require('../../services/contracts/contracts');
 
@@ -16,7 +16,7 @@ var ctService = require('../../services/contracts/contracts');
 Deletes a selection of users
 Users to be removed pass their ids in an array as parameter
 */
-function deleteAllUsers(users, mail){
+function deleteAllUsers(users, mail, userId){
   return new Promise(function(resolve, reject) {
     if(users.length > 0){ // Check if there is any item to delete
       logger.debug('Start async handler...');
@@ -35,7 +35,7 @@ function deleteAllUsers(users, mail){
           }
         },
         false,
-        { userMail : mail }
+        { userMail : mail, userId: userId }
       );
     } else {
       logger.warn({user:mail, action: 'deleteUser', message: "No users to be removed"});
@@ -78,7 +78,7 @@ function deleting(id, otherParams, callback){
     hasContracts: [],
     cid: {}
   };
-  userOp.findOne({_id: id}, {cid:1, hasItems:1}).populate('hasItems.id', 'cid oid')
+  userOp.findOne({_id: id}, {cid:1, hasItems:1, email:1}).populate('hasItems.id', 'cid oid')
   .then(function(response){
     var aux = response.toObject();
     var toDisable = [];
@@ -86,20 +86,18 @@ function deleting(id, otherParams, callback){
     for(var i = 0; i < aux.hasItems.length; i++){
       toDisable.push(aux.hasItems[i].id);
     }
-    disableUserItems(toDisable, otherParams.userMail)
+    disableUserItems(toDisable, otherParams.userMail, otherParams.userId)
     .then(function(response){ logger.debug('Disable items finished'); })
     .catch(function(err){ logger.debug('Disable items error: ' + err); });
 
     return userOp.update({_id: id}, { $set: obj });
   })
   .then(function(response){
-    return audits.putAuditInt(
-      cid.id,
-      { orgOrigin: cid.extid,
-        auxConnection: {kind: 'user', item: id},
-        user: otherParams.userMail,
-        eventType: 12 }
-    );
+    return audits.create(
+      { kind: 'user', item: otherParams.userId , extid: otherParams.userMail },
+      { kind: 'userAccount', item: cid.id, extid: cid.extid },
+      { kind: 'user', extid: aux.email },
+      12, null);
   })
   .then(function(response){ return userAccountOp.update({_id: cid.id}, {$pull: {accountOf: { id: id }}}); })
   .then(function(response){
@@ -115,7 +113,7 @@ function deleting(id, otherParams, callback){
 /*
 Disables all user items when the user is removed
 */
-function disableUserItems(items, mail){
+function disableUserItems(items, mail, userId){
   return new Promise(function(resolve, reject) {
     if(items.length > 0){ // Check if there is any item to delete
       // logger.debug('Start async handler...');
@@ -134,7 +132,7 @@ function disableUserItems(items, mail){
           }
         },
         false,
-        {mail: mail}
+        {mail: mail, userId: userId}
       );
     } else {
       logger.warn({user:mail, action: 'deleteUser', message: "No items to be removed"});

@@ -17,7 +17,9 @@ var myNode = require('../../services/nodes/processNode');
   function putOne(req, res) {
     var adid = req.params.id;
     var updates = req.body;
-    var userMail = req.body.userMail;
+    var userMail = raw.decoded_token !== undefined ? raw.decoded_token.sub : "unknown";
+    var userId = raw.decoded_token !== undefined ? raw.decoded_token.uid : "unknown";
+
     delete updates.userMail;
 
     nodeOp.findOneAndUpdate({adid: adid}, {$set: updates}, { new: true }, function(err, data){
@@ -29,14 +31,14 @@ var myNode = require('../../services/nodes/processNode');
           var adids = [];
           adids.push(adid);
           userAccountOp.update({_id: cid}, { $pull: {hasNodes: {extid: adid}} })
-          .then(function(response){return myNode.deleteNode(adids, userMail);})
+          .then(function(response){return myNode.deleteNode(adids, userMail, userId);})
           .then(function(response){res.json({'error': false, 'message': response});})
           .catch(function(err){
             logger.debug(err);
             res.json({'error': true, 'message': err});});
         }else{
           data.pass = req.body.pass;
-          myNode.updateNode(data, userMail)
+          myNode.updateNode(data, userMail, userId)
           .then(function(response){res.json({'error': false, 'message': response});})
           .catch(function(err){
             logger.debug(err);

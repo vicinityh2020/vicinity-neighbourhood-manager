@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 var userOp = require('../../models/vicinityManager').user;
 var userAccountsOp = require('../../models/vicinityManager').userAccounts;
 var logger = require("../../middlewares/logger");
@@ -11,11 +11,11 @@ var bcrypt = require('bcrypt');
 /*
 Update a user
 */
-function putOne(uid, updates, userMail, callback) {
+function putOne(uid, updates, userMail, userId, callback) {
   if(updates.hasOwnProperty('accessLevel')){
     sharingRules.changeUserAccessLevel(uid, updates.accessLevel, userMail)
     .then(function(response){
-      doUpdate(uid, updates, userMail, function(err, response){
+      doUpdate(uid, updates, userMail, userId, function(err, response){
         if(err){ callback(true, response); } else { callback(false, response); }
       });
     })
@@ -46,7 +46,7 @@ function putOne(uid, updates, userMail, callback) {
           getItems(response.hasItems, canDevs, canServices, items);
           sUpdItems.updateManyItems(items, userMail, updates.decoded_token.cid, updates.decoded_token.orgid, uid, function(err, response){
             if(!err){
-              doUpdate(uid, updates, userMail, function(err, response){
+              doUpdate(uid, updates, userMail, userId, function(err, response){
                 if(err){ callback(true, response); } else { callback(false, response); }
               });
             } else {
@@ -54,31 +54,29 @@ function putOne(uid, updates, userMail, callback) {
             }
           });
         } else {
-          doUpdate(uid, updates, userMail, function(err, response){
+          doUpdate(uid, updates, userMail, userId, function(err, response){
             if(err){ callback(true, response); } else { callback(false, response); }
           });
         }
       }
     });
   } else {
-    doUpdate(uid, updates, userMail, function(err, response){
+    doUpdate(uid, updates, userMail, userId, function(err, response){
       if(err){ callback(true, response); } else { callback(false, response); }
     });
   }
 }
 
-function doUpdate(uid, updates, userMail, callback){
+function doUpdate(uid, updates, userMail, userId, callback){
   var updItem;
   userOp.findOneAndUpdate( { "_id": uid}, {$set: updates}, {new: true})
   .then(function(response){
     updItem = response;
-    return audits.putAuditInt(
-      updItem.organisation,
-      { orgOrigin: updItem.organisation,
-        auxConnection: {kind: 'user', item: uid},
-        user: userMail,
-        eventType: 13 }
-    );
+    return audits.create(
+      { kind: 'user', item: userId , extid: userMail },
+      { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
+      { kind: 'user', item: response._id, extid: response.email },
+      13, null);
   })
   .then(function(response){
     logger.audit({user: userMail, action: 'updateUser', item: uid });

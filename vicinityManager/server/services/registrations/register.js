@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var mailing = require('../../services/mail/mailing');
 var logger = require("../../middlewares/logger");
 var uuid = require('uuid'); // Unique ID RFC4122 generator
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 var commServer = require('../../services/commServer/request');
 var config = require('../../configuration/configuration');
 var bcrypt = require('bcrypt');
@@ -200,12 +200,11 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
       return userData.save();
     })
     .then(function(response){
-      return audits.putAuditInt(
-        orgData._id,
-        { orgOrigin: {id: orgData._id, extid: orgData.cid},
-          user: userData.email,
-          eventType: 1 }
-        );
+      return audits.create(
+        { kind: 'user', item: userData._id , extid: userData.email },
+        { kind: 'userAccount', item: orgData._id, extid: orgData.cid },
+        {  },
+        1, null);
       })
       .then(function(response){
         var payload = {
@@ -230,12 +229,11 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
         .then(function(response){
           userData = response;
           userAccountId = mongoose.Types.ObjectId(raw.companyId);
-          return audits.putAuditInt(
-            raw.companyId,
-            { orgOrigin: {id: raw.companyId, extid: raw.cid},
-              user: userData.email,
-              auxConnection: {kind: 'user', item: userData._id},
-              eventType: 11 });
+          return audits.create(
+            { kind: 'user', item: userData._id , extid: userData.email },
+            { kind: 'userAccount', item: raw.companyId, extid: raw.cid },
+            {  },
+            11, null);
           })
           .then(function(response){
             return userAccountOp.findById(userAccountId);

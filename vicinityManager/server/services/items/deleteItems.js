@@ -9,7 +9,7 @@ var logger = require('../../middlewares/logger');
 var commServer = require('../../services/commServer/request');
 var semanticRepo = require('../../services/semanticRepo/request');
 var sync = require('../../services/asyncHandler/sync');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 
 // Public functions
 
@@ -61,7 +61,7 @@ function deleting(oid, otherParams, callback){
     adid: [],
     hasContracts: []
   };
-  itemOp.findOne({oid:oid},
+  itemOp.findOne({oid:oid}, {avatar:0},
     function(err,data){
       if(err){
         logger.debug("Something went wrong: " + err);
@@ -78,22 +78,11 @@ function deleting(oid, otherParams, callback){
         .then(function(response){ return userOp.update({_id: data.uid.id}, {$pull: {hasItems: { extid : oid }}}); })
         .then(function(response){ return semanticRepo.callSemanticRepo({}, "td/remove/" + oid, 'DELETE'); })
         .then(function(response){
-          return audits.putAuditInt(
-            id,
-            { orgOrigin: cid.extid,
-              user: otherParams.userMail,
-              auxConnection: {kind: 'item', item: id},
-              eventType: 42 }
-          );
-        })
-        .then(function(response){
-          return audits.putAuditInt(
-            cid.id,
-            { orgOrigin: cid.extid,
-              user: otherParams.userMail,
-              auxConnection: {kind: 'item', item: id},
-              eventType: 42 }
-          );
+          return audits.create(
+            { kind: 'user', item: data.uid.id, extid: data.uid.extid },
+            { kind: 'userAccount', item: data.cid.id, extid: data.cid.extid },
+            { kind: 'item', item: data._id, extid: data.oid, name: data.name },
+            42, null);
         })
         .then(function(response){ return commServer.callCommServer({}, 'users/' + oid, 'DELETE'); })
         .then(function(ans){

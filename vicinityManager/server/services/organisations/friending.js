@@ -9,7 +9,7 @@ var sharingRules = require('../../services/sharingRules');
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var itemOp = require('../../models/vicinityManager').item;
 var notifHelper = require('../../services/notifications/notificationsHelper');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 
 /*
 Public Functions
@@ -35,29 +35,17 @@ function processFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
           { kind: 'userAccount', item: me._id, extid: me.cid },
           'waiting', 31, null);
 
-          notifHelper.createNotification(
-            { kind: 'user', item: my_uid , extid: my_mail },
-            { kind: 'userAccount', item: me._id, extid: me.cid },
-            { kind: 'userAccount', item: friend._id, extid: friend.cid },
-            'info', 35, null);
+        notifHelper.createNotification(
+          { kind: 'user', item: my_uid , extid: my_mail },
+          { kind: 'userAccount', item: me._id, extid: me.cid },
+          { kind: 'userAccount', item: friend._id, extid: friend.cid },
+          'info', 35, null);
 
-        audits.putAuditInt(
-          my_id,
-          { orgOrigin: {'id': my_id, 'extid': me.cid },
-            orgDest: {'id': friend_id, 'extid': friend.cid },
-            user: my_mail,
-            triggeredByMe: true,
-            eventType: 31 }
-        );
-
-        audits.putAuditInt(
-          friend_id,
-          { orgOrigin: {'id': my_id, 'extid': me.cid },
-            orgDest: {'id': friend_id, 'extid': friend.cid },
-            user: my_mail,
-            triggeredByMe: false,
-            eventType: 31 }
-        );
+        audits.create(
+          { kind: 'user', item: my_uid , extid: my_mail },
+          { kind: 'userAccount', item: me._id, extid: me.cid },
+          { kind: 'userAccount', item: friend._id, extid: friend.cid },
+          31, null);
 
         // friend.hasNotifications.push(notification._id); // TODO CHECK IF NECESSARY
         friend.save();
@@ -98,23 +86,11 @@ function acceptFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
           { kind: 'userAccount', item: me._id, extid: me.cid },
           'accepted', 34, null);
 
-        audits.putAuditInt(
-          my_id,
-          { orgOrigin: {'id': my_id, 'extid': me.cid },
-            orgDest: {'id': friend_id, 'extid': friend.cid },
-            user: my_mail,
-            triggeredByMe: true,
-            eventType: 33 }
-        );
-
-        audits.putAuditInt(
-          friend_id,
-          { orgOrigin: {'id': my_id, 'extid': me.cid },
-            orgDest: {'id': friend_id, 'extid': friend.cid },
-            user: my_mail,
-            triggeredByMe: false,
-            eventType: 33 }
-        );
+        audits.create(
+          { kind: 'user', item: my_uid , extid: my_mail },
+          { kind: 'userAccount', item: me._id, extid: me.cid },
+          { kind: 'userAccount', item: friend._id, extid: friend.cid },
+          33, null);
 
         notifHelper.changeNotificationStatus(friend_id, my_id, 31); // responds partnership request from friend
         notifHelper.changeNotificationStatus(my_id, friend_id, 31); // responds partnership request from me
@@ -155,23 +131,11 @@ function rejectFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
           { kind: 'userAccount', item: me._id, extid: me.cid },
           'rejected', 33, null);
 
-        audits.putAuditInt(
-          my_id,
-          { orgOrigin: {'id': my_id, 'extid': me.cid },
-            orgDest: {'id': friend_id, 'extid': friend.cid },
-            user: my_mail,
-            triggeredByMe: true,
-            eventType: 34 }
-        );
-
-        audits.putAuditInt(
-          friend_id,
-          { orgOrigin: {'id': my_id, 'extid': me.cid },
-            orgDest: {'id': friend_id, 'extid': friend.cid },
-            user: my_mail,
-            triggeredByMe: false,
-            eventType: 34 }
-        );
+        audits.create(
+          { kind: 'user', item: my_uid , extid: my_mail },
+          { kind: 'userAccount', item: me._id, extid: me.cid },
+          { kind: 'userAccount', item: friend._id, extid: friend.cid },
+          34, null);
 
         notifHelper.changeNotificationStatus(friend_id, my_id, 31); // responds partnership request from friend
         notifHelper.changeNotificationStatus(my_id, friend_id, 31); // responds partnership request from me
@@ -218,23 +182,11 @@ function cancelFriendRequest(friend_id, my_id, my_mail, my_uid, callback){
       // notification.isUnread = true;
       // notification.save();
 
-      audits.putAuditInt(
-        my_id,
-        { orgOrigin: {'id': my_id, 'extid': me.cid },
-          orgDest: {'id': friend_id, 'extid': friend.cid },
-          user: my_mail,
-          triggeredByMe: true,
-          eventType: 32 }
-      );
-
-      audits.putAuditInt(
-        friend_id,
-        { orgOrigin: {'id': my_id, 'extid': me.cid },
-          orgDest: {'id': friend_id, 'extid': friend.cid },
-          user: my_mail,
-          triggeredByMe: false,
-          eventType: 32 }
-      );
+      audits.create(
+        { kind: 'user', item: my_uid , extid: my_mail },
+        { kind: 'userAccount', item: me._id, extid: me.cid },
+        { kind: 'userAccount', item: friend._id, extid: friend.cid },
+        32, null);
 
       friend.save();
       me.save();
@@ -285,23 +237,11 @@ function cancelFriendship(friend_id, my_id, my_mail, my_uid, callback){
           { kind: 'userAccount', item: friend._id, extid: friend.cid },
           'info', 32, null);
 
-        audits.putAuditInt(
-          my_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
-            user: my_mail,
-            triggeredByMe: true,
-            eventType: 35 }
-        );
-
-        audits.putAuditInt(
-          friend_id,
-          { orgOrigin: my_id,
-            orgDest: friend_id,
-            user: my_mail,
-            triggeredByMe: false,
-            eventType: 35 }
-        );
+          audits.create(
+            { kind: 'user', item: my_uid , extid: my_mail },
+            { kind: 'userAccount', item: me._id, extid: me.cid },
+            { kind: 'userAccount', item: friend._id, extid: friend.cid },
+            35, null);
 
         logger.audit({user: my_mail, action: 'cancelFriendship', orgOrigin: my_id, orgDest: friend_id});
         callback(false, "Friendship cancelled");

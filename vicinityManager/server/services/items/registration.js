@@ -8,7 +8,7 @@ var config = require('../../configuration/configuration');
 var commServer = require('../../services/commServer/request');
 var semanticRepo = require('../../services/semanticRepo/request');
 var sync = require('../../services/asyncHandler/sync');
-var audits = require('../../controllers/audit/put');
+var audits = require('../../services/audit/audit');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 var crypto = require('crypto');
 
@@ -252,7 +252,7 @@ function createAuditLogs(cid, ids, adid){
           }
         },
         false,
-        {orgOrigin: cid, user: "Agent:" + adid, eventType: 41, auxConnection: {kind: 'item'}}
+        {cid: cid, user: "Agent:" + adid, type: 41}
       );
     } catch(err){
       reject("Error creating audits: " + err);
@@ -262,10 +262,11 @@ function createAuditLogs(cid, ids, adid){
 
 function creatingAudit(ids, data, callback){
   if(ids.result === 'Success'){
-    data.auxConnection.item = ids.data.id;
-    var cid = data.orgOrigin.id.toString();
-    audits.putAuditInt(ids.data.id, data)
-    .then(function(response){ return audits.putAuditInt(cid,data); })
+    audits.create(
+      { kind: 'userAccount', item: data.cid.id, extid: data.cid.extid },
+      { kind: 'item', item: ids.data.id, extid: ids.data.oid },
+      { extid: data.adid },
+      data.type, null)
     .then(function(response){ callback(ids.data.oid,'Success');})
     .catch(function(err){ callback(ids.data.oid, err); });
   }else{
