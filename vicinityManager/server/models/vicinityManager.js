@@ -206,7 +206,8 @@ var auditLog = new Schema({
   audid: {type: String, required: true}, // extid
   date: { type: Date, default: Date.now },
   actor: {  // Always a user has to trigger an audit event
-    id: { type: ObjectId, ref: 'user' },
+    kind: String,
+    item: { type: ObjectId, refPath: 'actor.kind' },
     extid: String
   },
   target: {
@@ -296,7 +297,6 @@ user.index({email: 1}, { unique: false });
 item.index({name: 1}, { unique: false });
 item.index({oid: 1}, { unique: false });
 node.index({adid: 1}, { unique: false });
-auditLog.index({auditId: 1}, { unique: true});
 contract.index({ctid: 1}, { unique: true});
 
 

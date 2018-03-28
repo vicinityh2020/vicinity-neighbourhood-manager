@@ -69,26 +69,26 @@ function create(actor, target, object, type, description){
     audit.target = target;
     audit.object = object;
     audit.type = type;
-    audit.description = message;
+    audit.description = description;
     audit.audid = uuid();
     audit.save(function(err, response){
+      var aux = response;
       if(err){
         reject(err);
       } else {
-        addToEntity(actor, response._id, response.audid)
+        addToEntity(actor, aux._id, aux.audid)
         .then(function(response){
           if(target.item !== undefined){
-            return addToEntity(target, response._id, response.audid);
-          } else {
-            return true;
-          }
+            return addToEntity(target, aux._id, aux.audid);
+          } else { return true; }
         })
         .then(function(response){
-          resolve(true);
+          if(object.item !== undefined && object.extid !== actor.extid){
+            return addToEntity(object, aux._id, aux.audid);
+          } else { return true; }
         })
-        .catch(function(err){
-          reject(err);
-        });
+        .then(function(response){ resolve(true); })
+        .catch(function(err){ reject(err); });
       }
     });
   });
