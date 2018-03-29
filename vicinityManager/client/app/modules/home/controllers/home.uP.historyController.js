@@ -1,6 +1,6 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
-.controller('sPhistoryController',
+.controller('uPhistoryController',
 function ($scope, $stateParams, commonHelpers, auditAPIService, Notification) {
 
     // ====== Triggers window resize to avoid bug =======
@@ -21,7 +21,7 @@ function ($scope, $stateParams, commonHelpers, auditAPIService, Notification) {
       $scope.loadedPage = false;
       $scope.dates = [];
       $scope.logs = [];
-      auditAPIService.getAll($stateParams.serviceId, 'item', $scope.dateFrom)
+      auditAPIService.getAll($stateParams.userAccountId, 'user', $scope.dateFrom)
       .then(
         function(response){
           var myAudits = getAudits(response.data.message.hasAudits);

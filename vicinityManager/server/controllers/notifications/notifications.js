@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var notificationOp = require('../../models/vicinityManager').notification;
-
+var moment = require('moment');
 var notifHelper = require('../../services/notifications/notificationsHelper');
 
 /*
@@ -15,7 +15,9 @@ function getNotifications(req,res){
   var mail = req.body.decoded_token.sub;
   var isDevOps = req.body.decoded_token.roles.indexOf('devOps') !== -1;
   var all = req.query.hasOwnProperty('all') ? true : false;
-  var searchDate = req.query.hasOwnProperty('searchDate') ? notifHelper.objectIdWithTimestamp(req.query.searchDate) : new Date(2017,1,1);
+  var searchDate = req.query.hasOwnProperty('searchDate') && req.query.searchDate !== 'undefined' ?
+                  notifHelper.objectIdWithTimestamp(req.query.searchDate):
+                  notifHelper.objectIdWithTimestamp(moment().subtract(7, 'days').valueOf());
   notifHelper.getNotifications(u_id, c_id, cid, mail, isDevOps, all, searchDate, function(err,response){
     // logger.debug({error: err, message: response.length});
     res.json({error: err, message: response});

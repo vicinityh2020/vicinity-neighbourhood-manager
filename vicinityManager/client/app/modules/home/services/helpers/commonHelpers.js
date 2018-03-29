@@ -39,16 +39,16 @@ Converts Mongo Id into timestamp so we can work with dates in the UI
     var t = [], aux = [], result = [], dates = [];
     angular.forEach(array,
       function(n) {
-        if(n._id){
+        if(n){
           var timestamp = n._id.toString().substring(0,8);
           var date = new Date(parseInt( timestamp, 16 ) * 1000 );
           n.timestamp = moment(date);
           n.dateCaption = n.timestamp.format("Do MMM YYYY");
           n.timeCaption = n.timestamp.format("hh:mm a");
+          t.push(n.timestamp);
+          result.push(n);
         }
-        t.push(n.timestamp);
-        result.push(n);
-       }
+      }
     );
     t.sort(function(a,b){
       return b - a;

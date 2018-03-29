@@ -1,4 +1,5 @@
 // Global objects and variables
+var mongoose = require('mongoose');
 var logger = require('../../middlewares/logger');
 var auditOp = require('../../models/vicinityManager').auditLog;
 var userOp = require('../../models/vicinityManager').user;
@@ -19,7 +20,7 @@ var uuid = require('uuid'); // Unique ID RFC4122 generator
 */
 
 function get(id, c_id, type, searchDate, callback){
-
+var dbOp;
   if(type === 'user'){
     dbOp = userOp;
   } else if(type === 'userAccount') {
@@ -28,14 +29,16 @@ function get(id, c_id, type, searchDate, callback){
     dbOp = itemOp;
   }
 
+// TODO avoid sending members of hasAudits which do not meet match condition
+// Right now are being sent as hasAudits.id = null
   dbOp.findOne({_id: id}, {hasAudits:1, cid:1})
   .populate({
-    path: 'hasAudits',
-    match: { $gt: searchDate },
+    path: 'hasAudits.id',
+    match: { _id: { $gt: searchDate } },
     populate: [
-      { path:'actor.id', select: 'name email'},
-      { path:'target.item', select: '-avatar'},
-      { path:'object.item', select: '-avatar'}
+      { path:'actor.item', select: 'name email oid cid'},
+      { path:'target.item', select: 'name email oid cid'},
+      { path:'object.item', select: 'name email oid cid'}
     ]
     // select: '-_id'
   })
@@ -94,7 +97,18 @@ function create(actor, target, object, type, description){
   });
 }
 
-// Private functions
+/*
+Private functions
+*/
+
+// Converts mongo ID to timestamp
+function objectIdWithTimestamp(timestamp) {
+    // Convert date object to hex seconds since Unix epoch
+    var hexSeconds = Math.floor(timestamp/1000).toString(16);
+    // Create an ObjectId with that hex timestamp
+    var constructedObjectId = mongoose.Types.ObjectId(hexSeconds + "0000000000000000");
+    return constructedObjectId;
+}
 
 function addToEntity(entity, id, audid){
   return new Promise(function(resolve, reject) {
@@ -118,3 +132,4 @@ function addToEntity(entity, id, audid){
 
 module.exports.create = create;
 module.exports.get = get;
+module.exports.objectIdWithTimestamp = objectIdWithTimestamp;

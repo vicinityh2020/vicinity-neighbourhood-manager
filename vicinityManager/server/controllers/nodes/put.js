@@ -17,8 +17,8 @@ var myNode = require('../../services/nodes/processNode');
   function putOne(req, res) {
     var adid = req.params.id;
     var updates = req.body;
-    var userMail = raw.decoded_token !== undefined ? raw.decoded_token.sub : "unknown";
-    var userId = raw.decoded_token !== undefined ? raw.decoded_token.uid : "unknown";
+    var userMail = req.body.decoded_token !== 'undefined' ? req.body.decoded_token.sub : "unknown";
+    var userId = req.body.decoded_token !== 'undefined' ? req.body.decoded_token.uid : "unknown";
 
     delete updates.userMail;
 

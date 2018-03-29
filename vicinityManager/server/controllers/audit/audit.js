@@ -3,15 +3,25 @@
 var mongoose = require('mongoose');
 var logger = require('../../middlewares/logger');
 var auditHelper = require('../../services/audit/audit');
+var moment = require('moment');
 
 function getAudit(req, res){
   var c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var id = mongoose.Types.ObjectId(req.params.id);
-  var type = req.query.type; // user, userAccount, item
-  var searchDate = req.query.searchDate;
-  auditHelper.get(id, c_id, type, searchDate, function(err, response, success){
-    res.json({error: err, response: response, success: success});
-  });
+  var type = req.query.hasOwnProperty('type') && req.query.type !== 'undefined' ? req.query.type : false; // user, userAccount, item
+  var searchDate = req.query.hasOwnProperty('searchDate') && req.query.searchDate !== 'undefined' ?
+                  auditHelper.objectIdWithTimestamp(req.query.searchDate):
+                  auditHelper.objectIdWithTimestamp(moment().subtract(7, 'days').valueOf());
+
+  if(type === false){
+    logger.debug("Model type missing, not possible to retrieve audits...");
+    res.json({error: false , message: 'Model type needed!', success: false});
+  } else {
+    auditHelper.get(id, c_id, type, searchDate, function(err, response, success){
+      //logger.debug(err);
+      res.json({error: err, message: response, success: success});
+    });
+  }
 }
 
 // External call

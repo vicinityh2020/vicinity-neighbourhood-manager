@@ -14,11 +14,8 @@ Creates a node for an organisation
 Creates relevant users and groups in commServer
 Receives request from client
 */
-function postOne(raw, company_id, callback){
+function postOne(raw, company_id, cid, userMail, userId, callback){
   var db = new nodeOp();
-  var cid = raw.cid;
-  var userMail = raw.decoded_token !== undefined ? raw.decoded_token.sub : "unknown";
-  var userId = raw.decoded_token !== undefined ? raw.decoded_token.uid : "unknown";
   db.name = raw.name;
   db.eventUri = raw.eventUri;
   db.agent = raw.agent;
@@ -40,7 +37,7 @@ function postOne(raw, company_id, callback){
     .then( function(response){
       return audits.create(
         { kind: 'user', item: userId, extid: userMail },
-        { kind: 'userAccount', item: cid.id, extid: cid.extid },
+        { kind: 'userAccount', item: company_id, extid: cid },
         { kind: 'node', item: data._id, extid: data.adid },
         21, null);
       })

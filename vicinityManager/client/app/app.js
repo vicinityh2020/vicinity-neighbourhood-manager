@@ -353,6 +353,17 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('root.main.userProfile.history', {
+          url: '/history',
+          views: {
+            'tabPanel@root.main.userProfile':
+            {
+              templateUrl: 'modules/home/views/home.userProfileView.history.html',
+              controller:  'uPhistoryController'
+            }
+          }
+        })
+
         .state('root.main.userProfile.contracts', {
           url: '/contracts?contractId',
           reloadOnSearch : false,

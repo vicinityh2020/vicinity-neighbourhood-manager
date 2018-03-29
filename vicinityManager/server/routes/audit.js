@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var auditHelper = require('../controllers/audit/audit.js');
+var auditHelper = require('../controllers/audit/audit');
 
 router
   .get('/:id', auditHelper.getAudit)
