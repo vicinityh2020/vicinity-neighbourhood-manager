@@ -14,7 +14,7 @@ router
 .post('/items/disable', controllers.disableItems)
 .put('/items/update', controllers.updateItems)
 // agent
-.get('/agent/:adid/items', controllers.getAgentItems) // change to post if depends on update or use query
-.delete('/agent/:adid', controllers.deleteAgent);
+.get('/agent/:agid/items', controllers.getAgentItems) // change to post if depends on update or use query
+.delete('/agent/:agid', controllers.deleteAgent);
 
 module.exports = router;

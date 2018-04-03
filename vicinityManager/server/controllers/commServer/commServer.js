@@ -52,7 +52,7 @@ function searchItems(req, res){
  */
 function deleteItems(req, res){
   logger.debug('You are DELETING...');
-  var adid = req.body.agid;
+  var adid = req.body.agid || req.body.adid;
   var data = req.body.oids;
   nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
   .then(function(response){
@@ -64,7 +64,7 @@ function deleteItems(req, res){
         }
       }
     }
-    return sDelItems.deleteItems(toRemove); // TODO send toRemove
+    return sDelItems.deleteItems(toRemove, "Agent:" + adid); // TODO send toRemove
   })
   .then(function(response){ res.json({"error": false, "message": response});})
   .catch(function(err){ res.json({"error": true, "message": err});});
@@ -100,14 +100,26 @@ function disableItems(req, res){
  */
 function updateItems(req, res){
   logger.debug('You are UPDATING...');
-  var data = req.body;
-  var adid = data.agid;
-  var oids = [];
-  for(var i = 0; i < data.thingDescriptions.length; i++){
-    oids.push(data.thingDescriptions[i].oid);
-    delete data.thingDescriptions[i].oid;
-  }
-  sDelItems.deleteItems(oids, "Agent:" + adid)
+  var rawData = req.body;
+  var adid = req.body.agid || req.body.adid;
+  var data = {
+              thingDescriptions: [],
+              adid: adid
+            };
+  nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
+  .then(function(response){
+    var toRemove = [];
+    for(var i = 0; i < rawData.thingDescriptions.length; i++){
+      for(var j = 0; j < response.hasItems.length; j++){
+        if(rawData.thingDescriptions[i].oid === response.hasItems[j].extid){
+          toRemove.push(rawData.thingDescriptions[i].oid);
+          delete rawData.thingDescriptions[i].oid;
+          data.thingDescriptions.push(rawData.thingDescriptions[i]);
+        }
+      }
+    }
+    return sDelItems.deleteItems(toRemove, "Agent:" + adid);
+  })
   .then(function(response){
     return sRegistration.create(data, function(err, response){
       res.json({error: err, message: response});
@@ -126,7 +138,7 @@ function updateItems(req, res){
 */
 function getAgentItems(req, res){
   logger.debug('You are getting the CONFIG...');
-  var id = req.params.adid;
+  var id = req.params.agid;
   sGetNodeItems.getNodeItems(id, function(err, response){
     res.json({error: err, message: response});
   });
@@ -136,7 +148,7 @@ function getAgentItems(req, res){
 Delete agent
 */
 function deleteAgent(req, res){
-  var adid = req.params.adid;
+  var adid = req.params.agid;
   var adids = [];
   nodeOp.findOneAndUpdate({adid: adid}, {$set: {'status': 'deleted'}}, { new: true })
   .then(function(data){
