@@ -214,6 +214,13 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
         return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
       })
       .then(function(response){
+        var payload = {
+          name: orgData.cid + '_agents',
+          description: orgData.name + ' agents'
+        };
+        return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
+      })
+      .then(function(response){
         logger.audit({user: userData.email, action: 'createOrganisation', item: orgData._id });
         callback(false, "New userAccount was successfuly saved!");
       })
