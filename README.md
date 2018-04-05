@@ -119,7 +119,7 @@ Note, bower packages are installed by npm install.
 ```
 
 # Deploy instance of VCNT NM in a virtual machine
-### Linux/Debian machine
+### Linux machine. Tested in Debian Jessie and Ubuntu
  
 ## Pre-requisites
  * GIT - [https://git-scm.com/]
@@ -127,9 +127,17 @@ Note, bower packages are installed by npm install.
   
 
 ## Get the web application
-#### Navigate to the right folder and clone the repository:
+#### Create and navigate to the folder where the repository should be cloned:
+ * mkdir /var/www
  * cd /var/www
+#### Clone the repository and rename the folder:
  * git clone https://jalmela@bitbucket.org/bavenir/vicinity.git
+ * mv /var/www/vicinity-neighbourhood-manager /var/www/vicinity
+#### Point the webApp to the API URL:
+* cd /var/www/vicinity/vicinityManager/client/app
+* sudo vim env.js
+* Comment all the lines except the first
+* Add at the bottom: this._env.apiUrl = "http://<IP>:<PORT>"
 
 ## Install and configure Mongo DB
 #### Install
@@ -143,6 +151,7 @@ gpg: Total number processed: 1
 gpg:               imported: 1  (RSA: 1)
 ```  
 ###### Next, we have to add the MongoDB repository details so apt will know where to download the packages from. Issue the following command to create a list file for MongoDB.
+* WARNING: It may change depending on the Linux distribution
 * echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
 ###### After adding the repository details, update the packages list and install the MongoDB package.
 * sudo apt-get update 
@@ -163,6 +172,11 @@ gpg:               imported: 1  (RSA: 1)
 * SystemLog --> path: /var/log/mongodb/mongod.log
 
 ## Run the client
+#### Install Angular Web App 
+* sudo npm install -g bower
+* cd /var/www/vicinity/vicinityManager/client
+* sudo bower install --allow-root
+* sudo npm install
 #### Install NGINX -- https://www.nginx.com/resources/wiki/start/
 * sudo apt-get update
 * sudo apt-get upgrade
@@ -171,9 +185,10 @@ gpg:               imported: 1  (RSA: 1)
 * https://www.linode.com/docs/web-servers/nginx/how-to-configure-nginx
 #### Backup the old configuration
 * cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
-* service nginx reload
-#### Create server file
-* touch /etc/nginx/sites-available/vicinity
+* sudo service nginx reload
+#### Create server files and paste the script below
+* sudo touch /etc/nginx/sites-available/vicinity
+* sudo touch /etc/nginx/sites-enabled/vicinity
 #### Script vicinity
 
 ```
@@ -196,8 +211,14 @@ try_files $uri $uri/ =404;
 }
   
 ```
+#### Run the service
+* sudo rm /etc/nginx/sites-enabled/default
+* sudo service nginx restart
 
 ## Run the server
+#### Install Node JS app
+* cd /var/www/vicinity/vicinityManager/server
+* sudo npm install
 
 #### Install forever 
 * npm install –g forever
@@ -309,6 +330,11 @@ try_files $uri $uri/ =404;
 ```
 
 #### Run service
+* sudo mkdir /var/log/vicinity
+* sudo touch /var/log/vicinity/vcnt_server.out
+* sudo touch /var/log/vicinity/vcnt_server.log
+* sudo touch /var/log/vicinity/vcnt_server.pid
+* sudo touch /var/log/vicinity/vcnt_server.err
 * sudo service vcnt_server start
 
 ## Putting all together -- First user and organisation in the app
@@ -320,9 +346,12 @@ try_files $uri $uri/ =404;
 
 ```
 db. useraccounts.insert({
-"location" : Some location as String,
-"organisation" : Some name as String,
-"businessId" : Some BID as String
+    "name" : "admin",
+    "cid" : "admin",
+    "businessId" : "00000000",
+    "skinColor" : "black",
+    "location" : "test",
+    "status" : "active"
 })
 ```
 ###### Find organisation and copy the Mongo Id
@@ -331,23 +360,30 @@ db. useraccounts.insert({
   
 ```
   db.users.insert({
-    "email" : Some mail as String,
-    "occupation" : Some occupation as String,
-    "name" : Some name as String,
+    "email" : "admin@admin.com",
+    "occupation" : "admin",
+    "name" : "admin",
+    "location" : "test",
     "authentication" : {
-        "password" : Some password as String,
+        "hash" : REQUEST FIRST PASSWORD TO BAVENIR,
         "principalRoles" : [ 
             "user", 
-            "administrator", 
-            "infrastructure operator"
+            "devOps", 
+            "administrator"
         ]
     },
-    "organisation" : ObjectId("5a265f5bfac8abf7fd273a7d"),
+    "accessLevel" : 1,
+    "cid" : {
+        "id" : < organisation MongoId >,
+        "extid" : "admin"
+    },
+    "status" : "active"
+}
   })
 ```
 
 ###### Add your new user to the organisation
-* db.useraccounts.update({'organisation': organisationName},{$push:{'accountOf': userMongoId }})
+* db.useraccounts.update({'organisation': organisationName},{'accountOf': { $push:{'id': < user MongoId >, 'extid': "admin@admin.com" }}})
 ###### Try to log in 
 * Navigate your browser to the app domain and use the mail and password to do the first log in. 
 
