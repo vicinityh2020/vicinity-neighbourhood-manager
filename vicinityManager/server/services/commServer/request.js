@@ -26,13 +26,13 @@ function callCommServer(data, endPoint, myMethod){
 
   payload = JSON.stringify(data);
 
-  return request({
-    method : myMethod,
-    headers: head,
-    uri: config.commServerUrl + '/' + endPoint,
-    body: payload,
-    // simple: true
-  }, function(err, response, body) {
+  var options = {};
+  options.method = myMethod;
+  options.headers = head;
+  options.uri = config.commServerUrl + '/' + endPoint;
+  if(myMethod !== 'GET'){ options.body = payload; }
+
+  return request(options, function(err, response, body) {
         logger.debug('REQUEST RESULTS:', err, response.statusCode, body);
     }
   );

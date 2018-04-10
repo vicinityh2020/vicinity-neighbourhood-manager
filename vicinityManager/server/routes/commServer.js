@@ -7,6 +7,7 @@ var controllers = require('../controllers/commServer/commServer');
 
 router
 // items
+.get('/items/:oid', controllers.neighbourhood)
 .post('/items/register', controllers.registration)
 .post('/items/searchItems', controllers.searchItems)
 .post('/items/remove', controllers.deleteItems)

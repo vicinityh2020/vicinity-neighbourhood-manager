@@ -4,6 +4,7 @@ var sSearch = require("../../services/items/search");
 var sDelItems = require("../../services/items/deleteItems");
 var sDelNode = require('../../services/nodes/processNode');
 var sGetNodeItems = require('../../services/nodes/get');
+var commServer = require('../../services/commServer/request');
 
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -163,6 +164,16 @@ function deleteAgent(req, res){
   .catch(function(err){res.json({"error": true, "message": err});});
 }
 
+/*
+Get object neighbourhood
+*/
+function neighbourhood(req, res){
+  var oid = req.params.oid;
+  commServer({}, '/users/' + oid + '/roster', 'GET')
+  .then(function(response){res.json({"error": false, "message": response});})
+  .catch(function(err){res.json({"error": true, "message": err});});
+}
+
 // Export modules
 
 module.exports.registration = registration;
@@ -173,3 +184,4 @@ module.exports.disableItems = disableItems;
 module.exports.updateItems = updateItems;
 module.exports.getAgentItems = getAgentItems;
 module.exports.deleteAgent = deleteAgent;
+module.exports.neighbourhood = neighbourhood;
