@@ -16,8 +16,10 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   Organisation is used as a index and it is the field we compare
   Text index are not used because do not support substring look up!
   */
-  function searchOrganisation(sT, callback) {
-    userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, function(err, data) {
+  function searchOrganisation(sT, api, callback) {
+    var projection = {};
+    if(api){ projection.name = 1; } else { projection.skinColor = 0; }
+    userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, projection, function(err, data) {
       if (err) {
         callback(true, err);
       } else {
@@ -31,8 +33,10 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   Name is used as a index and it is the field we compare
   Text index are not used because do not support substring look up!
   */
-  function searchUser(sT, cid, callback) {
+  function searchUser(sT, cid, api, callback) {
     var friends = [], query = {};
+    var projection = {};
+    if(api){ projection.name = 1; } else { projection.authentication = 0; }
 
     userAccountOp.findById(cid, {knows:1})
     .then(function(response){
@@ -48,7 +52,7 @@ var asyncHandler = require('../../services/asyncHandler/sync');
       name: {$regex: sT}
       };
       logger.debug(query);
-      return userOp.find(query, {authentication:0});
+      return userOp.find(query, projection);
     })
     .then(function(response){
       callback(false, response);

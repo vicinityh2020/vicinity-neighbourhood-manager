@@ -315,7 +315,7 @@ function partnershipFeeds(req, res, next) {
 }
 
 /**
- * Request fiendship
+ * Request friendship
  *
  * @param {String} friend_id
  *
@@ -433,7 +433,8 @@ Contracts --------------------------------------------------
 function searchOrgs(req, res, next) {
   var searchTerm = req.query.searchTerm;
   var sT = new RegExp(searchTerm, 'i');
-  sGetSearch.searchOrganisation(sT, function(err, response){
+  var api = true; // Call origin api or webApp
+  sGetSearch.searchOrganisation(sT, api, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -449,7 +450,8 @@ function searchUsers(req, res, next) {
   var searchTerm = req.query.searchTerm;
   var cid =  mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var sT = new RegExp(searchTerm, 'i');
-  sGetSearch.searchUser(sT, cid, function(err, response){
+  var api = true; // Call origin api or webApp
+  sGetSearch.searchUser(sT, cid, api, function(err, response){
     res.json({error: err, message: response});
   });
 }
