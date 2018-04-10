@@ -230,103 +230,112 @@ try_files $uri $uri/ =404;
 * sudo update-rc.d vcnt_server defaults
 
 #### Script
+* Update environmental variables within the script below. Use the corrensponding information for your deployment.
 
 ```
-  #!/bin/bash
-  ### BEGIN INIT INFO
-  # If you wish the Daemon to be lauched at boot / stopped at shutdown :
-  #
-  #    On Debian-based distributions:
-  #      INSTALL : update-rc.d scriptname defaults
-  #      (UNINSTALL : update-rc.d -f  scriptname remove)
-  #
-  #    On RedHat-based distributions (CentOS, OpenSUSE...):
-  #      INSTALL : chkconfig --level 35 scriptname on
-  #      (UNINSTALL : chkconfig --level 35 scriptname off)
-  #
-  # chkconfig:         2345 90 60
-  # Provides:          /var/www/vicinity/vicinityManager/server/bin/www
-  # Required-Start:    $remote_fs $syslog
-  # Required-Stop:     $remote_fs $syslog
-  # Default-Start:     2 3 4 5
-  # Default-Stop:      0 1 6
-  # Short-Description: forever running /var/www/vicinity/vicinityManager/server/bin/www
-  # Description:       /var/www/vicinity/vicinityManager/server/bin/www
-  ### END INIT INFO
-  #
-  # initd a node app
-  # Based on a script posted by https://gist.github.com/jinze at https://gist.github.com/3748766
-  #
+#!/bin/bash
+### BEGIN INIT INFO
+# If you wish the Daemon to be lauched at boot / stopped at shutdown :
+#
+#    On Debian-based distributions:
+#      INSTALL : update-rc.d scriptname defaults
+#      (UNINSTALL : update-rc.d -f  scriptname remove)
+#
+#    On RedHat-based distributions (CentOS, OpenSUSE...):
+#      INSTALL : chkconfig --level 35 scriptname on
+#      (UNINSTALL : chkconfig --level 35 scriptname off)
+#
+# chkconfig:         2345 90 60
+# Provides:          /var/www/vicinity/vicinityManager/server/bin/www
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: forever running /var/www/vicinity/vicinityManager/server/bin/www
+# Description:       /var/www/vicinity/vicinityManager/server/bin/www
+### END INIT INFO
+#
+# initd a node app
+# Based on a script posted by https://gist.github.com/jinze at https://gist.github.com/3748766
+#
 
-  if [ -e /lib/lsb/init-functions ]; then
-    # LSB source function library.
+if [ -e /lib/lsb/init-functions ]; then
+	# LSB source function library.
 	. /lib/lsb/init-functions
-  fi;
+fi;
 
-  pidFile="/var/log/vicinity/vcnt_server.pid"
-  logFile="/var/log/vicinity/vcnt_server.log"
-  outFile="/var/log/vicinity/vcnt_server.out"
-  errFile="/var/log/vicinity/vcnt_server.err"
-  command="node"
-  nodeApp="/var/www/vicinity/vicinityManager/server/bin/www"
-  foreverApp="forever"
+pidFile="/var/log/vicinity/vcnt_server.pid"
+logFile="/var/log/vicinity/vcnt_server.log"
+outFile="/var/log/vicinity/vcnt_server.out"
+errFile="/var/log/vicinity/vcnt_server.err"
+command="node"
+nodeApp="/var/www/vicinity/vicinityManager/server/bin/www"
+foreverApp="forever"
 
-  export PORT=3000
-  export VCNT_MNGR_DB='mongodb://localhost:27017/vicinity_neighbourhood_manager'
 
-  start() {
-    echo "Starting $nodeApp"
+### EXPORT environmental variables
+# PORT
+export PORT=3000
+# MONGO DB URL
+export VCNT_MNGR_DB=<YOUR MONGO CONNECTION STRING>
+# Comm Server URL and token
+export commServerToken=<YOUR COMM SERVER ACCESS TOKEN>
+export commServerUrl=<YOUR COMM SERVER URL>
+# JWT Token secret
+export jwtTokenSecret=<YOUR JWT SECRET>
+# Semantic Repository URL
+export semanticRepoUrl=<YOUR SEMANTIC REPOSITORY URL>
 
-	# Notice that we change the PATH because on reboot
+start() {
+   echo "Starting $nodeApp"
+
+   # Notice that we change the PATH because on reboot
    # the PATH does not include the path to node.
    # Launching forever with a full path
    # does not work unless we set the PATH.
    PATH=/usr/local/bin:$PATH
-   export NODE_ENV=production
+	export NODE_ENV=production
    PORT=$PORT VCNT_MNGR_DB=$VCNT_MNGR_DB $foreverApp start --pidFile $pidFile -l $logFile -o $outFile -e $errFile -a -d -c "$command" $nodeApp
    RETVAL=$?
-  }
+}
 
-  restart() {
-	
-    echo -n "Restarting $nodeApp"
+restart() {
+	echo -n "Restarting $nodeApp"
 	$foreverApp restart $nodeApp
 	RETVAL=$?
-  }
+}
 
-  stop() {
-	
-    echo -n "Shutting down $nodeApp"
-     $foreverApp stop $nodeApp
-     RETVAL=$?
-  }
+stop() {
+	echo -n "Shutting down $nodeApp"
+   $foreverApp stop $nodeApp
+   RETVAL=$?
+}
 
-  status() {
-     
-     echo -n "Status $nodeApp"
-     $foreverApp list
-     RETVAL=$?
-  }
+status() {
+   echo -n "Status $nodeApp"
+   $foreverApp list
+   RETVAL=$?
+}
 
-  case "$1" in
+case "$1" in
    start)
-      start
+        start
         ;;
     stop)
         stop
         ;;
    status)
-      status
+        status
        ;;
    restart)
-   	  restart
+   	restart
         ;;
 	*)
        echo "Usage:  {start|stop|status|restart}"
        exit 1
         ;;
-  esac
-  exit $RETVAL
+esac
+exit $RETVAL
 ```
 
 #### Run service
