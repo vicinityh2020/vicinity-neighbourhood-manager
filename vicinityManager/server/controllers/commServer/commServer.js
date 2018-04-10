@@ -169,7 +169,7 @@ Get object neighbourhood
 */
 function neighbourhood(req, res){
   var oid = req.params.oid;
-  commServer({}, '/users/' + oid + '/roster', 'GET')
+  commServer.callCommServer({}, '/users/' + oid + '/roster', 'GET')
   .then(function(response){res.json({"error": false, "message": response});})
   .catch(function(err){res.json({"error": true, "message": err});});
 }
