@@ -12,18 +12,16 @@ factory('nodeAPIService', ['$http', 'configuration', '$window', function($http, 
     return $http.get(configuration.apiUrl + '/nodes/node/' + id);
   };
 
-  nodeAPI.postOne = function(cid,data) {
-    data.userMail = $window.sessionStorage.username;
-    return $http.post(configuration.apiUrl + '/nodes/' + cid, data);
+  nodeAPI.postOne = function(data) {
+    return $http.post(configuration.apiUrl + '/nodes/', data);
   };
 
   nodeAPI.pullIdFromOrganisation = function(cid,data) {
     return $http.put(configuration.apiUrl + '/nodes/node/' + cid, data);
   };
 
-  nodeAPI.updateOne = function(cid,data) {
-    data.userMail = $window.sessionStorage.username;
-    return $http.put(configuration.apiUrl + '/nodes/' + cid, data);
+  nodeAPI.updateOne = function(adid,data) {
+    return $http.put(configuration.apiUrl + '/nodes/' + adid, data);
   };
 
   return nodeAPI;

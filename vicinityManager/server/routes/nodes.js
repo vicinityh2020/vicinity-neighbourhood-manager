@@ -9,7 +9,7 @@ var putHelper = require('../controllers/nodes/put.js');
 router
   .get('/:id', getHelper.getAll)
   .get('/node/:id', getHelper.getOne)
-  .post('/:id', postHelper.postOne)
+  .post('/', postHelper.postOne)
   .put('/:id', putHelper.putOne);
 
 module.exports = router;

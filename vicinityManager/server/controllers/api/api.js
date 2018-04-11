@@ -6,11 +6,12 @@ var logger = require("../../middlewares/logger");
 var sLogin = require("../../services/login/login");
 var sRegister = require("../../services/registrations/register.js");
 var sGetNodeItems = require("../../services/nodes/get.js");
+var sCreateNode = require("../../services/nodes/post.js");
+var sRemoveNode = require("../../services/nodes/processNode.js");
 var sFriending = require("../../services/organisations/friending");
 var sGetUser = require("../../services/users/getUsers");
 var sInviteUser = require("../../services/invitations/invitations.js");
 var delUser = require('../../services/users/deleteUsers');
-var sGetNodeItems = require("../../services/nodes/get.js");
 var sGetItems = require("../../services/items/get");
 var sGetOrganisation = require("../../services/organisations/get");
 var sGetSearch = require("../../services/search/get");
@@ -288,12 +289,50 @@ function getAgentUsers(req, res, next) {
   });
 }
 
+/**
+ * Get agent items
+ *
+ * @param {Object} data
+ * name
+ * pass
+ * eventUri -- Not necessary
+ * agent -- Not necessary
+ * type -- Not necessary
+ *
+ * @return {Object} AGID and status
+ */
 function createAgent(req, res, next) {
-    res.json({error: false, message: "Use agent..."});
+  var company_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var cid = req.body.decoded_token.cid;
+  var userMail = req.body.decoded_token.sub !== 'undefined' ? req.body.decoded_token.sub : "unknown";
+  var userId = req.body.decoded_token.uid !== 'undefined' ? req.body.decoded_token.uid : "unknown";
+  sCreateNode.postOne(req.body.data, company_id, cid, userMail, userId, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
+/**
+ * Get agent items
+ *
+ * @param {String} agid
+ *
+ * @return {Object} AGID and status
+ */
 function removeAgent(req, res, next) {
-    res.json({error: false, message: "Use agent..."});
+  var agid = [];
+  agid.push(req.params.id);
+  var company_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var cid = req.body.decoded_token.cid;
+  var userMail = req.body.decoded_token.sub !== 'undefined' ? req.body.decoded_token.sub : "unknown";
+  var userId = req.body.decoded_token.uid !== 'undefined' ? req.body.decoded_token.uid : "unknown";
+  // TODO check if the requester org is authorized to see the agent items
+  sRemoveNode.deleteNode(agid, userMail, userId)
+  .then(function(response){
+    res.json(response);
+  })
+  .catch(function(err){
+    res.json({error: true, message: err});
+  });
 }
 
 /*

@@ -56,11 +56,7 @@ angular.module('VicinityManagerApp.controllers').
                   pass: $scope.nPass
                 };
                 if($scope.nodeId === '0'){
-                userAccountAPIService.getUserAccountCid($window.sessionStorage.companyAccountId)
-                .then(function(response){
-                  query.cid = response.data.message.cid;
-                  return nodeAPIService.postOne($window.sessionStorage.companyAccountId, query);
-                })
+                nodeAPIService.postOne(query)
                 .then(function(response){
                     Notification.success("Node successfully created!!");
                     $scope.backToList();

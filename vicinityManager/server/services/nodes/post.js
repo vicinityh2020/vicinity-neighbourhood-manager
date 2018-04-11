@@ -15,24 +15,25 @@ Creates relevant users and groups in commServer
 Receives request from client
 */
 function postOne(raw, company_id, cid, userMail, userId, callback){
+  var password = raw.pass || raw.password;
   var db = new nodeOp();
   db.name = raw.name;
-  db.eventUri = raw.eventUri;
-  db.agent = raw.agent;
-  db.type = raw.type;
+  db.eventUri = raw.eventUri || "NA";
+  db.agent = raw.agent || "NA";
+  db.type = "generic.adapter.vicinity.eu"; // raw.type || "NA";
   db.status = "active";
   db.cid = {"id": company_id, "extid": cid};
   db.adid = uuid();
 
   db.save()
   .then(function(data){
-    var payload = { username : data.adid, name: data.name, password: raw.pass
+    var payload = { username : data.adid, name: data.name, password: password
       // properties: { property: [ {'@key':'agent', '@value': data.agent}, {'@key':'uri', '@value': data.eventUri} ]}
     };
     var groupData = { name: data.adid, description: data.name };
     commServer.callCommServer(payload, 'users', 'POST')
     .then( function(response){ return commServer.callCommServer({}, 'users/' + data.adid + '/groups/' + cid + '_agents', 'POST'); })  //Add node to company group in commServer
-    // .then( function(response){ return commServer.callCommServer(groupData, 'groups/', 'POST'); }) // Create node group in commServer
+    .then( function(response){ return commServer.callCommServer(groupData, 'groups/', 'POST'); }) // Create node group in commServer
     .then( function(response){ return userAccountOp.update( { _id: company_id}, {$push: {hasNodes: {"id": data._id, "extid": data.adid}}}); }) // Add node to company in MONGO
     .then( function(response){
       return audits.create(
@@ -43,7 +44,7 @@ function postOne(raw, company_id, cid, userMail, userId, callback){
       })
     .then(function(response){
       logger.audit({user: userMail, action: 'createNode', item: data._id });
-      callback(false, "Node created"); })
+      callback(false, db.adid); })
     .catch(function(err){
       logger.warn({user: userMail, action: 'createNode', message: err});
       callback(true, err);

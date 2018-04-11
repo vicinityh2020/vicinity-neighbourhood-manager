@@ -25,9 +25,9 @@ router
   .put('/items', apiController.updateItem)
   .delete('/items/:id', apiController.removeItem)
 //Agents
-  .get('/agents/:id/items', apiController.getAgentUsers)
-  .post('/agents/', apiController.createAgent)
-  .delete('/agents/:id', apiController.removeAgent)
+  .get('/agents/:id/items', jwt, apiController.getAgentUsers)
+  .post('/agents/', jwt, apiController.createAgent)
+  .delete('/agents/:id', jwt, apiController.removeAgent)
 //Friending
   .get('/partnership', jwt, apiController.partnershipFeeds)
   .post('/partnership', jwt, apiController.requestPartnership)
