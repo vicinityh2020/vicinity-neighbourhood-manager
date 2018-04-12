@@ -16,8 +16,8 @@ var fs = require("fs");
  */
 
  var options = {
-   key: fs.readFileSync("/srv/www/keys/my-site-key.pem"),
-   cert: fs.readFileSync("/srv/www/keys/chain.pem")
+   key: fs.readFileSync("/etc/letsencrypt/live/vicinity.bavenir.eu/privkey.pem"),
+   cert: fs.readFileSync("/etc/letsencrypt/live/vicinity.bavenir.eu/fullchain.pem")
  };
 
 /**
