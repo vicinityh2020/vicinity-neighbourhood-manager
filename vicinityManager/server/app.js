@@ -24,7 +24,6 @@ var commServer = require('./routes/commServer');
 var search = require('./routes/search');
 
 // Custom MIDDLEWARES Import === jwauth && Winston Debugger
-//var config = require("./configuration/configuration");
 var jwtauth = require("./middlewares/jwtauth");
 var logger = require("./middlewares/logger");
 
@@ -45,7 +44,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(helmet());
+app.use(helmet()); // Comment if no SSL
 
 /*
 Endpoints
