@@ -7,7 +7,18 @@
 process.env.VCNT_MNGR_DB = process.env.VCNT_MNGR_DB ? process.env.VCNT_MNGR_DB : 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager';
 var app = require('../app');
 var debug = require('debug')('server:server');
-var http = require('http');
+var https = require('https'); // Comment if no SSL
+// var http = require('http'); // Uncomment if no SSL
+var fs = require("fs");
+
+/**
+ * Set cetificates in options // Comment if no SSL
+ */
+
+ var options = {
+   key: fs.readFileSync("/etc/letsencrypt/live/vicinity.bavenir.eu/privkey.pem"),
+   cert: fs.readFileSync("/etc/letsencrypt/live/vicinity.bavenir.eu/fullchain.pem")
+ };
 
 /**
  * Get port from environment and store in Express.
@@ -21,7 +32,8 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+// var server = http.createServer(app); // Uncomment if no SSL
+var server = https.createServer(options, app); // Comment if no SSL
 
 /**
  * Listen on provided port, on all network interfaces.
