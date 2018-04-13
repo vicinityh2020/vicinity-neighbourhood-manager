@@ -112,6 +112,10 @@ function putMetadata(uid, updates, userMail, userId, callback) {
     data.name = updates.name;
     updCount += 1;
   }
+  if(updates.hasOwnProperty('avatar')) {
+    data.avatar = updates.avatar;
+    updCount += 1;
+  }
   if(updCount > 0){
     doUpdate(uid, data, userMail, userId, function(err, response){
       if(err){ callback(true, err); } else { callback(false, response); }

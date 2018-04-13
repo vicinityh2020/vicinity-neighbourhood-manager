@@ -108,7 +108,7 @@ NAME
   };
 
   $scope.saveNewName = function () {
-    userAPIService.editInfoAboutUser($stateParams.userAccountId, {name: $scope.name}).
+    userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {name: $scope.name}, 'type': 'metadata'}).
     then(
       function successCallback(){
       userAPIService.getUser($stateParams.userAccountId)
@@ -154,7 +154,7 @@ $scope.backToEdit1 = function () {
 };
 
   $scope.saveNewOccupation = function () {
-    userAPIService.editInfoAboutUser($stateParams.userAccountId, {occupation: $scope.occupation})
+    userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {occupation: $scope.occupation}, 'type': 'metadata'})
       .then(
         function successCallback(){
           userAPIService.getUser($stateParams.userAccountId).then(
@@ -205,8 +205,8 @@ $scope.backToEdit1 = function () {
     var $newPass2 = $("#editPassNew2Input");
 
     if ($scope.pass1 === $scope.pass2){
-      userAPIService.updatePassword($stateParams.userAccountId,
-        {passwordNew: $scope.pass1, passwordOld: $scope.oldPass})
+      userAPIService.editInfoAboutUser($stateParams.userAccountId,
+        {'data': {newPwd: $scope.pass1, oldPwd: $scope.oldPass}, 'type':'password'})
         .then(function(response){
           if(!response.data.success){
             Notification.warning('Wrong user password!');
@@ -266,7 +266,7 @@ $scope.saveNewAccess = function () {
   var lvl = Number($('select#editAccessName').val()) - 1;
   if (Number($('select#editAccessName').val()) >= 0){
       userAPIService.editInfoAboutUser($stateParams.userAccountId,
-        {accessLevel: lvl})
+        {'data': {accessLevel: lvl}, 'type': 'visibility'})
         .then(
           function successCallback(response){
             $scope.accessLevel = Number(response.data.message.accessLevel);
@@ -344,7 +344,7 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-userAPIService.editInfoAboutUser($stateParams.userAccountId, {avatar: base64String})
+userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {avatar: base64String}, 'type': 'metadata'})
   .then(
     function successCallback(){
       userAPIService.getUser($stateParams.userAccountId)

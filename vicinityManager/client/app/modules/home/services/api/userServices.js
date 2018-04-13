@@ -8,10 +8,6 @@ factory('userAPIService', ['$http', 'configuration', '$window', function($http, 
     return $http.put(configuration.apiUrl +'/user/' + id, data);
   };
 
-  userAPI.updatePassword = function(id, data) {
-    return $http.put(configuration.apiUrl +'/user/password/' + id, data);
-  };
-
   userAPI.getUser = function(id) {
     return $http.get(configuration.apiUrl +'/user/' + id);
   };

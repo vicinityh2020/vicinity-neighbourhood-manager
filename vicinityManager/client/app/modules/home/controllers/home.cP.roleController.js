@@ -75,7 +75,7 @@ function ($scope, $window, commonHelpers, $stateParams, userAPIService, Notifica
 
     $scope.updateRoles = function(){
       if($scope.oneAdmin()){
-        var query = {'authentication.principalRoles':$scope.newRoles};
+        var query = {'data':{'roles':$scope.newRoles}, 'type': 'roles'};
         $scope.updateUserInfo(query);
         $scope.cancelChanges();
         Notification.success("User role modified");
