@@ -235,8 +235,8 @@ function updateUser(req, res, next) {
       if(type === 'undefined' || type === ""){
         res.json({error: false, message: 'Type of update not defined...', success: false});
       } else {
-        sPutUser.putOne(o_id, updates, userMail, userId, type, function(err,response){
-          res.json({error: err, message: response, success: true});
+        sPutUser.putOne(o_id, updates, userMail, userId, type, function(err, response, success){
+          res.json({error: err, message: response, success: success});
         });
       }
     } else {

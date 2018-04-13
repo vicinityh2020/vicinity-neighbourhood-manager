@@ -15,23 +15,23 @@ Select type of update
 */
 function putOne(uid, updates, userMail, userId, type, callback) {
   if(updates.hasOwnProperty('accessLevel') && type === "visibility"){
-    putVisibility(uid, updates, userMail, userId, function(err, response){
-      if(err){ callback(true, err); } else { callback(false, response); }
+    putVisibility(uid, updates, userMail, userId, function(err, response, success){
+      if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   } else if(updates.hasOwnProperty('roles') && type === "roles"){
-    putRoles(uid, updates, userMail, userId, function(err, response){
-      if(err){ callback(true, err); } else { callback(false, response); }
+    putRoles(uid, updates, userMail, userId, function(err, response, success){
+      if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   } else if(updates.hasOwnProperty('newPwd') && type === "password"){
-    putPassword(uid, updates, userMail, userId, function(err, response){
-      if(err){ callback(true, err); } else { callback(false, response); }
+    putPassword(uid, updates, userMail, userId, function(err, response, success){
+      if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   } else if(type === "metadata"){
-    putMetadata(uid, updates, userMail, userId, function(err, response){
-      if(err){ callback(true, err); } else { callback(false, response); }
+    putMetadata(uid, updates, userMail, userId, function(err, response, success){
+      if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   } else {
-    callback(false, "Missing or wrong information, not possible to update...");
+    callback(false, "Missing or wrong information, not possible to update...", false);
   }
 }
 
@@ -45,12 +45,12 @@ function putVisibility(uid, updates, userMail, userId, callback) {
   var data = {"accessLevel": updates.accessLevel}; //Ensure only right fields sent to update
   sharingRules.changeUserAccessLevel(uid, updates.accessLevel, userMail)
   .then(function(response){
-    doUpdate(uid, data, userMail, userId, function(err, response){
-      if(err){ callback(true, err); } else { callback(false, response); }
+    doUpdate(uid, data, userMail, userId, function(err, response, success){
+      if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   })
   .catch(function(err){
-    callback(true, err);
+    callback(true, err, false);
   });
 }
 
@@ -62,7 +62,7 @@ function putRoles(uid, updates, userMail, userId, callback) {
   userOp.findOne({_id: uid}, {hasItems:1, 'authentication.principalRoles':1, cid:1}).populate('hasItems.id', 'typeOfItem').exec(function(err, response){
     if(err){
       logger.debug('err: ' + err);
-      callback(true, err);
+      callback(true, err, false);
     } else {
       response = response.toObject();
       var couldServices = updates.roles.indexOf('service provider') === -1;
@@ -76,22 +76,22 @@ function putRoles(uid, updates, userMail, userId, callback) {
       if(wasAdmin || !isAdmin) canChange = response.oid !== userMail; // Remove admin role only if a diff admin does it
 
       if(!canChange){
-        callback(false, 'At least one admin needed');
+        callback(false, 'At least one admin needed', false);
       } else if((couldServices && !canServices) || (couldDevs && !canDevs)){
         var items = [];
         getItems(response.hasItems, canDevs, canServices, items);
         sUpdItems.updateManyItems(items, userMail, updates.decoded_token.cid, updates.decoded_token.orgid, uid, function(err, response){
           if(!err){
-            doUpdate(uid, data, userMail, userId, function(err, response){
-              if(err){ callback(true, err); } else { callback(false, response); }
+            doUpdate(uid, data, userMail, userId, function(err, response, success){
+              if(err){ callback(true, err, success); } else { callback(false, response, success); }
             });
           } else {
-            callback(true, err);
+            callback(true, err, false);
           }
         });
       } else {
-        doUpdate(uid, data, userMail, userId, function(err, response){
-          if(err){ callback(true, err); } else { callback(false, response); }
+        doUpdate(uid, data, userMail, userId, function(err, response, success){
+          if(err){ callback(true, err, success); } else { callback(false, response, success); }
         });
       }
     }
@@ -117,11 +117,11 @@ function putMetadata(uid, updates, userMail, userId, callback) {
     updCount += 1;
   }
   if(updCount > 0){
-    doUpdate(uid, data, userMail, userId, function(err, response){
-      if(err){ callback(true, err); } else { callback(false, response); }
+    doUpdate(uid, data, userMail, userId, function(err, response, success){
+      if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   } else {
-    callback(false, "Missing or wrong information, not possible to update...");
+    callback(false, "Missing or wrong information, not possible to update...", false);
   }
 }
 
@@ -168,10 +168,10 @@ function doUpdate(uid, updates, userMail, userId, callback){
   })
   .then(function(response){
     logger.audit({user: userMail, action: 'updateUser', item: uid });
-    callback(false, updItem); })
+    callback(false, updItem, true); })
   .catch(function(err){
     logger.error({user: userMail, action: 'updateUser', item: uid, message: err });
-    callback(true, err);
+    callback(true, err, false);
   });
 }
 

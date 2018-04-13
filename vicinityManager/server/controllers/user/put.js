@@ -5,7 +5,7 @@ var sPutUser = require('../../services/users/putUsers');
 
 function putOne(req, res) {
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  var updates = req.body;
+  var updates = req.body.data;
   var userMail = req.body.decoded_token.sub;
   var userId = req.body.decoded_token.uid;
   var roles = req.body.decoded_token.roles;
@@ -19,8 +19,8 @@ function putOne(req, res) {
       if(type === 'undefined' || type === ""){
         res.json({error: false, message: 'Type of update not defined...', success: false});
       } else {
-        sPutUser.putOne(o_id, updates, userMail, userId, type, function(err,response){
-          res.json({error: err, message: response, success: true});
+        sPutUser.putOne(o_id, updates, userMail, userId, type, function(err, response, success){
+          res.json({error: err, message: response, success: success});
         });
       }
     } else {

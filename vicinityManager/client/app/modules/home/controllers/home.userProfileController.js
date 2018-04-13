@@ -110,7 +110,7 @@ NAME
   $scope.saveNewName = function () {
     userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {name: $scope.name}, 'type': 'metadata'}).
     then(
-      function successCallback(){
+      function successCallback(response){
       userAPIService.getUser($stateParams.userAccountId)
         .then(
           function successCallback(response) {
@@ -156,7 +156,7 @@ $scope.backToEdit1 = function () {
   $scope.saveNewOccupation = function () {
     userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {occupation: $scope.occupation}, 'type': 'metadata'})
       .then(
-        function successCallback(){
+        function successCallback(response){
           userAPIService.getUser($stateParams.userAccountId).then(
             function successCallback(response) {
               $scope.occupation = response.data.message.occupation;
@@ -346,7 +346,7 @@ $scope.cancelLoadPic = function(){
 $scope.uploadPic = function(){
 userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {avatar: base64String}, 'type': 'metadata'})
   .then(
-    function successCallback(){
+    function successCallback(response){
       userAPIService.getUser($stateParams.userAccountId)
         .then(
           function successCallback(response) {
