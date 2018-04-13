@@ -59,7 +59,9 @@ Change the user Roles
 */
 function putRoles(uid, updates, userMail, userId, callback) {
   var data = {"authentication.principalRoles": updates.roles}; //Ensure only right fields sent to update
-  userOp.findOne({_id: uid}, {hasItems:1, 'authentication.principalRoles':1, cid:1}).populate('hasItems.id', 'typeOfItem').exec(function(err, response){
+  userOp.findOne({_id: uid}, {hasItems:1, 'authentication.principalRoles':1, cid:1, email:1}).populate('hasItems.id', 'typeOfItem').exec(function(err, response){
+    var cid = response.cid;
+    var ownerMail = response.email;
     if(err){
       logger.debug('err: ' + err);
       callback(true, err, false);
@@ -79,8 +81,8 @@ function putRoles(uid, updates, userMail, userId, callback) {
         callback(false, 'At least one admin needed', false);
       } else if((couldServices && !canServices) || (couldDevs && !canDevs)){
         var items = [];
-        getItems(response.hasItems, canDevs, canServices, items);
-        sUpdItems.updateManyItems(items, userMail, updates.decoded_token.cid, updates.decoded_token.orgid, uid, function(err, response){
+        getItems(response.hasItems, canDevs, canServices, ownerMail, items);
+        sUpdItems.updateManyItems(items, updates.roles, ownerMail, cid.extid, cid.id, uid, function(err, response){
           if(!err){
             doUpdate(uid, data, userMail, userId, function(err, response, success){
               if(err){ callback(true, err, success); } else { callback(false, response, success); }
@@ -180,11 +182,11 @@ Aux function
 Selects type of item to be removed based on new user Roles
 Can be both, one or none
 */
-function getItems(allItems, canDevs, canServices, items){
+function getItems(allItems, canDevs, canServices, mail, items){
   for(var i = 0; i < allItems.length; i++){
-    if(!canDevs && allItems[i].id.typeOfItem === 'device') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', accessLevel: 0, oldAccessLevel: 2});
-    if(!canServices && allItems[i].id.typeOfItem === 'service') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', accessLevel: 0, oldAccessLevel: 2});
-  }
+    if(!canDevs && allItems[i].id.typeOfItem === 'device') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', accessLevel: 0, oldAccessLevel: 2, typeOfItem: 'device', uid: mail});
+    if(!canServices && allItems[i].id.typeOfItem === 'service') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', accessLevel: 0, oldAccessLevel: 2, typeOfItem: 'service', uid: mail});
+   }
 }
 
 // Export modules
