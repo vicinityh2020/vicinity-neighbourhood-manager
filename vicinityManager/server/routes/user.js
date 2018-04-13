@@ -8,7 +8,6 @@ router
   .get('/:id', getHelper.getOne)
   .get('/all/:id', getHelper.getAll)
   .put('/:id', putHelper.putOne)
-  .put('/password/:id', putHelper.putPassword)
   .post('/delete/:id', deleteHelper.deleteUser);
 
 module.exports = router;

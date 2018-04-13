@@ -10,28 +10,23 @@ function putOne(req, res) {
   var userId = req.body.decoded_token.uid;
   var roles = req.body.decoded_token.roles;
   var cid = req.body.decoded_token.cid;
+  var type = req.body.type;
 
   userOp.findOne({_id:o_id}, {email:1, cid:1}, function(err, response){
     if(err){
       res.json({error: true, message: err, success: false});
     } else if((response.email === userMail) || (response.cid.extid === cid && roles.indexOf('administrator') !== -1)) {
-      sPutUser.putOne(o_id, updates, userMail, userId, function(err,response){
-        res.json({error: err, message: response, success: true});
-      });
+      if(type === 'undefined' || type === ""){
+        res.json({error: false, message: 'Type of update not defined...', success: false});
+      } else {
+        sPutUser.putOne(o_id, updates, userMail, userId, type, function(err,response){
+          res.json({error: err, message: response, success: true});
+        });
+      }
     } else {
-      res.json({error: true, message: 'Not authorized to update this user', success: false});
+      res.json({error: false, message: 'Not authorized to update this user...', success: false});
     }
   });
 }
 
-function putPassword(req, res){
-  var oldPwd = req.body.passwordOld;
-  var newPwd = req.body.passwordNew;
-  var id = req.params.id;
-  sPutUser.putPassword(id, oldPwd, newPwd, function(err,response, success){
-    res.json({error: err, message: response, success: success});
-  });
-}
-
 module.exports.putOne = putOne;
-module.exports.putPassword = putPassword;

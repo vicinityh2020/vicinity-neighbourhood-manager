@@ -17,7 +17,7 @@ router
   .get('/users/:uid', jwt, apiController.getUser)
   .get('/users/:cid/items/:uid', jwt, apiController.getUserItems)
   .post('/users/', jwt, apiController.createUser)
-  .put('/users/:uid', apiController.updateUser) // enable: true or false; Let other updates?
+  .put('/users/:uid', jwt, apiController.updateUser)
   .delete('/users/:uid', jwt, apiController.removeUser)
 //Items
   .get('/items/:id', apiController.getItem)
