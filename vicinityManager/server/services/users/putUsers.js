@@ -88,6 +88,7 @@ function putRoles(uid, updates, userMail, userId, callback) {
               if(err){ callback(true, err, success); } else { callback(false, response, success); }
             });
           } else {
+            logger.debug(err);
             callback(true, err, false);
           }
         });

@@ -55,6 +55,8 @@ function updateManyItems(items, roles, email, cid, c_id, uid, callback){
       false,
       {roles: roles, email: email, cid:cid, c_id:c_id, uid:uid}
     );
+  } else {
+    callback(false, 'No items to remove');
   }
 }
 
