@@ -59,6 +59,7 @@ Change the user Roles
 */
 function putRoles(uid, updates, userMail, userId, callback) {
   var data = {"authentication.principalRoles": updates.roles}; //Ensure only right fields sent to update
+  if(updates.roles.indexOf('devOps') === -1) data.push('devOps'); // If it is devOps keep status
   userOp.findOne({_id: uid}, {hasItems:1, 'authentication.principalRoles':1, cid:1, email:1}).populate('hasItems.id', 'typeOfItem').exec(function(err, response){
     var cid = response.cid;
     var ownerMail = response.email;
