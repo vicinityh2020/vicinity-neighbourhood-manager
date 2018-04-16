@@ -44,7 +44,6 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         $scope.item = response.data.message[0];
         $scope.name = $scope.item.cid.id.name;
         $scope.item.uid = $scope.item.uid === undefined ? {} : $scope.item.uid; // Case device disabled
-        $scope.owner = $scope.item.uid.extid;
         $scope.itemEnabled = ($scope.item.status === 'enabled');
 
         var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
@@ -61,20 +60,14 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
           "status":'disabled',
           "o_id": $scope.item._id,
           "oid": $scope.item.oid,
-          "uid": $scope.owner,
-          "typeOfItem": "device",
-          "accessLevel": 0, // Always private when enabling/disabling
-          "oldAccessLevel" : $scope.item.accessLevel,
+          "typeOfItem": "device"
         };
       }else{
         query = {
           "status":'enabled',
           "o_id": $scope.item._id,
           "oid": $scope.item.oid,
-          "uid": $scope.owner,
-          "typeOfItem": "device",
-          "accessLevel": 0, // Always private when enabling/disabling
-          "oldAccessLevel" : $scope.item.accessLevel,
+          "typeOfItem": "device"
         };
       }
       itemsAPIService.putOne(query)
@@ -209,7 +202,7 @@ $scope.cancelLoadPic = function(){
 };
 
 $scope.uploadPic = function(){
-  itemsAPIService.putOne({avatar: base64String, o_id: $stateParams.deviceId, uid: $scope.owner, typeOfItem: "device", cid: $scope.item.cid})
+  itemsAPIService.putOne({avatar: base64String, o_id: $stateParams.deviceId, typeOfItem: "device", oid: $scope.item.oid})
     .then(
       function successCallback(response){
         itemsAPIService.getItemWithAdd($stateParams.deviceId)

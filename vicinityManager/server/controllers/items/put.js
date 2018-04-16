@@ -16,7 +16,7 @@ function putOne(req, res) {
   var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
 
   if(req.body.multi){
-   sItemUpdate.updateManyItems(req.body.items, req.body.decoded_token.roles, req.body.decoded_token.sub, req.body.decoded_token.cid, req.body.decoded_token.orgid, req.body.decoded_token.uid, function(err, response, success){
+   sItemUpdate.updateManyItems(req.body.items, req.body.decoded_token.roles, email, cid, c_id, uid, function(err, response, success){
     res.json({error: err, message: response, success: success});
    });
   }else if(req.body.status === 'enabled'){

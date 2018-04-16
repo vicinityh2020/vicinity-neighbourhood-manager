@@ -28,20 +28,20 @@ function updateManyItems(items, roles, email, cid, c_id, uid, callback){
   if(items.length !== 0){ // Check if there is any item to update
     logger.debug('Start async handler...');
     sync.forEachAll(items,
-      function(value, allresult, next, otherParams) {
+    function(value, allresult, next, otherParams) {
         if(value.status === 'enabled'){
-          enableItem(value, otherParams, function(value, result, success) {
-            allresult.push({value: value, error: result, success: success});
+          enableItem(value, otherParams, function(value, error, success, message) {
+            allresult.push({value: value, error: error, success: success, message: message});
             next();
           });
         }else if(value.status === 'disabled'){
-          disableItem(value, otherParams, function(value, result, success) {
-            allresult.push({value: value, error: result, success: success});
+          disableItem(value, otherParams, function(value, error, success, message) {
+            allresult.push({value: value, error: error, success: success, message: message});
             next();
           });
         } else {
-          updateItem(value, otherParams, function(value, result, success) {
-            allresult.push({value: value, error: result, success: success});
+          updateItem(value, otherParams, function(value, error, success, message) {
+            allresult.push({value: value, error: error, success: success, message: message});
             next();
           });
         }
@@ -56,7 +56,7 @@ function updateManyItems(items, roles, email, cid, c_id, uid, callback){
       {roles: roles, email: email, cid:cid, c_id:c_id, uid:uid}
     );
   } else {
-    callback(false, 'No items to remove');
+    callback(false, 'No items to modify');
   }
 }
 
@@ -64,16 +64,23 @@ function updateManyItems(items, roles, email, cid, c_id, uid, callback){
 Enable items
 */
 function enableItem(data, otherParams, callback){
+  data.accessLevel = 0;
+  data.oldAccessLevel = 2;
   var cid = otherParams.cid;
-  var c_id = otherParams.orgid;
-  var oid = data.oid;
-  var o_id = data.o_id;
-  var userId = otherParams.uid;
+  var c_id = otherParams.c_id;
   var userMail = otherParams.email;
-  var canChange = checkUserAuth(otherParams.roles, otherParams.email, data.typeOfItem, data.uid);
+  var userId = otherParams.uid;
+  var roles = otherParams.roles;
+  var oid;
+  var o_id = data.o_id;
+  var query = {};
 
-  if(canChange){
-    commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
+  itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
+    data.cid = response.cid.extid;
+    oid = response.oid;
+    var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, userMail, data.cid, false); // There is no uid when enabling
+    if(canChange){
+      commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
       .then(function(response){ return deviceActivityNotif({id: userId, extid: userMail}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Enabled', 11);})
       .then(function(response){
         return audits.create(
@@ -93,40 +100,51 @@ function enableItem(data, otherParams, callback){
       .then(function(response){
         logger.debug("Item update process ended successfully...");
         logger.audit({user: userMail, action: 'EnableItem', item: o_id });
-        callback(false, response, true);
+        callback(o_id, false, true, 'enabled');
       })
       .catch(function(err){
         logger.error({user: userMail, action: 'EnableItem', item: o_id, message: err});
-        callback(true, err, false);
+        callback(o_id, true, false, err);
       });
     } else {
-      callback(false, 'User not authorized', false);
+      callback(o_id, false, false, 'User not authorized');
     }
+  });
 }
 
 /*
 Disable items
 */
 function disableItem(data, otherParams, callback){
+  data.accessLevel = 0;
+  data.oldAccessLevel = 2;
   var cid = otherParams.cid;
-  var c_id = otherParams.orgid;
-  var oid = data.oid;
-  var o_id = data.o_id;
-  var userId = otherParams.uid;
+  var c_id = otherParams.c_id;
   var userMail = otherParams.email;
-  var canChange = checkUserAuth(otherParams.roles, otherParams.email, data.typeOfItem, data.uid);
+  var roles = otherParams.roles;
+  var oid;
+  var o_id = data.o_id;
+  var userId;
+  var query = {};
 
-  if(canChange){
-    commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
-      .then(function(response){ return deviceActivityNotif({id: userId, extid: userMail}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Disabled', 12);})
+  itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
+    data.uid = response.uid.extid;
+    userId = response.uid.id;
+    oid = response.oid;
+    data.cid = response.cid.extid;
+    var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, data.uid, data.cid, true);
+
+    if(canChange){
+      commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
+      .then(function(response){ return deviceActivityNotif({id: userId, extid: data.cid}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Disabled', 12);})
       .then(function(response){
         return audits.create(
-          { kind: 'user', item: userId, extid: userMail },
+          { kind: 'user', item: userId, extid: data.cid },
           { kind: 'item', item: o_id, extid: oid },
           { },
           44, null);
       })
-      .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'disabled'); })
+      .then(function(response){ return manageUserItems(oid, o_id, data.cid, userId, 'disabled'); })
       .then(function(response){
          var query = {status: data.status, accessLevel: data.accessLevel};
          return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
@@ -137,15 +155,16 @@ function disableItem(data, otherParams, callback){
       .then(function(response){
         logger.debug("Item update process ended successfully...");
         logger.audit({user: userMail, action: 'DisableItem', item: o_id });
-        callback(false, response, true);
+        callback(o_id, false, true, 'disabled');
       })
       .catch(function(err){
         logger.error({user: userMail, action: 'DisableItem', item: o_id, message: err});
-        callback(true, err, false);
+        callback(o_id, true, false, err);
       });
     } else {
-      callback(false, 'User not authorized', false);
+      callback(o_id, false, false, 'User not authorized');
     }
+  });
 }
 
 /*
@@ -154,66 +173,76 @@ Update items
 function updateItem(data, otherParams, callback){
   var cid = otherParams.cid;
   var c_id = otherParams.c_id;
-  var oid = data.oid;
-  var o_id = data.o_id;
-  var userId = otherParams.uid;
   var userMail = otherParams.email;
+  var userId = otherParams.uid;
+  var roles = otherParams.roles;
+  var oid;
+  var o_id = data.o_id;
   var query = {};
-  var canChange = checkUserAuth(otherParams.roles, otherParams.email, data.typeOfItem, data.uid);
 
-  if(canChange){
-    if(data.hasOwnProperty('accessLevel')){
+  itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1, status:1}, function(err, response){ // Get item creds to avoid forging
+    var status = response.status;
+    if(status === 'enabled') data.uid = response.uid.extid;
+    data.cid = response.cid.extid;
+    oid = response.oid;
+    var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, data.uid, data.cid, false);
 
-      userOp.findOne({_id:userId}, {accessLevel:1}, function(err, response){
-        if(err){
-          callback(true, err, false);
-        } else if(Number(response.accessLevel) < Number(data.accessLevel)){
-          logger.debug("User privacy is too low...");
-          callback(false, "User privacy is too low...", false);
-        } else {
-          query = {accessLevel: data.accessLevel};
-          itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
-          .then(function(response){
-            return sharingRules.changePrivacy(data);
-          })
-          .then(function(response){
-            return audits.create(
-              { kind: 'user', item: userId, extid: userMail },
-              { kind: 'item', item: o_id, extid: oid },
-              { },
-              45,
-              "From " + clasify(Number(data.oldAccessLevel)) + " to " + clasify(Number(data.accessLevel))
-            );
-          })
-          .then(function(response){
-            logger.debug("Item update process ended successfully...");
-            logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
-            callback(false, response, true);
-          })
-          .catch(function(err){
-            logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
-            callback(true, err, false);
-          });
-        }
-      });
+    if(status !== 'enabled'){
+      callback(o_id, false, false, 'Item needs to be enabled to change accessLevel');
+    } else if(canChange){
+      if(data.hasOwnProperty('accessLevel')){
+        if(!data.hasOwnProperty('oldAccessLevel')) data.oldAccessLevel = 2; // Assume worst case scenario
+        userOp.findOne({_id:userId}, {accessLevel:1}, function(err, response){
+          if(err){
+            callback(o_id, true, false, err);
+          } else if(Number(response.accessLevel) < Number(data.accessLevel)){
+            logger.debug("User privacy is too low...");
+            callback(o_id, false, false, "User privacy is too low...");
+          } else {
+            query = {accessLevel: data.accessLevel};
+            itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
+            .then(function(response){
+              return sharingRules.changePrivacy(data);
+            })
+            .then(function(response){
+              return audits.create(
+                { kind: 'user', item: userId, extid: userMail },
+                { kind: 'item', item: o_id, extid: oid },
+                { },
+                45,
+                "From " + clasify(Number(data.oldAccessLevel)) + " to " + clasify(Number(data.accessLevel))
+              );
+            })
+            .then(function(response){
+              logger.debug("Item update process ended successfully...");
+              logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
+              callback(o_id, false, true, 'accessLevel updated');
+            })
+            .catch(function(err){
+              logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
+              callback(o_id, true, false, err);
+            });
+          }
+        });
 
+      } else {
+
+        if(data.hasOwnProperty('avatar')){ query = {avatar: data.avatar}; }
+        itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
+        .then(function(response){
+          logger.debug("Item update process ended successfully...");
+          logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
+          callback(o_id, false, true, 'avatar updated');
+        })
+        .catch(function(err){
+          logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
+          callback(o_id, true, false, err);
+        });
+      }
     } else {
-
-      if(data.hasOwnProperty('avatar')){ query = {avatar: data.avatar}; }
-      itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
-      .then(function(response){
-        logger.debug("Item update process ended successfully...");
-        logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
-        callback(false, response, true);
-      })
-      .catch(function(err){
-        logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
-        callback(true, err, false);
-      });
+      callback(o_id, false, false, 'User not authorized');
     }
-  } else {
-    callback(false, 'User not authorized', false);
-  }
+  });
 }
 
 // Private functions
@@ -264,12 +293,12 @@ function clasify(lvl){
 }
 
 /*
-Check if user can update a device based on its roles
+Check if user can update a device based on its roles and cid
 */
-function checkUserAuth(roles, tokenUser, typeOfItem, itemUser){
-  var imAdmin = roles.indexOf('administrator') !== -1;
+function checkUserAuth(roles, tokenUser, tokenCid, typeOfItem, itemUser, itemCid, imDisabling){
+  var imAdmin = (roles.indexOf('administrator')) !== -1 && (tokenCid === itemCid) && (imDisabling); // myOwn company admin
   var canChangeSer, canChangeDev;
-  if(tokenUser === itemUser){
+  if((tokenUser === itemUser) && (tokenCid === itemCid)){
     canChangeDev = (roles.indexOf('infrastructure operator') !== -1 && typeOfItem === 'device');
     canChangeSer = (roles.indexOf('service provider') !== -1 && typeOfItem === 'service');
   } else {

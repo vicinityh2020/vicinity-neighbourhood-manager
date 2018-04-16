@@ -81,8 +81,8 @@ function putRoles(uid, updates, userMail, userId, callback) {
         callback(false, 'At least one admin needed', false);
       } else if((couldServices && !canServices) || (couldDevs && !canDevs)){
         var items = [];
-        getItems(response.hasItems, canDevs, canServices, ownerMail, items);
-        sUpdItems.updateManyItems(items, updates.roles, ownerMail, cid.extid, cid.id, uid, function(err, response){
+        getItems(response.hasItems, canDevs, canServices, items);
+        sUpdItems.updateManyItems(items, updates.roles, userMail, cid.extid, cid.id, userId, function(err, response){
           if(!err){
             doUpdate(uid, data, userMail, userId, function(err, response, success){
               if(err){ callback(true, err, success); } else { callback(false, response, success); }
@@ -183,10 +183,10 @@ Aux function
 Selects type of item to be removed based on new user Roles
 Can be both, one or none
 */
-function getItems(allItems, canDevs, canServices, mail, items){
+function getItems(allItems, canDevs, canServices, items){
   for(var i = 0; i < allItems.length; i++){
-    if(!canDevs && allItems[i].id.typeOfItem === 'device') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', accessLevel: 0, oldAccessLevel: 2, typeOfItem: 'device', uid: mail});
-    if(!canServices && allItems[i].id.typeOfItem === 'service') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', accessLevel: 0, oldAccessLevel: 2, typeOfItem: 'service', uid: mail});
+    if(!canDevs && allItems[i].id.typeOfItem === 'device') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'device'});
+    if(!canServices && allItems[i].id.typeOfItem === 'service') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'service'});
    }
 }
 

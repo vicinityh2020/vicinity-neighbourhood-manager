@@ -18,6 +18,7 @@ var sGetItems = require("../../services/items/get");
 var sGetOrganisation = require("../../services/organisations/get");
 var sGetSearch = require("../../services/search/get");
 var sOrgConfiguration = require('../../services/organisations/configuration');
+var sItemUpdate = require('../../services/items/update');
 
 // Main functions - VCNT API
 
@@ -255,7 +256,7 @@ function updateUser(req, res, next) {
 function removeUser(req, res, next) {
   var uid = [];
   var email = req.body.decoded_token.sub;
-  var my_id = req.body.decoded_token.orgid;
+  var my_cid = req.body.decoded_token.orgid;
   var finalResp;
   uid.push(mongoose.Types.ObjectId(req.params.uid));
   if(req.body.decoded_token.roles.indexOf('administrator') === -1){
@@ -263,7 +264,7 @@ function removeUser(req, res, next) {
   } else if(req.params.uid === req.body.decoded_token.sub){
     res.json({'error': false, 'message': "You cannot remove yourself..."});
   } else {
-    delUser.isMyUser(my_id, req.params.uid) // Check if user belongs to me
+    delUser.isMyUser(my_cid, req.params.uid) // Check if user belongs to me
     .then(function(response){
       if(response){
         finalRes = "User removed";
@@ -294,8 +295,36 @@ function createItem(req, res, next) {
     res.json({error: false, message: "Use agent..."});
 }
 
+/**
+ * Update a user
+ *
+ * @param {Array} uids + thing to update
+ *
+ * @return {String} Acknowledgement
+ */
 function updateItem(req, res, next) {
-    res.json({error: false, message: "Use agent..."});
+  var email = req.body.decoded_token.sub;
+  var cid = req.body.decoded_token.cid;
+  var c_id = req.body.decoded_token.orgid;
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+
+  if(req.body.multi){
+   sItemUpdate.updateManyItems(req.body.items, req.body.decoded_token.roles, email, cid, c_id, uid, function(err, response, success){
+    res.json({error: err, message: response, success: success});
+   });
+  }else if(req.body.status === 'enabled'){
+    sItemUpdate.enableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+      res.json({error: err, message: response, success: success});
+    });
+  }else if(req.body.status === 'disabled'){
+    sItemUpdate.disableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+      res.json({error: err, message: response, success: success});
+    });
+  }else{
+    sItemUpdate.updateItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+      res.json({error: err, message: response, success: success});
+    });
+  }
 }
 
 function removeItem(req, res, next) {

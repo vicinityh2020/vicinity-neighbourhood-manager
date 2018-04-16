@@ -20,10 +20,10 @@ router
   .put('/users/:uid', jwt, apiController.updateUser)
   .delete('/users/:uid', jwt, apiController.removeUser)
 //Items
-  .get('/items/:id', apiController.getItem)
-  .post('/items', apiController.createItem)
-  .put('/items', apiController.updateItem)
-  .delete('/items/:id', apiController.removeItem)
+  .get('/items/:id', jwt, apiController.getItem)
+  .post('/items', jwt, apiController.createItem)
+  .put('/items', jwt, apiController.updateItem)
+  .delete('/items/:id', jwt, apiController.removeItem)
 //Agents
   .get('/agents/:id/items', jwt, apiController.getAgentUsers)
   .post('/agents/', jwt, apiController.createAgent)
@@ -33,9 +33,9 @@ router
   .post('/partnership', jwt, apiController.requestPartnership)
   .put('/partnership', jwt, apiController.managePartnership) // In payload --> accept, reject, cancel
 //Contracts
-  .get('/contract', apiController.contractFeeds)
-  .post('/contract', apiController.requestContract)
-  .put('/contract', apiController.manageContract) // In payload --> accept, reject, cancel
+  .get('/contract', jwt, apiController.contractFeeds)
+  .post('/contract', jwt, apiController.requestContract)
+  .put('/contract', jwt, apiController.manageContract) // In payload --> accept, reject, cancel
 //Search
   .get('/search/organisations', jwt, apiController.searchOrgs)
   .get('/search/users', jwt, apiController.searchUsers)
