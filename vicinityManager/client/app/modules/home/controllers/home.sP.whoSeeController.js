@@ -16,7 +16,7 @@ function ($scope, $stateParams, commonHelpers, userAccountAPIService, itemsAPISe
       function successCallback(response){
         $scope.item = response.data.message[0];
         if ($scope.item.accessLevel === 1){
-          userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
+          userAccountAPIService.getUserAccountProfile($scope.item.cid.id._id)
             .then(
               function successCallback(response){
                 $scope.friends = response.data.message.knows;
