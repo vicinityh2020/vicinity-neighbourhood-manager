@@ -4,6 +4,7 @@
 var nodemailer = require('nodemailer');
 var fs = require("fs");
 var logger = require("../../middlewares/logger");
+var config = require('../../configuration/configuration');
 
 // Functions
 
@@ -14,10 +15,10 @@ When invoked needs to receive an object with the mail fields
 function sendMail(mailInfo){
   return new Promise(function(resolve, reject) {
     var smtpConfig = {
-      host: 'vicinity.bavenir.eu',
+      host: config.smtpHost,
       auth: {
-          user: 'vicinitymailservice',
-          pass: '1nTer0Per4bilit715h3r3'
+          user: config.smtpUser,
+          pass: config.smtpPassword
         }
       };
 
