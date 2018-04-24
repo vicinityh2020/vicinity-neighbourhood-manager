@@ -11,7 +11,7 @@ Create contracts
 */
 function createContract(req, res){
   var data = req.body;
-  ctHelper.creating(data, function(response, err){
+  ctHelper.creating(data, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -21,7 +21,7 @@ Accept contracts
 */
 function acceptContract(req, res){
   var id = req.params.id;
-  ctHelper.accepting(id, function(response, err){
+  ctHelper.accepting(id, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -32,11 +32,11 @@ Modify contracts
 function modifyContract(req, res){
   var id = req.params.id;
   var data = req.body;
-  ctHelper.removing(id, function(response, err){
+  ctHelper.removing(id, function(err, response){
     if(err){
       res.json({error: err, message: response});
     } else {
-      ctHelper.creating(data, function(response, err){
+      ctHelper.creating(data, function(err, response){
         res.json({error: err, message: response});
       });
     }
@@ -48,7 +48,7 @@ Delete contracts
 */
 function removeContract(req, res){
   var id = req.params.id;
-  ctHelper.removing(id, function(response, err){
+  ctHelper.removing(id, function(err, response){
     res.json({error: err, message: response});
   });
 }

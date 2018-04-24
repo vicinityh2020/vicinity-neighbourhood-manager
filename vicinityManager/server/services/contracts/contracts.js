@@ -21,9 +21,14 @@ function accepting(id, callback){
   // TODO enable option to accept contract by iotOwner
   var updItem = {};
   var query = { $set: {"serviceProvider.termsAndConditions": true, status: 'accepted'} };
-  contractOp.findOneAndUpdate( { "_id": id}, query, {new: true})
+  contractOp.findOneAndUpdate({ "_id": id}, query, {new: true})
   .then(function(response){
-    updItem = response.toObject(); // Get rid of metadata
+    updItem = response.toObject(); // Get rid of virtuals and functions
+    // Service Provider approves contract
+    return userOp.updateOne({"_id": updItem.serviceProvider.uid.id, "hasContracts.id" :updItem._id},
+                            {$set: { "hasContracts.$.approved" : true }});
+  })
+  .then(function(response){
     return sharingRules.createContract(updItem.ctid, 'Contract: ' + updItem.type);
   })
   .then(function(response){
@@ -47,11 +52,11 @@ function accepting(id, callback){
       51, null);
   })
   .then(function(response){
-    callback(updItem, false);
+    callback(false, updItem);
   })
   .catch(function(error){
     logger.debug(error);
-    callback(error, true);
+    callback(true, error);
   });
 }
 
@@ -81,7 +86,7 @@ function creating(data, callback){
         ctid = response.ctid;
         var cidService = data.cidService.extid;
         var cidDevice = data.cidDevice.extid;
-        var ctidService = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: data.uidDevice.id, approved: true };
+        var ctidService = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: data.uidDevice.id, approved: false };
         var ctidDevice = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: data.uidService.id, approved: true };
         var uidService = data.uidService.id;
         getOnlyId(idsService, data.oidService);
@@ -112,11 +117,11 @@ function creating(data, callback){
             53, null);
         })
         .then(function(response){
-          callback({}, false);
+          callback(false, 'Contract posted, waiting for approval');
         })
         .catch(function(error){
           logger.debug(error);
-          callback(error, true);
+          callback(true, error);
         });
       }
     }
@@ -195,11 +200,11 @@ function removing(id, callback){
       52, null);
   })
   .then(function(response){
-    callback(finalResp, false);
+    callback(false, finalResp);
   })
   .catch(function(error){
     logger.debug('Delete contract error: ' + error);
-    callback(error, true);
+    callback(true, error);
   });
 }
 
@@ -255,6 +260,30 @@ function removeDevice(item, otherParams, callback){
   });
 }
 
+/**
+* Contract feeds
+* @return {Array} Contract requests
+*/
+function contractFeeds(uid, callback){
+  logger.debug(uid);
+  userOp.findOne({_id: uid}, {hasContracts:1})
+  .then(function(response){
+    logger.debug(response);
+    var openContracts = [];
+    for(var i = 0; i < response.hasContracts.length; i++){
+      if(!response.hasContracts[i].approved){
+        openContracts.push(response.hasContracts[i]);
+      }
+    }
+    callback(false, openContracts);
+  })
+  .catch(function(err){
+    logger.debug(err);
+    callback(true, err);
+  });
+}
+
+
 // Private Functions --------------------------------
 
 // function createNotif(mycid, othercid, thing, type){
@@ -307,3 +336,4 @@ module.exports.removing = removing;
 module.exports.removeDevice = removeDevice;
 module.exports.creating = creating;
 module.exports.accepting = accepting;
+module.exports.contractFeeds = contractFeeds;

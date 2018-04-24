@@ -19,6 +19,8 @@ var sGetOrganisation = require("../../services/organisations/get");
 var sGetSearch = require("../../services/search/get");
 var sOrgConfiguration = require('../../services/organisations/configuration');
 var sItemUpdate = require('../../services/items/update');
+var ctHelper = require("../../services/contracts/contracts.js");
+var ctChecks = require("../../services/contracts/contractChecks.js");
 
 // Main functions - VCNT API
 
@@ -512,21 +514,121 @@ function managePartnership(req, res, next) {
 Contracts --------------------------------------------------
 */
 
+/**
+ * Contract requests
+ * @return {Array} Open Contracts
+ */
 function contractFeeds(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  ctHelper.contractFeeds(req.body.decoded_token.uid, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
+/**
+ * Post contract
+ *
+ * @param {String} readWrite
+ * @param {Object} serviceProvider
+ * @param {Object} iotOwner
+ *
+ * Object contains:
+ * cidService, uidService, [oidService]
+ * cidDevice, uidDevice, [oidDevices]
+ * readWrite (Boolean)
+ *
+ * @return {String} Acknowledgement
+ */
 function requestContract(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var data = req.body;
+  var uid = req.body.decoded_token.uid;
+  var cid = req.body.decoded_token.orgid;
+  ctChecks.postCheck(data, uid, cid, function(error, response, success){
+    if(error){
+      res.json({error: error, message: response});
+    } else if(!success){
+      res.json({error: error, message: response});
+    } else {
+      ctHelper.creating(data, function(err, response){
+        res.json({error: err, message: response});
+      });
+    }
+  });
 }
 
+/**
+ * Manage contract -- Update or remove
+ *
+ * @param {String} type - update/delete/accept
+ * @param {String} ctid
+ *
+ * IF TYPE IS Update add:
+ * cidService, uidService, [oidService]
+ * cidDevice, uidDevice, [oidDevices]
+ * readWrite (Boolean)
+ *
+ * @return {String} Acknowledgement
+ */
 function manageContract(req, res, next) {
-    res.json({error: false, message: "Endpoint under development..."});
+  var id, data;
+  var uid = req.body.decoded_token.uid;
+  var cid = req.body.decoded_token.orgid;
+  if(req.body.type === 'delete'){
+    id = req.params.id;
+    ctChecks.deleteCheck(id, uid, cid, function(error, response, success){
+      if(error){
+        res.json({error: error, message: response});
+      } else if(!success){
+        res.json({error: error, message: response});
+      } else {
+        ctHelper.removing(id, function(err, response){
+          res.json({error: err, message: "Contract successfully removed"});
+        });
+      }
+    });
+  } else if(req.body.type === 'accept') {
+    id = req.params.id;
+    ctChecks.acceptCheck(id, uid, cid, function(error, response, success){
+      if(error){
+        res.json({error: error, message: response});
+      } else if(!success){
+        res.json({error: error, message: response});
+      } else {
+          ctHelper.accepting(id, function(err, response){
+          res.json({error: err, message: response});
+        });
+      }
+    });
+  } else if(req.body.type === 'update'){
+    id = req.params.id;
+    data = req.body;
+    delete req.body.type;
+    // UPDATE
+    ctChecks.updateCheck(id, data, uid, cid, function(error, response, success){
+      if(error){
+        res.json({error: error, message: response});
+      } else if(!success){
+        res.json({error: error, message: response});
+      } else {
+        ctHelper.removing(id, function(err, response){
+          if(err){
+            res.json({error: err, message: response});
+          } else {
+            ctHelper.creating(data, function(err, response){
+              res.json({error: err, message: response});
+            });
+          }
+        });
+      }
+    });
+  } else {
+    res.json({error: false, message: "Wrong type. Please choose among update, accept and delete"});
+  }
 }
 
 /*
-Contracts --------------------------------------------------
+Search --------------------------------------------------
 */
+
 /**
  * Search organisations
  *

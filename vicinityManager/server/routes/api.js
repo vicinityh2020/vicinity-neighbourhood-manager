@@ -35,7 +35,7 @@ router
 //Contracts
   .get('/contract', jwt, apiController.contractFeeds)
   .post('/contract', jwt, apiController.requestContract)
-  .put('/contract', jwt, apiController.manageContract) // In payload --> accept, reject, cancel
+  .put('/contract/:id', jwt, apiController.manageContract) // In payload --> accept, reject, cancel
 //Search
   .get('/search/organisations', jwt, apiController.searchOrgs)
   .get('/search/users', jwt, apiController.searchUsers)
