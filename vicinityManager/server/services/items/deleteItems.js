@@ -22,9 +22,9 @@ function deleteItems(oids, email){
       logger.debug('Start async handler...');
       sync.forEachAll(oids,
         function(value, allresult, next, otherParams) {
-          deleting(value, otherParams, function(value, result) {
+          deleting(value, otherParams, function(value, result, error) {
               logger.debug('END execution with value =', value, 'and result =', result);
-              allresult.push({value: value, result: result});
+              allresult.push({value: value, result: result, error: error});
               next();
           });
         },
@@ -65,36 +65,46 @@ function deleting(oid, otherParams, callback){
     function(err,data){
       if(err){
         logger.debug("Something went wrong: " + err);
-        callback(oid, "error mongo" + err);
+        callback(oid, "error mongo" + err, true);
       }else if(!data){
         logger.debug("Object does not exist");
-        callback(oid, "Object does not exist");
+        callback(oid, "Object does not exist", false);
       }else{
         var cid = data.cid;
         var id = data._id;
+        var hasUser = (data.status === 'enabled');
+        var owner = {};
 
         itemOp.update({oid:oid}, {$set: obj})
         .then(function(response){ return nodeOp.update({_id: data.adid.id}, {$pull: {hasItems: { extid : oid }}}); })
-        .then(function(response){ return userOp.update({_id: data.uid.id}, {$pull: {hasItems: { extid : oid }}}); })
+        .then(function(response){
+          if(hasUser){
+            owner.id = data.uid.id; owner.extid = data.uid.extid; owner.entity = 'user';
+            return userOp.update({_id: data.uid.id}, {$pull: {hasItems: { extid : oid }}});
+          } else {
+            owner.id = data.adid.id; owner.extid = data.adid.extid; owner.entity = 'node';
+            return false;
+          }
+        })
         .then(function(response){ return semanticRepo.callSemanticRepo({}, "td/remove/" + oid, 'DELETE'); })
+        .then(function(response){ return commServer.callCommServer({}, 'users/' + oid, 'DELETE'); })
         .then(function(response){
           return audits.create(
-            { kind: 'user', item: data.uid.id, extid: data.uid.extid },
+            { kind: owner.entity, item: owner.id, extid: owner.extid },
             { kind: 'userAccount', item: data.cid.id, extid: data.cid.extid },
             { kind: 'item', item: data._id, extid: data.oid, name: data.name },
             42, null);
         })
-        .then(function(response){ return commServer.callCommServer({}, 'users/' + oid, 'DELETE'); })
         .then(function(ans){
           logger.audit({user: otherParams.userMail, action: 'deleteItem', item: oid });
-          callback(oid, "Success");})
+          callback(oid, "Success", false);})
         .catch(function(err){
           if(err.statusCode !== 404){
             logger.error({user: otherParams.userMail, action: 'deleteItem', item: oid, message: err});
-            callback(oid, 'Error: ' + err);
+            callback(oid, 'Error: ' + err, true);
           } else {
             logger.warn({user: otherParams.userMail, action: 'deleteItem', item: oid, message: 'Object did not exist in comm server' });
-            callback(oid, "Success");
+            callback(oid, "Success", false);
           }
         });
       }
