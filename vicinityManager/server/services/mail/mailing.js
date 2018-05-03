@@ -34,7 +34,7 @@ function sendMail(mailInfo){
           mailContent = mailContent.replace("#link", mailInfo.link);
 
           var mailOptions = {
-            from: 'noreply.vicinity@gmail.com',
+            from: config.mailServer,
             to: mailInfo.emailTo,
             subject: mailInfo.subject,
             html: mailContent,
