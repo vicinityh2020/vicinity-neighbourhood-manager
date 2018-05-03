@@ -254,11 +254,14 @@ function cancelFriendship(friend_id, my_id, my_mail, my_uid, callback){
     );
 }
 
-
 function friendshipFeeds(my_id, callback){
-  notificationOp.find({type: 31, addressedTo: {$in : [my_id]}, $or: [{isUnread: true}, {status: 'waiting'}]}, {addressedTo:1, sentBy:1}).populate('sentBy','avatar name')
+  companyAccountOp.findOne({_id: my_id}, {knowsRequestsTo:1, knowsRequestsFrom:1}).populate('knowsRequestsTo.id', 'name').populate('knowsRequestsFrom.id', 'name')
   .then(function(response){
-    callback(false, response);
+    var myFeeds = response.toObject();
+    var feeds = {};
+    feeds.requestsReceived = myFeeds.knowsRequestsFrom;
+    feeds.sentRequests = myFeeds.knowsRequestsTo;
+    callback(false, feeds);
   })
   .catch(function(err){
     callback(true, err);

@@ -431,6 +431,7 @@ function requestPartnership(req, res, next) {
   var friend_id = mongoose.Types.ObjectId(req.body.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
+  var my_uid = req.body.decoded_token.uid;
   sFriending.friendshipStatus(my_id, friend_id.toString(), function(err, response){
     if(err){
       res.json({"error": true, "message": err });
@@ -439,7 +440,7 @@ function requestPartnership(req, res, next) {
     } else if(response.sentReq || response.haveReq){
       res.json({"error": false, "message": "You already have an open friending process with " + friend_id });
     } else {
-      sFriending.processFriendRequest(friend_id, my_id, my_mail, function(err, response){
+      sFriending.processFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
         res.json({"error": err, "message": response});
       });
     }
@@ -459,6 +460,7 @@ function managePartnership(req, res, next) {
   var friend_id = mongoose.Types.ObjectId(req.body.id);
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var my_mail = req.body.decoded_token.sub;
+  var my_uid = req.body.decoded_token.uid;
   var type = req.body.type;
   sFriending.friendshipStatus(my_id, friend_id.toString(), function(err, response){
     if(err){
@@ -468,7 +470,7 @@ function managePartnership(req, res, next) {
       switch(type) {
         case "accept":
             if(response.haveReq){
-              sFriending.acceptFriendRequest(friend_id, my_id, my_mail, function(err, response){
+              sFriending.acceptFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
                 res.json({"error": err, "message": response});
               });
             } else {
@@ -477,7 +479,7 @@ function managePartnership(req, res, next) {
             break;
         case "reject":
           if(response.haveReq){
-              sFriending.rejectFriendRequest(friend_id, my_id, my_mail, function(err, response){
+              sFriending.rejectFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
                 res.json({"error": err, "message": response});
               });
             } else {
@@ -486,7 +488,7 @@ function managePartnership(req, res, next) {
             break;
         case "cancelRequest":
             if(response.sentReq){
-              sFriending.cancelFriendRequest(friend_id, my_id, my_mail, function(err, response){
+              sFriending.cancelFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
                 res.json({"error": err, "message": response});
               });
             } else {
@@ -495,7 +497,7 @@ function managePartnership(req, res, next) {
             break;
         case "cancel":
             if(response.imFriend){
-              sFriending.cancelFriendship(friend_id, my_id, my_mail, function(err, response){
+              sFriending.cancelFriendship(friend_id, my_id, my_mail, my_uid, function(err, response){
                 res.json({"error": err, "message": response});
               });
             } else {
