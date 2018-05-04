@@ -173,7 +173,12 @@ Users --------------------------------------------------
 */
 
 function getUser(req, res, next) {
-  res.json({error: false, message: "Endpoint under development..."});
+  var uid = mongoose.Types.ObjectId(req.params.uid);
+  var myUid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  sGetUser.getUserInfo(uid, myUid, myCid, function(err, response){
+    res.json({error: err, message: response});
+  });
 }
 
 /**

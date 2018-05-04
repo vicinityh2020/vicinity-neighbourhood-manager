@@ -6,6 +6,41 @@ var logger = require("../../middlewares/logger");
 
 // Public functions
 
+/*
+Gets user information
+Receives following parameters:
+- Target UID
+- Requester UID and CID
+*/
+function getUserInfo(uid, myUid, myCid, callback) {
+  userAccountOp.findOne({_id: myCid}, {accountOf:1})
+  .then(function(response){
+    if(!response){
+      callback(false, 'Wrong cid provided...');
+    } else {
+      if(uid.toString() === myUid.toString()){ // Checking own info
+        userOp.findOne({_id:uid}, {name:1, email:1, cid:1, occupation:1, accessLevel:1, hasItems:1, hasContracts:1}, function(err, response){
+          if(err){ callback(true, err); } else { callback(false, response); }
+          callback(false, response);
+        });
+      } else {
+        var users = [];
+        getIds(response.accountOf, users);
+        if(users.indexOf(uid) !== -1){
+          userOp.findOne({_id:uid}, {name:1, email:1, cid:1, occupation:1, accessLevel:1, hasItems:1, hasContracts:1}, function(err, response){
+            if(err){ callback(true, err); } else { callback(false, response); }
+          });
+        } else {
+          callback(false, 'Unauthorized');
+        }
+      }
+    }
+  })
+  .catch(function(err){
+    callback(true, err);
+  });
+}
+
 function getOne(o_id, callback) {
   userOp.findById(o_id, {'authentication.hash':0},function(err, data){
     if (err) {
@@ -60,3 +95,4 @@ function getIds(array){
 // Export functions
 module.exports.getOne = getOne;
 module.exports.getAll = getAll;
+module.exports.getUserInfo = getUserInfo;
