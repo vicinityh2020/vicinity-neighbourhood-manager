@@ -11,6 +11,7 @@ router
   .get('/organisation/friends', jwt, apiController.getFriends)
   .get('/organisation/:cid/users', jwt, apiController.getUsers)
   .get('/organisation/:cid/items', jwt, apiController.getItems)
+  .get('/organisation/agents', jwt, apiController.getAgents)
   .post('/organisation', apiController.createOrganisation)
   .delete('/organisation', jwt, apiController.removeOrganisation)
 //Users

@@ -18,7 +18,10 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   */
   function searchOrganisation(sT, api, callback) {
     var projection = {};
-    if(api){ projection.name = 1; } else { projection.skinColor = 0; }
+    if(api){
+      projection.name = 1;
+      projection.cid = 1;
+    } else { projection.skinColor = 0; }
     userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, projection, function(err, data) {
       if (err) {
         callback(true, err);
@@ -36,7 +39,12 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   function searchUser(sT, cid, api, callback) {
     var friends = [], query = {};
     var projection = {};
-    if(api){ projection.name = 1; } else { projection.authentication = 0; }
+    if(api){
+      projection.name = 1;
+      projection.uid = 1;
+      projection.cid = 1;
+      projection.email = 1;        
+    } else { projection.authentication = 0; }
 
     userAccountOp.findById(cid, {knows:1})
     .then(function(response){
