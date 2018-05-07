@@ -15,6 +15,7 @@ var sInviteUser = require("../../services/invitations/invitations.js");
 var sPutUser = require('../../services/users/putUsers');
 var delUser = require('../../services/users/deleteUsers');
 var sGetItems = require("../../services/items/get");
+var sGetAgents = require("../../services/nodes/get");
 var sGetOrganisation = require("../../services/organisations/get");
 var sGetSearch = require("../../services/search/get");
 var sOrgConfiguration = require('../../services/organisations/configuration');
@@ -111,6 +112,21 @@ function getItems(req, res, next) {
   var type = (req.query.type === undefined || (req.query.type !== "device" && req.query.type !== "service")) ? "all" : req.query.type;
   var api = true; // Call origin api or webApp
   sGetItems.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/**
+ * Get organisation users
+ *
+ * @param {String} id
+ *
+ * @return {Object} Array of agents
+ */
+function getAgents(req, res, next) {
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var api = true; // Call origin api or webApp
+  sGetAgents.getOrgAgents(mycid, api, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -694,6 +710,7 @@ module.exports.getOrganisations = getOrganisations;
 module.exports.getFriends = getFriends;
 module.exports.getUsers = getUsers;
 module.exports.getItems = getItems;
+module.exports.getAgents = getAgents;
 module.exports.createOrganisation = createOrganisation;
 module.exports.removeOrganisation = removeOrganisation;
 
