@@ -4,13 +4,56 @@ var mongoose = require('mongoose');
 var itemOp = require('../models/vicinityManager').item;
 var userAccountOp = require('../models/vicinityManager').userAccount;
 var contractOp = require('../models/vicinityManager').contract;
-var logger = require("../middlewares/logger");
+var logger = require('../middlewares/logger');
 var sync = require('../services/asyncHandler/sync');
 var commServer = require('../services/commServer/request');
-var ctHelper = require('../services/contracts/contracts');
+var ctChecks = require('../services/contracts/contractChecks.js');
 var audits = require('../services/audit/audit');
 
 // Public functions ================================
+
+/*
+A device changes its accessLevel
+I need to remove/add from/to the commServer groups accordingly
+*/
+function changePrivacy(ids, userId, userMail, c_id){
+  var cont = 0;
+  var knows = [];
+  return new Promise(function(resolve, reject) {
+    userAccountOp.findOne({_id:c_id}, {knows:1}, function(err, response){
+      if(err){reject(err);}
+      if(!response){resolve('Nothing to be done...');}
+      if(response.knows != 'undefined' || response.knows.length > 0){
+        getOnlyId(knows, response.knows);
+      }
+      sync.forEachAll(ids,
+        function(value, allresult, next, otherParams) {
+          processingPrivacy(value, otherParams, function(toContinue, array) {
+            if(toContinue){
+              for(var i = 0; i < array.length; i++){
+                allresult.push(array[i]);
+              }
+            }
+            cont++;
+            next();
+          });
+        },
+        function(allresult) {
+          if(cont === ids.length){
+            ctChecks.checkContracts(allresult, userId, userMail)
+            .then(function(response){resolve('Success');})
+            .catch(function(error){
+              logger.debug(error);
+              reject(error);
+            });
+          }
+        },
+        false,
+        {knows:knows}
+      );
+    });
+  });
+}
 
 /*
 An organisation stops being my partner
@@ -18,43 +61,36 @@ I need to remove my devices with friend data access Level
 To do so, I remove the group which shares with my friend and the group which
 my friend is using to share with me.
 */
-function removeFriend(my_id, friend_id, email){
+function removeFriend(my_id, friend_id, email, uid){
   logger.debug('removing friend');
-  var items1, items2, items;
+  var items1, items2;
+  var items = [];
   return new Promise(function(resolve, reject) {
-    itemOp.find({'cid.id':my_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':friend_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
+    itemOp.find({'cid.id':my_id, accessLevel: 1, 'hasContracts.contractingParty':friend_id}, {cid:1})
     .then(function(response){
       if(response){ items1 = response; }
-      return itemOp.find({'cid.id':friend_id, accessLevel: {$lt: 2}, 'hasContracts.contractingParty':my_id}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows');
+      return itemOp.find({'cid.id':friend_id, accessLevel: 1, 'hasContracts.contractingParty':my_id}, {cid:1});
     })
     .then(function(response){
       if(response){ items2 = response; }
-        items = items1.concat(items2);
-
-      if(items.length !== 0){ // Check if there is any item to modify
-        logger.debug('Start async handler...');
-        sync.forEachAll(items,
-          function(value, allresult, next, otherParams) {
-            // Removes invalid contracts from all affected devices
-            ctHelper.removeDevice(value, otherParams, function(value, result) {
-                allresult.push({value: value, error: result});
-                next();
-            });
-          },
-          function(allresult) {
-            if(allresult.length === items.length){
-              logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-              resolve({"error": false, "message": allresult });
-            }
-          },
-          false,
-          {email: email}
-        );
-      } else {
-        logger.debug('Unfriending: No items to delete');
-        logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
-        resolve({"error": false, "message": "Nothing to be removed..."});
-      }
+      if(items1.length > 0){
+        for(var i = 0; i < items1.length; i++){
+          items.push(items1[i]._id);
+        }
+        return changePrivacy(items, uid, email, my_id);
+      } else { return true; }
+    })
+    .then(function(response){
+      if(items2.length > 0){
+        items = [];
+        for(var j = 0; j < items2.length; j++){
+          items.push(items2[j]._id);
+        }
+        return changePrivacy(items, uid, email, friend_id);
+      } else { return true; }
+    })
+    .then(function(response){
+      resolve({error: false, message: 'Success'});
     })
     .catch(function(error){
       logger.debug('Error remove friend: ' + error);
@@ -69,195 +105,155 @@ I need check that all devices have an AL below users AL
 If not, I need to update all items and contracts accordingly
 */
 function changeUserAccessLevel(uid, newAccessLevel, email){
-  var items = [], updItems = [];
+  var ids = [];
+  var c_id;
   return new Promise(function(resolve, reject) {
-
-    itemOp.find({'uid.id':uid, accessLevel: {$gt: newAccessLevel}}, {hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
+    itemOp.find({'uid.id':uid, accessLevel: {$gt: newAccessLevel}}, {cid:1})
     .then(function(items){
-      var aux = {}, ids = [];
-      for(var i = 0; i < items.length; i++){
-        aux = items[i].toObject();
-        ids.push(aux._id);
-        aux.accessLevel = newAccessLevel;
-        updItems.push(aux);
+      if(items.length > 0){
+        c_id = items[0].cid.id;
+        for(var i = 0; i < items.length; i++){
+          ids.push(items[i]._id);
+        }
+        logger.debug(ids);
+        return itemOp.update({_id: {$in: ids}}, {$set: {accessLevel: newAccessLevel}}, {multi:true});
+      } else {
+        return false;
       }
-      return itemOp.update({_id: {$in: ids}}, {$set: {accessLevel: newAccessLevel}},{multi:true});
     })
     .then(function(response){
-      if(updItems.length !== 0){ // Check if there is any item to modify
-        logger.debug('Start async handler...');
-        sync.forEachAll(updItems,
-          function(value, allresult, next, otherParams) {
-            // Removes invalid contracts from all affected devices
-            ctHelper.removeDevice(value, otherParams, function(value, result) {
-                allresult.push({value: value, error: result});
-                next();
-            });
-          },
-          function(allresult) {
-            if(allresult.length === updItems.length){
-              logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-              resolve({"error": false, "message": allresult });
-            }
-          },
-          false,
-          {email: email}
-        );
+      if(!response){
+        return false;
       } else {
-        logger.debug('Change user accessLevel: No items to reduce accessLevel');
-        logger.warn({user:email, action: 'removeContract', message: "Nothing to be removed"});
-        resolve({"error": false, "message": "Nothing to be removed..."});
+        return changePrivacy(ids, uid, email, c_id);
+      }
+    })
+    .then(function(response){
+      if(!response){
+        resolve({error: false, message: 'Nothing to update'});
+      } else {
+        resolve({error: false, message: 'success'});
       }
     })
     .catch(function(error){
       logger.debug('Error remove friend: ' + error);
       reject({error: true, message: error});
     });
-
   });
 }
 
-/*
-A device changes its accessLevel
-I need to remove/add from/to the commServer groups accordingly
-*/
-function changePrivacy(updates){
-  var oldStatus = Number(updates.oldAccessLevel);
-  var newStatus = Number(updates.accessLevel);
-  return new Promise(
-    function(resolve, reject) {
-    logger.debug(oldStatus + ' to ' + newStatus);
-    findCase(oldStatus, newStatus, updates, function(error, result){
-      logger.debug('END change accessLevel');
-      logger.debug('Error: ' + error + ', Result: ' + result);
-      resolve({error: error, result:result});
-    });
-  });
-}
 
-/*
-Start contract group in commServer
-*/
-function createContract(id, descr){
-  var payload = {
-    name: id,
-    description: descr
-  };
-  return commServer.callCommServer(payload, 'groups', 'POST');
-}
-
-/*
-Add items to the contract
-*/
-function addItemsToContract(other, items){
-  return new Promise(function(resolve, reject) {
-    if(items.length > 0){ // Check if there is any item to delete
-      // logger.debug('Start async handler...');
-      sync.forEachAll(items,
-        function(value, allresult, next, otherParams) {
-          adding(value, otherParams, function(value, result) {
-              // logger.debug('END execution with value =', value, 'and result =', result);
-              allresult.push({value: value, result: result});
-              next();
-          });
-        },
-        function(allresult) {
-          if(allresult.length === items.length){
-            logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-            resolve({"error": false, "message": allresult });
-          }
-        },
-        false,
-        {ctid: other.ctid, id: other._id, mail: other.serviceProvider.uid.extid, orgOrigin: other.iotOwner.cid, OrgDest: other.serviceProvider.cid}
-      );
-    } else {
-      logger.warn({user:mail, action: 'addItemToContract', message: "No items to be added"});
-      resolve({"error": false, "message": "Nothing to be removed..."});
-    }
-  });
-}
-
-/*
-Remove contract group in commServer
-*/
-function cancelContract(id){
-  return commServer.callCommServer({}, 'groups/' + id, 'DELETE')
-  .catch(function(err){
-    return new Promise(function(resolve, reject) {
-      if(err.statusCode !== 404){
-        reject('Error in commServer: ' + err);
-      } else {
-        resolve(true);
-      }
-    });
-  });
-}
 
 // Private functions ================================
 
 /*
-Find how to resolve the accessLevel change in the device
-Based on old and new accessLevel captions
+Checking each item privacy change
 */
-function findCase(oldA, newA, updates, callback){
-  var id = updates.id || updates.o_id;
-  var item = {};
-  if((oldA === 2 && newA === 1) || (oldA === 2 && newA === 0) || (oldA === 1 && newA === 0)) {
-    itemOp.findOne({_id: id},{hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1}).populate('cid.id', 'knows')
-    .then( function(response){
-      item = response.toObject();
-      item.accessLevel = newA;
-      return ctHelper.removeDevice(item, {}, function(value, result){
-        callback(false, result);
-      });
-    })
-    .catch(function(err){
-      logger.debug(err);
-      callback(true, err);
-    });
-  } else {
-    logger.debug("No action required!");
-    callback(false, 'Nothing');
-  }
+function processingPrivacy(id, otherParams, callback){
+  logger.debug('processing...');
+  var knows = otherParams.knows || [];
+  var cts_id = [];
+  var cts_ctid = [];
+  var typeOfItem, oid, contracts;
+  var flag1, flag2;
+  itemOp.findOne({_id: id},{hasContracts:1, oid:1, cid:1, accessLevel:1, typeOfItem:1})
+  .then( function(response){
+    oid = response.oid;
+    typeOfItem = response.typeOfItem;
+    contracts = response.hasContracts;
+    if(contracts.length === 0){
+      callback(false, {});
+    } else {
+      for(var i = 0; i < contracts.length; i++){
+        flag1 = response.accessLevel === 0;
+        if(knows.length > 0){
+          flag2 = knows.indexOf(contracts[i].contractingParty) === -1 && response.accessLevel === 1;
+        } else {
+          flag2 = response.accessLevel !== 2;
+        }
+        if(flag1 || flag2){
+          cts_id.push(contracts[i].id);
+          cts_ctid.push(contracts[i].extid);
+        }
+      }
+      if(cts_id.length === 0){ callback(false, {}); }
+      return cts_id;
+    }
+  })
+  .then(function(response){
+    return itemOp.update(
+      {_id: id},
+      {$pull: {"hasContracts": {id: {$in: cts_id }}}},
+      {multi:true}
+    );
+  })
+  .then(function(response){
+    return contractOp.update(
+      {_id: {$in: cts_id }},
+      {$pull: {"iotOwner.items": {id:id}}},
+      {multi:true}
+    );
+  })
+  .then(function(response){
+    return contractOp.update(
+      {_id: {$in: cts_id }},
+      {$pull: {"serviceProvider.items": {id:id}}},
+      {multi:true}
+    );
+  })
+  .then(function(response){
+    return updateCommServer(cts_ctid, oid);
+  })
+  .then(function(response){
+    callback(true, cts_id);
+  })
+  .catch(function(error){
+    logger.debug(error);
+    callback(false, {}); // Do error control
+  });
 }
 
 /*
-Add items to contract group in commServer
+Async update commserver groups to adapt to privacy changes
 */
-function adding(oid, otherParams, callback){
-  // logger.debug('START execution with value =', oid);
-  commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST')
-  // .then(function(response){
-  //   var id = null;
-  //   for(var i = 0; i < otherParams.iotOwner.items.length;){
-  //     if(otherParams.iotOwner.items[i].extid === oid){id = otherParams.iotOwner.items[i].id;}
-  //   }
-  //   if(id === null){
-  //     new Promise(function(resolve, reject) { resolve(true); } );
-  //   } else {
-  //     return audits.putAuditInt(
-  //       id,
-  //       { orgOrigin: otherParams.orgDest,
-  //         orgDest:otherParams.orgOrigin,
-  //         auxConnection: {kind: 'contract', item: otherParams.id, extid: otherParams.ctid},
-  //         eventType: 51 }
-  //     );
-  //   }
-  // })
-  .then(function(ans){
-    logger.audit({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid });
-    callback(oid, "Success");})
-  .catch(function(err){
-      logger.error({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid, message: err });
-      callback(oid, 'Error: ' + err);
+function updateCommServer(cts, oid){
+  var cont = 0;
+  return new Promise(function(resolve, reject) {
+    sync.forEachAll(cts,
+      function(ctid, allresult, next, otherParams) {
+        commServer.callCommServer({}, 'users/' + otherParams.oid + '/groups/' + ctid, 'DELETE')
+        .then(function(response){
+          allresult.push({error: false, ctid: ctid});
+          cont++;
+          next();
+        })
+        .catch(function(err){
+          logger.debug(err);
+          allresult.push({error: true, ctid: ctid});
+          cont++;
+          next();
+        });
+      },
+      function(allresult) {
+        if(cont === cts.length){
+          resolve('Success');
+        }
+      },
+      false,
+      {oid: oid}
+    );
   });
+}
+
+/* get ids */
+function getOnlyId(array, toAdd){
+  for(var i = 0; i < toAdd.length; i++){
+    array.push(toAdd[i].id.toString());
+  }
 }
 
 // Function exports ================================
 
-module.exports.removeFriend = removeFriend;
 module.exports.changePrivacy = changePrivacy;
-module.exports.createContract = createContract;
-module.exports.cancelContract = cancelContract;
-module.exports.addItemsToContract = addItemsToContract;
 module.exports.changeUserAccessLevel = changeUserAccessLevel;
+module.exports.removeFriend = removeFriend;

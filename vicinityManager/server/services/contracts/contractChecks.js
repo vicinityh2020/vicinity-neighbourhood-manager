@@ -8,6 +8,9 @@ var contractOp = require('../../models/vicinityManager').contract;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
+var ctChecks = require("../../services/contracts/contractChecks.js");
+var ctHelper = require("../../services/contracts/contracts.js");
+var sync = require('../../services/asyncHandler/sync');
 
 // Public functions
 
@@ -109,7 +112,73 @@ function acceptCheck(ctid, uid, cid, callback){
   });
 }
 
+/*
+Modify contracts that need to remove items
+Check if the contracts need to be removed or just updated
+*/
+function checkContracts(ids, userId, userMail){
+  var cont = 0;
+  return new Promise(function(resolve, reject) {
+    if(ids.length !== 0){
+      sync.forEachAll(ids,
+        function(value, allresult, next, otherParams) {
+          checkingContract(value, otherParams, function(error, ctid) {
+            allresult.push({error: error, ctid: ctid});
+            cont++;
+            next();
+          });
+        },
+        function(allresult) {
+          if(cont === ids.length){
+            resolve('success');
+          }
+        },
+        false,
+        {userId: userId, userMail: userMail}
+      );
+    } else {
+      resolve('No contracts to modify');
+    }
+  });
+}
+
 // Private functions
+
+/*
+Send each contract to delete or to modify
+*/
+function checkingContract(ctid, otherParams, callback){
+  contractOp.findOne({_id: ctid, status: {$ne: 'deleted'}}, {'serviceProvider.items':1, 'iotOwner.items':1})
+  .then(function(response){
+    if(!response){
+      // TODO Notify/audit update contract
+      logger.debug("Contract already deleted...");
+      callback(false, ctid);
+    }else{
+      logger.debug(JSON.stringify(response));
+      var hasNoItems = response.serviceProvider.items.length * response.iotOwner.items.length === 0;
+      logger.debug(response.serviceProvider.items.length + '  ' + response.iotOwner.items.length );
+      if(hasNoItems){
+        logger.debug('remove contract total');
+        ctHelper.removing(ctid, function(err,response){
+          if(err){
+            callback(true, ctid);
+          } else {
+            callback(false, ctid);
+          }
+        });
+      } else {
+        // TODO Notify/audit update contract
+        callback(false, ctid);
+      }
+    }
+  })
+  .catch(function(err){
+    logger.debug('Error checking contract validity: ' + err);
+    callback(true, ctid);
+  });
+}
+
 
 /*
 Check that previous owners and service match with the data provided
@@ -222,3 +291,4 @@ module.exports.postCheck = postCheck;
 module.exports.updateCheck = updateCheck;
 module.exports.deleteCheck = deleteCheck;
 module.exports.acceptCheck = acceptCheck;
+module.exports.checkContracts = checkContracts;

@@ -7,8 +7,8 @@ var contractOp = require('../../models/vicinityManager').contract;
 var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
 var notifHelper = require('../../services/notifications/notificationsHelper');
-var sharingRules = require('../../services/sharingRules');
 var commServer = require('../../services/commServer/request');
+var sync = require('../../services/asyncHandler/sync');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
 //Functions
@@ -29,13 +29,13 @@ function accepting(id, callback){
                             {$set: { "hasContracts.$.approved" : true }});
   })
   .then(function(response){
-    return sharingRules.createContract(updItem.ctid, 'Contract: ' + updItem.type);
+    return createContract(updItem.ctid, 'Contract: ' + updItem.type);
   })
   .then(function(response){
     var items = [];
     getOnlyOid(items, updItem.serviceProvider.items);
     getOnlyOid(items, updItem.iotOwner.items);
-    return sharingRules.addItemsToContract(updItem, items);
+    return addItemsToContract(updItem, items);
   })
   .then(function(response){
     return notifHelper.createNotification(
@@ -156,7 +156,7 @@ function removing(id, callback){
     return contractOp.update({_id:id}, {$set: query});
   })
   .then(function(response){
-    return sharingRules.cancelContract(data.ctid);
+    return cancelContract(data.ctid);
   })
   .then(function(response){
     finalResp = response;
@@ -212,6 +212,7 @@ function removing(id, callback){
 Modify contracts related with removed device
 * @return {Callback}
 */
+// TODO REMOVE when visibility and remove updates ready
 function removeDevice(item, otherParams, callback){
   var ctids = [];
   var mycid = item.cid.id._id;
@@ -286,17 +287,6 @@ function contractFeeds(uid, callback){
 
 // Private Functions --------------------------------
 
-// function createNotif(mycid, othercid, thing, type){
-//   var notification = new notificationOp();
-//   notification.addressedTo.push(othercid, mycid);
-//   notification.sentBy = mycid;
-//   // notification.userId = "";
-//   notification.ctId = thing;
-//   notification.type = type;
-//   notification.status = 'info';
-//   return notification.save();
-// }
-
 function getOnlyOid(items, toAdd){
   for(var i = 0; i < toAdd.length; i++){
     items.push(toAdd[i].extid);
@@ -327,6 +317,79 @@ function contractValidity(ctids){
   })
   .catch(function(err){
     logger.debug('Error checking contract validity: ' + err);
+  });
+}
+
+/*
+Start contract group in commServer
+*/
+function createContract(id, descr){
+  var payload = {
+    name: id,
+    description: descr
+  };
+  return commServer.callCommServer(payload, 'groups', 'POST');
+}
+
+/*
+Add items to the contract
+*/
+function addItemsToContract(other, items){
+  return new Promise(function(resolve, reject) {
+    if(items.length > 0){ // Check if there is any item to delete
+      // logger.debug('Start async handler...');
+      sync.forEachAll(items,
+        function(value, allresult, next, otherParams) {
+          adding(value, otherParams, function(value, result) {
+              // logger.debug('END execution with value =', value, 'and result =', result);
+              allresult.push({value: value, result: result});
+              next();
+          });
+        },
+        function(allresult) {
+          if(allresult.length === items.length){
+            logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+            resolve({"error": false, "message": allresult });
+          }
+        },
+        false,
+        {ctid: other.ctid, id: other._id, mail: other.serviceProvider.uid.extid, orgOrigin: other.iotOwner.cid, OrgDest: other.serviceProvider.cid}
+      );
+    } else {
+      logger.warn({user:mail, action: 'addItemToContract', message: "No items to be added"});
+      resolve({"error": false, "message": "Nothing to be removed..."});
+    }
+  });
+}
+
+/*
+Remove contract group in commServer
+*/
+function cancelContract(id){
+  return commServer.callCommServer({}, 'groups/' + id, 'DELETE')
+  .catch(function(err){
+    return new Promise(function(resolve, reject) {
+      if(err.statusCode !== 404){
+        reject('Error in commServer: ' + err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+/*
+Add items to contract group in commServer
+*/
+function adding(oid, otherParams, callback){
+  // logger.debug('START execution with value =', oid);
+  commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST')
+  .then(function(ans){
+    logger.audit({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid });
+    callback(oid, "Success");})
+  .catch(function(err){
+      logger.error({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid, message: err });
+      callback(oid, 'Error: ' + err);
   });
 }
 

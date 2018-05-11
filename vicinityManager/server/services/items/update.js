@@ -65,7 +65,6 @@ Enable items
 */
 function enableItem(data, otherParams, callback){
   data.accessLevel = 0;
-  data.oldAccessLevel = 2;
   var cid = otherParams.cid;
   var c_id = otherParams.c_id;
   var userMail = otherParams.email;
@@ -95,9 +94,6 @@ function enableItem(data, otherParams, callback){
          return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
        })
       .then(function(response){
-        return sharingRules.changePrivacy(data);
-        })
-      .then(function(response){
         logger.debug("Item update process ended successfully...");
         logger.audit({user: userMail, action: 'EnableItem', item: o_id });
         callback(o_id, false, true, 'enabled');
@@ -117,7 +113,6 @@ Disable items
 */
 function disableItem(data, otherParams, callback){
   data.accessLevel = 0;
-  data.oldAccessLevel = 2;
   var cid = otherParams.cid;
   var c_id = otherParams.c_id;
   var userMail = otherParams.email;
@@ -147,10 +142,12 @@ function disableItem(data, otherParams, callback){
       .then(function(response){ return manageUserItems(oid, o_id, data.cid, userId, 'disabled'); })
       .then(function(response){
          var query = {status: data.status, accessLevel: data.accessLevel};
-         return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
+         return itemOp.update({ _id : o_id}, {$set: query});
        })
       .then(function(response){
-        return sharingRules.changePrivacy(data);
+        var ids = [];
+        ids.push(o_id);
+        return sharingRules.changePrivacy(ids, userId, userMail, c_id);
         })
       .then(function(response){
         logger.debug("Item update process ended successfully...");
@@ -179,6 +176,7 @@ function updateItem(data, otherParams, callback){
   var oid;
   var o_id = data.o_id;
   var query = {};
+  var oldAccessLevel;
 
   itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1, status:1}, function(err, response){ // Get item creds to avoid forging
     var status = response.status;
@@ -191,7 +189,6 @@ function updateItem(data, otherParams, callback){
       callback(o_id, false, false, 'Item needs to be enabled to change accessLevel');
     } else if(canChange){
       if(data.hasOwnProperty('accessLevel')){
-        if(!data.hasOwnProperty('oldAccessLevel')) data.oldAccessLevel = 2; // Assume worst case scenario
         userOp.findOne({_id:userId}, {accessLevel:1}, function(err, response){
           if(err){
             callback(o_id, true, false, err);
@@ -200,9 +197,16 @@ function updateItem(data, otherParams, callback){
             callback(o_id, false, false, "User privacy is too low...");
           } else {
             query = {accessLevel: data.accessLevel};
-            itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
+            itemOp.findOneAndUpdate({ _id : o_id}, { $set: query }) // returns new document defaults = false
             .then(function(response){
-              return sharingRules.changePrivacy(data);
+              oldAccessLevel = response.accessLevel;
+              if(oldAccessLevel > data.accessLevel){
+                var ids = [];
+                ids.push(o_id);
+                return sharingRules.changePrivacy(ids, userId, userMail, c_id);
+              } else {
+                return false;
+              }
             })
             .then(function(response){
               return audits.create(
@@ -210,7 +214,7 @@ function updateItem(data, otherParams, callback){
                 { kind: 'item', item: o_id, extid: oid },
                 { },
                 45,
-                "From " + clasify(Number(data.oldAccessLevel)) + " to " + clasify(Number(data.accessLevel))
+                "From " + clasify(oldAccessLevel) + " to " + clasify(Number(data.accessLevel))
               );
             })
             .then(function(response){
@@ -219,7 +223,7 @@ function updateItem(data, otherParams, callback){
               callback(o_id, false, true, 'accessLevel updated');
             })
             .catch(function(err){
-              logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
+              logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err.message});
               callback(o_id, true, false, err);
             });
           }
