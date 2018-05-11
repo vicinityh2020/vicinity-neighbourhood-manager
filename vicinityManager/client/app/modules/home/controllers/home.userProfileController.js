@@ -264,18 +264,32 @@ $scope.backToEditAL = function () {
 
 $scope.saveNewAccess = function () {
   var lvl = Number($('select#editAccessName').val()) - 1;
-  if (Number($('select#editAccessName').val()) >= 0){
-      userAPIService.editInfoAboutUser($stateParams.userAccountId,
-        {'data': {accessLevel: lvl}, 'type': 'visibility'})
-        .then(
-          function successCallback(response){
-            $scope.accessLevel = Number(response.data.message.accessLevel);
-            $scope.accessLevelCaption = getCaption($scope.accessLevel);
-            $scope.backToEditAL();
-          }
-        );
+  if($scope.accessLevel > lvl){
+    if(confirm('Are you sure? May affect existing contracts.')){  // TODO
+      if(Number($('select#editAccessName').val()) >= 0){
+        $scope.saving();
       }
-    };
+    } else {
+      $scope.backToEditAL();
+    }
+  } else {
+    if (Number($('select#editAccessName').val()) >= 0){
+      $scope.saving();
+    }
+  }
+};
+
+$scope.saving = function(){
+  userAPIService.editInfoAboutUser($stateParams.userAccountId,
+  {'data': {accessLevel: lvl}, 'type': 'visibility'})
+  .then(
+    function successCallback(response){
+      $scope.accessLevel = Number(response.data.message.accessLevel);
+      $scope.accessLevelCaption = getCaption($scope.accessLevel);
+      $scope.backToEditAL();
+    }
+  );
+};
 
 function getCaption(lvl){
   var ret;

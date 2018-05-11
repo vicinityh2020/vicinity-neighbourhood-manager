@@ -167,6 +167,7 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
     };
 
     $scope.cancelNeighbourship = function() {
+      if(confirm('Are you sure? May affect existing contracts.')){
         userAccountAPIService.cancelNeighbourship($stateParams.companyAccountId)
             .then(
               function successCallback(response){
@@ -179,6 +180,7 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
             },
             function errorCallback(response){}
           );
+        }
     };
 
 // Refresh $scope =================
@@ -308,7 +310,7 @@ $scope.updateCompany = function(data){
       );
     }
   };
-  
+
   // Avatar change functions ==============
 
   var base64String = "";
