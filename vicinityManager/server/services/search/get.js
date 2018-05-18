@@ -43,7 +43,7 @@ var asyncHandler = require('../../services/asyncHandler/sync');
       projection.name = 1;
       projection.uid = 1;
       projection.cid = 1;
-      projection.email = 1;        
+      projection.email = 1;
     } else { projection.authentication = 0; }
 
     userAccountOp.findById(cid, {knows:1})
@@ -97,6 +97,11 @@ var asyncHandler = require('../../services/asyncHandler/sync');
     })
     .then(function(data){
       if(api){
+        for(var i=0; i<data.length; i++){
+          data[i].avatar = null;
+          data[i].hasContracts = null;
+          data[i].hasAudits = null;
+        }
         callback(false, data);
       } else {
         var dataWithAdditional = itemProperties.getAdditional(data,cid,friends);

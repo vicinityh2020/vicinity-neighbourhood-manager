@@ -13,27 +13,33 @@ Receives following parameters:
 - Requester UID and CID
 */
 function getUserInfo(uid, myUid, myCid, callback) {
-  userAccountOp.findOne({_id: myCid}, {accountOf:1})
+  var friends = [];
+  var data;
+  userAccountOp.findOne({_id: myCid}, {knows:1})
   .then(function(response){
     if(!response){
       callback(false, 'Wrong cid provided...');
     } else {
-      if(uid.toString() === myUid.toString()){ // Checking own info
-        userOp.findOne({_id:uid}, {name:1, email:1, cid:1, occupation:1, accessLevel:1, hasItems:1, hasContracts:1}, function(err, response){
-          if(err){ callback(true, err); } else { callback(false, response); }
-          callback(false, response);
-        });
-      } else {
-        var users = [];
-        getIds(response.accountOf, users);
-        if(users.indexOf(uid) !== -1){
-          userOp.findOne({_id:uid}, {name:1, email:1, cid:1, occupation:1, accessLevel:1, hasItems:1, hasContracts:1}, function(err, response){
-            if(err){ callback(true, err); } else { callback(false, response); }
-          });
+      getIds(response.knows, friends);
+      userOp.findOne({_id:uid}, {name:1, email:1, cid:1, occupation:1, accessLevel:1, hasItems:1, hasContracts:1, 'authentication.principalRoles':1 }, function(err, response){
+        data = response;
+        logger.debug(response);
+        if(err){
+          callback(true, err);
         } else {
-          callback(false, 'Unauthorized');
+          if(myUid.toString() === uid.toString() || myCid.toString() === data.cid.id.toString()){
+            callback(false, data);
+          } else if((friends.indexOf(data.cid.id.toString()) !== -1 && data.accessLevel === 1) || data.accessLevel === 2){
+            data.accessLevel = null;
+            data.hasItems = null;
+            data.hasContracts = null;
+            data.authentication.principalRoles = null;
+            callback(false, data);
+          } else {
+            callback(false, 'Nothing to show');
+          }
         }
-      }
+      });
     }
   })
   .catch(function(err){
@@ -41,25 +47,32 @@ function getUserInfo(uid, myUid, myCid, callback) {
   });
 }
 
-function getOne(o_id, callback) {
-  userOp.findById(o_id, {'authentication.hash':0},function(err, data){
-    if (err) {
-      logger.debug(err);
-      callback(true, err);
-    } else {
-      callback(false, data);
-    }
+function getOne(o_id, api, callback) {
+  var projection;
+  if(api){ projection = "name email cid accessLevel"; }
+  else { projection = "-authentication.hash"; }
+  userOp.findById(o_id).select(projection)
+  .then(function(data){
+    callback(false, data);
+  })
+  .catch(function(err){
+    logger.debug(err);
+    callback(true, err);
   });
 }
 
-function getAll(othercid, mycid, callback) {
+function getAll(othercid, mycid, api, callback) {
   var friends = [], users = [];
-  userAccountOp.findById(othercid, {knows:1, 'accountOf.id':1}).populate('accountOf.id', 'avatar name email occupation authentication.principalRoles location status accessLevel')
+  var projection;
+  if(api){ projection = "name email cid occupation accessLevel"; }
+  else { projection = "avatar name email occupation authentication.principalRoles location status accessLevel"; }
+  userAccountOp.findById(othercid, {knows:1, 'accountOf.id':1}).populate('accountOf.id', projection)
   .then(function(response){
     var parsedData = response.toObject();
-    friends = parsedData.knows;
+    friends = parsedData.knows !== 'undefined' ?  parsedData.knows : [];
     users = parsedData.accountOf;
     var relation = myRelationWithOther(mycid, othercid, friends);
+
     if(relation === 1){
       users = users.filter(function(i){return i.id.accessLevel >= 1;});
     } else if(relation === 2){
@@ -76,7 +89,8 @@ function getAll(othercid, mycid, callback) {
 // Private functions
 
 function myRelationWithOther(a,b,c){
-  var d = getIds(c);
+  var d = [];
+  getIds(c, d);
   d = d.join();
   d = d.split(',');
   if(a.toString() === b.toString()){ return 0; } // Same company
@@ -84,12 +98,10 @@ function myRelationWithOther(a,b,c){
   else { return 2; } // Other company
 }
 
-function getIds(array){
-  var a = [];
+function getIds(array, friends){
   for(var i = 0; i < array.length; i++){
-    a.push(array[i].id);
+    friends.push(array[i].id.toString());
   }
-  return a;
 }
 
 // Export functions

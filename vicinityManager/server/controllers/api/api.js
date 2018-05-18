@@ -3,6 +3,7 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var userOp = require("../../models/vicinityManager").user;
+var userAccountOp = require("../../models/vicinityManager").userAccount;
 
 var sLogin = require("../../services/login/login");
 var sRegister = require("../../services/registrations/register.js");
@@ -40,14 +41,38 @@ function authenticate(req, res, next) {
   var userName = req.body.username;
   var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
   var pwd = req.body.password;
-  sLogin.authenticate(userName, userRegex, pwd, function(err, response){
-    res.json({error: err, message: response});
+  sLogin.authenticate(userName, userRegex, pwd, function(err, response, other){
+    if(err){
+      res.json({error: err, message: response});
+    } else {
+      response.uid = other.uid;
+      response.cid = other.cid;
+      res.json({error: err, message: response});
+    }
   });
 }
 
 /*
 Organisations --------------------------------------------------
 */
+
+/**
+ * Get my organisation
+ *
+ * @param null
+ *
+ * @return {Object} My organisation
+ */
+function getMyOrganisation(req, res, next) {
+  var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  userAccountOp.findOne({_id: cid}, {name:1, cid:1, accountOf:1, knows:1, hasNodes:1}, function(err, response){
+    if(!err){
+      res.json({error: false, message: response});
+    } else {
+      res.json({error: true, message: err});
+    }
+  });
+}
 
 /**
  * Get all organisations
@@ -59,7 +84,8 @@ Organisations --------------------------------------------------
 function getOrganisations(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = 0; // 0 all, 1 friends, else not friends
-  sGetOrganisation.getAll(cid, type, function(err, response){
+  var api = true;
+  sGetOrganisation.getAll(cid, type, api, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -74,7 +100,8 @@ function getOrganisations(req, res, next) {
 function getFriends(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = 1; // 0 all, 1 friends, else not friends
-  sGetOrganisation.getAll(cid, type, function(err, response){
+  var api = true;
+  sGetOrganisation.getAll(cid, type, api, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -89,7 +116,8 @@ function getFriends(req, res, next) {
 function getUsers(req, res, next) {
   var othercid = mongoose.Types.ObjectId(req.params.cid);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  sGetUser.getAll(othercid, mycid, function(err,response){
+  var api = true;
+  sGetUser.getAll(othercid, mycid, api, function(err,response){
     res.json({error: err, message: response});
   });
 }
@@ -189,7 +217,8 @@ Users --------------------------------------------------
 */
 
 function getUser(req, res, next) {
-  var uid = mongoose.Types.ObjectId(req.params.uid);
+  var reqId = req.params.uid || req.body.decoded_token.uid;
+  var uid = mongoose.Types.ObjectId(reqId);
   var myUid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   sGetUser.getUserInfo(uid, myUid, myCid, function(err, response){
@@ -262,8 +291,10 @@ function updateUser(req, res, next) {
         sPutUser.putOne(o_id, updates, userMail, userId, type, function(err, response, success){
           if(err){
             res.json({error: err, message: response, success: success});
+          } else if(!success){
+            res.json({error: err, message: response, success: success});
           } else {
-            res.json({error: err, message: 'updated', success: success});
+            res.json({error: err, message: "User updated: " + response.email, success: success});
           }
         });
       }
@@ -288,7 +319,7 @@ function removeUser(req, res, next) {
   uid.push(mongoose.Types.ObjectId(req.params.uid));
   if(req.body.decoded_token.roles.indexOf('administrator') === -1){
     res.json({'error': false, 'message': "Need admin privileges to remove a user..."});
-  } else if(req.params.uid === req.body.decoded_token.sub){
+  } else if(req.params.uid.toString() === req.body.decoded_token.uid.toString()){
     res.json({'error': false, 'message': "You cannot remove yourself..."});
   } else {
     delUser.isMyUser(my_cid, req.params.uid) // Check if user belongs to me
@@ -369,8 +400,8 @@ Agents --------------------------------------------------
  * adid
  * @return {Object} TDs -- Array of Objects, adid -- String
  */
-function getAgentUsers(req, res, next) {
-  var adid = req.body;
+function getAgentItems(req, res, next) {
+  var adid = req.params.id;
   // TODO check if the requester org is authorized to see the agent items
   sGetNodeItems.getNodeItems(adid, function(err, response){
     res.json({error: err, message: response});
@@ -548,6 +579,18 @@ function contractFeeds(req, res, next) {
 }
 
 /**
+ * Get contract info
+ * @param {String} ctid
+ *
+ * @return {Object} Contract Info
+ */
+function contractInfo(req, res, next) {
+  ctHelper.contractInfo(req.params.ctid, req.body.decoded_token.uid, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/**
  * Post contract
  *
  * @param {String} readWrite
@@ -583,7 +626,7 @@ function requestContract(req, res, next) {
  *
  * @param {String} type - update/delete/accept
  * @param {String} ctid
- *
+ * @param {Object} body - only in case of update
  * IF TYPE IS Update add:
  * cidService, uidService, [oidService]
  * cidDevice, uidDevice, [oidDevices]
@@ -706,11 +749,11 @@ function searchItems(req, res, next) {
 
 module.exports.authenticate = authenticate;
 
+module.exports.getMyOrganisation = getMyOrganisation;
 module.exports.getOrganisations = getOrganisations;
 module.exports.getFriends = getFriends;
 module.exports.getUsers = getUsers;
 module.exports.getItems = getItems;
-module.exports.getAgents = getAgents;
 module.exports.createOrganisation = createOrganisation;
 module.exports.removeOrganisation = removeOrganisation;
 
@@ -725,7 +768,7 @@ module.exports.createItem = createItem;
 module.exports.updateItem = updateItem;
 module.exports.removeItem = removeItem;
 
-module.exports.getAgentUsers = getAgentUsers;
+module.exports.getAgentItems = getAgentItems;
 module.exports.createAgent = createAgent;
 module.exports.removeAgent = removeAgent;
 
@@ -734,6 +777,7 @@ module.exports.requestPartnership = requestPartnership;
 module.exports.managePartnership = managePartnership;
 
 module.exports.contractFeeds = contractFeeds;
+module.exports.contractInfo = contractInfo;
 module.exports.requestContract = requestContract;
 module.exports.manageContract = manageContract;
 

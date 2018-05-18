@@ -80,16 +80,7 @@ var user = new Schema({
   2 - Everyone */
   authentication: {
     hash: String,
-    principalRoles: [ String ]
-    /* principalRoles: {type: String,
-                        enum: [
-                          "user",
-                          "administrator",
-                          "infrastructure operator",
-                          "service provider",
-                          "system integrator",
-                          "devOps"]}
-    */
+    principalRoles: { type: [String], required: true }
   },
   hasNotifications: [{ type: ObjectId, ref: 'notification' }],
   hasAudits: [ auditSchema ],
@@ -298,7 +289,6 @@ item.index({name: 1}, { unique: false });
 item.index({oid: 1}, { unique: false });
 node.index({adid: 1}, { unique: false });
 contract.index({ctid: 1}, { unique: true});
-
 
 // Exports models  ===============================
 

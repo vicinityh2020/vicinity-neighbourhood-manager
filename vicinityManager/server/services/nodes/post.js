@@ -20,7 +20,7 @@ function postOne(raw, company_id, cid, userMail, userId, callback){
   db.name = raw.name;
   db.eventUri = raw.eventUri || "NA";
   db.agent = raw.agent || "NA";
-  db.type = "generic.adapter.vicinity.eu"; // raw.type || "NA";
+  db.type = raw.type === "sharq" ? "generic.adapter.sharq.eu" : "generic.adapter.vicinity.eu";
   db.status = "active";
   db.cid = {"id": company_id, "extid": cid};
   db.adid = uuid();
@@ -44,7 +44,7 @@ function postOne(raw, company_id, cid, userMail, userId, callback){
       })
     .then(function(response){
       logger.audit({user: userMail, action: 'createNode', item: data._id });
-      callback(false, db.adid); })
+      callback(false, {adid: db.adid, id: db._id, type: db.type}); })
     .catch(function(err){
       logger.warn({user: userMail, action: 'createNode', message: err});
       callback(true, err);

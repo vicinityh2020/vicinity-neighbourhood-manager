@@ -7,14 +7,15 @@ router
 //Authenticate
   .post('/authenticate', apiController.authenticate)
 //Organisation
+  .get('/organisation', jwt, apiController.getMyOrganisation)
   .get('/organisation/all', jwt, apiController.getOrganisations)
   .get('/organisation/friends', jwt, apiController.getFriends)
   .get('/organisation/:cid/users', jwt, apiController.getUsers)
   .get('/organisation/:cid/items', jwt, apiController.getItems)
-  .get('/organisation/agents', jwt, apiController.getAgents)
   .post('/organisation', apiController.createOrganisation)
   .delete('/organisation', jwt, apiController.removeOrganisation)
 //Users
+  .get('/users', jwt, apiController.getUser)
   .get('/users/:uid', jwt, apiController.getUser)
   .get('/users/:cid/items/:uid', jwt, apiController.getUserItems)
   .post('/users/', jwt, apiController.createUser)
@@ -26,7 +27,7 @@ router
   .put('/items', jwt, apiController.updateItem)
   .delete('/items/:id', jwt, apiController.removeItem)
 //Agents
-  .get('/agents/:id/items', jwt, apiController.getAgentUsers)
+  .get('/agents/:id/items', jwt, apiController.getAgentItems)
   .post('/agents/', jwt, apiController.createAgent)
   .delete('/agents/:id', jwt, apiController.removeAgent)
 //Friending
@@ -35,6 +36,7 @@ router
   .put('/partnership', jwt, apiController.managePartnership) // In payload --> accept, reject, cancel
 //Contracts
   .get('/contract', jwt, apiController.contractFeeds)
+  .get('/contract/:ctid/items', jwt, apiController.contractInfo)
   .post('/contract', jwt, apiController.requestContract)
   .put('/contract/:id', jwt, apiController.manageContract) // In payload --> accept, reject, cancel
 //Search

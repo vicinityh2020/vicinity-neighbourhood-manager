@@ -21,7 +21,7 @@ function postCheck(data, uid, cid, callback){
   var result, resultUid, resultCid; // Boolean; return true if all the conditions meet
   var items = [];
 
-// Check that IoTOwner is matches with the user doing the contract request
+// Check that IoTOwner matches with the user doing the contract request
   resultUid = uid.toString() === data.uidDevice.id.toString();
   resultCid = cid.toString() === data.cidDevice.id.toString();
   result = resultUid && resultCid;

@@ -7,23 +7,30 @@ var logger = require("../../middlewares/logger");
 /*
 Get all organisations meeting the  user request (All, friends, no friends)
 */
-function getAll(cid, type, callback) {
+function getAll(cid, type, api, callback) {
+  var projection = {};
+  var qry = {};
+  if(api){
+    projection = "name cid";
+  } else {
+    projection = "-status";
+  }
   if(type === 0){
-    userAccountOp.find({status: { $not: /^del.*/} }) // if the field status exists, is also equal to deleted
+    qry = {status: { $not: /^del.*/} };
+    userAccountOp.find(qry).select(projection) // if the field status exists, is also equal to deleted
     .then( function(data) { callback(false, data); })
     .catch( function(err) { callback(true, err); });
   } else {
     userAccountOp.findById(cid, {knows: 1})
     .then( function(data){
       var parsedData = data.toObject();
-      var qry;
       var friends = [];
       if(parsedData){
         getIds(parsedData.knows, friends);
       }
-      if(type === 1){ qry = {_id: {$in: friends}, status: { $not: /^del.*/} }; }
-      else { qry = {_id: {$not: {$in: friends} }, status: { $not: /^del.*/} }; }
-      return userAccountOp.find(qry); // if the field status exists, is also equal to deleted
+      if(type === 1){ qry = {_id: {$in: friends}, status: { $not: /^del.*/}}; }
+      else { qry = {_id: {$not: {$in: friends} }, status: { $not: /^del.*/}}; }
+      return userAccountOp.find(qry).select(projection); // if the field status exists, is also equal to deleted
     })
     .then( function(data){callback(false, data); })
     .catch( function(err){callback(true, err); });

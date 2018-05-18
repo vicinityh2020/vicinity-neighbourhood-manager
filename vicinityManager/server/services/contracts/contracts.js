@@ -263,10 +263,11 @@ function removeDevice(item, otherParams, callback){
 
 /**
 * Contract feeds
+* @param {String} uid
+*
 * @return {Array} Contract requests
 */
 function contractFeeds(uid, callback){
-  logger.debug(uid);
   userOp.findOne({_id: uid}, {hasContracts:1})
   .then(function(response){
     logger.debug(response);
@@ -277,6 +278,31 @@ function contractFeeds(uid, callback){
       }
     }
     callback(false, openContracts);
+  })
+  .catch(function(err){
+    logger.debug(err);
+    callback(true, err);
+  });
+}
+
+/**
+* Contract feeds
+* @param {String} ctid
+* @param {String} uid
+*
+* @return {Object} Contract instance
+*/
+function contractInfo(ctid, uid, callback){
+  var query = checkInput(ctid);
+  contractOp.findOne(query)
+  .then(function(response){
+    if(!response){
+      callback(false, "The contract with: " + JSON.stringify(query) + " could not be found...");
+    } else if(response.iotOwner.uid.id.toString() !== uid.toString() && response.serviceProvider.uid.id.toString() !== uid.toString()) {
+      callback(false, "You are not part of the contract with ctid: " + response.ctid);
+    } else {
+      callback(false, response);
+    }
   })
   .catch(function(err){
     logger.debug(err);
@@ -393,6 +419,17 @@ function adding(oid, otherParams, callback){
   });
 }
 
+// Private functions
+function checkInput(ctid){
+  try{
+    var id = mongoose.Types.ObjectId(ctid);
+    return {_id: id};
+  }
+  catch(err){
+    return {ctid: ctid};
+  }
+}
+
 // modules exports
 
 module.exports.removing = removing;
@@ -400,3 +437,4 @@ module.exports.removeDevice = removeDevice;
 module.exports.creating = creating;
 module.exports.accepting = accepting;
 module.exports.contractFeeds = contractFeeds;
+module.exports.contractInfo = contractInfo;

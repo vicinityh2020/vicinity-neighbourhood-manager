@@ -23,27 +23,30 @@ function authenticate(userName, userRegex, pwd, callback) {
       } else {
         myUser = response[0];
         hash = myUser.authentication.hash;
-        return bcrypt.compare(pwd, hash);
-      }
-    })
-    .then(function(response){
-      if ((userName.toLowerCase() === myUser.email.toLowerCase()) && response){
-        o_id = mongoose.Types.ObjectId(myUser._id);
-        userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1, cid:1}, function(err, response){
-          var credentials = jwt.jwtEncode(myUser._id, userName, myUser.authentication.principalRoles, response[0]._id, response[0].cid);
-          callback(false, credentials);
-          logger.audit({user: userName, action: 'login'});
+        bcrypt.compare(pwd, hash)
+        .then(function(response){
+          if ((userName.toLowerCase() === myUser.email.toLowerCase()) && response){
+            o_id = mongoose.Types.ObjectId(myUser._id);
+            userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1, cid:1}, function(err, response){
+              var credentials = jwt.jwtEncode(myUser._id, userName, myUser.authentication.principalRoles, response[0]._id, response[0].cid);
+              callback(false, credentials, {uid: myUser._id, cid: response[0]._id });
+              logger.audit({user: userName, action: 'login'});
+            });
+          } else {
+            logger.warn({user: userName, action: 'login', message: 'Wrong password'});
+            callback(true, "Wrong password");
+          }
+        })
+        .catch(function(err){
+          logger.debug(err);
+          callback(true, err);
         });
-      } else {
-        logger.warn({user: userName, action: 'login', message: 'Wrong password'});
-        callback(true, "Wrong password");
       }
     })
     .catch(function(err){
       logger.debug(err);
       callback(true, err);
     });
-
    } else {
     logger.warn({user: userName, action: 'login', message: 'Missing fields'});
     callback(true, "Missing email or password");

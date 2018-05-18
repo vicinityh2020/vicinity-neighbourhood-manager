@@ -8,7 +8,8 @@ var sGetUser = require('../../services/users/getUsers');
 
 function getOne(req, res, next) {
   var o_id = mongoose.Types.ObjectId(req.params.id);
-  sGetUser.getOne(o_id, function(err,response){
+  var api = false;
+  sGetUser.getOne(o_id, api, function(err,response){
     res.json({error: err, message: response});
   });
 }
@@ -16,7 +17,8 @@ function getOne(req, res, next) {
 function getAll(req, res, next) {
   var othercid = mongoose.Types.ObjectId(req.params.id);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  sGetUser.getAll(othercid, mycid, function(err,response){
+  var api = false;
+  sGetUser.getAll(othercid, mycid, api, function(err,response){
     res.json({error: err, message: response});
   });
 }

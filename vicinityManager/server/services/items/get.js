@@ -48,6 +48,11 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
         callback(true, err);
       } else {
         if(api){
+          for(var i = 0; i < data.length; i++){
+            data[i].avatar = null;
+            data[i].hasContracts = null;
+            data[i].hasAudits = null;
+          }
           callback(false, data);
         } else {
           var dataWithAdditional = itemProperties.getAdditional(data,cid,friends); // Not necessary to know friends because I am always owner

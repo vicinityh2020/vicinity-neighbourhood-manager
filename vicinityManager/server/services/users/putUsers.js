@@ -19,9 +19,9 @@ function putOne(uid, updates, userMail, userId, type, callback) {
       if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   } else if(updates.hasOwnProperty('roles') && type === "roles"){
-    putRoles(uid, updates, userMail, userId, function(err, response, success){
-      if(err){ callback(true, err, success); } else { callback(false, response, success); }
-    });
+      putRoles(uid, updates, userMail, userId, function(err, response, success){
+        if(err){ callback(true, err, success); } else { callback(false, response, success); }
+      });
   } else if(updates.hasOwnProperty('newPwd') && type === "password"){
     putPassword(uid, updates, userMail, userId, function(err, response, success){
       if(err){ callback(true, err, success); } else { callback(false, response, success); }
@@ -58,34 +58,43 @@ function putVisibility(uid, updates, userMail, userId, callback) {
 Change the user Roles
 */
 function putRoles(uid, updates, userMail, userId, callback) {
-  var data = {"authentication.principalRoles": updates.roles}; //Ensure only right fields sent to update
+  var data = {}; // Initialize variable to hold actual updates
   userOp.findOne({_id: uid}, {hasItems:1, 'authentication.principalRoles':1, cid:1, email:1}).populate('hasItems.id', 'typeOfItem').exec(function(err, response){
-    var cid = response.cid;
-    var ownerMail = response.email;
     if(err){
       logger.debug('err: ' + err);
       callback(true, err, false);
     } else {
-      response = response.toObject();
-      if(response.authentication.principalRoles.indexOf('devOps') !== -1){
+      responseParsed = response.toObject();
+      var cid = responseParsed.cid;
+      var ownerMail = responseParsed.email;
+      // Complete update payload -- Check if something is missing
+      if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1){
          updates.roles.push('devOps'); // If it is devOps keep status
-         data = {"authentication.principalRoles": updates.roles};
        }
-      var couldServices = updates.roles.indexOf('service provider') === -1;
-      var couldDevs = updates.roles.indexOf('infrastructure operator') === -1;
-      var canServices = response.authentication.principalRoles.indexOf('service provider') === -1;
-      var canDevs = response.authentication.principalRoles.indexOf('infrastructure operator') === -1;
-      var wasAdmin = updates.roles.indexOf('administrator') === -1;
-      var isAdmin = response.authentication.principalRoles.indexOf('administrator') === -1;
+       if(updates.roles.indexOf('user') === -1){
+          updates.roles.push('user'); // User has to be always a role
+        }
+      var data = {"authentication.principalRoles": updates.roles}; //Ensure only right fields sent to update
+
+      var canServices = updates.roles.indexOf('service provider') !== -1;
+      var canDevs = updates.roles.indexOf('infrastructure operator') !== -1;
+      var couldServices = responseParsed.authentication.principalRoles.indexOf('service provider') !== -1;
+      var couldDevs = responseParsed.authentication.principalRoles.indexOf('infrastructure operator') !== -1;
+      var willAdmin = updates.roles.indexOf('administrator') !== -1;
+      var isAdmin = responseParsed.authentication.principalRoles.indexOf('administrator') !== -1;
       var canChange = true;
 
-      if(wasAdmin || !isAdmin) canChange = response.oid !== userMail; // Remove admin role only if a diff admin does it
+      if(willAdmin !== isAdmin){ canChange = ownerMail !== userMail; } // Only a different admin can modify my admin role
+
+      var invalidRoles = checkRoles(updates.roles);
 
       if(!canChange){
-        callback(false, 'At least one admin needed', false);
+        callback(false, 'Only a different administrator can modify your administrator role', false);
+      } else if(invalidRoles.invalid){
+        callback(false, invalidRoles.message + ' is an invalid role...', false);
       } else if((couldServices && !canServices) || (couldDevs && !canDevs)){
         var items = [];
-        getItems(response.hasItems, canDevs, canServices, items);
+        getItems(responseParsed.hasItems, canDevs, canServices, items);
         sUpdItems.updateManyItems(items, updates.roles, userMail, cid.extid, cid.id, userId, function(err, response){
           if(!err){
             doUpdate(uid, data, userMail, userId, function(err, response, success){
@@ -192,6 +201,20 @@ function getItems(allItems, canDevs, canServices, items){
     if(!canDevs && allItems[i].id.typeOfItem === 'device') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'device'});
     if(!canServices && allItems[i].id.typeOfItem === 'service') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'service'});
    }
+}
+
+/*
+Validates Roles
+If role does not exist throw error message
+*/
+function checkRoles(roles){
+  var possibleRoles =  ["service provider", "infrastructure operator", "administrator", "system integrator", "devOps", "user"];
+  for(var i = 0; i < roles.length; i++){
+    if(possibleRoles.indexOf(roles[i]) === -1){
+      return {invalid: true, message: roles[i]};
+    }
+  }
+  return {invalid: false, message: null};
 }
 
 // Export modules
