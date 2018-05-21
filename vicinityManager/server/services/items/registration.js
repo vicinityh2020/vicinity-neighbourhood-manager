@@ -20,20 +20,23 @@ Message producing the req is sent by the agent with thingDescriptions
 */
 function create(data, callback){
   var objectsArray = data.thingDescriptions;
-  var adid = typeof data.adid !== undefined ? data.adid : data.agid;
+  var adid = typeof data.adid !== 'undefined' ? data.adid : data.agid;
+
   // console.time("ALL REGISTRATION EXECUTION");
   // console.time("REGISTRATION FIX PART");
 
-  nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1},
+  nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1, type:1},
     function(err,data){
         if(err){
           callback(true, "Error in Mongo: " + err);
         }else if(!data){
-          callback(true, "Invalid adid identificator");
+          callback(true, "Invalid adid/agid identificator");
         } else {
           var nodeId = data._id;
           var cid = data.cid;
+          var doSemanticValidation = config.enabledAdapters.indexOf(data.type[0]) !== -1;
           var semanticTypes = {};
+
           // Get available item types in the semantic repository
           semanticRepo.getTypes()
           .then(function(response){
@@ -43,6 +46,7 @@ function create(data, callback){
             semanticTypes.services = response.services;
             semanticTypes.devices = response.devices;
             // console.timeEnd("REGISTRATION FIX PART");
+
             // Process new items internally
             sync.forEachAll(objectsArray,
               function(value, allresult, next, otherParams) { // Process all new items
@@ -60,27 +64,23 @@ function create(data, callback){
                     data.hasItems = response;
                     return data.save();
                   })
-                  .then(function(response){ return deviceActivityNotif(cid); })
                   .then(function(response){ return createAuditLogs(cid, allresult, adid); })
                   .then(function(response){
-                    var finalResult = [];
+                    var finalRes = [];
+                    var someSuccess = false; // true if some registration was successful
                     for(var item in allresult){
-                      if(allresult[item].result === "Success"){
-                        finalResult.push({
-                          oid: allresult[item].data.oid,
-                          password: allresult[item].data.password,
-                          "infrastructure-id": allresult[item].data["infrastructure-id"]
-                        });
-                      }
+                      finalRes.push(allresult[item].data);
+                      if(allresult[item].result === 'Success'){someSuccess = true;}
                     }
-                    callback(false, finalResult);
+                    if(someSuccess){deviceActivityNotif(cid);} // Notify only if some item was registered
+                    callback(false, finalRes);
                     // console.timeEnd("ALL REGISTRATION EXECUTION");
                   })
                   .catch(function(err){ callback(true, "Error in final steps: " + err); });
                   }
                 },
                 false,
-                {adid: adid, cid:cid, nodeId: nodeId, data:data, types:semanticTypes} // additional parameters
+                {adid: adid, cid:cid, nodeId: nodeId, data:data, types:semanticTypes, semanticValidation:doSemanticValidation } // additional parameters
               );
             }
           )
@@ -115,22 +115,34 @@ function saveDocuments(objects, otherParams, callback){
     oidExist(uuid()) // Username in commServer & semanticRepo
     .then(function(response){
       obj.oid = response;
-      objects.oid = response;
-      return semanticRepo.callSemanticRepo(objects, "td/create", "POST"); }) // Register TD in semantic repository
-    .then(function(response){
-      var repoAnswer = JSON.parse(response);
-      if(!(repoAnswer.data.hasOwnProperty('errors'))) {
-        //logger.debug(repoAnswer);
-        obj.info = JSON.parse(response).data.lifting; // Thing description obj, stores response from semanticRepo
+      if(otherParams.semanticValidation){
+        objects.oid = response;
+        semanticValidation(objects, obj, pwd, infra_id, callback);
+      } else {
         createInstance(new itemOp(obj), pwd, infra_id, callback);
-      } else { // If lifting ends with error ...
-        callback({oid: obj.oid, password: "NONE", "infrastructure-id": "NONE"}, repoAnswer.data.errors);
       }
-    })
-    .catch(function(err){callback({oid: obj.oid, password: "NONE", "infrastructure-id": "NONE"}, err); });
+    }) // Register TD in semantic repository
+    .catch(function(err){callback({"infrastructure-id": infra_id, error: err}, err); });
   } else { // if the TD contains an OID, then we need to update the instance in Mongo (not create a new one)
-    callback({oid: "NONE", password: "NONE", "infrastructure-id": "NONE"}, "Update service disabled, you cannot register TDs with OID");
+    callback({"infrastructure-id": infra_id, error: "Your TD contained an OID, please consider update service instead"}, "Update service disabled, you cannot register TDs with OID");
   }
+}
+
+/*
+Semantic validation
+*/
+function semanticValidation(objects, obj, pwd, infra_id, callback){
+  semanticRepo.callSemanticRepo(objects, "td/create", "POST")
+  .then(function(response){
+    var repoAnswer = JSON.parse(response);
+    if(!(repoAnswer.data.hasOwnProperty('errors'))) {
+      obj.info = JSON.parse(response).data.lifting; // Thing description obj, stores response from semanticRepo
+      createInstance(new itemOp(obj), pwd, infra_id, callback);
+    } else { // If lifting ends with error ...
+      callback({"infrastructure-id": infra_id, error: repoAnswer.data.errors}, repoAnswer.data.errors);
+    }
+  })
+  .catch(function(err){callback({"infrastructure-id": infra_id, error: err}, err); });
 }
 
 /*
@@ -142,10 +154,10 @@ function createInstance(obj, pwd, infra_id, callback){
     return commServerProcess(obj.oid, obj.name, pwd);
   })
   .then(function(response){
-    callback({oid: obj.oid, password: pwd, "infrastructure-id": infra_id, id: obj._id}, "Success");
+    callback({oid: obj.oid, password: pwd, "infrastructure-id": infra_id, "nm-id": obj._id, error: false}, "Success");
   })
   .catch(function(err){
-    callback({oid: obj.oid, password: "NONE", infra_id: "NONE"}, err);
+    callback({"infrastructure-id": infra_id, error: err}, err);
   });
 }
 
