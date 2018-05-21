@@ -37,15 +37,12 @@ Semantic Repository static call
 When invoked retrieves all available types of devices or services
 The headers are preconfigured
 */
-function getTypes(typeOfItem){
-  query = {"query": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>PREFIX core: <http://iot.linkeddata.es/def/core#>PREFIX wot: <http://iot.linkeddata.es/def/wot#>SELECT distinct * WHERE {?s rdfs:subClassOf core:" + typeOfItem + "} LIMIT 100" };
-  payload = JSON.stringify(query);
-
+function getTypes(){
   return request({
-    method : "POST",
+    method : "GET",
     headers: head,
-    uri: config.semanticRepoUrl + "sparql",
-    body: payload
+    uri: config.semanticRepoUrl + "annotations",
+    // body: payload
     // simple: true
   });
 }
