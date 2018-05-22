@@ -2,6 +2,7 @@ var logger = require("../../middlewares/logger");
 var sRegistration = require("../../services/items/registration");
 var sSearch = require("../../services/items/search");
 var sDelItems = require("../../services/items/deleteItems");
+var sUpdItems = require("../../services/items/updThingDescription");
 var sDelNode = require('../../services/nodes/processNode');
 var sGetNodeItems = require('../../services/nodes/get');
 var commServer = require('../../services/commServer/request');
@@ -89,45 +90,82 @@ function disableItems(req, res){
   res.json({error:false, message:"not implemented"});
 }
 
+//  /**
+//  *  Update items
+//  *  Delete & create
+//  *  input idem as registration + oid
+//  *
+//  * @param {Object} data
+//  * adid (string), TDs (array of objects) with OID
+//  * @return {Array}
+//  * array of {oid, infra-id, password, id}
+//  */
+// function updateItems(req, res){
+//   logger.debug('You are UPDATING...');
+//   var rawData = req.body;
+//   var adid = req.body.agid || req.body.adid;
+//   var data = {
+//               thingDescriptions: [],
+//               adid: adid
+//             };
+//   nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
+//   .then(function(response){
+//     var toRemove = [];
+//     for(var i = 0; i < rawData.thingDescriptions.length; i++){
+//       for(var j = 0; j < response.hasItems.length; j++){
+//         if(rawData.thingDescriptions[i].oid === response.hasItems[j].extid){
+//           toRemove.push(rawData.thingDescriptions[i].oid);
+//           delete rawData.thingDescriptions[i].oid;
+//           data.thingDescriptions.push(rawData.thingDescriptions[i]);
+//         }
+//       }
+//     }
+//     return sDelItems.deleteItems(toRemove, "Agent:" + adid);
+//   })
+//   .then(function(response){
+//     return sRegistration.create(data, function(err, response){
+//       res.json({error: err, message: response});
+//     });
+//   })
+//   .catch(function(err){res.json({"error": true, "message": err});});
+// }
+
  /**
- *  Update items
- *  Delete & create
+ *  Update item contents
+ *  Update info field
  *  input idem as registration + oid
  *
  * @param {Object} data
  * adid (string), TDs (array of objects) with OID
  * @return {Array}
- * array of {oid, infra-id, password, id}
+ * array of {oid, infra-id, success, error}
  */
-function updateItems(req, res){
-  logger.debug('You are UPDATING...');
+function updateItemContent(req,res){
+  logger.debug('You are UPDATING content...');
   var rawData = req.body;
-  var adid = req.body.agid || req.body.adid;
-  var data = {
-              thingDescriptions: [],
-              adid: adid
-            };
-  nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
-  .then(function(response){
-    var toRemove = [];
-    for(var i = 0; i < rawData.thingDescriptions.length; i++){
-      for(var j = 0; j < response.hasItems.length; j++){
-        if(rawData.thingDescriptions[i].oid === response.hasItems[j].extid){
-          toRemove.push(rawData.thingDescriptions[i].oid);
-          delete rawData.thingDescriptions[i].oid;
-          data.thingDescriptions.push(rawData.thingDescriptions[i]);
+  var adid = typeof req.body.adid !== 'undefined' ? req.body.adid : req.body.agid;
+  var toUpdate = [];
+  if(!adid){
+    res.json({error: false, message: "Missing adapter identificator (adid/agid)"});
+  } else {
+    nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
+    .then(function(response){
+      for(var i = 0; i < rawData.thingDescriptions.length; i++){
+        for(var j = 0; j < response.hasItems.length; j++){
+          if(rawData.thingDescriptions[i].oid === response.hasItems[j].extid){
+            toUpdate.push(rawData.thingDescriptions[i]);
+          }
         }
       }
-    }
-    return sDelItems.deleteItems(toRemove, "Agent:" + adid);
-  })
-  .then(function(response){
-    return sRegistration.create(data, function(err, response){
-      res.json({error: err, message: response});
-    });
-  })
-  .catch(function(err){res.json({"error": true, "message": err});});
+      return sUpdItems.updateContents(toUpdate);
+    })
+    .then(function(response){
+      res.json({error: false, message: response});
+    })
+    .catch(function(err){res.json({error: true, message: err});});
+  }
 }
+
 
 /**
 * Get all items under Agent with TD
@@ -181,7 +219,7 @@ module.exports.searchItems = searchItems;
 module.exports.deleteItems = deleteItems;
 module.exports.enableItems = enableItems;
 module.exports.disableItems = disableItems;
-module.exports.updateItems = updateItems;
+module.exports.updateItemContent = updateItemContent;
 module.exports.getAgentItems = getAgentItems;
 module.exports.deleteAgent = deleteAgent;
 module.exports.neighbourhood = neighbourhood;

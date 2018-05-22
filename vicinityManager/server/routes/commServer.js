@@ -13,7 +13,7 @@ router
 .post('/items/remove', controllers.deleteItems)
 .post('/items/enable', controllers.enableItems)
 .post('/items/disable', controllers.disableItems)
-.put('/items/update', controllers.updateItems)
+.put('/items/update', controllers.updateItemContent)
 // agent
 .get('/agent/:agid/items', controllers.getAgentItems) // change to post if depends on update or use query
 .delete('/agent/:agid', controllers.deleteAgent);

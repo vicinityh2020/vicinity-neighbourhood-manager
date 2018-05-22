@@ -200,13 +200,13 @@ function updateItemsList(items, allresult){
         }
         for(j = 0; j < allresult.length; j++){
           if(itemsOid.indexOf(allresult[j].data.oid) === -1 && allresult[j].result === "Success"){
-            items.push({id: allresult[j].data.id, extid: allresult[j].data.oid});
+            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid});
           }
         }
       } else {
         for(j = 0; j < allresult.length; j++){
           if(allresult[j].result === "Success"){
-            items.push({id: allresult[j].data.id, extid: allresult[j].data.oid});
+            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid});
           }
         }
       }
@@ -261,7 +261,7 @@ function creatingAudit(ids, data, callback){
   if(ids.result === 'Success'){
     audits.create(
       { kind: 'userAccount', item: data.cid.id, extid: data.cid.extid },
-      { kind: 'item', item: ids.data.id, extid: ids.data.oid },
+      { kind: 'item', item: ids.data["nm-id"], extid: ids.data.oid },
       { extid: data.adid },
       data.type, null)
     .then(function(response){ callback(ids.data.oid,'Success');})
