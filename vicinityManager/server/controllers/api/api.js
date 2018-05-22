@@ -416,7 +416,7 @@ function getAgentItems(req, res, next) {
  * pass
  * eventUri -- Not necessary
  * agent -- Not necessary
- * type -- Not necessary
+ * type
  *
  * @return {Object} AGID and status
  */

@@ -18,12 +18,26 @@
       <!-- <div class="form-group">
         <label>URI</label>
         <input class="form-control" ng-model="nUri" placeholder="Enter URI" required>
-      </div>
-      <div class="form-group">
-        <label>Agent</label>
-        <input class="form-control" ng-model="nAgent" placeholder="Enter agent" required>
       </div> -->
 
+      <div class="form-group">
+        <label>Agent type</label>
+        <div class="form-group">
+          <div class="radio">
+            <label>
+              <input name="optionsRadios" ng-model="nAgentType" value="generic.adapter.vicinity.eu" type="radio">
+              Vicinity agent
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input name="optionsRadios" ng-model="nAgentType" value="generic.adapter.sharq.eu" type="radio">
+              Sharq adapter
+            </label>
+          </div>
+        </div>
+      </div>
+      
       <div class="form-group">
         <label>Password</label>
         <input type="password" class="form-control" ng-model="nPass" placeholder="Enter password" required>

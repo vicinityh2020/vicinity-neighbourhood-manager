@@ -23,6 +23,7 @@ angular.module('VicinityManagerApp.controllers').
             $scope.nPass2 = "";
             $scope.nType = "";
             $scope.nId = "";
+            $scope.nAgentType = "generic.adapter.vicinity.eu";
 
             $scope.modify = true;
             $scope.nodeId = $state.params.nodeId;
@@ -52,7 +53,7 @@ angular.module('VicinityManagerApp.controllers').
                   name: $scope.nName,
                   eventUri: $scope.nUri,
                   agent: $scope.nAgent,
-                  type: "generic.adapter.vicinity.eu",
+                  type: $scope.nAgentType, // "generic.adapter.vicinity.eu",
                   pass: $scope.nPass
                 };
                 if($scope.nodeId === '0'){
