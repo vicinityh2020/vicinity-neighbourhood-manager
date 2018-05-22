@@ -119,7 +119,7 @@ function saveDocuments(objects, otherParams, callback){
         objects.oid = response;
         semanticValidation(objects, obj, pwd, infra_id, callback);
       } else {
-        createInstance(new itemOp(obj), pwd, infra_id, callback);
+        createInstance(obj, pwd, infra_id, callback);
       }
     }) // Register TD in semantic repository
     .catch(function(err){callback({"infrastructure-id": infra_id, error: err}, err); });
@@ -137,7 +137,7 @@ function semanticValidation(objects, obj, pwd, infra_id, callback){
     var repoAnswer = JSON.parse(response);
     if(!(repoAnswer.data.hasOwnProperty('errors'))) {
       obj.info = JSON.parse(response).data.lifting; // Thing description obj, stores response from semanticRepo
-      createInstance(new itemOp(obj), pwd, infra_id, callback);
+      createInstance(obj, pwd, infra_id, callback);
     } else { // If lifting ends with error ...
       callback({"infrastructure-id": infra_id, error: repoAnswer.data.errors}, repoAnswer.data.errors);
     }
@@ -148,7 +148,9 @@ function semanticValidation(objects, obj, pwd, infra_id, callback){
 /*
 Totally new TD --> Expects new instance to be created
 */
-function createInstance(obj, pwd, infra_id, callback){
+function createInstance(objData, pwd, infra_id, callback){
+  var objWithInteractions = addInteractions(objData);
+  var obj = new itemOp(objWithInteractions);
   obj.save()
   .then(function(response){
     return commServerProcess(obj.oid, obj.name, pwd);
@@ -159,6 +161,32 @@ function createInstance(obj, pwd, infra_id, callback){
   .catch(function(err){
     callback({"infrastructure-id": infra_id, error: err}, err);
   });
+}
+
+/*
+Add interactions to item instance
+properties, actions, events
+*/
+function addInteractions(objData){
+  objData.interactionPatterns = [];
+  try{
+    var interactions = ["properties", "actions", "events"];
+    var interactionsEffect = ["monitors", "affects", "monitors"];
+    for(var i = 0; i < interactions.length; i++){
+      if(objData.info.hasOwnProperty(interactions[i])){
+        for(var j = 0; j < objData.info[interactions[i]].length; j++){
+          objData.interactionPatterns.push({
+            type: interactions[i],
+            value: objData.info[interactions[i]][j][interactionsEffect[i]]
+          });
+        }
+      }
+    }
+    return objData;
+  }catch(err){
+    logger.debug('error: ' + err);
+    return objData;
+  }
 }
 
 /*

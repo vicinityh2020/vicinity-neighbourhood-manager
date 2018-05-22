@@ -31,6 +31,11 @@ var auditSchema = Schema({
   extid: String
 },{ _id : false });
 
+var interactionSchema = Schema({
+  type: String,
+  value: String
+},{ _id : false });
+
 var ctidSchema = Schema({
   id: {type: ObjectId, ref: 'contract'},
   extid: String,
@@ -106,6 +111,7 @@ var item = new Schema({
   adid: adidSchema, // Agent id
   cid: cidSchema,
   uid: uidSchema,
+  interactionPatterns: [ interactionSchema ],
   hasContracts: [ ctidSchema ],
   hasAudits: [ auditSchema ],
   accessLevel: {type: Number, enum: [0, 1, 2], default: 0},
