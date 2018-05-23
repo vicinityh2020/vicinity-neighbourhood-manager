@@ -26,7 +26,6 @@ OPTIONS: Enable, disable, update metadata/accessLevel/avatar ...
 function updateManyItems(items, roles, email, cid, c_id, uid, callback){
 
   if(items.length !== 0){ // Check if there is any item to update
-    logger.debug('Start async handler...');
     sync.forEachAll(items,
     function(value, allresult, next, otherParams) {
         if(value.status === 'enabled'){
@@ -74,13 +73,24 @@ function enableItem(data, otherParams, callback){
   var o_id = data.o_id;
   var query = {};
 
-  itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
+  itemOp.findOne({_id:o_id}, {cid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
     data.cid = response.cid.extid;
     oid = response.oid;
     var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, userMail, data.cid, false); // There is no uid when enabling
     if(canChange){
       commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
-      .then(function(response){ return deviceActivityNotif({id: userId, extid: userMail}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Enabled', 11);})
+      .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'enabled'); })
+      .then(function(response){
+         var query = {status: data.status, accessLevel: data.accessLevel};
+         return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
+       })
+      .then(function(response){
+        return deviceActivityNotif(
+          {id: userId, extid: userMail},
+          {id: o_id, extid: oid},
+          {extid: cid, id: c_id},
+          'Enabled', 11);
+      })
       .then(function(response){
         return audits.create(
           { kind: 'user', item: userId, extid: userMail },
@@ -88,11 +98,6 @@ function enableItem(data, otherParams, callback){
           { },
           43, null);
       })
-      .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'enabled'); })
-      .then(function(response){
-         var query = {status: data.status, accessLevel: data.accessLevel};
-         return itemOp.findOneAndUpdate({ _id : o_id}, {$set: query});
-       })
       .then(function(response){
         logger.debug("Item update process ended successfully...");
         logger.audit({user: userMail, action: 'EnableItem', item: o_id });
@@ -131,15 +136,7 @@ function disableItem(data, otherParams, callback){
 
     if(canChange){
       commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
-      .then(function(response){ return deviceActivityNotif({id: userId, extid: data.cid}, {id: o_id, extid: oid}, {extid: cid, id: c_id}, 'Disabled', 12);})
-      .then(function(response){
-        return audits.create(
-          { kind: 'user', item: userId, extid: data.cid },
-          { kind: 'item', item: o_id, extid: oid },
-          { },
-          44, null);
-      })
-      .then(function(response){ return manageUserItems(oid, o_id, data.cid, userId, 'disabled'); })
+      .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'disabled'); })
       .then(function(response){
          var query = {status: data.status, accessLevel: data.accessLevel};
          return itemOp.update({ _id : o_id}, {$set: query});
@@ -150,10 +147,24 @@ function disableItem(data, otherParams, callback){
         return sharingRules.changePrivacy(ids, userId, userMail, c_id);
         })
       .then(function(response){
-        logger.debug("Item update process ended successfully...");
-        logger.audit({user: userMail, action: 'DisableItem', item: o_id });
-        callback(o_id, false, true, 'disabled');
-      })
+        return deviceActivityNotif(
+          {id: userId, extid: data.cid},
+          {id: o_id, extid: oid},
+          {extid: cid, id: c_id},
+          'Disabled', 12);
+        })
+      .then(function(response){
+        return audits.create(
+          { kind: 'user', item: userId, extid: data.cid },
+          { kind: 'item', item: o_id, extid: oid },
+          { },
+          44, null);
+        })
+        .then(function(response){
+          logger.debug("Item update process ended successfully...");
+          logger.audit({user: userMail, action: 'DisableItem', item: o_id });
+          callback(o_id, false, true, 'disabled');
+        })
       .catch(function(err){
         logger.error({user: userMail, action: 'DisableItem', item: o_id, message: err});
         callback(o_id, true, false, err);
@@ -258,11 +269,15 @@ Enable/Disable triggers the action
 function manageUserItems(oid, uid, email, userId, type){
   var item = {'id': uid, 'extid': oid};
   var user = type === 'enabled' ? {'id': userId, 'extid': email} : {};
-  var query = type === 'enabled' ? {$push: {hasItems: item}} : {$pull: {hasItems: item}};
-  return userOp.update({'email': email}, query)
+  var query = type === 'enabled' ?
+  userOp.update({'email': email}, {$push: {hasItems: item}})
   .then(function(response){
     return itemOp.update({_id:uid}, {$set: {uid: user }});
-  });
+  }) :
+  userOp.update({_id: userId}, {$pull: {hasItems: item}})
+  .then(function(response){
+    return itemOp.update({_id:uid}, {$set: {uid: user }}); });
+  return query;
 }
 
 /*
