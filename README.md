@@ -339,6 +339,72 @@ Note, bower packages are installed by npm install.
 
 
 ### Adding Bootstrap framework
+<<<<<<< HEAD
+=======
+
+1. **Adding bootstrap framework.**
+
+* Open ```bower.json``` file in ```stubs\facility```directory.
+* Add bootstrap dependency.
+
+```
+{
+  "name": "angular-seed",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-seed",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.0",
+    "angular-route": "~1.4.0",
+    "angular-loader": "~1.4.0",
+    "angular-mocks": "~1.4.0",
+    "html5-boilerplate": "~5.2.0",
+    "bootstrap": "3.3.6"
+  }
+}
+```
+
+* Run ```npm install``` in ```stubs\facility``` directory.
+* Put files under version control "git add ."
+
+2. **Adding boostrap in template.**
+
+* Download bootstrap template such as (https://github.com/puikinsh/gentelella/releases)
+* Import index.html and necessary supporting files in ```stubs\facility\app.
+* run application using ```npm start ```
+
+
+# ATOM editor
+
+## GIT configuration
+
+## NodeJS Debugger
+
+1. **Install node-debugger package in ATOM editor**
+  * Atom -> Preferences -> Install
+  * Search "node-debugger"
+  * Install
+
+2. **Configure node-debugger package in ATOM editor**
+  * Atom -> Preferences -> Community Packages -> node-debuger
+  * Settings:
+    * Set "Node Path" to local location of the node executable (e.g. ```which node```)
+    * Path to ```vicinityManager/server/bin/www``` (e.g. Right click on file in left menu and 'Copy path')
+
+3. **Usable commands**
+```
+'node-debugger:start-resume' (F5)
+'node-debugger:debug-active-file' (ctrl-F5)
+'node-debugger:stop' (shift-F5)
+'node-debugger:toggle-breakpoint' (F9)
+'node-debugger:step-next' (F10)
+'node-debugger:step-in' (F11)
+'node-debugger:step-out' (shift-F11)
+'node-debugger:attach'
+```
+>>>>>>> ac9bb820ac1dd58cd26a8c87ae4962347d2ddc3b
 
 1. **Adding bootstrap framework.**
 
