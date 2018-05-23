@@ -21,6 +21,7 @@ Receives following parameters:
 */
 function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
   var query;
+  var projection;
 
   userAccountOp.findOne(cid, {knows: 1})
   .then(function(response){
@@ -42,17 +43,18 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
 
     if( type !== "all" ){ query.typeOfItem = type; }
 
-    itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
+    if(api){
+      projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0 };
+    } else {
+      projection = { status: 0 };
+    }
+
+    itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
         callback(true, err);
       } else {
         if(api){
-          for(var i = 0; i < data.length; i++){
-            data[i].avatar = null;
-            data[i].hasContracts = null;
-            data[i].hasAudits = null;
-          }
           callback(false, data);
         } else {
           var dataWithAdditional = itemProperties.getAdditional(data,cid,friends); // Not necessary to know friends because I am always owner
@@ -159,7 +161,7 @@ function getItemWithAdd(oid, cid, callback) {
     var items = [];
     var friends = [];
 
-    userOp.findOne({_id: reqId, status: {$ne: 'deleted'}}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid avatar')
+    userOp.findOne({_id: reqId, status: {$ne: 'deleted'}}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid info avatar')
     .then(function(response){
       parsedData = response.toObject();
       items = parsedData.hasItems;

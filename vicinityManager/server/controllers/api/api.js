@@ -371,15 +371,15 @@ function updateItem(req, res, next) {
     res.json({error: err, message: response, success: success});
    });
   }else if(req.body.status === 'enabled'){
-    sItemUpdate.enableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+    sItemUpdate.enableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(oid, err, success, response){
       res.json({error: err, message: response, success: success});
     });
   }else if(req.body.status === 'disabled'){
-    sItemUpdate.disableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+    sItemUpdate.disableItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(oid, err, success, response){
       res.json({error: err, message: response, success: success});
     });
   }else{
-    sItemUpdate.updateItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(err, response, success){
+    sItemUpdate.updateItem(req.body, {roles: req.body.decoded_token.roles, email: email, cid:cid, c_id:c_id, uid:uid}, function(oid, err, success, response){
       res.json({error: err, message: response, success: success});
     });
   }
@@ -409,7 +409,7 @@ function getAgentItems(req, res, next) {
 }
 
 /**
- * Get agent items
+ * Create agent
  *
  * @param {Object} data
  * name

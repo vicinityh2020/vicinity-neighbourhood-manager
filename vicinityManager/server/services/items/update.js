@@ -48,14 +48,14 @@ function updateManyItems(items, roles, email, cid, c_id, uid, callback){
       function(allresult) {
         if(allresult.length === items.length){
           logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-          callback(false, allresult);
+          callback(false, allresult, true);
         }
       },
       false,
       {roles: roles, email: email, cid:cid, c_id:c_id, uid:uid}
     );
   } else {
-    callback(false, 'No items to modify');
+    callback(false, 'No items to modify', false);
   }
 }
 

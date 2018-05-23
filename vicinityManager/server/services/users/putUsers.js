@@ -43,15 +43,19 @@ Change the user visibility
 */
 function putVisibility(uid, updates, userMail, userId, callback) {
   var data = {"accessLevel": updates.accessLevel}; //Ensure only right fields sent to update
-  sharingRules.changeUserAccessLevel(uid, updates.accessLevel, userMail)
-  .then(function(response){
-    doUpdate(uid, data, userMail, userId, function(err, response, success){
-      if(err){ callback(true, err, success); } else { callback(false, response, success); }
+  if(Number(updates.accessLevel) < 0 || Number(updates.accessLevel) > 2){
+    callback(false, "Wrong accessLevel. Valid are [0, 1, 2]", false);
+  } else {
+    sharingRules.changeUserAccessLevel(uid, updates.accessLevel, userMail)
+    .then(function(response){
+      doUpdate(uid, data, userMail, userId, function(err, response, success){
+        if(err){ callback(true, err, success); } else { callback(false, response, success); }
+      });
+    })
+    .catch(function(err){
+      callback(true, err, false);
     });
-  })
-  .catch(function(err){
-    callback(true, err, false);
-  });
+  }
 }
 
 /*

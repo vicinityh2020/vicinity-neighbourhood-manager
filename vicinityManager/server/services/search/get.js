@@ -79,6 +79,7 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   */
   function searchItem(sT, cid, api, callback) {
     var friends = [], query = {}; // Will contain company partners and itself
+    var projection;
     userAccountOp.findById(cid, {knows:1})
     .then(function(response){
       var things = response.toObject();
@@ -92,16 +93,17 @@ var asyncHandler = require('../../services/asyncHandler/sync');
       ],
       name: {$regex: sT}
       };
-      logger.debug(query);
-      return itemOp.find(query).populate('cid.id','name');
+
+      if(api){
+        projection = { avatar: 0, hasContracts: 0, hasAudits: 0 };
+      } else {
+        projection = { hasAudits: 0 }; 
+      }
+
+      return itemOp.find(query).select(projection).populate('cid.id','name');
     })
     .then(function(data){
       if(api){
-        for(var i=0; i<data.length; i++){
-          data[i].avatar = null;
-          data[i].hasContracts = null;
-          data[i].hasAudits = null;
-        }
         callback(false, data);
       } else {
         var dataWithAdditional = itemProperties.getAdditional(data,cid,friends);
