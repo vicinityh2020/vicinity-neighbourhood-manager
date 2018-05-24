@@ -55,7 +55,7 @@ WITHOUT INFERENCES!!!!! -- Only child
 */
 function getSubclass(thing){
 
-  query = {"query" : "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://purl.oclc.org/NET/ssnx/ssn#>  PREFIX core:<http://iot.linkeddata.es/def/core#> PREFIX : <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#> select distinct * WHERE{ { select ?s WHERE{ Graph <http://vicinity.eu/schema> {  ?s a " + thing + " . }}} UNION {select ?s WHERE  { Graph  <http://vicinity.eu/schema> {  ?s rdfs:subClassOf " + thing + " . }}}}" };
+  query = {"query" : "PREFIX adapters: <http://iot.linkeddata.es/def/adapters#> PREFIX systems: <http://www.w3.org/ns/ssn/systems/> PREFIX sosa: <http://www.w3.org/ns/sosa/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://www.w3.org/ns/ssn/>  PREFIX core:<http://iot.linkeddata.es/def/core#> PREFIX : <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#> select distinct * WHERE{ { select ?s WHERE{ Graph <http://vicinity.eu/schema> {  ?s a " + thing + " . }}} UNION {select ?s WHERE  { Graph  <http://vicinity.eu/schema> {  ?s rdfs:subClassOf " + thing + " . }}}}" };
 
   payload = JSON.stringify(query);
 
@@ -75,7 +75,7 @@ The headers are preconfigured
 WITH INFERENCES!!!!! -- Childs and all grandchilds
 */
 function getAllSubclass(thing){
-  query = {"query" : "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://purl.oclc.org/NET/ssnx/ssn#>  PREFIX core:<http://iot.linkeddata.es/def/core#> PREFIX : <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#> select distinct * WHERE{ { select ?s WHERE{ ?s a " + thing + " . }} UNION {select ?s WHERE {  ?s rdfs:subClassOf " + thing + " . }}}" };
+  query = {"query" : "PREFIX adapters: <http://iot.linkeddata.es/def/adapters#> PREFIX systems: <http://www.w3.org/ns/ssn/systems/> PREFIX sosa: <http://www.w3.org/ns/sosa/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://www.w3.org/ns/ssn/>  PREFIX core:<http://iot.linkeddata.es/def/core#> PREFIX : <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#> select distinct * WHERE{ { select ?s WHERE{ ?s a " + thing + " . }} UNION {select ?s WHERE {  ?s rdfs:subClassOf " + thing + " . }}}" };
 
   payload = JSON.stringify(query);
 
@@ -97,9 +97,9 @@ If getGraph true --> Retrieves the context instead of the subject, necessary for
 function getGraphOids(thing, predicate, getGraph){
 
   if(getGraph === true){
-    query = {"query": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://purl.oclc.org/NET/ssnx/ssn#>  PREFIX core: <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#>  PREFIX : <http://iot.linkeddata.es/def/core#> select distinct ?s WHERE { GRAPH ?s { ?sub " + predicate + " " + thing + " . } }" };
+    query = {"query": "PREFIX adapters: <http://iot.linkeddata.es/def/adapters#> PREFIX systems: <http://www.w3.org/ns/ssn/systems/> PREFIX sosa: <http://www.w3.org/ns/sosa/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://www.w3.org/ns/ssn/>  PREFIX core: <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#>  PREFIX : <http://iot.linkeddata.es/def/core#> select distinct ?s WHERE { GRAPH ?s { ?sub " + predicate + " " + thing + " . } }" };
   } else {
-    query = {"query": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://purl.oclc.org/NET/ssnx/ssn#>  PREFIX core: <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#>  PREFIX : <http://iot.linkeddata.es/def/core#> select distinct ?s WHERE { ?s " + predicate + " " + thing + " . }" };
+    query = {"query": "PREFIX adapters: <http://iot.linkeddata.es/def/adapters#> PREFIX systems: <http://www.w3.org/ns/ssn/systems/> PREFIX sosa: <http://www.w3.org/ns/sosa/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX ssn: <http://www.w3.org/ns/ssn/>  PREFIX core: <http://iot.linkeddata.es/def/core#> PREFIX wot: <http://iot.linkeddata.es/def/wot#>  PREFIX : <http://iot.linkeddata.es/def/core#> select distinct ?s WHERE { ?s " + predicate + " " + thing + " . }" };
   }
 
   payload = JSON.stringify(query);

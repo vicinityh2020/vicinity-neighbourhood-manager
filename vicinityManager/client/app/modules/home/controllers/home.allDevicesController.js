@@ -245,8 +245,14 @@ angular.module('VicinityManagerApp.controllers')
       for(var i=0; i<arr.length; i++){
         aux = arr[i].s.value;
         pos_hash = aux.indexOf('#',0);
-        pos_slash = aux.lastIndexOf('/', pos_hash-4);
-        myTypes.push(aux.substr(pos_slash + 1).replace("#", ":"));
+        if(pos_hash === -1){
+          pos_hash = aux.lastIndexOf('/', aux.length);
+          pos_slash = aux.lastIndexOf('/', pos_hash-4);
+          myTypes.push(aux.substr(pos_slash + 1).replace("/", ":"));
+        } else {
+          pos_slash = aux.lastIndexOf('/', pos_hash-4);
+          myTypes.push(aux.substr(pos_slash + 1).replace("#", ":"));
+        }
         myTypesCaption.push(aux.substr(pos_hash+1));
       }
       if(onlyClass === true){
