@@ -161,6 +161,8 @@ function getItemWithAdd(oid, cid, callback) {
     var items = [];
     var friends = [];
 
+    logger.debug(type);
+
     userOp.findOne({_id: reqId, status: {$ne: 'deleted'}}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid info avatar')
     .then(function(response){
       parsedData = response.toObject();
