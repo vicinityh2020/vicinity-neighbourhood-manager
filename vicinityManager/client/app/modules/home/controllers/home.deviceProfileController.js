@@ -13,7 +13,7 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
   $scope.showInput = false;
   $scope.isMyItem = false;
   $scope.isMyOrgItem = false;
-  $scope.imItemOperator = false;
+  $scope.imDeviceOwner = false;
   $scope.loaded = false;
   $scope.item = {};
 
@@ -34,8 +34,8 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
       );
       var payload = tokenDecoder.deToken();
       for(var i in payload.roles){
-        if(payload.roles[i] === 'infrastructure operator'){
-          $scope.imItemOperator = true;
+        if(payload.roles[i] === 'device owner'){
+          $scope.imDeviceOwner = true;
         }
       }
     }

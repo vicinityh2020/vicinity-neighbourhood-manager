@@ -35,7 +35,7 @@
               <h3 class="profile-username text-center" style="margin-top: 15px">{{item.name}}</h3>
 
               <!-- Enable/Disable device -->
-              <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" ng-show="imItemOperator">
+              <div style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px" ng-show="imDeviceOwner">
                 <a ng-click="changeStatus()" class="btn btn-primary btn-block" ng-show="!itemEnabled && isMyOrgItem"><i class="fa fa-plus-square"></i><b> Enable device</b></a>
                 <a ng-click="changeStatus()" class="btn btn-default btn-block" ng-show="itemEnabled && isMyItem"><i class="fa fa-minus-square"></i><b> Disable device</b></a>
               </div>

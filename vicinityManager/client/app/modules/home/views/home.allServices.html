@@ -72,6 +72,11 @@
               &nbsp;<b>Service in use</b>
         </div>
 
+        <div class="widget-user-footer-moreinfo2 bg-warning" ng-show="!it.isOwner && !it.contracted && !canRequestService" >
+          <i class="fa fa-bar-chart fa-lg"></i>
+              &nbsp;<b>Friend service</b>
+        </div>
+
         <div class="widget-user-footer-moreinfo2 bg-teal" ng-show="it.isOwner">
              <i class="fa fa-user fa-lg"></i>
               &nbsp;<b>My service</b>

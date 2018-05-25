@@ -72,7 +72,7 @@ function putRoles(uid, updates, userMail, userId, callback) {
       var cid = responseParsed.cid;
       var ownerMail = responseParsed.email;
       // Complete update payload -- Check if something is missing
-      if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1){
+      if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1 && updates.roles.indexOf('devOps') === -1){
          updates.roles.push('devOps'); // If it is devOps keep status
        }
        if(updates.roles.indexOf('user') === -1){
@@ -212,7 +212,7 @@ Validates Roles
 If role does not exist throw error message
 */
 function checkRoles(roles){
-  var possibleRoles =  ["service provider", "infrastructure operator", "administrator", "system integrator", "devOps", "user"];
+  var possibleRoles =  ["service provider", "device owner", "infrastructure operator", "administrator", "system integrator", "devOps", "user"];
   for(var i = 0; i < roles.length; i++){
     if(possibleRoles.indexOf(roles[i]) === -1){
       return {invalid: true, message: roles[i]};

@@ -41,7 +41,7 @@
               </div>
 
               <!-- Requesting service -->
-              <div ng-show="itemEnabled && !isMyItem" style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px">
+              <div ng-show="itemEnabled && !isMyItem && canRequestService" style="margin-left: 10%; margin-right: 10%; margin-top: 10px; margin-bottom: 10px">
                 <div class="btn btn-success btn-block" href="" ui-sref="root.main.requestService({companyAccountId: item.cid.id._id, serviceId: item._id})">
                    <i class="fa fa-plus"></i>&nbsp;<b>Request service</b>
                 </div>
