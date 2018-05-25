@@ -267,19 +267,19 @@ $scope.saveNewAccess = function () {
   if($scope.accessLevel > lvl){
     if(confirm('Are you sure? May affect existing contracts.')){  // TODO
       if(Number($('select#editAccessName').val()) >= 0){
-        $scope.saving();
+        $scope.saving(lvl);
       }
     } else {
       $scope.backToEditAL();
     }
   } else {
     if (Number($('select#editAccessName').val()) >= 0){
-      $scope.saving();
+      $scope.saving(lvl);
     }
   }
 };
 
-$scope.saving = function(){
+$scope.saving = function(lvl){
   userAPIService.editInfoAboutUser($stateParams.userAccountId,
   {'data': {accessLevel: lvl}, 'type': 'visibility'})
   .then(
