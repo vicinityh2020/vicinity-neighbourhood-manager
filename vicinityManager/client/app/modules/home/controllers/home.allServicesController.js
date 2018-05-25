@@ -26,7 +26,7 @@ angular.module('VicinityManagerApp.controllers')
 
        var payload = tokenDecoder.deToken();
        for(var i in payload.roles){
-         if(payload.roles[i] === 'infrastructure operator' || payload.roles[i] === 'service provider'){
+         if(payload.roles[i] === 'infrastructure operator'){
            $scope.canRequestService = true;
          }
        }

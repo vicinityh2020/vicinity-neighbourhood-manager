@@ -15,6 +15,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
   $scope.isMyOrgItem = false;
   $scope.imServiceProvider = false;
   $scope.loaded = false;
+  $scope.canRequestService = false;
   $scope.item = {};
   $scope.contracted = false;
 
@@ -38,6 +39,9 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
       for(var i in payload.roles){
         if(payload.roles[i] === 'service provider'){
           $scope.imServiceProvider = true;
+        }
+        if(payload.roles[i] === 'infrastructure operator'){
+          $scope.canRequestService = true;
         }
       }
     }
