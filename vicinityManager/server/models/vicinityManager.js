@@ -41,12 +41,13 @@ var ctidSchema = Schema({
   extid: String,
   contractingUser: String,
   contractingParty: String,
+  readWrite: {type: Boolean, default: false},
   approved: {type: Boolean, default: false}
 },{ _id : false });
 
 var contractSubschema = Schema({
   cid: cidSchema,
-  uid: uidSchema,
+  uid: [ uidSchema ],
   termsAndConditions: {type: Boolean, default: false},
   items: [ oidSchema ]
 },{ _id : false });
@@ -122,7 +123,7 @@ var item = new Schema({
 
 var contract = new Schema({
 ctid: {type: String, required: true},
-serviceProvider: contractSubschema,
+foreignIot: contractSubschema,
 iotOwner: contractSubschema,
 readWrite: Boolean, // True RW -- False R
 legalDescription: String,
