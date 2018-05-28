@@ -23,6 +23,7 @@ var sOrgConfiguration = require('../../services/organisations/configuration');
 var sItemUpdate = require('../../services/items/update');
 var ctHelper = require("../../services/contracts/contracts.js");
 var ctChecks = require("../../services/contracts/contractChecks.js");
+var semanticRepo = require("../../services/semanticRepo/request.js");
 
 // Main functions - VCNT API
 
@@ -351,6 +352,17 @@ function getItem(req, res, next) {
 
 function createItem(req, res, next) {
     res.json({error: false, message: "Use agent..."});
+}
+
+// Validate TD service - Just relay body to semantic repo
+function validateItemDescription(req, res, next){
+  semanticRepo.callSemanticRepo(req.body, "td/validate", "POST")
+  .then(function(response){
+    res.json({error: false, message: response});
+  })
+  .catch(function(error){
+    res.json({error: true, message: error});
+  });
 }
 
 /**
@@ -764,6 +776,7 @@ module.exports.updateUser = updateUser;
 module.exports.removeUser = removeUser;
 
 module.exports.getItem = getItem;
+module.exports.validateItemDescription = validateItemDescription;
 module.exports.createItem = createItem;
 module.exports.updateItem = updateItem;
 module.exports.removeItem = removeItem;

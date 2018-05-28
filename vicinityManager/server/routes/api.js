@@ -24,6 +24,7 @@ router
 //Items
   .get('/items/:id', jwt, apiController.getItem)
   .post('/items', jwt, apiController.createItem)
+  .post('/items/validate', apiController.validateItemDescription)
   .put('/items', jwt, apiController.updateItem)
   .delete('/items/:id', jwt, apiController.removeItem)
 //Agents
