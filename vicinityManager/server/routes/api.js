@@ -24,8 +24,6 @@ router
 //Items
   .get('/items/:id', jwt, apiController.getItem)
   .post('/items', jwt, apiController.createItem)
-  .post('/items/validate', apiController.validateItemDescription)
-  .get('/items/annotations', apiController.getAnnotations)
   .put('/items', jwt, apiController.updateItem)
   .delete('/items/:id', jwt, apiController.removeItem)
 //Agents
@@ -44,6 +42,9 @@ router
 //Search
   .get('/search/organisations', jwt, apiController.searchOrgs)
   .get('/search/users', jwt, apiController.searchUsers)
-  .get('/search/items', jwt, apiController.searchItems);
+  .get('/search/items', jwt, apiController.searchItems)
+// Semantic Repository
+  .post('/repository/validate', apiController.validateItemDescription)
+  .get('/repository/annotations', apiController.getAnnotations);
 
 module.exports = router;
