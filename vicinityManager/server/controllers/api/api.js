@@ -366,6 +366,23 @@ function validateItemDescription(req, res, next){
 }
 
 /**
+* Get annotations from semanticRepo
+* @param {Boolean} hierarchical Optional as a query value
+*/
+function getAnnotations(req, res, next){
+  var hier = req.query.hierarchical !== 'undefined' ? req.query.hierarchical : false;
+  var endpoint;
+  if(hier){ endpoint = "annotations/hierarchy"; } else { endpoint = "annotations"; }
+  semanticRepo.callSemanticRepo({}, endpoint, "GET")
+  .then(function(response){
+    res.json(response);
+  })
+  .catch(function(error){
+    res.json({error: true, message: error});
+  });
+}
+
+/**
  * Update a user
  *
  * @param {Array} uids + thing to update
@@ -777,6 +794,7 @@ module.exports.removeUser = removeUser;
 
 module.exports.getItem = getItem;
 module.exports.validateItemDescription = validateItemDescription;
+module.exports.getAnnotations = getAnnotations;
 module.exports.createItem = createItem;
 module.exports.updateItem = updateItem;
 module.exports.removeItem = removeItem;
