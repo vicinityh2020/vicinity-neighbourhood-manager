@@ -358,6 +358,7 @@ function createItem(req, res, next) {
 function validateItemDescription(req, res, next){
   semanticRepo.callSemanticRepo(req.body, "td/validate", "POST")
   .then(function(response){
+    res.setHeader('Content-Type', 'application/json');
     res.json(response);
   })
   .catch(function(error){
@@ -372,9 +373,10 @@ function validateItemDescription(req, res, next){
 function getAnnotations(req, res, next){
   var hier = req.query.hierarchical !== 'undefined' ? req.query.hierarchical : false;
   var endpoint;
-  if(hier){ endpoint = "annotations/hierarchy"; } else { endpoint = "annotations"; }
+  if(hier === 'true'){ endpoint = "annotations/hierarchy"; } else { endpoint = "annotations"; }
   semanticRepo.callSemanticRepo({}, endpoint, "GET")
   .then(function(response){
+    res.setHeader('Content-Type', 'application/json');
     res.json(response);
   })
   .catch(function(error){
