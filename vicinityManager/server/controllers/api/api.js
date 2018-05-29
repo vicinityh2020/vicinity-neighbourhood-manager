@@ -359,7 +359,7 @@ function validateItemDescription(req, res, next){
   semanticRepo.callSemanticRepo(req.body, "td/validate", "POST")
   .then(function(response){
     res.setHeader('Content-Type', 'application/json');
-    res.json(response);
+    res.json(JSON.stringify(response));
   })
   .catch(function(error){
     res.json({error: true, message: error});
@@ -377,7 +377,7 @@ function getAnnotations(req, res, next){
   semanticRepo.callSemanticRepo({}, endpoint, "GET")
   .then(function(response){
     res.setHeader('Content-Type', 'application/json');
-    res.json(response);
+    res.json(JSON.stringify(response));
   })
   .catch(function(error){
     res.json({error: true, message: error});
