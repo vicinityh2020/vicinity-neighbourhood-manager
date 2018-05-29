@@ -358,7 +358,7 @@ function createItem(req, res, next) {
 function validateItemDescription(req, res, next){
   semanticRepo.callSemanticRepo(req.body, "td/validate", "POST")
   .then(function(response){
-    res.json({error: false, message: response});
+    res.json(response);
   })
   .catch(function(error){
     res.json({error: true, message: error});
