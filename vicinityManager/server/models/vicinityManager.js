@@ -8,22 +8,26 @@ var Schema = mongoose.Schema;
 
 var cidSchema = Schema({
   id: {type: ObjectId, ref: 'userAccount'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var adidSchema = Schema({
   id: {type: ObjectId, ref: 'node'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var uidSchema = Schema({
   id: {type: ObjectId, ref: 'user'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var oidSchema = Schema({
   id: {type: ObjectId, ref: 'item'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var auditSchema = Schema({

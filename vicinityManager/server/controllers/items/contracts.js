@@ -11,7 +11,9 @@ Create contracts
 */
 function createContract(req, res){
   var data = req.body;
-  ctHelper.creating(data, function(err, response){
+  var uid = req.body.decoded_token.uid;
+  var mail = req.body.decoded_token.sub;
+  ctHelper.creating(data, uid, mail, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -21,7 +23,9 @@ Accept contracts
 */
 function acceptContract(req, res){
   var id = req.params.id;
-  ctHelper.accepting(id, function(err, response){
+  var uid = req.body.decoded_token.uid;
+  var mail = req.body.decoded_token.sub;
+  ctHelper.accepting(id, uid, mail, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -32,11 +36,13 @@ Modify contracts
 function modifyContract(req, res){
   var id = req.params.id;
   var data = req.body;
-  ctHelper.removing(id, function(err, response){
+  var uid = req.body.decoded_token.uid;
+  var mail = req.body.decoded_token.sub;
+  ctHelper.removing(id, uid, mail, function(err, response){
     if(err){
       res.json({error: err, message: response});
     } else {
-      ctHelper.creating(data, function(err, response){
+      ctHelper.creating(data, uid, mail, function(err, response){
         res.json({error: err, message: response});
       });
     }
@@ -48,7 +54,9 @@ Delete contracts
 */
 function removeContract(req, res){
   var id = req.params.id;
-  ctHelper.removing(id, function(err, response){
+  var uid = req.body.decoded_token.uid;
+  var mail = req.body.decoded_token.sub;
+  ctHelper.removing(id, uid, mail, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -63,10 +71,10 @@ function fetchContract(req, res){
   .then(function(response){
     parsedData = response.toObject();
     var ct_ids = [];
-    if(parsedData.hasContracts.length != null){
+    if(parsedData.hasContracts.length !== 'undefined'){
       getOnlyId(ct_ids, parsedData.hasContracts);
     }
-    return contractOp.find({_id: {$in: ct_ids}, status: {$ne: "deleted"}}).populate('iotOwner.cid.id', 'name').populate('iotOwner.items.id', 'name').populate('serviceProvider.cid.id', 'name').populate('serviceProvider.items.id', 'name');
+    return contractOp.find({_id: {$in: ct_ids}, status: {$ne: "deleted"}});
   })
   .then(function(response){
     res.json({error: false, message: response});

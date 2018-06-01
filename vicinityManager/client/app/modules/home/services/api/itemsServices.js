@@ -27,6 +27,10 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.get(configuration.apiUrl + '/items/' + id + '/organisation/myItems?type=' + filter + '&offset=' + offset + '&cid=' + cid);
   };
 
+  itemsAPI.getArrayOfItems = function(items){
+    return $http.post(configuration.apiUrl + '/items/array', items);
+  };
+
   itemsAPI.getAllItems = function(id, filter, offset, filterNumber, filterOntology) {
     var payload = { type: filter, offset: offset, filterNumber: filterNumber, filterOntology: filterOntology};
     return $http.post(configuration.apiUrl + '/items/' + id + '/organisation/allItems', payload);
@@ -35,6 +39,10 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   itemsAPI.getUserItems = function(reqId, reqCid, type){
     var payload = { reqId: reqId, reqCid: reqCid, type: type};
     return $http.post(configuration.apiUrl + '/items/user', payload);
+  };
+
+  itemsAPI.getMyContractItems = function(cid, oid){
+    return $http.get(configuration.apiUrl + '/items/' + cid + '/contract/' + oid);
   };
 
   /*
@@ -48,8 +56,8 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.post(configuration.apiUrl + '/items/contract', payload);
   };
 
-  itemsAPI.acceptContract = function(id, payload){
-    return $http.put(configuration.apiUrl + '/items/contract/' + id + '/accept', payload);
+  itemsAPI.acceptContract = function(id){
+    return $http.put(configuration.apiUrl + '/items/contract/' + id + '/accept');
   };
 
   itemsAPI.modifyContract = function(id, payload){

@@ -14,66 +14,20 @@ var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 //Functions
 
 /**
-Accept a contract request
-* @return {Callback}
-*/
-function accepting(id, callback){
-  // TODO enable option to accept contract by iotOwner
-  var updItem = {};
-  var query = { $set: {"serviceProvider.termsAndConditions": true, status: 'accepted'} };
-  contractOp.findOneAndUpdate({ "_id": id}, query, {new: true})
-  .then(function(response){
-    updItem = response.toObject(); // Get rid of virtuals and functions
-    // Service Provider approves contract
-    return userOp.updateOne({"_id": updItem.serviceProvider.uid.id, "hasContracts.id" :updItem._id},
-                            {$set: { "hasContracts.$.approved" : true }});
-  })
-  .then(function(response){
-    return createContract(updItem.ctid, 'Contract: ' + updItem.type);
-  })
-  .then(function(response){
-    var items = [];
-    getOnlyOid(items, updItem.serviceProvider.items);
-    getOnlyOid(items, updItem.iotOwner.items);
-    return addItemsToContract(updItem, items);
-  })
-  .then(function(response){
-    return notifHelper.createNotification(
-      { kind: 'user', item: updItem.serviceProvider.uid.id, extid: updItem.serviceProvider.uid.extid },
-      { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
-      { kind: 'contract', item: updItem._id, extid: updItem.ctid },
-      'info', 24, null);
-  })
-  .then(function(response){
-    return audits.create(
-      { kind: 'user', item: updItem.serviceProvider.uid.id, extid: updItem.serviceProvider.uid.extid },
-      { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
-      { kind: 'contract', item: updItem._id, extid: updItem.ctid },
-      51, null);
-  })
-  .then(function(response){
-    callback(false, updItem);
-  })
-  .catch(function(error){
-    logger.debug(error);
-    callback(true, error);
-  });
-}
-
-/**
 Create a contract request
 * @return {Callback}
 */
-function creating(data, callback){
-  // TODO service provider can post a contract
+function creating(data, token_uid, token_mail, callback){
   var ct_id, ctid;
   var ct = new contractOp();
   var idsService = [];
   var idsDevice = [];
-  // ct.ctid = data.ctid === undefined ? uuid() : data.ctid;
+  var uidService = [];
+  var uidDevice = [];
+
   ct.ctid = uuid();
-  ct.serviceProvider = { cid: data.cidService, uid: data.uidService, termsAndConditions: false, items: data.oidService };
-  ct.iotOwner = { cid: data.cidDevice, uid: data.uidDevice, termsAndConditions: true, items: data.oidDevices };
+  ct.foreignIot = { cid: data.cidService, uid: data.uidsService, termsAndConditions: false, items: data.oidsService };
+  ct.iotOwner = { cid: data.cidDevice, uid: data.uidsDevice, termsAndConditions: true, items: data.oidsDevice };
   ct.readWrite = data.readWrite;
   ct.legalDescription = 'lorem ipsum';
   ct.type = 'serviceRequest';
@@ -84,35 +38,52 @@ function creating(data, callback){
       } else {
         ct_id = response._id;
         ctid = response.ctid;
+        ct_type = response.type;
+        var allRequesterItems = response.iotOwner.items;
         var cidService = data.cidService.extid;
         var cidDevice = data.cidDevice.extid;
-        var ctidService = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: data.uidDevice.id, approved: false };
-        var ctidDevice = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: data.uidService.id, approved: true };
-        var uidService = data.uidService.id;
-        getOnlyId(idsService, data.oidService);
-        var uidDevice = data.uidDevice.id;
-        getOnlyId(idsDevice, data.oidDevices);
-        userOp.update({_id: uidDevice}, { $push: {hasContracts: ctidDevice} })
+        var ctidService = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: token_uid, approved: false, readWrite: response.readWrite };
+        // If only one requester we asume that it is provinding all items itself, therefore the contract is approved by default
+        var ctidDeviceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: data.contractingUser.id, approved: data.uidsDevice.length === 1, readWrite: response.readWrite };
+        var ctidDeviceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: data.contractingUser.id, approved: true, readWrite: response.readWrite };
+
+        getOnlyId(uidService, data.uidsService);
+        getOnlyId(idsService, data.oidsService);
+        getOnlyId(uidDevice, data.uidsDevice);
+        getOnlyId(idsDevice, data.oidsDevice);
+        userOp.update({_id: {$in: uidDevice }}, { $push: {hasContracts: ctidDeviceUser} }, { multi: true })
         .then(function(response){
-            return itemOp.update({_id: {$in: idsDevice }}, { $push: {hasContracts: ctidDevice} }, { multi: true });
+          return itemOp.update({_id: {$in: idsDevice }}, { $push: {hasContracts: ctidDeviceItem} }, { multi: true });
         })
         .then(function(response){
-          return userOp.update({_id: uidService}, { $push: {hasContracts: ctidService} });
+          return userOp.update({_id: {$in: uidService }}, { $push: {hasContracts: ctidService} }, { multi: true });
         })
         .then(function(response){
           return itemOp.update({_id: {$in: idsService }}, { $push: {hasContracts: ctidService} }, { multi: true });
         })
         .then(function(response){
+          return createContract(ctid, 'Contract: ' + ct_type);
+        })
+        .then(function(response){
+          if(data.uidsDevice.length === 1){ // I know that contract req is the only device owner then I can add his devices to the contract group
+            var items = [];
+            getOnlyOid(items, allRequesterItems);
+            return addItemsToContract(ctid, token_mail, items);
+          } else {
+            return false;
+          }
+        })
+        .then(function(response){
           return notifHelper.createNotification(
-            { kind: 'user', item: data.uidDevice.id, extid: data.uidDevice.extid },
-            { kind: 'user', item: data.uidService.id, extid: data.uidService.extid },
+            { kind: 'user', item: token_uid, extid: token_mail },
+            { kind: 'user', item: data.contractingUser.id, extid: data.contractingUser.extid },
             { kind: 'contract', item: ct_id, extid: ctid },
             'info', 21, null);
         })
         .then(function(response){
           return audits.create(
-            { kind: 'user', item: data.uidDevice.id, extid: data.uidDevice.extid },
-            { kind: 'user', item: data.uidService.id, extid: data.uidService.extid },
+            { kind: 'user', item: token_uid, extid: token_mail },
+            { kind: 'user', item: data.contractingUser.id, extid: data.contractingUser.extid },
             { kind: 'contract', item: ct_id, extid: ctid },
             53, null);
         })
@@ -129,22 +100,66 @@ function creating(data, callback){
 }
 
 /**
+Accept a contract request
+* @return {Callback}
+*/
+function accepting(id, token_uid, token_mail, callback){
+  // TODO enable option to accept contract by iotOwner
+  var updItem = {};
+  var query = { $set: {"foreignIot.termsAndConditions": true, status: 'accepted'} };
+  contractOp.findOneAndUpdate({"_id": id}, query, {new: true})
+  .then(function(response){
+    updItem = response.toObject(); // Get rid of virtuals and functions
+    // Service Provider approves contract
+    return userOp.updateOne({"_id": token_uid, "hasContracts.id" :updItem._id},
+                            {$set: { "hasContracts.$.approved" : true }});
+  })
+  .then(function(response){
+    var items = [];
+    getOnlyOid(items, updItem.foreignIot.items);
+    return addItemsToContract(updItem.ctid, token_mail, items);
+  })
+  // TODO send notifications and audits to all parties involved
+  // .then(function(response){
+  //   return notifHelper.createNotification(
+  //     { kind: 'user', item: updItem.foreignIot.uid.id, extid: updItem.foreignIot.uid.extid },
+  //     { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
+  //     { kind: 'contract', item: updItem._id, extid: updItem.ctid },
+  //     'info', 24, null);
+  // })
+  // .then(function(response){
+  //   return audits.create(
+  //     { kind: 'user', item: updItem.foreignIot.uid.id, extid: updItem.foreignIot.uid.extid },
+  //     { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
+  //     { kind: 'contract', item: updItem._id, extid: updItem.ctid },
+  //     51, null);
+  // })
+  .then(function(response){
+    callback(false, updItem);
+  })
+  .catch(function(error){
+    logger.debug(error);
+    callback(true, error);
+  });
+}
+
+
+/**
 Remove a contract
 * @return {Callback}
 */
-function removing(id, callback){
+function removing(id, token_uid, token_mail, callback){
   var finalResp;
   var data = {};
   var idsDevice = [];
   var idsService = [];
+  var uidService = [];
+  var uidDevice = [];
   var cidService = "";
   var cidDevice = "";
   var ctid = {};
-  var uidService = "";
-  var uidDevice = "";
-
   var query = {
-    serviceProvider:{},
+    foreignIot:{},
     iotOwner:{},
     legalDescription: "",
     status: 'deleted'
@@ -160,104 +175,52 @@ function removing(id, callback){
   })
   .then(function(response){
     finalResp = response;
-    cidService = data.serviceProvider.cid.extid;
+    cidService = data.foreignIot.cid.extid;
     cidDevice = data.iotOwner.cid.extid;
     ctid = {id: data._id, extid: data.ctid};
-    uidService = data.serviceProvider.uid.id;
-    getOnlyId(idsService, data.serviceProvider.items);
-    uidDevice = data.iotOwner.uid.id;
+    getOnlyId(uidService, data.foreignIot.uid);
+    getOnlyId(idsService, data.foreignIot.items);
+    getOnlyId(uidDevice, data.iotOwner.uid);
     getOnlyId(idsDevice, data.iotOwner.items);
-    return userOp.update({_id: uidDevice}, { $pull: {hasContracts: ctid} });
+    return userOp.update({_id: {$in: uidDevice }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
     return itemOp.update({_id: {$in: idsDevice }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
-    return userOp.update({_id: uidService}, { $pull: {hasContracts: ctid} });
+    return userOp.update({_id: {$in: uidService }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
   .then(function(response){
     return itemOp.update({_id: {$in: idsService }}, { $pull: {hasContracts: ctid} }, { multi: true });
   })
-  .then(function(response){
-    return notifHelper.createNotification(
-      { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
-      { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
-      { kind: 'contract', item: ctid.id, extid: ctid.extid },
-      'info', 23, null);
-  })
-  .then(function(response){
-    return notifHelper.createNotification(
-      { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
-      { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
-      { kind: 'contract', item: ctid.id, extid: ctid.extid },
-      'info', 23, null);
-  })
-  .then(function(response){
-    return audits.create(
-      { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
-      { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
-      { kind: 'contract', item: ctid.id, extid: ctid.extid },
-      52, null);
-  })
+  // TODO notifiy all contract users
+  // .then(function(response){
+  //   return notifHelper.createNotification(
+  //     { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
+  //     { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
+  //     { kind: 'contract', item: ctid.id, extid: ctid.extid },
+  //     'info', 23, null);
+  // })
+  // .then(function(response){
+  //   return notifHelper.createNotification(
+  //     { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
+  //     { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
+  //     { kind: 'contract', item: ctid.id, extid: ctid.extid },
+  //     'info', 23, null);
+  // })
+  // .then(function(response){
+  //   return audits.create(
+  //     { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
+  //     { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
+  //     { kind: 'contract', item: ctid.id, extid: ctid.extid },
+  //     52, null);
+  // })
   .then(function(response){
     callback(false, finalResp);
   })
   .catch(function(error){
     logger.debug('Delete contract error: ' + error);
     callback(true, error);
-  });
-}
-
-/**
-Modify contracts related with removed device
-* @return {Callback}
-*/
-// TODO REMOVE when visibility and remove updates ready
-function removeDevice(item, otherParams, callback){
-  var ctids = [];
-  var mycid = item.cid.id._id;
-  var friends = [];
-  var notifs = [];
-  if(item.accessLevel === 0){
-    getOnlyId(ctids, item.hasContracts);
-    // for(var j = 0; j < item.hasContracts.length; j++){
-    //   notifs.push({mycid: mycid, othercid: item.hasContracts[j].contractingParty, thing: item.hasContracts[j].id, type: 22});
-    // }
-  } else {
-    getOnlyId(friends, item.cid.id.knows);
-    for(var i = 0; i < item.hasContracts.length; i++){
-      if(friends.indexOf(item.hasContracts[i].contractingParty) === -1){
-        ctids.push(item.hasContracts[i].id.toString());
-        // notifs.push({mycid: mycid, othercid: item.hasContracts[i].contractingParty, thing: item.hasContracts[i].id, type: 22});
-      }
-    }
-  }
-
-  itemOp.update({_id: item._id}, {$pull: {hasContracts: {id: {$in: ctids}}}}, { multi: true })
-  .then(function(){ return contractOp.update({_id: {$in: ctids}}, {$pull: {'iotOwner.items' : {id: item._id}}}, { multi: true }); })
-  .then(function(){ return contractOp.update({_id: {$in: ctids}}, {$pull: {'serviceProvider.items' : {id: item._id}}}, { multi: true }); })
-  .then(function(){
-    for(var i = 0; i < item.hasContracts.length; i++){
-      if(ctids.indexOf(item.hasContracts[i].id.toString()) !== -1){
-        commServer.callCommServer({}, 'users/' + item.oid + '/groups/' + item.hasContracts[i].extid, 'DELETE');
-      }
-    }
-    return true;
-  })
-  // .then(function(){
-  //   for(item in notifs){
-  //     createNotif(notifs[item].mycid, notifs[item].othercid, notifs[item].thing, notifs[item].type);
-  //   }
-  //   return true;
-  // })
-  .then(function(){
-    contractValidity(ctids);
-  })
-  .then(function(){
-    callback(item.oid, 'success');
-  })
-  .catch(function(err){
-    callback(item.oid, err);
   });
 }
 
@@ -330,23 +293,6 @@ function getOnlyId(array, toAdd){
 }
 
 /*
-If contract does not have items, delete it
-*/
-function contractValidity(ctids){
-  contractOp.find({_id: {$in: ctids}}, {'serviceProvider.items':1, 'iotOwner.items':1})
-  .then(function(response){
-    for(var i = 0; i < ctids.length; i++){
-      if(response[i].serviceProvider.items.length * response[i].iotOwner.items.length === 0){
-        removing(ctids[i], function(resp,err){});
-      }
-    }
-  })
-  .catch(function(err){
-    logger.debug('Error checking contract validity: ' + err);
-  });
-}
-
-/*
 Start contract group in commServer
 */
 function createContract(id, descr){
@@ -360,7 +306,7 @@ function createContract(id, descr){
 /*
 Add items to the contract
 */
-function addItemsToContract(other, items){
+function addItemsToContract(ctid, token_mail, items){
   return new Promise(function(resolve, reject) {
     if(items.length > 0){ // Check if there is any item to delete
       // logger.debug('Start async handler...');
@@ -379,12 +325,30 @@ function addItemsToContract(other, items){
           }
         },
         false,
-        {ctid: other.ctid, id: other._id, mail: other.serviceProvider.uid.extid, orgOrigin: other.iotOwner.cid, OrgDest: other.serviceProvider.cid}
+        {ctid: ctid, mail: token_mail}
       );
     } else {
       logger.warn({user:mail, action: 'addItemToContract', message: "No items to be added"});
       resolve({"error": false, "message": "Nothing to be removed..."});
     }
+  });
+}
+
+/*
+Add items to contract group in commServer
+*/
+function adding(oid, otherParams, callback){
+  // logger.debug('START execution with value =', oid);
+  itemOp.updateOne({"oid": oid, "hasContracts.extid" :otherParams.ctid}, {$set: { "hasContracts.$.approved" : true }})
+  .then(function(response){
+    return commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST');
+  })
+  .then(function(response){
+    logger.audit({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid });
+    callback(oid, "Success");})
+  .catch(function(err){
+    logger.error({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid, message: err });
+    callback(oid, 'Error: ' + err);
   });
 }
 
@@ -405,21 +369,8 @@ function cancelContract(id){
 }
 
 /*
-Add items to contract group in commServer
-*/
-function adding(oid, otherParams, callback){
-  // logger.debug('START execution with value =', oid);
-  commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST')
-  .then(function(ans){
-    logger.audit({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid });
-    callback(oid, "Success");})
-  .catch(function(err){
-      logger.error({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid, message: err });
-      callback(oid, 'Error: ' + err);
-  });
-}
 
-// Private functions
+*/
 function checkInput(ctid){
   try{
     var id = mongoose.Types.ObjectId(ctid);
@@ -433,7 +384,6 @@ function checkInput(ctid){
 // modules exports
 
 module.exports.removing = removing;
-module.exports.removeDevice = removeDevice;
 module.exports.creating = creating;
 module.exports.accepting = accepting;
 module.exports.contractFeeds = contractFeeds;

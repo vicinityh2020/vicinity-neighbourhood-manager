@@ -608,13 +608,14 @@ function requestContract(req, res, next) {
   var data = req.body;
   var uid = req.body.decoded_token.uid;
   var cid = req.body.decoded_token.orgid;
+  var mail = req.body.decoded_token.sub;
   ctChecks.postCheck(data, uid, cid, function(error, response, success){
     if(error){
       res.json({error: error, message: response});
     } else if(!success){
       res.json({error: error, message: response});
     } else {
-      ctHelper.creating(data, function(err, response){
+      ctHelper.creating(data, uid, mail, function(err, response){
         res.json({error: err, message: response});
       });
     }
@@ -638,6 +639,7 @@ function manageContract(req, res, next) {
   var id, data;
   var uid = req.body.decoded_token.uid;
   var cid = req.body.decoded_token.orgid;
+  var mail = req.body.decoded_token.sub;
   if(req.body.type === 'delete'){
     id = req.params.id;
     ctChecks.deleteCheck(id, uid, cid, function(error, response, success){
@@ -646,7 +648,7 @@ function manageContract(req, res, next) {
       } else if(!success){
         res.json({error: error, message: response});
       } else {
-        ctHelper.removing(id, function(err, response){
+        ctHelper.removing(id, uid, mail, function(err, response){
           res.json({error: err, message: "Contract successfully removed"});
         });
       }
@@ -659,7 +661,7 @@ function manageContract(req, res, next) {
       } else if(!success){
         res.json({error: error, message: response});
       } else {
-          ctHelper.accepting(id, function(err, response){
+          ctHelper.accepting(id, uid, mail, function(err, response){
           res.json({error: err, message: response});
         });
       }
@@ -675,11 +677,11 @@ function manageContract(req, res, next) {
       } else if(!success){
         res.json({error: error, message: response});
       } else {
-        ctHelper.removing(id, function(err, response){
+        ctHelper.removing(id, uid, mail, function(err, response){
           if(err){
             res.json({error: err, message: response});
           } else {
-            ctHelper.creating(data, function(err, response){
+            ctHelper.creating(data, uid, mail, function(err, response){
               res.json({error: err, message: response});
             });
           }
