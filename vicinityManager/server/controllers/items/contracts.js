@@ -11,7 +11,7 @@ Create contracts
 */
 function createContract(req, res){
   var data = req.body;
-  var uid = req.body.decoded_token.uid;
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
   ctHelper.creating(data, uid, mail, function(err, response){
     res.json({error: err, message: response});
@@ -23,7 +23,7 @@ Accept contracts
 */
 function acceptContract(req, res){
   var id = req.params.id;
-  var uid = req.body.decoded_token.uid;
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
   ctHelper.accepting(id, uid, mail, function(err, response){
     res.json({error: err, message: response});
@@ -36,7 +36,7 @@ Modify contracts
 function modifyContract(req, res){
   var id = req.params.id;
   var data = req.body;
-  var uid = req.body.decoded_token.uid;
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
   ctHelper.removing(id, uid, mail, function(err, response){
     if(err){
@@ -54,7 +54,7 @@ Delete contracts
 */
 function removeContract(req, res){
   var id = req.params.id;
-  var uid = req.body.decoded_token.uid;
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
   ctHelper.removing(id, uid, mail, function(err, response){
     res.json({error: err, message: response});

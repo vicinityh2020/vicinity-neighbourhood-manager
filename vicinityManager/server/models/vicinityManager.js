@@ -46,7 +46,9 @@ var ctidSchema = Schema({
   contractingUser: String,
   contractingParty: String,
   readWrite: {type: Boolean, default: false},
-  approved: {type: Boolean, default: false}
+  approved: {type: Boolean, default: false},
+  imAdmin: {type: Boolean, default: false},
+  imForeign: {type: Boolean, default: false}
 },{ _id : false });
 
 var contractSubschema = Schema({

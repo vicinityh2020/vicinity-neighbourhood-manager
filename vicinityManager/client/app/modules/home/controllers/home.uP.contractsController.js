@@ -49,8 +49,8 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
 
   // Buttons
 
-  $scope.acceptContract = function(id){
-    itemsAPIService.acceptContract(id)
+  $scope.acceptContract = function(ctid){
+    itemsAPIService.acceptContract(ctid)
       .then(function(response){
         Notification.success("The contract was agreed!");
         init();
@@ -59,8 +59,8 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
       );
     };
 
-  $scope.removeContract = function(id){
-    itemsAPIService.removeContract(id)
+  $scope.removeContract = function(ctid){
+    itemsAPIService.removeContract(ctid)
       .then(function(response){
         Notification.success("The contract was cancelled!");
         init();
@@ -79,7 +79,6 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     .then(function(response){
       $scope.alldevices = response.data.message;
       for(var i = 0; i < $scope.alldevices.length; i++){
-        $scope.alldevices[i].isMine = ($scope.alldevices[i].uid.id.toString() === $scope.uid.toString());
         for(var j = 0; j < $scope.alldevices[i].hasContracts.length; j++){
           if($scope.alldevices[i].hasContracts[j].id.toString() === $scope.searchParam.contractId.toString() ){
               $scope.alldevices[i].status = $scope.alldevices[i].hasContracts[j].approved;
@@ -107,12 +106,12 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     init();
   };
 
+// TODO
   $scope.removeItem = function(){
-
   };
 
+// TODO
   $scope.addItem = function(){
-
   };
 
   // Private Functions

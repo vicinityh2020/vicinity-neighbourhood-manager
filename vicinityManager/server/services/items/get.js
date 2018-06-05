@@ -78,7 +78,7 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
   userAccountOp.findOne(cid, {knows: 1})
   .then(function(response){
     var friends = [];
-    if(response.knows != null){
+    if(response.knows !== 'undefined'){
         getIds(response.knows, friends);
     }
     logger.debug(friends);
@@ -118,10 +118,13 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
 Gets array of items:
 - array of items
 */
-function getArrayOfItems(items, cid, api, callback) {
+function getArrayOfItems(items, token_cid, token_uid, api, callback) {
   var projection = {name:1, oid:1, adid:1, cid:1, uid:1, interactionPatterns:1, accessLevel:1, typeOfItem:1, hasContracts:1 };
   itemOp.find({'_id': { $in: items } }, projection)
   .then(function(response){
+    for(var i = 0; i < response.length; i++){
+      response[i]._doc.isMine = response[i].uid.id.toString() === token_uid.toString();
+    }
     callback(false, response);
   })
   .catch(function(err){

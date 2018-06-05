@@ -318,7 +318,7 @@ function checkUserAuth(roles, tokenUser, tokenCid, typeOfItem, itemUser, itemCid
   var imAdmin = (roles.indexOf('administrator')) !== -1 && (tokenCid === itemCid) && (imDisabling); // myOwn company admin
   var canChangeSer, canChangeDev;
   if((tokenUser === itemUser) && (tokenCid === itemCid)){
-    canChangeDev = (roles.indexOf('infrastructure operator') !== -1 && typeOfItem === 'device');
+    canChangeDev = (roles.indexOf('device owner') !== -1 && typeOfItem === 'device');
     canChangeSer = (roles.indexOf('service provider') !== -1 && typeOfItem === 'service');
   } else {
     canChangeDev = canChangeSer = false;

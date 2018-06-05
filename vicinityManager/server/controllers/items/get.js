@@ -50,9 +50,10 @@ Gets array of items:
 */
 function getArrayOfItems(req, res) {
   var items = req.body;
+  var myuid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = false; // Call origin api or webApp
-  sGet.getArrayOfItems(items, mycid, api, function(err, response){
+  sGet.getArrayOfItems(items, mycid, myuid, api, function(err, response){
     res.json({error: err, message: response});
   });
 }
