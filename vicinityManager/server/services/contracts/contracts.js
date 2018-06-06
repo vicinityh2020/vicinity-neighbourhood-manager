@@ -145,21 +145,9 @@ function accepting(id, token_uid, token_mail, callback){
     getOnlyOid(items, response);
     return moveItemsInContract(updItem.ctid, token_mail, items, true); // add = true
   })
-  // TODO send notifications and audits to all parties involved
-  // .then(function(response){
-  //   return notifHelper.createNotification(
-  //     { kind: 'user', item: updItem.foreignIot.uid.id, extid: updItem.foreignIot.uid.extid },
-  //     { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
-  //     { kind: 'contract', item: updItem._id, extid: updItem.ctid },
-  //     'info', 24, null);
-  // })
-  // .then(function(response){
-  //   return audits.create(
-  //     { kind: 'user', item: updItem.foreignIot.uid.id, extid: updItem.foreignIot.uid.extid },
-  //     { kind: 'user', item: updItem.iotOwner.uid.id, extid: updItem.iotOwner.uid.extid },
-  //     { kind: 'contract', item: updItem._id, extid: updItem.ctid },
-  //     51, null);
-  // })
+  .then(function(response){
+    return createNotifAndAudit(updItem._id, updItem.ctid, token_uid, token_mail, updItem.iotOwner.uid, updItem.foreignIot.uid, imAdmin, true); // Accepted = true
+  })
   .then(function(response){
     callback(false, updItem);
   })
@@ -186,34 +174,10 @@ function removing(id, token_uid, token_mail, callback){
       }
     }
     if(imAdmin){
-      removeAll(id);
+      removeAll(id, token_uid, token_mail);
     } else {
-      removeOneUser(id, token_uid, token_mail, imAdmin, imForeign);
+      removeOneUser(id, token_uid, token_mail, imForeign);
     }
-  })
-  // TODO notifiy all contract users
-  // .then(function(response){
-  //   return notifHelper.createNotification(
-  //     { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
-  //     { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
-  //     { kind: 'contract', item: ctid.id, extid: ctid.extid },
-  //     'info', 23, null);
-  // })
-  // .then(function(response){
-  //   return notifHelper.createNotification(
-  //     { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
-  //     { kind: 'user', item: data.serviceProvider.uid.id, extid: data.serviceProvider.uid.extid },
-  //     { kind: 'contract', item: ctid.id, extid: ctid.extid },
-  //     'info', 23, null);
-  // })
-  .then(function(response){
-    data = response;
-    ctid = {id: data._id, extid: data.ctid};
-    return audits.create(
-      { kind: 'user', item: data.iotOwner.uid.id, extid: data.iotOwner.uid.extid },
-      { kind: 'user', item: data.foreignIot.uid.id, extid: data.foreignIot.uid.extid },
-      { kind: 'contract', item: ctid.id, extid: ctid.extid },
-      52, null);
   })
   .then(function(response){
     callback(false, "Contract removed");
@@ -228,7 +192,7 @@ function removing(id, token_uid, token_mail, callback){
 Remove whole contract
 * @return {Promise}
 */
-function removeAll(id){
+function removeAll(id, token_uid, token_mail){
   var users = []; var items = [];
   var data = {}; var ctid = {};
   return new Promise(function(resolve, reject) {
@@ -256,6 +220,9 @@ function removeAll(id){
       return itemOp.update({_id: {$in: items }}, { $pull: {hasContracts: ctid} }, { multi: true });
     })
     .then(function(response){
+      return createNotifAndAudit(data._id, data.ctid, token_uid, token_mail, data.iotOwner.uid, data.foreignIot.uid, true, false); // Accepted = true
+    })
+    .then(function(response){
       resolve(data);
     })
     .catch(function(err){
@@ -268,15 +235,16 @@ function removeAll(id){
 Remove a user in a contract
 * @return {Promise}
 */
-function removeOneUser(id, uid, mail, imAdmin, imForeign){
+function removeOneUser(id, uid, mail, imForeign){
   var items = []; var items_id = []; var items_oid = [];
-  var query = {}; var ctid;
+  var query = {}; var ctid; var data = {};
   return new Promise(function(resolve, reject) {
     if(imForeign){ query = { $pull: {"foreignIot.uid": {id: uid} } }; }
     else { query = { $pull: {"iotOwner.uid": {id: uid} } }; }
     contractOp.findOneAndUpdate({"_id": id}, query, {new: true})
     .then(function(response){
       ctid = response.ctid;
+      data = response;
       if(imForeign){ getOnlyId(items, response.foreignIot.items.toObject()); }
       else { getOnlyId(items, response.iotOwner.items.toObject()); }
       return itemOp.find({"_id": { $in: items }, 'uid.id': uid}, {oid:1});
@@ -296,6 +264,9 @@ function removeOneUser(id, uid, mail, imAdmin, imForeign){
     })
     .then(function(response){
       return moveItemsInContract(ctid, mail, items_oid, false); // add = false
+    })
+    .then(function(response){
+      return createNotifAndAudit(data._id, data.ctid, uid, mail, data.iotOwner.uid, data.foreignIot.uid, false, false); // Accepted = true
     })
     .then(function(response){
       resolve(true);
@@ -476,6 +447,55 @@ function getOnlyOid(items, toAdd){
       items.push(toAdd[i].oid);
     }
   }
+}
+
+/*
+Create notifications
+*/
+function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imAdmin, accepted){
+  var auditNumber;
+  var notifNumber;
+  var notifTarget = [];
+  var allUsers = ownUsers.concat(foreignUsers);
+
+  for(var n = 0; n < allUsers.length; n++){
+    notifTarget.push({kind: 'user', item: allUsers[n].id, extid: allUsers[n].extid});
+  }
+
+  if(imAdmin && accepted){
+    notifNumber = 22; auditNumber = 52;
+  } else if(!imAdmin && accepted){
+    notifNumber = 24; auditNumber = 54;
+  } else if(imAdmin && !accepted){
+    notifNumber = 23; auditNumber = 53;
+  } else {
+    notifNumber = 25; auditNumber = 55;
+  }
+
+  return new Promise(function(resolve, reject) {
+    // Asynchronously notify all allUsers
+    // Ignore response
+    // TODO Do error handling for the response
+    for(var i = 0; i < notifTarget.length; i++){
+      notifHelper.createNotification(
+        { kind: 'user', item: uid, extid: mail },
+        notifTarget[i],
+        { kind: 'contract', item: ct_id, extid: ctid },
+        'info', notifNumber, null
+      );
+    }
+    audits.create(
+      { kind: 'user', item: uid, extid: mail },
+      {},
+      { kind: 'contract', item: ct_id, extid: ctid },
+      auditNumber, null)
+    .then(function(response){
+      resolve(true);
+    })
+    .catch(function(err){
+      reject(err);
+    });
+  });
 }
 
 /*
