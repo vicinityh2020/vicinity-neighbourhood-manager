@@ -34,7 +34,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   // Callbacks
 
   function successCallback(response) {
-    $scope.contracts = response.data.message;
+    $scope.contracts = parseContracts(response.data.message.hasContracts);
     $scope.noItems = ($scope.contracts.length === 0);
     if(!$scope.noItems){myContractDetails();}
     $scope.loaded = true;
@@ -52,6 +52,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   $scope.acceptContract = function(ctid){
     itemsAPIService.acceptContract(ctid)
       .then(function(response){
+        $scope.contracts = [];
         Notification.success("The contract was agreed!");
         init();
       },
@@ -62,6 +63,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   $scope.removeContract = function(ctid){
     itemsAPIService.removeContract(ctid)
       .then(function(response){
+        $scope.contracts = [];
         Notification.success("The contract was cancelled!");
         init();
       },
@@ -106,11 +108,11 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     init();
   };
 
-// TODO
+// TODO Disable one device only
   $scope.removeItem = function(){
   };
 
-// TODO
+// TODO Enable one device only
   $scope.addItem = function(){
   };
 
@@ -140,5 +142,29 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
       }
     }
   }
+
+  function parseContracts(array){
+    var cts = [];
+    for(var i = 0; i < array.length; i++){
+      if(array[i].id.status !== 'deleted'){
+        cts.push(array[i].id);
+        cts[i].imAdmin = array[i].imAdmin;
+        cts[i].imForeign = array[i].imForeign;
+        cts[i].active = array[i].approved;
+      }
+    }
+    return cts;
+  }
+
+  $scope.orderByMe = function(x) {
+    if($scope.myOrderBy === x){
+      $scope.rev=!($scope.rev);
+    }
+    $scope.myOrderBy = x;
+  };
+
+  $scope.onSort = function(order){
+    $scope.rev = order;
+  };
 
 });

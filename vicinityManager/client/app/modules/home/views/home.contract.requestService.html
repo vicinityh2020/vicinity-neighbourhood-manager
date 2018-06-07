@@ -1,5 +1,12 @@
 <section class="content-header">
-  <h1>Request Service</h1>
+  <div class="row">
+    <div class="col-sm-6">
+      <h1>Request Service</h1>
+    </div>
+    <div class="col-sm-6">
+      <img class="pull-right" src="img/logos/shqlogo.png"/>
+    </div>
+  </div>
 </section>
 
 <div class="row" ng-hide="loaded">
@@ -19,7 +26,7 @@
       <p><b>Name:</b> {{service.name}}</p>
       <p><b>Access level:</b> {{service.accessLevelCaption}}</p>
       <p><b>Owner:</b> {{service.uid.extid}} </p>
-      <p><b>Company:</b> {{service.cid.id.name}} </p>
+      <p><b>Company:</b> {{service.cid.name}} </p>
       <p><b>Friends:</b> {{service.myFriend}}</p>
     </div>
 
@@ -29,11 +36,38 @@
     <div class="box-body">
       <form role="form">
         <div class="form-group padded">
-          <div class="checkbox" ng-repeat="thing in things">
-            <label>
-              <input type="checkbox" ng-model="thing.status">
-              {{thing.name}} -- {{thing.accessLevelCaption}} -- {{thing.typeOfItem}} -- {{thing.uid.extid}}
-            </label>
+
+          <div class="box-body">
+            <table id="RegTable" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Check</th>
+                  <th>Name<i ng-click="orderByMe('name')" class="fa fa-fw fa-sort"/></th>
+                  <th>Privacy<i ng-click="orderByMe('privacy')" class="fa fa-fw fa-sort"/></th>
+                  <th>Type<i ng-click="orderByMe('type')" class="fa fa-fw fa-sort"/></th>
+                  <th>Owner<i ng-click="orderByMe('owner')" class="fa fa-fw fa-sort"/></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="thing in things | orderBy:myOrderBy:rev">
+                  <td class="col-sm-1">
+                    <input type="checkbox" ng-model="thing.status">
+                  </td>
+                  <td class="col-sm-3">
+                    <span>{{thing.name}}</span>
+                  </td>
+                  <td class="col-sm-3">
+                    <span>{{thing.accessLevelCaption}}</span>
+                  </td>
+                  <td class="col-sm-2">
+                    <span>{{thing.typeOfItem}}</span>
+                  </td>
+                  <td class="col-sm-3">
+                    <span>{{thing.uid.extid}}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </form>

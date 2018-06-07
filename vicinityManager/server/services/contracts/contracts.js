@@ -72,7 +72,7 @@ function creating(data, token_uid, token_mail, callback){
         .then(function(response){
           return createContract(ctid, 'Contract: ' + ct_type);
         })
-        .then(function(response){
+        .then(function(response){ // Get contract creator devices -- To add in contract
           return itemOp.find({"_id": { $in: idsDevice }, 'uid.id': token_uid}, {oid:1});
         })
         .then(function(response){
@@ -180,7 +180,7 @@ function removing(id, token_uid, token_mail, callback){
     }
   })
   .then(function(response){
-    callback(false, "Contract removed");
+    callback(false, response);
   })
   .catch(function(error){
     logger.debug('Delete contract error: ' + error);
@@ -269,7 +269,7 @@ function removeOneUser(id, uid, mail, imForeign){
       return createNotifAndAudit(data._id, data.ctid, uid, mail, data.iotOwner.uid, data.foreignIot.uid, false, false); // Accepted = true
     })
     .then(function(response){
-      resolve(true);
+      resolve(data);
     })
     .catch(function(err){
       reject(err);
@@ -302,7 +302,7 @@ function contractFeeds(uid, callback){
 }
 
 /**
-* Contract feeds
+* Contract info - return one contract
 * @param {String} ctid
 * @param {String} uid
 *
@@ -453,26 +453,26 @@ function getOnlyOid(items, toAdd){
 Create notifications
 */
 function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imAdmin, accepted){
-  var auditNumber;
-  var notifNumber;
-  var notifTarget = [];
-  var allUsers = ownUsers.concat(foreignUsers);
-
-  for(var n = 0; n < allUsers.length; n++){
-    notifTarget.push({kind: 'user', item: allUsers[n].id, extid: allUsers[n].extid});
-  }
-
-  if(imAdmin && accepted){
-    notifNumber = 22; auditNumber = 52;
-  } else if(!imAdmin && accepted){
-    notifNumber = 24; auditNumber = 54;
-  } else if(imAdmin && !accepted){
-    notifNumber = 23; auditNumber = 53;
-  } else {
-    notifNumber = 25; auditNumber = 55;
-  }
-
   return new Promise(function(resolve, reject) {
+    var auditNumber;
+    var notifNumber;
+    var notifTarget = [];
+    var allUsers = ownUsers.concat(foreignUsers);
+
+    for(var n = 0; n < allUsers.length; n++){
+      notifTarget.push({kind: 'user', item: allUsers[n].id, extid: allUsers[n].extid});
+    }
+
+    if(imAdmin && accepted){
+      notifNumber = 22; auditNumber = 52;
+    } else if(!imAdmin && accepted){
+      notifNumber = 24; auditNumber = 54;
+    } else if(imAdmin && !accepted){
+      notifNumber = 23; auditNumber = 53;
+    } else {
+      notifNumber = 25; auditNumber = 55;
+    }
+
     // Asynchronously notify all allUsers
     // Ignore response
     // TODO Do error handling for the response

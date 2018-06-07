@@ -111,7 +111,17 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
               $scope.things[i].accessLevelCaption = "Private";
           }
         }
+    };
 
+    $scope.orderByMe = function(x) {
+      if($scope.myOrderBy === x){
+        $scope.rev=!($scope.rev);
+      }
+      $scope.myOrderBy = x;
+    };
+
+    $scope.onSort = function(order){
+      $scope.rev = order;
     };
 
 });

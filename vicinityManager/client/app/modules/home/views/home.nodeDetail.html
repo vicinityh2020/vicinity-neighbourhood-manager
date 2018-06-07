@@ -1,5 +1,5 @@
 <section class="content-header">
-    <h1>Node detail</h1>
+    <h1>Gateway detail</h1>
 </section>
 
 <!-- MODIFY TEMPLATE -->
@@ -12,7 +12,7 @@
   <form name="form" role="form" ng-submit="submitNode()">
     <div class="box-body">
       <div class="form-group">
-        <label>Node name</label>
+        <label>Gateway name</label>
         <input class="form-control" ng-model="nName" placeholder="Enter name" required>
       </div>
       <!-- <div class="form-group">
@@ -21,23 +21,33 @@
       </div> -->
 
       <div class="form-group">
-        <label>Agent type</label>
+        <label>Gateway type</label>
         <div class="form-group">
-          <div class="radio">
-            <label>
-              <input name="optionsRadios" ng-model="nAgentType" value="generic.adapter.vicinity.eu" type="radio">
-              Vicinity agent
-            </label>
+          <div class="row radio">
+            <div class="col-sm-1">
+              <img class="pull-left" height="25" src="img/logos/vcntlogo.png"/>
+            </div>
+            <div class="col-sm-11">
+              <label>
+                <input name="optionsRadios" ng-model="nAgentType" value="generic.adapter.vicinity.eu" type="radio">
+                Vicinity agent
+              </label>
+            </div>
           </div>
-          <div class="radio">
-            <label>
-              <input name="optionsRadios" ng-model="nAgentType" value="generic.adapter.sharq.eu" type="radio">
-              Sharq adapter
-            </label>
+          <div class="row radio">
+            <div class="col-sm-1">
+              <img class="pull-left" height="25" src="img/logos/shqlogo.png"/>
+            </div>
+            <div class="col-sm-11">
+              <label>
+                <input name="optionsRadios" ng-model="nAgentType" value="generic.adapter.sharq.eu" type="radio">
+                Sharq adapter
+              </label>
+            </div>
           </div>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label>Password</label>
         <input type="password" class="form-control" ng-model="nPass" placeholder="Enter password" required>
@@ -72,7 +82,7 @@
 
     <div class="box-body">
       <div class="form-group">
-        <label>Node name</label>
+        <label>Gateway name</label>
         <p>{{nName}}</p>
       </div>
       <!-- <div class="form-group">

@@ -67,15 +67,7 @@ Get contract
 function fetchContract(req, res){
   var id = req.params.id; // User id
   var parsedData = {};
-  userOp.findOne({ _id: id}, {hasContracts:1})
-  .then(function(response){
-    parsedData = response.toObject();
-    var ct_ids = [];
-    if(parsedData.hasContracts.length !== 'undefined'){
-      getOnlyId(ct_ids, parsedData.hasContracts);
-    }
-    return contractOp.find({_id: {$in: ct_ids}, status: {$ne: "deleted"}});
-  })
+  userOp.findOne({ _id: id}, {hasContracts:1}).populate('hasContracts.id')
   .then(function(response){
     res.json({error: false, message: response});
   })
