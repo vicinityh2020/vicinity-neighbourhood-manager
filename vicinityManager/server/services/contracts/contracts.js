@@ -92,7 +92,7 @@ function creating(data, token_uid, token_mail, callback){
             { kind: 'user', item: token_uid, extid: token_mail },
             { kind: 'user', item: data.contractingUser.id, extid: data.contractingUser.extid },
             { kind: 'contract', item: ct_id, extid: ctid },
-            53, null);
+            51, null);
         })
         .then(function(response){
           callback(false, 'Contract posted, waiting for approval');
