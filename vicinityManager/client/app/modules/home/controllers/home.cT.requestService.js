@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cTrequestService',
-function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService, Notification) {
+function ($scope, $stateParams, $state, $window, $q, commonHelpers, itemsAPIService, Notification) {
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
@@ -29,6 +29,9 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
     itemsAPIService.getMyContractItems($scope.owner.cid, $scope.owner.oid)
       .then(
         function (response){
+          return checkIfItemsToShare(response);
+        })
+        .then(function(response){
           var auxcid = response.data.message[0].cid;
           $scope.device.cid = { 'id': auxcid.id._id, 'extid': auxcid.extid, 'name': auxcid.id.name};
           $scope.things = response.data.message;
@@ -48,7 +51,13 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
           $scope.loaded = true;
         })
         .catch(function(error){
-          Notification.error(error);
+          if(error === "No items"){
+            Notification.warning("You do not have items to share with this service!!");
+            $state.go("root.main.allServices");
+          } else {
+            Notification.error(error);
+            $state.go("root.main.allServices");
+          }
         });
     }
 
@@ -123,5 +132,16 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
     $scope.onSort = function(order){
       $scope.rev = order;
     };
+
+    function checkIfItemsToShare(msg){
+      return $q(function(resolve, reject) {
+          if(msg.data.message.length > 0){
+            resolve(msg);
+          } else {
+            reject("No items");
+          }
+        }
+      );
+    }
 
 });
