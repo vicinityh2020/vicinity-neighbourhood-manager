@@ -119,6 +119,7 @@ function saveDocuments(objects, otherParams, callback){
         objects.oid = response;
         semanticValidation(objects, obj, pwd, infra_id, callback);
       } else {
+        obj.info = objects;
         createInstance(obj, pwd, infra_id, callback);
       }
     }) // Register TD in semantic repository
