@@ -1,11 +1,32 @@
+# VICINITY Neighbourhood Manager
+
+VICINITY Neighbourhood Manager is a web-based application that gives VICINITY platform users an intuitive visual control add-value service access to their devices connected to VICINITY Platform to collect data and control them.
+
+In VICINITY Neighbourhood Manager as in the regular social networks of users (organization), their services and devices. It is possible to establish partnerships with other users and controll access to their devices with them. 
+
+The users can set privacy levels to each device and service they have registered in VICINITY. The privacy levels range from:
+
+* Private – Visible only within the user organisation.
+* Visible for friends – Visible also for organisations that were befriended.
+* Public -  Visible for the whole platform.
+
+In order to register device and service user needs to create so called gateway and set-up VICINITY Gateway and VICINITY Adapter to connect his devices and services to VICINITY Platofrm. To set-up VICINITY Gateway and VICINITY Adapter please consult following repositories:
+
+* [VICINITY Agent](https://github.com/vicinityh2020/vicinity-agent)
+* [VICINITY Gateway API](TBD).
+
+VICINITY Neighbourhood Manager is publicly accessible over [internet](https://vicinity.bavenir.eu).
+
 # Deploy instance of VCNT NM in a virtual machine
+If you are interested to deploy private instance of VICINITY Neighbourhood Manager please follow the following guideline.
+
 ### Linux machine. Tested in Debian Jessie and Ubuntu
  
 ## Pre-requisites
- * GIT - [https://git-scm.com/]
- * NodeJS - [http://nodejs.org/]
-  
 
+* [GIT](https://git-scm.com/)
+* [NodeJS](http://nodejs.org/)
+  
 ## Get the web application
 #### Create and navigate to the folder where the repository should be cloned:
  * mkdir /var/www
