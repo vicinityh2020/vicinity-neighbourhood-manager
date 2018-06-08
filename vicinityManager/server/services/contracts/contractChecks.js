@@ -17,18 +17,18 @@ var sync = require('../../services/asyncHandler/sync');
 /*
 Check post contract validity
 */
-function postCheck(data, uid, cid, callback){
+function postCheck(data, roles, cid, callback){
   var result, resultUid, resultCid; // Boolean; return true if all the conditions meet
   var items = [];
 
 // Check that IoTOwner matches with the user doing the contract request
-  resultUid = uid.toString() === data.uidDevice.id.toString();
-  resultCid = cid.toString() === data.cidDevice.id.toString();
-  result = resultUid && resultCid;
+  imIotOperator = roles.indexOf('infrastructure operator') !== -1;
+  sameCompany = cid.toString() === data.cidDevice.id.toString();
+  result = imIotOperator && sameCompany;
 
   if(result){
-    getOnlyId(items, data.oidDevices);
-    getOnlyId(items, data.oidService);
+    getOnlyId(items, data.oidsDevice);
+    getOnlyId(items, data.oidsService);
 
     checkVisibility(items, cid, data.cidService.id)
     .then(function(response){
@@ -44,43 +44,6 @@ function postCheck(data, uid, cid, callback){
 
   } else {
     callback(false, 'Contract requester must be the IoT Owner', false);
-  }
-}
-
-/*
-Check update contract validity
-*/
-function updateCheck(ctid, data, uid, cid, callback){
-  var result, resultUid, resultCid; // Boolean; return true if all the conditions meet
-  var items = [];
-
-// Check that IoTOwner is matches with the user doing the contract request
-  resultUid = uid.toString() === data.uidDevice.id.toString();
-  resultCid = cid.toString() === data.cidDevice.id.toString();
-  result = resultUid && resultCid;
-
-  if(result){
-    getOnlyId(items, data.oidDevices);
-    getOnlyId(items, data.oidService);
-
-    checkVisibility(items, cid, data.cidService.id)
-    .then(function(response){
-      if(response){ return previousOwners(ctid, data); }
-      else { return false; }
-    })
-    .then(function(response){
-      if(response){ callback(false, 'authorized', true); }
-      else { callback(false, 'Some items cannot be shared or owner mismatch', false); }
-    })
-    .catch(function(error){
-      callback(true, error, false);
-    });
-
-    // Check that the items are not simultaneously controlled by more than one service
-    // TODO after discussing with partners requirements!!
-
-  } else {
-    callback(false, 'Contract updater must be the IoT Owner', false);
   }
 }
 
@@ -179,35 +142,6 @@ Send each contract to delete or to modify
 //   });
 // }
 
-
-/*
-Check that previous owners and service match with the data provided
-*/
-function previousOwners(ctid, data){
-  var flag1, flag2, flag3;
-  return new Promise(function(resolve, reject) {
-    contractOp.findOne({_id: ctid})
-    .then(function(response){
-      if(response){
-       flag1 = response.iotOwner.uid.id.toString() === data.uidDevice.id.toString();
-       flag2 = response.serviceProvider.uid.id.toString() === data.uidService.id.toString();
-       flag3 = response.serviceProvider.items[0].id.toString() === data.oidService[0].id.toString();
-        if(flag1 && flag2 && flag3){
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      } else {
-        resolve(false);
-      }
-    })
-    .catch(function(error){
-      logger.debug(error);
-      reject(error);
-    });
-  });
-}
-
 /*
 Check that I am part of the contract
 */
@@ -288,7 +222,6 @@ function getOnlyId(items, toAdd){
 // modules exports
 
 module.exports.postCheck = postCheck;
-module.exports.updateCheck = updateCheck;
 module.exports.deleteCheck = deleteCheck;
 module.exports.acceptCheck = acceptCheck;
 // module.exports.checkContracts = checkContracts;

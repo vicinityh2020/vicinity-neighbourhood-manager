@@ -24,6 +24,7 @@ function creating(data, token_uid, token_mail, callback){
   var idsDevice = [];
   var uidService = [];
   var uidDevice = [];
+  var contractingUser = {};
 
   ct.ctid = uuid();
   ct.foreignIot = { cid: data.cidService, uid: data.uidsService, termsAndConditions: false, items: data.oidsService };
@@ -39,13 +40,16 @@ function creating(data, token_uid, token_mail, callback){
         ct_id = response._id;
         ctid = response.ctid;
         ct_type = response.type;
+        // Case contracting user not provided, assume it is the first in the array of contracted service
+        contractingUser = data.contractingUser !== 'undefined' ? Object.assign({},data.uidsService[0]) : Object.assign({},data.contractingUser);
+
         var cidService = data.cidService.extid;
         var cidDevice = data.cidDevice.extid;
         var ctidServiceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: token_uid, approved: false, readWrite: response.readWrite, imForeign: true };
         var ctidServiceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: token_uid, approved: false, readWrite: response.readWrite, imForeign: true };
         // If only one requester we asume that it is provinding all items itself, therefore the contract and its items are approved by default
-        var ctidDeviceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: data.contractingUser.id, approved: data.uidsDevice.length === 1, readWrite: response.readWrite };
-        var ctidDeviceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: data.contractingUser.id, approved: false, readWrite: response.readWrite };
+        var ctidDeviceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: data.uidsDevice.length === 1, readWrite: response.readWrite };
+        var ctidDeviceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: false, readWrite: response.readWrite };
 
         getOnlyId(uidService, data.uidsService);
         getOnlyId(idsService, data.oidsService);
@@ -63,7 +67,7 @@ function creating(data, token_uid, token_mail, callback){
           return userOp.update({_id: {$in: uidService }}, { $push: {hasContracts: ctidServiceUser} }, { multi: true });
         })
         .then(function(response){ // Update main provider
-          return userOp.update({_id: data.contractingUser.id, "hasContracts.id" :ct_id},
+          return userOp.update({_id: contractingUser.id, "hasContracts.id" :ct_id},
                                   {$set: { "hasContracts.$.imAdmin" : true }});
         })
         .then(function(response){
@@ -83,14 +87,14 @@ function creating(data, token_uid, token_mail, callback){
         .then(function(response){
           return notifHelper.createNotification(
             { kind: 'user', item: token_uid, extid: token_mail },
-            { kind: 'user', item: data.contractingUser.id, extid: data.contractingUser.extid },
+            { kind: 'user', item: contractingUser.id, extid: contractingUser.extid },
             { kind: 'contract', item: ct_id, extid: ctid },
             'info', 21, null);
         })
         .then(function(response){
           return audits.create(
             { kind: 'user', item: token_uid, extid: token_mail },
-            { kind: 'user', item: data.contractingUser.id, extid: data.contractingUser.extid },
+            { kind: 'user', item: contractingUser.id, extid: contractingUser.extid },
             { kind: 'contract', item: ct_id, extid: ctid },
             51, null);
         })

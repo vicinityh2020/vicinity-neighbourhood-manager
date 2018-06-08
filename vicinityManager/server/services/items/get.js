@@ -34,7 +34,7 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
     if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
       query = {'cid.id': cid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
     } else {
-      if(friends.indexOf(mycid) !== -1) {
+      if(friends.indexOf(mycid.toString()) !== -1) {
         query = {'cid.id': cid, accessLevel: { $gt:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
       } else {
         query = {'cid.id': cid, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
@@ -48,6 +48,8 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
     } else {
       projection = { status: 0 };
     }
+
+    logger.debug(query);
 
     itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
       if (err) {
