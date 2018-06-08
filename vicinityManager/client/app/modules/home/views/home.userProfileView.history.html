@@ -62,15 +62,15 @@
                     <span ng-show="[2, 42, 12, 22].lastIndexOf(log.type) !== -1"><i class="fa fa-minus my-red"/></span>
                     <span ng-show="log.type===13"><i class="fa fa-user"/></span>
                     <span ng-show="log.type===23"><i class="fa fa-sitemap"/></span>
-                    <span ng-show="[31, 53].lastIndexOf(log.type) !== -1"><i class="fa fa-envelope my-blue"/></span>
+                    <span ng-show="[31, 51].lastIndexOf(log.type) !== -1"><i class="fa fa-envelope my-blue"/></span>
                     <span ng-show="[32, 34].lastIndexOf(log.type) !== -1"><i class="fa fa-times my-red"/></span>
                     <span ng-show="log.type===33"><i class="fa fa-user-plus my-green"/></span>
                     <span ng-show="log.type===35"><i class="fa fa-user-times my-red"/></span>
-                    <span ng-show="[43, 54].lastIndexOf(log.type) !== -1"><i class="fa fa-arrow-up my-green"/></span>
+                    <span ng-show="log.type===43"><i class="fa fa-arrow-up my-green"/></span>
                     <span ng-show="log.type===44"><i class="fa fa-arrow-down my-red"/></span>
                     <span ng-show="log.type===45"><i class="fa fa-eye"/></span>
-                    <span ng-show="log.type===51"><i class="fa fa-chain my-blue"/></span>
-                    <span ng-show="log.type===52"><i class="fa fa-chain-broken"/></span>
+                    <span ng-show="[52, 54].lastIndexOf(log.type) !== -1"><i class="fa fa-chain my-blue"/></span>
+                    <span ng-show="[53, 55].lastIndexOf(log.type) !== -1"><i class="fa fa-chain-broken"/></span>
                   </div>
 
                 </h3>
@@ -97,10 +97,11 @@
                 <span ng-show="log.type===44">The {{log.target.item.name}} was disabled</span>
                 <span ng-show="log.type===45">Privacy change in {{log.target.item.name}}: {{log.description}} </span>
 
-                <span ng-show="log.type===51">Contract stablished between {{log.target.item.name}} and {{log.actor.item.name}} with id: {{log.object.extid}}</span>
-                <span ng-show="log.type===52">Contract cancelled between {{log.target.item.name}} and {{log.actor.item.name}} with id: {{log.object.extid}}</span>
-                <span ng-show="log.type===53">Contract request between {{log.target.item.name}} and {{log.actor.item.name}} with id: {{log.object.extid}}</span>
-                <span ng-show="log.type===54">Contract updated between {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
+                <span ng-show="log.type===51">Contract request between {{log.target.item.name}} and {{log.actor.item.name}} with id: {{log.object.extid}}</span>
+                <span ng-show="log.type===52">Contract accepted by {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
+                <span ng-show="log.type===53">Contract cancelled by {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
+                <span ng-show="log.type===54">Contract joined by {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
+                <span ng-show="log.type===55">Contract abandoned {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
 
                 <br>
 

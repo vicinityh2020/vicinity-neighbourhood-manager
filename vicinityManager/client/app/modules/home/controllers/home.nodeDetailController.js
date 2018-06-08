@@ -27,7 +27,7 @@ angular.module('VicinityManagerApp.controllers').
 
             $scope.modify = true;
             $scope.nodeId = $state.params.nodeId;
-            $scope.myNode = "Creating new node";
+            $scope.myNode = "Creating new gateway";
 
             if($scope.nodeId !== '0'){
             $scope.modify = false;
@@ -95,7 +95,7 @@ angular.module('VicinityManagerApp.controllers').
 
             $scope.toModify= function(){
               $scope.modify = true;
-              $scope.myNode = "Modifying node: " + $scope.nName;
+              $scope.myNode = "Modifying gateway: " + $scope.nName;
             };
 
   });

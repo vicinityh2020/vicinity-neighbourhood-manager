@@ -1,5 +1,5 @@
 <section class="content-header">
-    <h1>Organisation nodes</h1>
+    <h1>Organisation gateways</h1>
 </section>
 
 <div class="coll-md-1" ng-hide="loadedPage" style="margin: auto; width:60%">
@@ -10,7 +10,7 @@
 <section class="content" ng-show="loadedPage && !imMobile">
   <span class="col-xs-2 pull-right">
   <div>
-    <button class="btn btn-default" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>  Create node  </button>
+    <button class="btn btn-default" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>  Create gateway  </button>
   </div>
   <!-- <div class="col-xs-6">
     <button class="btn btn-default btn-block" ng-click="createGroup()" ng-disabled="true"><span class="glyphicon glyphicon-plus"></span>Create group</button>
@@ -37,7 +37,15 @@
             <span>{{nod.adid}}</span>
           </td>
           <td class="col-sm-3">
-            <span>{{nod.type[0]}}</span>
+            <div class="row">
+              <div class="col-sm-6">
+                <span>{{nod.type[0]}}</span>
+              </div>
+              <div class="col-sm-6">
+                <img ng-hide="nod.type[0] === 'generic.adapter.sharq.eu'" class="pull-right" height="25" src="img/logos/vcntlogo.png"/>
+                <img ng-show="nod.type[0] === 'generic.adapter.sharq.eu'" class="pull-right" height="25" src="img/logos/shqlogo.png"/>
+              </div>
+            </div>
           </td>
           <td class="col-sm-1">
             <span>{{nod.numItems}}</span>
@@ -68,7 +76,7 @@
   <hr>
   <span>
     <div>
-      <button class="btn btn-default btn-block" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>  Create node  </button>
+      <button class="btn btn-default btn-block" ng-click="goToEdit(0)"><span class="glyphicon glyphicon-plus"></span>  Create gateway  </button>
     </div>
   </span>
   <hr>

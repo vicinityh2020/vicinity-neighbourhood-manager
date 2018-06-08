@@ -81,12 +81,12 @@ function create(actor, target, object, type, description){
       } else {
         addToEntity(actor, aux._id, aux.audid)
         .then(function(response){
-          if(target.item !== undefined){
+          if(target.item !== 'undefined'){
             return addToEntity(target, aux._id, aux.audid);
           } else { return true; }
         })
         .then(function(response){
-          if(object.item !== undefined && object.extid !== actor.extid){
+          if(object.item !== 'undefined' && object.extid !== actor.extid){
             return addToEntity(object, aux._id, aux.audid);
           } else { return true; }
         })
@@ -120,10 +120,12 @@ function addToEntity(entity, id, audid){
       itemOp.update({_id: entity.item}, {$push: {hasAudits:{id: id, extid: audid}}}, function(err, response){
         if(err){ reject(err); } else { resolve(true); }
       });
-    } else {
+    } else if(entity.kind === 'userAccount'){
       userAccountOp.update({_id: entity.item}, {$push: {hasAudits: {id: id, extid: audid}}}, function(err, response){
         if(err){ reject(err); } else { resolve(true); }
       });
+    } else {
+      resolve(false);
     }
   });
 }

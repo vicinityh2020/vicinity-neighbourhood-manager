@@ -34,7 +34,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   // Callbacks
 
   function successCallback(response) {
-    $scope.contracts = response.data.message;
+    $scope.contracts = parseContracts(response.data.message.hasContracts);
     $scope.noItems = ($scope.contracts.length === 0);
     if(!$scope.noItems){myContractDetails();}
     $scope.loaded = true;
@@ -49,9 +49,10 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
 
   // Buttons
 
-  $scope.acceptContract = function(id){
-    itemsAPIService.acceptContract(id, {})
+  $scope.acceptContract = function(ctid){
+    itemsAPIService.acceptContract(ctid)
       .then(function(response){
+        $scope.contracts = [];
         Notification.success("The contract was agreed!");
         init();
       },
@@ -59,9 +60,10 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
       );
     };
 
-  $scope.removeContract = function(id){
-    itemsAPIService.removeContract(id)
+  $scope.removeContract = function(ctid){
+    itemsAPIService.removeContract(ctid)
       .then(function(response){
+        $scope.contracts = [];
         Notification.success("The contract was cancelled!");
         init();
       },
@@ -74,21 +76,20 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     getOneContract(id);
     getOnlyId();
     $scope.edit = edit;
-    itemsAPIService.getUserItems($scope.wholeContract.iotOwner.uid.id, $scope.wholeContract.iotOwner.cid.id._id)
+
+    itemsAPIService.getArrayOfItems($scope.contractItems)
     .then(function(response){
-      $scope.alldevices = response.data.message.items;
+      $scope.alldevices = response.data.message;
       for(var i = 0; i < $scope.alldevices.length; i++){
-        if($scope.contractItems.indexOf($scope.alldevices[i].id._id) !== -1){
-            $scope.alldevices[i].status = true;
-        } else {
-          if(!edit){$scope.alldevices.splice(i,1);} // If not in contract show only for edit
+        for(var j = 0; j < $scope.alldevices[i].hasContracts.length; j++){
+          if($scope.alldevices[i].hasContracts[j].id.toString() === $scope.searchParam.contractId.toString() ){
+              $scope.alldevices[i].status = $scope.alldevices[i].hasContracts[j].approved;
+          }
+          if(!$scope.alldevices[i].status){$scope.alldevices[i].status = false;} // If not approved show only for edit
         }
       }
-      if(edit){
-        $scope.mainTitle = "Edit Contract";
-      } else {
-        $scope.mainTitle = "Contract Details";
-      }
+
+      $scope.mainTitle = "Contract Details";
       $scope.detailsShow = true;
     })
     .catch(function(error){
@@ -107,34 +108,19 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     init();
   };
 
-  $scope.editContract = function(id){
-    $scope.data = {};
-    $scope.data.cidService = {'extid': $scope.wholeContract.serviceProvider.cid.extid, 'id': $scope.wholeContract.serviceProvider.cid.id._id};
-    $scope.data.uidService = $scope.wholeContract.serviceProvider.uid;
-    $scope.data.oidService = [{'id': $scope.wholeContract.serviceProvider.items[0].id._id, 'extid': $scope.wholeContract.serviceProvider.items[0].id.extid}];
-    $scope.data.cidDevice = {'extid': $scope.wholeContract.iotOwner.cid.extid, 'id': $scope.wholeContract.iotOwner.cid.id._id};
-    $scope.data.uidDevice = $scope.wholeContract.iotOwner.uid;
-    $scope.data.readWrite = $scope.wholeContract.readWrite;
-    var count = countDevices();
-    if(count > 0){
-      itemsAPIService.modifyContract($scope.wholeContract._id, $scope.data)
-      .then(function(response){
-        Notification.success('Contract sent for approval');
-        $scope.closeDetails();
-      })
-      .catch(function(error){
-        Notification.error('Problem processing the contract: ' + error);
-      });
-    } else {
-      Notification.warning('Select some device to proceed');
-    }
+// TODO Disable one device only
+  $scope.removeItem = function(){
+  };
+
+// TODO Enable one device only
+  $scope.addItem = function(){
   };
 
   // Private Functions
 
   function getOnlyId(){
     for(var i = 0; i < $scope.wholeContract.iotOwner.items.length; i++){
-      $scope.contractItems.push($scope.wholeContract.iotOwner.items[i].id._id);
+      $scope.contractItems.push($scope.wholeContract.iotOwner.items[i].id);
     }
   }
 
@@ -148,25 +134,37 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
 
   function myContractDetails(){
     for(var i = 0; i < $scope.contracts.length; i++){
-      $scope.contracts[i].imServiceProv = $scope.contracts[i].serviceProvider.uid.id.toString() === $scope.uid.toString();
+      $scope.contracts[i].imServiceProv = $scope.contracts[i].foreignIot.uid[0].id.toString() === $scope.uid.toString();
       if($scope.contracts[i].imServiceProv){
-        $scope.contracts[i].agreed = $scope.contracts[i].serviceProvider.termsAndConditions;
+        $scope.contracts[i].agreed = $scope.contracts[i].foreignIot.termsAndConditions;
       }else{
         $scope.contracts[i].agreed = $scope.contracts[i].iotOwner.termsAndConditions;
       }
     }
   }
 
-  function countDevices(){
-    var n = 0;
-    $scope.data.oidDevices = [];
-    for(var i = 0; i < $scope.alldevices.length; i++){
-      if($scope.alldevices[i].status){
-        n++;
-        $scope.data.oidDevices.push({'id': $scope.alldevices[i].id._id, 'extid': $scope.alldevices[i].extid});
+  function parseContracts(array){
+    var cts = [];
+    for(var i = 0; i < array.length; i++){
+      if(array[i].id.status !== 'deleted'){
+        cts.push(array[i].id);
+        cts[i].imAdmin = array[i].imAdmin;
+        cts[i].imForeign = array[i].imForeign;
+        cts[i].active = array[i].approved;
       }
     }
-    return n;
+    return cts;
   }
+
+  $scope.orderByMe = function(x) {
+    if($scope.myOrderBy === x){
+      $scope.rev=!($scope.rev);
+    }
+    $scope.myOrderBy = x;
+  };
+
+  $scope.onSort = function(order){
+    $scope.rev = order;
+  };
 
 });

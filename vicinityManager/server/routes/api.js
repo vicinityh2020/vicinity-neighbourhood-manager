@@ -37,6 +37,7 @@ router
 //Contracts
   .get('/contract', jwt, apiController.contractFeeds)
   .get('/contract/:ctid/items', jwt, apiController.contractInfo)
+  .get('/contract/validItems/:cid/:oid', jwt, apiController.contractValidItems)
   .post('/contract', jwt, apiController.requestContract)
   .put('/contract/:id', jwt, apiController.manageContract) // In payload --> accept, reject, cancel
 //Search

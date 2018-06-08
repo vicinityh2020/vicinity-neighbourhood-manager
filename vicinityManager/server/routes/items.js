@@ -21,6 +21,8 @@ router
 
 // When userAccount requires devices/services
   .get('/:cid/organisation/myItems', getHelper.getMyItems)
+  .get('/:cid/contract/:oid', getHelper.getMyContractItems)
+  .post('/array', getHelper.getArrayOfItems)
   .post('/:cid/organisation/allItems', getHelper.getAllItems)
   .post('/user', getHelper.getUserItems);
 

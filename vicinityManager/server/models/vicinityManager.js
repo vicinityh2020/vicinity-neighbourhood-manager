@@ -8,22 +8,26 @@ var Schema = mongoose.Schema;
 
 var cidSchema = Schema({
   id: {type: ObjectId, ref: 'userAccount'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var adidSchema = Schema({
   id: {type: ObjectId, ref: 'node'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var uidSchema = Schema({
   id: {type: ObjectId, ref: 'user'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var oidSchema = Schema({
   id: {type: ObjectId, ref: 'item'},
-  extid: String
+  extid: String,
+  name: String
 },{ _id : false });
 
 var auditSchema = Schema({
@@ -42,7 +46,9 @@ var ctidSchema = Schema({
   contractingUser: String,
   contractingParty: String,
   readWrite: {type: Boolean, default: false},
-  approved: {type: Boolean, default: false}
+  approved: {type: Boolean, default: false},
+  imAdmin: {type: Boolean, default: false},
+  imForeign: {type: Boolean, default: false}
 },{ _id : false });
 
 var contractSubschema = Schema({
@@ -180,16 +186,17 @@ var notification = new Schema({
     message: String, // Enable personal messages possibility
     isUnread: { type: Boolean, default: true },
     status: {type: String, enum: ['waiting', 'info', 'accepted', 'rejected', 'responded'], required: true},
-    type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 24, 31, 32, 33, 34, 35, 36], required: true}
+    type: {type: Number, enum: [1, 11, 12, 13, 21, 22, 23, 24, 25, 31, 32, 33, 34, 35, 36], required: true}
     /*
     1 - registrationRequest - toAnswer
     11 - itemEnabled - info
     12 - itemDisabled - info
     13 - itemDiscovered - info
     21 - contractRequest - info
-    22 - contractModified - info
+    22 - contractAccepted - info
     23 - contractCancelled - info
-    24 - contractAccepted - info
+    24 - contractJoined - info
+    25 - contractAbandoned - info
     31 - partnershipRequest  - toAnswer
     32 - partnershipCancelled - info
     33 - partnershipRejected - info
@@ -242,10 +249,11 @@ var auditLog = new Schema({
     43 - Item enabled ->
     44 - Item disabled ->
     45 - Privacy change ->
-    51 - Accept contract <->
-    52 - Cancel contract <->
-    53 - Request contract <->
-    54 - Update contract <->
+    51 - Request contract <->
+    52 - Accept contract <->
+    53 - Cancel contract <->
+    54 - Join contract <->
+    55 - Abandon contract <->
     User:
     */
 });

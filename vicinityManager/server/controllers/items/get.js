@@ -30,6 +30,35 @@ function getMyItems(req, res) {
 }
 
 /*
+Gets all items that I can share with other organisation:
+- Organisation cid (foreign org)
+- Item Id of the item I am requesting
+*/
+function getMyContractItems(req, res) {
+  var cid = mongoose.Types.ObjectId(req.params.cid);
+  var oid = mongoose.Types.ObjectId(req.params.oid);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var api = false; // Call origin api or webApp
+  sGet.getMyContractItems(cid, oid, mycid, api, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/*
+Gets array of items:
+- array of items
+*/
+function getArrayOfItems(req, res) {
+  var items = req.body;
+  var myuid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var api = false; // Call origin api or webApp
+  sGet.getArrayOfItems(items, mycid, myuid, api, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/*
 Gets all items that my organisation can see
 Receives following parameters:
 - Organisation cid
@@ -81,5 +110,7 @@ function getItemWithAdd(req, res, next) {
 
 module.exports.getAllItems = getAllItems;
 module.exports.getMyItems = getMyItems;
+module.exports.getArrayOfItems = getArrayOfItems;
 module.exports.getItemWithAdd = getItemWithAdd;
 module.exports.getUserItems = getUserItems;
+module.exports.getMyContractItems = getMyContractItems;

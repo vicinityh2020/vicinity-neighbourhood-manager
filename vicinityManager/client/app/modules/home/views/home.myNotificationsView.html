@@ -66,9 +66,10 @@
                       <span ng-show="notif.type===12"><span class="label label-default paddedSides">Item disabled</span></span>
                       <span ng-show="notif.type===13"><span class="label label-default paddedSides">Item discovered</span></span>
                       <span ng-show="notif.type===21"><span class="label label-default paddedSides">Contract request</span></span>
-                      <span ng-show="notif.type===22"><span class="label label-default paddedSides">Contract modified</span></span>
+                      <span ng-show="notif.type===22"><span class="label label-default paddedSides">Contract accepted</span></span>
                       <span ng-show="notif.type===23"><span class="label label-default paddedSides">Contract cancelled</span></span>
-                      <span ng-show="notif.type===24"><span class="label label-default paddedSides">Contract accepted</span></span>
+                      <span ng-show="notif.type===24"><span class="label label-default paddedSides">Contract joined</span></span>
+                      <span ng-show="notif.type===25"><span class="label label-default paddedSides">Contract abandoned</span></span>
                       <span ng-show="notif.type===31"><span class="label label-default paddedSides">Partnership request</span></span>
                       <span ng-show="notif.type===32"><span class="label label-default paddedSides">Partnership cancelled</span></span>
                       <span ng-show="notif.type===33"><span class="label label-default paddedSides">Partnership rejected</span></span>
@@ -93,13 +94,14 @@
                   <span class="padded" ng-show="notif.type === 12"><b>{{notif.object.item.name}}</b> has been disabled.</span>
 
                   <span class="padded" ng-show="notif.type === 21">There is a contract request from the user <b>{{notif.actor.item.name}}</b>.</span>
-                  <span class="padded" ng-show="notif.type === 22">A contract with the user <b>{{notif.actor.item.name}}</b> was modified.</span>
-                  <span class="padded" ng-show="notif.type === 23">A contract with the user <b>{{notif.actor.item.name}}</b> was cancelled.</span>
-                  <span class="padded" ng-show="notif.type === 24">A contract with the user <b>{{notif.actor.item.name}}</b> was established.</span>
+                  <span class="padded" ng-show="notif.type === 22">The contract admin <b>{{notif.actor.item.name}}</b> has accepted the contract <b>{{notif.object.extid}}</b>.</span>
+                  <span class="padded" ng-show="notif.type === 23">The contract admin <b>{{notif.actor.item.name}}</b> has cancelled the contract <b>{{notif.object.extid}}</b>.</span>
+                  <span class="padded" ng-show="notif.type === 24">The user <b>{{notif.actor.item.name}}</b> has joined the contract <b>{{notif.object.extid}}</b>.</span>
+                  <span class="padded" ng-show="notif.type === 25">The user <b>{{notif.actor.item.name}}</b> has abandoned the contract <b>{{notif.object.extid}}</b>.</span>
 
                   <span class="padded" ng-show="notif.type === 31 && (notif.status === 'responded' || notif.status=== 'waiting')"><b>{{notif.object.item.name}}</b> wants to partner with you.</span>
                   <span class="padded" ng-show="notif.type === 32">The partnership between <b>{{notif.target.item.name}}</b> and <b>{{notif.object.item.name}}</b> was cancelled by <b>{{notif.actor.item.name}}</b>.</span>
-                  <span class="padded" ng-show="[33, 34].lastIndexOf(notif.type) >= 0 && !(notif.status=== 'waiting')"><b>{{notif.object.item.name}}</b> responded our partnership request.</b></span>
+                  <span class="padded" ng-show="[33, 34].lastIndexOf(notif.type) >= 0 && !(notif.status=== 'waiting')"><b>{{notif.object.item.name}}</b> responded our partnership request.</span>
                   <span class="padded" ng-show="notif.type === 35">You have sent a partnership request to <b>{{notif.object.item.name}}</b>.</span>
                   <!-- <span class="padded" ng-show="notif.type === 36">Partnership request cancelled.</span> -->
 
@@ -133,9 +135,9 @@
                     </span>
                   </div>
 
-                  <div class="centered" ng-show="[21, 22, 23, 24].indexOf(notif.type) !== -1">
+                  <div class="centered" ng-show="[21, 22, 23, 24, 25].indexOf(notif.type) !== -1">
                     <span>
-                      <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId,userAccountId: userId, contractId: notif.object.item._id})"><i class="fa fa-search fa-lg "></i></a>
+                      <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId,userAccountId: userId, contractId: notif.object.item._id})"><i class="fa fa-search fa-lg"></i></a>
                     </span>
                   </div>
 

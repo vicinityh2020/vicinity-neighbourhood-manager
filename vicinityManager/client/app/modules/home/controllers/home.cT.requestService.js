@@ -20,24 +20,26 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
   $scope.loaded = false;
   $scope.terms = false;
   $scope.readWrite = false;
+  $scope.usersIn = {}; // Stores the device users, avoid storing non unique users
 
   initData();
 
   function initData(){
     // Get user items returns only items that I can chare with the other party
-    itemsAPIService.getUserItems($scope.requester.id, $scope.requester.cid)
+    itemsAPIService.getMyContractItems($scope.owner.cid, $scope.owner.oid)
       .then(
         function (response){
-          $scope.device.cid = response.data.message.cid;
-          $scope.things = response.data.message.items;
+          var auxcid = response.data.message[0].cid;
+          $scope.device.cid = { 'id': auxcid.id._id, 'extid': auxcid.extid, 'name': auxcid.id.name};
+          $scope.things = response.data.message;
           $scope.setCaption();
           return itemsAPIService.getItemWithAdd($scope.owner.oid);
         })
         .then(function(response){
           $scope.aux = response.data.message[0];
-          $scope.service.cid = $scope.aux.cid;
+          $scope.service.cid = { 'id': $scope.aux.cid.id._id, 'extid': $scope.aux.cid.extid, 'name': $scope.aux.cid.id.name};
           $scope.service.uid = $scope.aux.uid;
-          $scope.service.oid = { 'id': $scope.aux._id, 'extid': $scope.aux.oid};
+          $scope.service.oid = { 'id': $scope.aux._id, 'extid': $scope.aux.oid, 'name': $scope.aux.name};
           $scope.service.name = $scope.aux.name;
           $scope.service.accessLevel = $scope.aux.accessLevel;
           $scope.service.myFriend = $scope.aux.imFriend ? 'Yes' : 'No';
@@ -55,10 +57,12 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
     $scope.processContract = function(){
       $scope.data = {};
       $scope.data.cidService = $scope.service.cid;
-      $scope.data.uidService = $scope.service.uid;
-      $scope.data.oidService = [$scope.service.oid];
+      $scope.data.uidsService = [$scope.service.uid];
+      $scope.data.contractingUser = $scope.service.uid;
+      $scope.data.oidsService = [$scope.service.oid];
       $scope.data.cidDevice = $scope.device.cid;
-      $scope.data.uidDevice = {'id': $scope.requester.id, 'extid': $scope.requester.extid };
+      $scope.data.uidsDevice = [{'id': $scope.requester.id, 'extid': $scope.requester.extid }];
+      $scope.usersIn[$scope.requester.extid] = 1;
       $scope.data.readWrite = $scope.readWrite;
       var count = $scope.countDevices();
       if(count > 0){
@@ -77,11 +81,15 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
 
     $scope.countDevices = function(){
       var n = 0;
-      $scope.data.oidDevices = [];
+      $scope.data.oidsDevice = [];
       for(var i = 0; i < $scope.things.length; i++){
-        if($scope.things[i].id.status){
+        if($scope.things[i].status){
           n++;
-          $scope.data.oidDevices.push({'id': $scope.things[i].id._id, 'extid': $scope.things[i].extid});
+          $scope.data.oidsDevice.push({ 'id': $scope.things[i]._id, 'extid': $scope.things[i].oid, 'name': $scope.things[i].name });
+          if(!$scope.usersIn.hasOwnProperty($scope.things[i].uid.extid)){
+            $scope.usersIn[$scope.things[i].uid.extid] = 1;
+            $scope.data.uidsDevice.push({ 'id': $scope.things[i].uid.id, 'extid': $scope.things[i].uid.extid });
+          }
         }
       }
       return n;
@@ -89,21 +97,31 @@ function ($scope, $stateParams, $state, $window, commonHelpers, itemsAPIService,
 
     $scope.setCaption = function(){
       for(var i = 0; i < $scope.things.length; i++){
-      switch ($scope.things[i].id.accessLevel) {
+      switch ($scope.things[i].accessLevel) {
           case 0:
-              $scope.things[i].id.accessLevelCaption = "Private";
+              $scope.things[i].accessLevelCaption = "Private";
               break;
           case 1:
-              $scope.things[i].id.accessLevelCaption = "Under request for friends";
+              $scope.things[i].accessLevelCaption = "Under request for friends";
               break;
           case 2:
-              $scope.things[i].id.accessLevelCaption = "Under request for everyone";
+              $scope.things[i].accessLevelCaption = "Under request for everyone";
               break;
           default:
-              $scope.things[i].id.accessLevelCaption = "Private";
+              $scope.things[i].accessLevelCaption = "Private";
           }
         }
+    };
 
+    $scope.orderByMe = function(x) {
+      if($scope.myOrderBy === x){
+        $scope.rev=!($scope.rev);
+      }
+      $scope.myOrderBy = x;
+    };
+
+    $scope.onSort = function(order){
+      $scope.rev = order;
     };
 
 });

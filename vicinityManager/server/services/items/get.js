@@ -34,10 +34,10 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
     if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
       query = {'cid.id': cid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
     } else {
-      if(friends.indexOf(mycid) !== -1) {
-        query = {'cid.id': cid, accessLevel: { $gte:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
+      if(friends.indexOf(mycid.toString()) !== -1) {
+        query = {'cid.id': cid, accessLevel: { $gt:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
       } else {
-        query = {'cid.id': cid, accessLevel: { $gte:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
+        query = {'cid.id': cid, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
       }
     }
 
@@ -48,6 +48,8 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
     } else {
       projection = { status: 0 };
     }
+
+    logger.debug(query);
 
     itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
       if (err) {
@@ -64,6 +66,73 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
     });
   })
   .catch(function(err){callback(true, err);} );
+}
+
+/*
+Gets all items that I can share with other organisation:
+- Organisation cid (foreign org)
+- Item Id of the item I am requesting
+*/
+function getMyContractItems(cid, oid, mycid, api, callback) {
+  var query;
+  var projection;
+
+  userAccountOp.findOne(cid, {knows: 1})
+  .then(function(response){
+    var friends = [];
+    if(response.knows !== 'undefined'){
+        getIds(response.knows, friends);
+    }
+    logger.debug(friends);
+
+    if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
+      query = {'cid.id': mycid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
+    } else {
+      if(friends.indexOf(mycid.toString()) !== -1) {
+        query = {'cid.id': mycid, accessLevel: { $gt:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
+      } else {
+        query = {'cid.id': mycid, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
+      }
+    }
+
+    logger.debug(query);
+
+    if(api){
+      projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0 };
+    } else {
+      projection = { status: 0, avatar: 0, hasAudits: 0 };
+    }
+
+    itemOp.find(query).select(projection).populate('cid.id', 'name').exec(function(err, data){
+      if (err) {
+        logger.debug('error','Find Items Error: ' + err.message);
+        callback(true, err);
+      } else {
+        callback(false, data);
+      }
+    });
+  })
+  .catch(function(err){callback(true, err);} );
+}
+
+
+/*
+Gets array of items:
+- array of items
+*/
+function getArrayOfItems(items, token_cid, token_uid, api, callback) {
+  var projection = {name:1, oid:1, adid:1, cid:1, uid:1, interactionPatterns:1, accessLevel:1, typeOfItem:1, hasContracts:1 };
+  itemOp.find({'_id': { $in: items } }, projection)
+  .then(function(response){
+    for(var i = 0; i < response.length; i++){
+      response[i]._doc.isMine = response[i].uid.id.toString() === token_uid.toString();
+    }
+    callback(false, response);
+  })
+  .catch(function(err){
+    logger.debug(err);
+    callback(true, err);
+  });
 }
 
 /*
@@ -245,7 +314,7 @@ function updateQueryWithFilterNumber(q, fN, cid){
 
   function getIds(array, friends){
     for(var i = 0; i < array.length; i++){
-      friends.push(array[i].id);
+      friends.push(array[i].id.toString());
     }
   }
 
@@ -255,3 +324,5 @@ module.exports.getAllItems = getAllItems;
 module.exports.getOrgItems = getOrgItems;
 module.exports.getItemWithAdd = getItemWithAdd;
 module.exports.getUserItems = getUserItems;
+module.exports.getArrayOfItems = getArrayOfItems;
+module.exports.getMyContractItems = getMyContractItems;

@@ -136,9 +136,9 @@ function getUsers(req, res, next) {
 function getItems(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.params.cid);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  var limit = req.query.limit === undefined ? 0 : req.query.limit;
-  var offset = req.query.offset === undefined ? 0 : req.query.offset;
-  var type = (req.query.type === undefined || (req.query.type !== "device" && req.query.type !== "service")) ? "all" : req.query.type;
+  var limit = req.query.limit === 'undefined' ? 0 : req.query.limit;
+  var offset = req.query.offset === 'undefined' ? 0 : req.query.offset;
+  var type = (req.query.type !== "device" && req.query.type !== "service") ? "all" : req.query.type;
   var api = true; // Call origin api or webApp
   sGetItems.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
     res.json({error: err, message: response});
@@ -622,6 +622,23 @@ function contractInfo(req, res, next) {
 }
 
 /**
+ * Get items valid for contract
+ * @param {String} cid
+ * @param {String} oid
+ *
+ * @return {Array} items
+ */
+function contractValidItems(req, res, next) {
+  var cid = mongoose.Types.ObjectId(req.params.cid);
+  var oid = mongoose.Types.ObjectId(req.params.oid);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var api = true; // Call origin api or webApp
+  sGetItems.getMyContractItems(cid, oid, mycid, api, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/**
  * Post contract
  *
  * @param {String} readWrite
@@ -639,13 +656,15 @@ function requestContract(req, res, next) {
   var data = req.body;
   var uid = req.body.decoded_token.uid;
   var cid = req.body.decoded_token.orgid;
-  ctChecks.postCheck(data, uid, cid, function(error, response, success){
+  var mail = req.body.decoded_token.sub;
+  var roles = req.body.decoded_token.roles;
+  ctChecks.postCheck(data, roles, cid, function(error, response, success){
     if(error){
       res.json({error: error, message: response});
     } else if(!success){
       res.json({error: error, message: response});
     } else {
-      ctHelper.creating(data, function(err, response){
+      ctHelper.creating(data, uid, mail, function(err, response){
         res.json({error: err, message: response});
       });
     }
@@ -657,11 +676,6 @@ function requestContract(req, res, next) {
  *
  * @param {String} type - update/delete/accept
  * @param {String} ctid
- * @param {Object} body - only in case of update
- * IF TYPE IS Update add:
- * cidService, uidService, [oidService]
- * cidDevice, uidDevice, [oidDevices]
- * readWrite (Boolean)
  *
  * @return {String} Acknowledgement
  */
@@ -669,6 +683,7 @@ function manageContract(req, res, next) {
   var id, data;
   var uid = req.body.decoded_token.uid;
   var cid = req.body.decoded_token.orgid;
+  var mail = req.body.decoded_token.sub;
   if(req.body.type === 'delete'){
     id = req.params.id;
     ctChecks.deleteCheck(id, uid, cid, function(error, response, success){
@@ -677,7 +692,7 @@ function manageContract(req, res, next) {
       } else if(!success){
         res.json({error: error, message: response});
       } else {
-        ctHelper.removing(id, function(err, response){
+        ctHelper.removing(id, uid, mail, function(err, response){
           res.json({error: err, message: "Contract successfully removed"});
         });
       }
@@ -690,35 +705,13 @@ function manageContract(req, res, next) {
       } else if(!success){
         res.json({error: error, message: response});
       } else {
-          ctHelper.accepting(id, function(err, response){
+          ctHelper.accepting(id, uid, mail, function(err, response){
           res.json({error: err, message: response});
         });
       }
     });
-  } else if(req.body.type === 'update'){
-    id = req.params.id;
-    data = req.body;
-    delete req.body.type;
-    // UPDATE
-    ctChecks.updateCheck(id, data, uid, cid, function(error, response, success){
-      if(error){
-        res.json({error: error, message: response});
-      } else if(!success){
-        res.json({error: error, message: response});
-      } else {
-        ctHelper.removing(id, function(err, response){
-          if(err){
-            res.json({error: err, message: response});
-          } else {
-            ctHelper.creating(data, function(err, response){
-              res.json({error: err, message: response});
-            });
-          }
-        });
-      }
-    });
   } else {
-    res.json({error: false, message: "Wrong type. Please choose among update, accept and delete"});
+    res.json({error: false, message: "Wrong type. Please choose among accept or delete"});
   }
 }
 
@@ -811,6 +804,7 @@ module.exports.managePartnership = managePartnership;
 
 module.exports.contractFeeds = contractFeeds;
 module.exports.contractInfo = contractInfo;
+module.exports.contractValidItems = contractValidItems;
 module.exports.requestContract = requestContract;
 module.exports.manageContract = manageContract;
 

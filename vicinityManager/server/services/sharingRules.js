@@ -40,12 +40,14 @@ function changePrivacy(ids, userId, userMail, c_id){
         },
         function(allresult) {
           if(cont === ids.length){
-            ctChecks.checkContracts(allresult, userId, userMail)
-            .then(function(response){resolve('Success');})
-            .catch(function(error){
-              logger.debug(error);
-              reject(error);
-            });
+            // ctChecks.checkContracts(allresult, userId, userMail)
+            // .then(function(response){
+            resolve('Success');
+            // })
+            // .catch(function(error){
+            //   logger.debug(error);
+            //   reject(error);
+            // });
           }
         },
         false,
@@ -197,7 +199,7 @@ function processingPrivacy(id, otherParams, callback){
   .then(function(response){
     return contractOp.update(
       {_id: {$in: cts_id }},
-      {$pull: {"serviceProvider.items": {id:id}}},
+      {$pull: {"foreignIot.items": {id:id}}},
       {multi:true}
     );
   })
