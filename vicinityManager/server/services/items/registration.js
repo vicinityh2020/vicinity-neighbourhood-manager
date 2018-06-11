@@ -101,6 +101,7 @@ function saveDocuments(objects, otherParams, callback){
   var pwd = crypto.randomBytes(32).toString('base64'); // password for comm server credentials
   var infra_id = objects["infrastructure-id"];
   delete objects["infrastructure-id"]; // remove infrastructure-id, no need to pass it further
+  if(!otherParams.semanticValidation && objects.hasOwnProperty("adapter-id")){delete objects["adapter-id"];} // Unnecessary if no semantic validation
 
   // Create one item document
   obj.typeOfItem = findType(objects.type, otherParams.types); // Use collection of semanticTypes to find if service/device/unknown
@@ -121,6 +122,7 @@ function saveDocuments(objects, otherParams, callback){
         semanticValidation(objects, obj, pwd, infra_id, callback);
       } else {
         obj.info = objects;
+        obj.info.oid = obj.oid;
         createInstance(obj, pwd, infra_id, callback);
       }
     }) // Register TD in semantic repository
