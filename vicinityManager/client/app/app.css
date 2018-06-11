@@ -148,6 +148,18 @@ Back to top - Arrow
   }
 }
 
+/*
+Logos
+*/
+img.widget-logo{
+  max-width:15%;
+  max-height:25%;
+  background-color:white
+}
+
+img.node-logo{
+  height:25px;
+}
 
 /*
 Notifications

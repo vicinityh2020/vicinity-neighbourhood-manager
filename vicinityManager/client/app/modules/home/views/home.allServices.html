@@ -47,7 +47,7 @@
           </div>
 
           <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class="tooltiptext2" > Unknown </span>
+            <span class="tooltiptext2"> Unknown </span>
           </div>
 
           <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: it._id})">{{it.name}}</a></h3>
@@ -58,6 +58,8 @@
           <h5 class="widget-user-desc2" ng-show="it.isPublic">Service is public</h5>
           <h5 class="widget-user-desc2" ng-show="it.isFriendData">Access for friends</h5>
           <h5 class="widget-user-desc2" ng-show="it.isPrivate">Private data</h5>
+          <img ng-if="it.adid.type === 'vcnt'" class="pull-right widget-logo" src="img/logos/vcntlogo.png"/>
+          <img ng-if="it.adid.type === 'shq'" class="pull-right widget-logo" src="img/logos/shqlogo.png"/>
         </div>
 
         <div class="widget-user-footer-moreinfo2" ng-show="!it.isOwner && canRequestService">

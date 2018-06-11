@@ -15,7 +15,8 @@ var cidSchema = Schema({
 var adidSchema = Schema({
   id: {type: ObjectId, ref: 'node'},
   extid: String,
-  name: String
+  name: String,
+  type: {type: String, enum: ['vcnt', 'shq']}
 },{ _id : false });
 
 var uidSchema = Schema({
