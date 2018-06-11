@@ -21,7 +21,7 @@
         <i class="fa fa-arrow-right fa-4x my-green" ng-show="!contract.imServiceProv" aria-hidden="true"></i>
         <i class="fa fa-arrow-left fa-4x my-red" ng-show="contract.imServiceProv" aria-hidden="true"></i>
       </div>
-      <div class="col-sm-2">
+      <div class="col-sm-3">
         <table style="width:100%">
           <tr><td><label> Service Name </label></td></tr>
           <tr><td><span>{{contract.foreignIot.items[0].name}}</span></td></tr>
@@ -37,12 +37,18 @@
       </div>
       <div class="col-sm-2">
         <table style="width:100%">
+          <tr><td><label> IoT Owner </label></td></tr>
+          <tr><td><span>{{contract.iotOwner.cid.name}}</span></td></tr>
+        </table>
+      </div>
+      <div class="col-sm-1">
+        <table style="width:100%">
           <tr><td><label> Status </label></td></tr>
           <tr><td><span ng-show="contract.status === 'pending'" class="label label-warning">{{contract.status}}</span></td></tr>
           <tr><td><span ng-show="contract.status === 'accepted'" class="label label-success">{{contract.status}}</span></td></tr>
         </table>
       </div>
-      <div class="col-sm-2">
+      <div class="col-sm-1">
         <table style="width:100%">
           <tr><td><label> Type </label></td></tr>
           <tr><td><span class="label label-info">{{contract.type}}</span></td></tr>
@@ -50,7 +56,7 @@
           <tr><td><span ng-hide="contract.readWrite" class="label label-warning">Read Only</span></td></tr>
         </table>
       </div>
-      <div class="col-sm-3 padded centered">
+      <div class="col-sm-2 padded centered">
         <button ng-show="!contract.active" ng-click="acceptContract(contract._id)"><i class="fa fa-check"></i></button>
         <button ng-click="showDetails(contract._id, false)"><i class="fa fa-eye"></i></button>
         <button ng-click="removeContract(contract._id)"><i class="fa fa-times"></i></button>
