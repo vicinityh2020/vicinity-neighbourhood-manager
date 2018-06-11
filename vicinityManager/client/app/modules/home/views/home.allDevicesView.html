@@ -75,8 +75,8 @@
           <h5 class="widget-user-desc2" ng-show="dev.isPublic">Device is public</h5>
           <h5 class="widget-user-desc2" ng-show="dev.isFriendData">Access for friends</h5>
           <h5 class="widget-user-desc2" ng-show="dev.isPrivate">Private data</h5>
-          <img ng-if="dev.adid.type === 'vcnt'" class="pull-right widget-logo" src="img/logos/vcntlogo.png"/>
-          <img ng-if="dev.adid.type === 'shq'" class="pull-right widget-logo" src="img/logos/shqlogo.png"/>
+          <img ng-if="dev.adid.type === 'vcnt'" class="pull-right widget-logo-vcnt" src="img/logos/vcntlogo.png"/>
+          <img ng-if="dev.adid.type === 'shq'" class="pull-right widget-logo-shq" src="img/logos/shqlogo.png"/>
         </div>
 
         <div class="widget-user-footer-moreinfo2 bg-gray" ng-show="!dev.isOwner && !dev.imFriend">
