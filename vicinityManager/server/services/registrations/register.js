@@ -186,29 +186,40 @@ function createReg(id, data, callback) {
 * @return {Object} New user and org ids
 */
 function fastRegistration(data, callback){
-  data.user.email = uuid();
-  var dbUser = buildUserObj(data.user);
-  findDuplicatesCompany({ companyName: data.organisation.companyName, businessId: uuid()})
-  .then(function(response){
-    if(!response){ // If response false === there are no duplicates
+  var saltRounds = 10;
+  var dbUser = {};
+  var pwd = data.user.password;
+  if(!pwd || pwd.length < 5){
+    callback(true, "Missing or short password...");
+  } else {
+    findDuplicatesCompany({ companyName: data.organisation.companyName, businessId: uuid()})
+    .then(function(response){
+      if(!response){ // If response false === there are no duplicates
+        return getHash(saltRounds, pwd);
+      } else {
+        return new Promise(function(resolve, reject) { reject('duplicated'); } );
+      }
+    })
+    .then(function(hash){
+      data.user.email = uuid();
+      data.user.hash = hash;
+      dbUser = buildUserObj(data.user);
       return saveOrganisation(dbUser, data.organisation);
-    } else {
-      return new Promise(function(resolve, reject) { reject('duplicated'); } );
-    }
-  })
-  .then(function(response){
-    logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
-    callback(false, {result: "Success", uid: response.uid, cid: response._id});
-  })
-  .catch(function(err){
-    if(err === 'duplicated'){
-      logger.error({user: raw.email, action: 'createOrganisation', message: err});
-      callback(true, "Company name already exists...");
-    } else {
-      logger.error({user: raw.email, action: 'createOrganisation', message: err});
-      callback(true, err);
-    }
-  });
+    })
+    .then(function(response){
+      logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
+      callback(false, {result: "Success", uid: response.uid, cid: response._id});
+    })
+    .catch(function(err){
+      if(err === 'duplicated'){
+        logger.error({user: raw.email, action: 'createOrganisation', message: err});
+        callback(true, "Company name already exists...");
+      } else {
+        logger.error({user: raw.email, action: 'createOrganisation', message: err});
+        callback(true, err);
+      }
+    });
+  }
 }
 
 /*
