@@ -80,8 +80,9 @@ var userAccount = new Schema({
 });
 
 var user = new Schema({
-  name: {type: String},
+  name: {type: String, required: true},
   email: {type: String, required: true},
+  contactMail: {type: String, required: true},
   cid: cidSchema,
   occupation: String,
   location: String,
@@ -92,9 +93,19 @@ var user = new Schema({
   1 - Friends
   2 - Everyone */
   authentication: {
-    hash: String,
+    hash: { type: String, required: true},
     principalRoles: { type: [String], required: true }
   },
+  /*
+  user
+  administrator - Can modify org profile
+  infrastructure operator - Can request services
+  service provider - Can have services
+  device owner - Can have devices
+  system integrator - Can set up infrastructures (gateways)
+  devOps - Can control org registrations, webAdmin
+  superUser - Can use automatic registration in API
+  */
   hasNotifications: [{ type: ObjectId, ref: 'notification' }],
   hasAudits: [ auditSchema ],
   hasItems: [ oidSchema ], // Own items and foreign items under contract

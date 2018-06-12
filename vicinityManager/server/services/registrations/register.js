@@ -60,44 +60,21 @@ function findDuplicatesCompany(data) {
   });
 }
 
-
+/*
+Receives a request to create registration,
+Can be an already verified by the devOps request or
+some external request that needs to be validated
+*/
 function requestReg(data, callback) {
-  var db = new registrationOp();
   var pwd = data.password;
   var saltRounds = 10;
-  var salt = "";
-  var hash = "";
-
-  db.userName = data.userName;
-  db.email = data.email;
-  db.occupation = data.occupation;
-  db.companyName = data.companyName;
-  db.companyLocation = data.companyLocation;
-  db.companyId = data.companyId; // Only when registering new user
-  db.cid = data.cid; // Only when registering new user
-  db.status = (!data.status || data.status !== 'pending') ? "open" : data.status;
-  db.businessId = data.businessId;
-  db.termsAndConditions = data.termsAndConditions;
-  db.type = data.type;
-
-// Saving a registration pending approval
-if(!data.status || data.status !== 'pending'){
-    bcrypt.genSalt(saltRounds)
-    .then(function(response){
-      salt = response.toString('hex');
-      return bcrypt.hash(pwd, salt); // Stores salt & hash in the hash field
-    })
-    .then(function(response){
-      hash = response;
+  var db = buildRegistrationObj(data);
+    // Saving a registration pending approval
+  if(!data.status || data.status !== 'pending'){
+    getHash(saltRounds, pwd)
+    .then(function(hash){
       db.hash = hash;
-      return db.save();
-    })
-    .then(function(product){
-      return notifHelper.createNotification(
-        { kind: 'registration', item: product._id, extid: "NA" },
-        { kind: 'registration', item: product._id, extid: "NA" },
-        { kind: 'registration', item: product._id, extid: "NA" },
-        'waiting', 1, null);
+      return registrationPendingApproval(db);
     })
     .then(function(response){
       callback(false, "Registration request created");
@@ -105,39 +82,12 @@ if(!data.status || data.status !== 'pending'){
     .catch(function(err){
       callback(true, err);
     });
-
-// Saving a resgistration ready to send mail to requester (Invited by other org)
+    // Saving a registration ready to send mail to requester (Invited by other org)
   } else {
-    bcrypt.genSalt(saltRounds)
-    .then(function(response){
-      salt = response.toString('hex');
-      return bcrypt.hash(pwd, salt); // Stores salt & hash in the hash field
-    })
-    .then(function(response){
-      hash = response;
+    getHash(saltRounds, pwd)
+    .then(function(hash){
       db.hash = hash;
-      return db.save();
-    })
-    .then(function(product){
-      var mailInfo;
-      if(product.type === 'newUser'){
-        mailInfo = {
-          link : "http://vicinity.bavenir.eu/#/registration/newUser/" + product._id,
-          tmpName : "activateUser",
-          name : product.userName,
-          subject : 'Verification email to join VICINITY',
-          emailTo : product.email
-        };
-      }else{
-        mailInfo = {
-          link : "http://vicinity.bavenir.eu/#/registration/newCompany/" + product._id,
-          tmpName : "activateCompany",
-          name : product.companyName,
-          subject : 'Verification email to join VICINITY',
-          emailTo : product.email
-        };
-      }
-      return mailing.sendMail(mailInfo);
+      return registrationAndVerificationMail(db);
     })
     .then(function(response){
       callback(false, "Registration mail sent!");
@@ -156,116 +106,37 @@ Add new user - Create user in MONGO
 Send verification or rejection mail to new Organisation
 */
 function createReg(id, data, callback) {
-  var o_id = mongoose.Types.ObjectId(id);
-  var dbOrg = new userAccountOp();
-  var dbUser = new userOp();
   var mailInfo = {};
-  var userData = {};
-  var orgData = {};
-  var userAccountId = "";
+  var regId = mongoose.Types.ObjectId(id);
 
-registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (err, raw) {
-
-// User data
-  dbUser.name =raw.userName;
-  dbUser.avatar= config.avatarUser;
-  dbUser.occupation =raw.occupation;
-  dbUser.email =raw.email;
-  dbUser.authentication.hash = raw.hash;
-  dbUser.authentication.principalRoles[0] ="user";
-  dbUser.cid = {id: raw.companyId, extid: raw.cid};
-
-// Set related notification to responded
-  notifHelper.changeNotificationStatus("", "", 1, {sentByReg: o_id});
-
-// Case new company registration
-
-  if ((raw.type == "newCompany") && (raw.status == "verified")){
-    dbUser.authentication.principalRoles[1] ="administrator"; // First or user always is admin
-    dbUser.save()
-    .then(function(response){
-      userData = response;
-      logger.debug('New user was successfuly saved!');
-      dbOrg.businessId = raw.businessId;
-      dbOrg.name = raw.companyName;
-      dbOrg.location = raw.companyLocation;
-      dbOrg.accountOf[0] = { id: userData._id, extid: userData.email};
-      dbOrg.avatar = config.avatarOrg;
-      dbOrg.cid = uuid();
-      return dbOrg.save();
-      })
-    .then(function(response) {
-      orgData = response;
-      userData.cid = {id: orgData._id, extid: orgData.cid}; // Adding the company id to the new user
-      return userData.save();
-    })
-    .then(function(response){
-      return audits.create(
-        { kind: 'user', item: userData._id , extid: userData.email },
-        { kind: 'userAccount', item: orgData._id, extid: orgData.cid },
-        {  },
-        1, null);
-      })
+  registrationOp.findByIdAndUpdate(regId, {$set: data}, { new: true }, function (err, raw) {
+  // User data
+    var dbUser = buildUserObj(raw);
+  // Set related notification to responded
+    notifHelper.changeNotificationStatus("", "", 1, {sentByReg: regId});
+  // Case new company registration
+    if ((raw.type == "newCompany") && (raw.status == "verified")){
+      saveOrganisation(dbUser, raw)
       .then(function(response){
-        var payload = {
-          name: orgData.cid + '_ownDevices',
-          description: orgData.name
-        };
-        return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
-      })
-      .then(function(response){
-        var payload = {
-          name: orgData.cid + '_agents',
-          description: orgData.name + ' agents'
-        };
-        return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
-      })
-      .then(function(response){
-        logger.audit({user: userData.email, action: 'createOrganisation', item: orgData._id });
+        logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
         callback(false, "New userAccount was successfuly saved!");
       })
       .catch(function(err){
         logger.error({user: raw.email, action: 'createOrganisation', message: err});
         callback(true, err);
       });
-
-// Case new user registration
-
-        }else if ((raw.type == "newUser") && (raw.status == "verified")){
-        dbUser.save()
-        .then(function(response){
-          userData = response;
-          userAccountId = mongoose.Types.ObjectId(raw.companyId);
-          return audits.create(
-            { kind: 'user', item: userData._id , extid: userData.email },
-            { kind: 'userAccount', item: raw.companyId, extid: raw.cid },
-            {  },
-            11, null);
-          })
-          .then(function(response){
-            return userAccountOp.findById(userAccountId);
-          })
-          .then(function(response){ // add user to organisation list of accounts
-            orgData = response;
-            var user_id = {id: userData._id, extid: userData.email};
-            orgData.accountOf.push(user_id);
-            return orgData.save();
-          })
-          .then(function(response){ // add organisation cid schema to user
-            userData.cid = {id: raw.companyId, extid: orgData.cid};
-            return userData.save();
-          })
-          .then(function(response){
-            callback(false, "User was saved to the accountOf!");
-            logger.debug('New user was successfuly saved!');
-          })
-          .catch(function(err){
-            logger.error({user: raw.email, action: 'createUser', message: err});
-            callback(true, err);
-          });
-
-// Case we just want to send verification mail
-
+      // Case new user registration
+    }else if ((raw.type == "newUser") && (raw.status == "verified")){
+      saveUser(dbUser, raw)
+      .then(function(response){
+        logger.debug('New user was successfuly saved!');
+        callback(false, "User was saved to the accountOf!");
+      })
+      .catch(function(err){
+        logger.error({user: raw.email, action: 'createUser', message: err});
+        callback(true, err);
+      });
+      // Case we just want to send verification mail
       }else if ((raw.type == "newCompany") && (raw.status == "pending")){
         mailInfo = {
           link : "http://vicinity.bavenir.eu/#/registration/newCompany/" + raw._id ,
@@ -282,9 +153,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
         .catch(function(err){
           callback(true, err);
         });
-
-// Case we do not want that company to be registered
-
+        // Case we do not want that company to be registered
       }else if ((raw.type == "newCompany") && (raw.status == "declined")){
         mailInfo = {
           link : "", tmpName : "rejectCompany", name : raw.companyName,
@@ -300,9 +169,7 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
         .catch(function(err){
           callback(true, err);
         });
-
-// Otherwise ...
-
+        // Otherwise ...
       }else{
         logger.debug('Wrong status, doing nothing...');
         callback(false, "Type is neither newUser nor newCompany!");
@@ -310,9 +177,212 @@ registrationOp.findByIdAndUpdate(o_id, {$set: data}, { new: true }, function (er
    });
 }
 
+/**
+* Quick registration skipping mail Verification
+* Only for authorized users
+* @param {Object} data.user
+* @param {Object} data.organisation
+*
+* @return {Object} New user and org ids
+*/
+function fastRegistration(data, callback){
+  data.user.email = uuid();
+  var dbUser = buildUserObj(data.user);
+  findDuplicatesCompany({ companyName: data.organisation.companyName, businessId: uuid()})
+  .then(function(response){
+    if(!response){ // If response false === there are no duplicates
+      return saveOrganisation(dbUser, data.organisation);
+    } else {
+      return new Promise(function(resolve, reject) { reject('duplicated'); } );
+    }
+  })
+  .then(function(response){
+    logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
+    callback(false, {result: "Success", uid: response.uid, cid: response._id});
+  })
+  .catch(function(err){
+    if(err === 'duplicated'){
+      logger.error({user: raw.email, action: 'createOrganisation', message: err});
+      callback(true, "Company name already exists...");
+    } else {
+      logger.error({user: raw.email, action: 'createOrganisation', message: err});
+      callback(true, err);
+    }
+  });
+}
+
+/*
+*
+* Private functions
+*
+*/
+
+/* Return hashed password */
+function getHash(saltRounds, pwd){
+  return bcrypt.genSalt(saltRounds)
+  .then(function(response){
+    var salt = response.toString('hex');
+    return bcrypt.hash(pwd, salt); // Stores salt & hash in the hash field
+  });
+}
+
+/* Save registration and notify devOps */
+function registrationPendingApproval(db){
+  return db.save()
+  .then(function(product){
+    return notifHelper.createNotification(
+      { kind: 'registration', item: product._id, extid: "NA" },
+      { kind: 'registration', item: product._id, extid: "NA" },
+      { kind: 'registration', item: product._id, extid: "NA" },
+      'waiting', 1, null);
+  });
+}
+
+/* Save registration and send verification mail */
+function registrationAndVerificationMail(db){
+  return db.save()
+  .then(function(product){
+    var mailInfo = {};
+    if(product.type === 'newUser'){
+      mailInfo = {
+        link : "http://vicinity.bavenir.eu/#/registration/newUser/" + product._id,
+        tmpName : "activateUser",
+        name : product.userName,
+        subject : 'Verification email to join VICINITY',
+        emailTo : product.email
+      };
+    }else{
+      mailInfo = {
+        link : "http://vicinity.bavenir.eu/#/registration/newCompany/" + product._id,
+        tmpName : "activateCompany",
+        name : product.companyName,
+        subject : 'Verification email to join VICINITY',
+        emailTo : product.email
+      };
+    }
+    return mailing.sendMail(mailInfo);
+  });
+}
+
+/* Save organisation and finish registration */
+function saveOrganisation(dbUser, raw){
+  var userData = {};
+  var orgData = {};
+  dbUser.authentication.principalRoles[1] = "administrator"; // First or user always is admin
+  return dbUser.save()
+  .then(function(response){
+    userData = response;
+    logger.debug('New user was successfuly saved!');
+    var dbOrg = buildUserAccountObj(raw, userData);
+    return dbOrg.save();
+    })
+  .then(function(response) {
+    orgData = response;
+    userData.cid = {id: orgData._id, extid: orgData.cid}; // Adding the company id to the new user
+    return userData.save();
+  })
+  .then(function(response){
+    return audits.create(
+      { kind: 'user', item: userData._id , extid: userData.email },
+      { kind: 'userAccount', item: orgData._id, extid: orgData.cid },
+      {  },
+      1, null);
+    })
+    .then(function(response){
+      var payload = {
+        name: orgData.cid + '_ownDevices',
+        description: orgData.name
+      };
+      return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
+    })
+    .then(function(response){
+      var payload = {
+        name: orgData.cid + '_agents',
+        description: orgData.name + ' agents'
+      };
+      return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
+    })
+    .then(function(response){
+      return {email: userData.email, uid: userData._id, _id: orgData._id};
+    });
+}
+
+/* Save user and finish registration */
+function saveUser(dbUser, raw){
+  var userData = {};
+  var orgData = {};
+  var userAccountId = "";
+  return dbUser.save()
+  .then(function(response){
+    userData = response;
+    userAccountId = mongoose.Types.ObjectId(raw.companyId);
+    return audits.create(
+      { kind: 'user', item: userData._id , extid: userData.email },
+      { kind: 'userAccount', item: raw.companyId, extid: raw.cid },
+      {  }, 11, null
+    );
+  })
+  .then(function(response){
+    return userAccountOp.findById(userAccountId);
+  })
+  .then(function(response){ // add user to organisation list of accounts
+    orgData = response;
+    var user_id = {id: userData._id, extid: userData.email};
+    orgData.accountOf.push(user_id);
+    return orgData.save();
+  })
+  .then(function(response){ // add organisation cid schema to user
+    userData.cid = {id: raw.companyId, extid: orgData.cid};
+    return userData.save();
+  });
+}
+
+/* Prepare the registration object with the user input */
+function buildRegistrationObj(data){
+  var db = new registrationOp();
+  db.userName = data.userName;
+  db.email = data.email;
+  db.occupation = data.occupation;
+  db.companyName = data.companyName;
+  db.companyLocation = data.companyLocation;
+  db.companyId = data.companyId; // Only when registering new user
+  db.cid = data.cid; // Only when registering new user
+  db.status = (!data.status || data.status !== 'pending') ? "open" : data.status;
+  db.businessId = data.businessId;
+  db.termsAndConditions = data.termsAndConditions;
+  db.type = data.type;
+  return db;
+}
+
+/* Prepare the user object with the user input */
+function buildUserObj(data){
+  var dbUser = new userOp();
+  dbUser.name = data.userName;
+  dbUser.avatar= config.avatarUser;
+  dbUser.occupation = data.occupation;
+  dbUser.email = data.email;
+  dbUser.contactMail = data.contactMail !== 'undefined' ? data.contactMail : data.email ;
+  dbUser.authentication.hash = data.hash;
+  dbUser.authentication.principalRoles[0] = "user";
+  return dbUser;
+}
+
+/* Prepare the userAccount object with the user input */
+function buildUserAccountObj(data, userData){
+  var dbOrg = new userAccountOp();
+  dbOrg.businessId = data.businessId !== 'undefined' ? data.businessId : uuid();
+  dbOrg.name = data.companyName;
+  dbOrg.location = data.companyLocation;
+  dbOrg.accountOf[0] = { id: userData._id, extid: userData.email};
+  dbOrg.avatar = config.avatarOrg;
+  dbOrg.cid = uuid();
+  return dbOrg;
+}
+
 // Export functions
 
 module.exports.createReg = createReg;
 module.exports.requestReg = requestReg;
+module.exports.fastRegistration = fastRegistration;
 module.exports.findDuplicatesUser = findDuplicatesUser;
 module.exports.findDuplicatesCompany = findDuplicatesCompany;
