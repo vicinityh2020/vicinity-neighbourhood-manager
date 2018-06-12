@@ -185,7 +185,7 @@ function createReg(id, data, callback) {
 *
 * @return {Object} New user and org ids
 */
-function fastRegistration(data, callback){
+function fastRegistration(data, token_mail, callback){
   var saltRounds = 10;
   var dbUser = {};
   var pwd = data.user.password;
@@ -212,10 +212,10 @@ function fastRegistration(data, callback){
     })
     .catch(function(err){
       if(err === 'duplicated'){
-        logger.error({user: raw.email, action: 'createOrganisation', message: err});
+        logger.error({user: token_mail, action: 'createOrganisation', message: err});
         callback(true, "Company name already exists...");
       } else {
-        logger.error({user: raw.email, action: 'createOrganisation', message: err});
+        logger.error({user: token_mail, action: 'createOrganisation', message: err});
         callback(true, err);
       }
     });
@@ -381,7 +381,7 @@ function buildUserObj(data){
 /* Prepare the userAccount object with the user input */
 function buildUserAccountObj(data, userData){
   var dbOrg = new userAccountOp();
-  dbOrg.businessId = data.businessId !== 'undefined' ? data.businessId : uuid();
+  dbOrg.businessId = data.businessId !== undefined ? data.businessId : uuid();
   dbOrg.name = data.companyName;
   dbOrg.location = data.companyLocation;
   dbOrg.accountOf[0] = { id: userData._id, extid: userData.email};

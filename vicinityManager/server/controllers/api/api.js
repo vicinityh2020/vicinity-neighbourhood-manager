@@ -205,12 +205,13 @@ function createOrganisation(req, res, next) {
  * @return {String} Acknowledgement
  */
 function createOrganisationAuto(req, res, next){
+  var mail = req.body.decoded_token.sub;
   if(req.body.decoded_token.roles.indexOf('superUser') !== -1){
-    sRegister.fastRegistration(data, function(err, response){
+    sRegister.fastRegistration(req.body, mail, function(err, response){
       if(!err){
         res.json(response);
       } else {
-        res.json({error: true, message: err});
+        res.json({error: err, message: response});
       }
     });
   } else {
