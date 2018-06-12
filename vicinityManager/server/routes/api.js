@@ -13,6 +13,7 @@ router
   .get('/organisation/:cid/users', jwt, apiController.getUsers)
   .get('/organisation/:cid/items', jwt, apiController.getItems)
   .post('/organisation', apiController.createOrganisation)
+  .post('/organisation/auto', jwt, apiController.createOrganisationAuto)
   .delete('/organisation', jwt, apiController.removeOrganisation)
 //Users
   .get('/users', jwt, apiController.getUser)

@@ -195,6 +195,30 @@ function createOrganisation(req, res, next) {
 }
 
 /**
+ * Creates a registration request that needs to be approved
+ *
+ * @param {Object} data
+ *
+ * data.user: userName, occupation, contactMail, password
+ * data.organisations: businessId, companyName, companyLocation
+ *
+ * @return {String} Acknowledgement
+ */
+function createOrganisationAuto(req, res, next){
+  if(req.body.decoded_token.roles.indexOf('superUser') !== -1){
+    sRegister.fastRegistration(data, function(err, response){
+      if(!err){
+        res.json(response);
+      } else {
+        res.json({error: true, message: err});
+      }
+    });
+  } else {
+    res.json({error: false, message: 'Unauthorized'});
+  }
+}
+
+/**
  * Removes an organisation
  *
  * @param {Object} null
@@ -779,6 +803,7 @@ module.exports.getFriends = getFriends;
 module.exports.getUsers = getUsers;
 module.exports.getItems = getItems;
 module.exports.createOrganisation = createOrganisation;
+module.exports.createOrganisationAuto = createOrganisationAuto;
 module.exports.removeOrganisation = removeOrganisation;
 
 module.exports.getUser = getUser;
