@@ -208,7 +208,7 @@ function fastRegistration(data, token_mail, callback){
     })
     .then(function(response){
       logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
-      callback(false, {result: "Success", uid: response.uid, cid: response._id});
+      callback(false, {result: "Success", login: response.email, uid: response.uid, cid: response._id});
     })
     .catch(function(err){
       if(err === 'duplicated'){

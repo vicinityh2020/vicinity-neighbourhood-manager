@@ -40,6 +40,9 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAPIServic
   $('a#edits11').hide();
   $('a#edits21').hide();
   $('input#editOccupationInput').hide();
+  $('a#edits12').hide();
+  $('a#edits22').hide();
+  $('input#editMailInput').hide();
   $('p#nameP1').show();
   $('p#nameP1new').hide();
   $('p#newOccupationUnderAvatar').hide();
@@ -184,8 +187,7 @@ $scope.backToEdit1 = function () {
   */
   $scope.changeToInput2 = function () {
     $('a#nameButt2').hide();
-    $('p#nameP21').hide();
-    $('p#nameP22').hide();
+    $('span#nameP21').hide();
     $('input#editMailInput').show();
     $('a#edits12').fadeIn('slow');
     $('a#edits22').fadeIn('slow');
@@ -197,8 +199,7 @@ $scope.backToEdit1 = function () {
     $('input#editMailInput').fadeOut('slow');
     setTimeout(function() {
       $('a#nameButt2').fadeIn('fast');
-      $('p#nameP21').fadeIn('fast');
-      $('p#nameP22').fadeIn('fast');
+      $('span#nameP21').fadeIn('fast');
     }, 600);
   };
 
@@ -218,8 +219,7 @@ $scope.backToEdit1 = function () {
            $('input#editMailInput').fadeOut('slow');
            setTimeout(function() {
              $('a#nameButt2').fadeIn('fast');
-             $('p#nameP21').fadeIn('fast');
-             $('p#nameP22').fadeIn('fast');
+             $('span#nameP21').fadeIn('fast');
           }, 600);
         },
       errorCallback
