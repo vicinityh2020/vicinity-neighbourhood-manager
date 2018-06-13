@@ -22,7 +22,8 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAPIServic
   $scope.occupation = "";
   $scope.organisation = "";
   $scope.password = "";
-  $scope.email= "";
+  $scope.email = "";
+  $scope.contactMail= "";
   $scope.accessLevel = 0;
   $scope.accessLevelCaption = "";
   $scope.roles = [];
@@ -73,9 +74,10 @@ $scope.myInit = function(){
 // Updating resources
 
 function updateScopeAttributes(response){
-      $scope.name =response.data.message.name;
-      $scope.occupation=response.data.message.occupation;
-      $scope.avatar =response.data.message.avatar;
+      $scope.name = response.data.message.name;
+      $scope.occupation= response.data.message.occupation;
+      $scope.avatar = response.data.message.avatar;
+      $scope.contactMail = response.data.message.contactMail;
       $scope.email = response.data.message.email;
       $scope.roles = response.data.message.authentication.principalRoles;
       $scope.accessLevel = Number(response.data.message.accessLevel);
@@ -176,6 +178,53 @@ $scope.backToEdit1 = function () {
     errorCallback
     );
   };
+
+  /*
+  CONTACT MAIL
+  */
+  $scope.changeToInput2 = function () {
+    $('a#nameButt2').hide();
+    $('p#nameP21').hide();
+    $('p#nameP22').hide();
+    $('input#editMailInput').show();
+    $('a#edits12').fadeIn('slow');
+    $('a#edits22').fadeIn('slow');
+  };
+
+  $scope.backToEdit2 = function () {
+    $('a#edits12').fadeOut('slow');
+    $('a#edits22').fadeOut('slow');
+    $('input#editMailInput').fadeOut('slow');
+    setTimeout(function() {
+      $('a#nameButt2').fadeIn('fast');
+      $('p#nameP21').fadeIn('fast');
+      $('p#nameP22').fadeIn('fast');
+    }, 600);
+  };
+
+    $scope.saveNewMail = function () {
+      userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {contactMail: $scope.contactMail}, 'type': 'metadata'})
+        .then(
+          function successCallback(response){
+            userAPIService.getUser($stateParams.userAccountId)
+            .then(
+              function successCallback(response) {
+                $scope.contactMail = response.data.message.contactMail;
+               },
+               errorCallback
+            );
+           $('a#edits12').fadeOut('slow');
+           $('a#edits22').fadeOut('slow');
+           $('input#editMailInput').fadeOut('slow');
+           setTimeout(function() {
+             $('a#nameButt2').fadeIn('fast');
+             $('p#nameP21').fadeIn('fast');
+             $('p#nameP22').fadeIn('fast');
+          }, 600);
+        },
+      errorCallback
+      );
+    };
 
   /*
   PASSWORD

@@ -75,6 +75,9 @@ function putRoles(uid, updates, userMail, userId, callback) {
       if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1 && updates.roles.indexOf('devOps') === -1){
          updates.roles.push('devOps'); // If it is devOps keep status
        }
+       if(responseParsed.authentication.principalRoles.indexOf('superUser') !== -1 && updates.roles.indexOf('superUser') === -1){
+          updates.roles.push('superUser'); // If it is superUser keep status
+        }
        if(updates.roles.indexOf('user') === -1){
           updates.roles.push('user'); // User has to be always a role
         }
@@ -134,6 +137,10 @@ function putMetadata(uid, updates, userMail, userId, callback) {
   }
   if(updates.hasOwnProperty('avatar')) {
     data.avatar = updates.avatar;
+    updCount += 1;
+  }
+  if(updates.hasOwnProperty('contactMail')) {
+    data.contactMail = updates.contactMail;
     updCount += 1;
   }
   if(updCount > 0){
@@ -201,7 +208,7 @@ Selects type of item to be removed based on new user Roles
 Can be both, one or none
 */
 function getItems(allItems, canDevs, canServices, items){
-  for(var i = 0; i < allItems.length; i++){
+  for(var i = 0, l = allItems.length; i < l; i++){
     if(!canDevs && allItems[i].id.typeOfItem === 'device') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'device'});
     if(!canServices && allItems[i].id.typeOfItem === 'service') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'service'});
    }
@@ -213,7 +220,7 @@ If role does not exist throw error message
 */
 function checkRoles(roles){
   var possibleRoles =  ["service provider", "device owner", "infrastructure operator", "administrator", "system integrator", "devOps", "user"];
-  for(var i = 0; i < roles.length; i++){
+  for(var i = 0, l = roles.length; i < l; i++){
     if(possibleRoles.indexOf(roles[i]) === -1){
       return {invalid: true, message: roles[i]};
     }
