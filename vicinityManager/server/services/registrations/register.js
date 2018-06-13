@@ -372,7 +372,7 @@ function buildUserObj(data){
   dbUser.avatar= config.avatarUser;
   dbUser.occupation = data.occupation;
   dbUser.email = data.email;
-  dbUser.contactMail = data.contactMail !== 'undefined' ? data.contactMail : data.email ;
+  dbUser.contactMail = data.contactMail !== undefined ? data.contactMail : data.email ;
   dbUser.authentication.hash = data.hash;
   dbUser.authentication.principalRoles[0] = "user";
   return dbUser;
