@@ -77,6 +77,7 @@ var userAccount = new Schema({
   location: String,
   notes: String,
   status: {type: String, enum: ['active', 'deleted'], default: 'active'},
+  auto: { type: Boolean, default: false }
 });
 
 var user = new Schema({

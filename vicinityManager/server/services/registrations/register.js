@@ -203,6 +203,7 @@ function fastRegistration(data, token_mail, callback){
     .then(function(hash){
       data.user.email = uuid();
       data.user.hash = hash;
+      data.organisation.auto = true;
       dbUser = buildUserObj(data.user);
       return saveOrganisation(dbUser, data.organisation);
     })
@@ -382,6 +383,7 @@ function buildUserObj(data){
 function buildUserAccountObj(data, userData){
   var dbOrg = new userAccountOp();
   dbOrg.businessId = data.businessId !== undefined ? data.businessId : uuid();
+  dbOrg.auto = data.auto !== undefined ? data.auto : false;
   dbOrg.name = data.companyName;
   dbOrg.location = data.companyLocation;
   dbOrg.accountOf[0] = { id: userData._id, extid: userData.email};
