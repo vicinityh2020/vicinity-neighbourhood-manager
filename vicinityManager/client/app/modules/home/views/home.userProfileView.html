@@ -53,6 +53,13 @@
             <!-- Email -->
             <strong><i class="fa fa-at margin-r-5"></i> Email</strong>
             <p class="text-muted">{{email}}</p>
+            <strong><i class="fa fa-envelope margin-r-5"></i> Contact Mail</strong>
+            <a id="nameButt2" ng-show="isMyProfile" href="" ng-click="changeToInput2()" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i>Edit</a>
+            <a id="edits22" ng-click="saveNewMail()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+            <a id="edits12" ng-click="backToEdit2()" style="margin-left: 35%" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+            <p id="nameP2" class="text-muted" ng-if="contactMail">{{contactMail}}</p>
+            <p id="nameP2" class="text-muted" ng-if="!contactMail">{{email}}</p>
+            <input id="editMailInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="contactMail"></input>
 
             <hr ng-show="isMyProfile">
 
