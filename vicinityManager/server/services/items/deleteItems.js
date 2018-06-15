@@ -9,6 +9,7 @@ var logger = require('../../middlewares/logger');
 var commServer = require('../../services/commServer/request');
 var semanticRepo = require('../../services/semanticRepo/request');
 var sync = require('../../services/asyncHandler/sync');
+var sharingRules = require('../../services/sharingRules');
 var audits = require('../../services/audit/audit');
 
 // Public functions
@@ -73,9 +74,18 @@ function deleting(oid, otherParams, callback){
         var cid = data.cid;
         var id = data._id;
         var hasUser = (data.status === 'enabled');
+        var contracts = [];
+        getOnlyCtid(contracts, data.hasContracts);
         var owner = {};
 
         itemOp.update({oid:oid}, {$set: obj})
+        .then(function(response){
+          if(hasUser && contracts.length > 0){ // If the item does not have owner, cannot have contracts either
+             return sharingRules.removeOneItem(oid, data.uid.id, contracts, otherParams.userMail);
+           } else {
+             return false;
+           }
+        })
         .then(function(response){ return nodeOp.update({_id: data.adid.id}, {$pull: {hasItems: { extid : oid }}}); })
         .then(function(response){
           if(hasUser){
@@ -109,6 +119,15 @@ function deleting(oid, otherParams, callback){
         });
       }
     });
+  }
+
+  /*
+  Creates array with ids
+  */
+  function getOnlyCtid(array, toAdd){
+    for(var i = 0, l = toAdd.length; i < l; i++){
+      aray.push(toAdd[i].extid);
+    }
   }
 
 // Export modules

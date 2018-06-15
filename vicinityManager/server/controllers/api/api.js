@@ -228,11 +228,12 @@ function createOrganisationAuto(req, res, next){
  */
 function removeOrganisation(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
   if(req.body.decoded_token.roles.indexOf('administrator') === -1){
     res.json({'error': false, 'message': "Need admin privileges to remove an organisation..."});
   } else {
-    sOrgConfiguration.remove(cid, mail, function(err, data){
+    sOrgConfiguration.remove(cid, uid, mail, function(err, data){
       res.json({"error": err, "message": data});
     });
   }
@@ -410,7 +411,7 @@ function getAnnotations(req, res, next){
 }
 
 /**
- * Update a user
+ * Update an item
  *
  * @param {Array} uids + thing to update
  *

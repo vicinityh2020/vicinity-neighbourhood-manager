@@ -178,7 +178,7 @@ function removing(id, token_uid, token_mail, callback){
       }
     }
     if(imAdmin){
-      removeAll(id, token_uid, token_mail);
+      removeAllContract(id, token_uid, token_mail);
     } else {
       removeOneUser(id, token_uid, token_mail, imForeign);
     }
@@ -193,10 +193,61 @@ function removing(id, token_uid, token_mail, callback){
 }
 
 /**
+* Contract feeds
+* @param {String} uid
+*
+* @return {Array} Contract requests
+*/
+function contractFeeds(uid, callback){
+  userOp.findOne({_id: uid}, {hasContracts:1})
+  .then(function(response){
+    logger.debug(response);
+    var openContracts = [];
+    for(var i = 0; i < response.hasContracts.length; i++){
+      if(!response.hasContracts[i].approved){
+        openContracts.push(response.hasContracts[i]);
+      }
+    }
+    callback(false, openContracts);
+  })
+  .catch(function(err){
+    logger.debug(err);
+    callback(true, err);
+  });
+}
+
+/**
+* Contract info - return one contract
+* @param {String} ctid
+* @param {String} uid
+*
+* @return {Object} Contract instance
+*/
+function contractInfo(ctid, uid, callback){
+  var query = checkInput(ctid);
+  contractOp.findOne(query)
+  .then(function(response){
+    if(!response){
+      callback(false, "The contract with: " + JSON.stringify(query) + " could not be found...");
+    } else if(response.iotOwner.uid.id.toString() !== uid.toString() && response.serviceProvider.uid.id.toString() !== uid.toString()) {
+      callback(false, "You are not part of the contract with ctid: " + response.ctid);
+    } else {
+      callback(false, response);
+    }
+  })
+  .catch(function(err){
+    logger.debug(err);
+    callback(true, err);
+  });
+}
+
+// Private Functions -------------------------------------------------
+
+/**
 Remove whole contract
 * @return {Promise}
 */
-function removeAll(id, token_uid, token_mail){
+function removeAllContract(id, token_uid, token_mail){
   var users = []; var items = [];
   var data = {}; var ctid = {};
   return new Promise(function(resolve, reject) {
@@ -224,7 +275,9 @@ function removeAll(id, token_uid, token_mail){
       return itemOp.update({_id: {$in: items }}, { $pull: {hasContracts: ctid} }, { multi: true });
     })
     .then(function(response){
-      return createNotifAndAudit(data._id, data.ctid, token_uid, token_mail, data.iotOwner.uid, data.foreignIot.uid, true, false); // Accepted = true
+      if(token_uid && token_mail){
+        return createNotifAndAudit(data._id, data.ctid, token_uid, token_mail, data.iotOwner.uid, data.foreignIot.uid, true, false); // Accepted = true
+      }
     })
     .then(function(response){
       resolve(data);
@@ -281,59 +334,6 @@ function removeOneUser(id, uid, mail, imForeign){
   });
 }
 
-/**
-* Contract feeds
-* @param {String} uid
-*
-* @return {Array} Contract requests
-*/
-function contractFeeds(uid, callback){
-  userOp.findOne({_id: uid}, {hasContracts:1})
-  .then(function(response){
-    logger.debug(response);
-    var openContracts = [];
-    for(var i = 0; i < response.hasContracts.length; i++){
-      if(!response.hasContracts[i].approved){
-        openContracts.push(response.hasContracts[i]);
-      }
-    }
-    callback(false, openContracts);
-  })
-  .catch(function(err){
-    logger.debug(err);
-    callback(true, err);
-  });
-}
-
-/**
-* Contract info - return one contract
-* @param {String} ctid
-* @param {String} uid
-*
-* @return {Object} Contract instance
-*/
-function contractInfo(ctid, uid, callback){
-  var query = checkInput(ctid);
-  contractOp.findOne(query)
-  .then(function(response){
-    if(!response){
-      callback(false, "The contract with: " + JSON.stringify(query) + " could not be found...");
-    } else if(response.iotOwner.uid.id.toString() !== uid.toString() && response.serviceProvider.uid.id.toString() !== uid.toString()) {
-      callback(false, "You are not part of the contract with ctid: " + response.ctid);
-    } else {
-      callback(false, response);
-    }
-  })
-  .catch(function(err){
-    logger.debug(err);
-    callback(true, err);
-  });
-}
-
-
-// Private Functions -------------------------------------------------
-
-
 /*
 Add items to the contract
 */
@@ -344,13 +344,13 @@ function moveItemsInContract(ctid, token_mail, items, add){
       sync.forEachAll(items,
         function(value, allresult, next, otherParams) {
           if(add){
-            adding(value, otherParams, function(value, result) {
+            addingOne(value, otherParams, function(value, result) {
                 // logger.debug('END execution with value =', value, 'and result =', result);
                 allresult.push({value: value, result: result});
                 next();
             });
           } else {
-            deleting(value, otherParams, function(value, result) {
+            deletingOne(value, otherParams, function(value, result) {
                 // logger.debug('END execution with value =', value, 'and result =', result);
                 allresult.push({value: value, result: result});
                 next();
@@ -382,7 +382,7 @@ function moveItemsInContract(ctid, token_mail, items, add){
 Add items to contract group in commServer
 Extends to moveItemsInContract
 */
-function adding(oid, otherParams, callback){
+function addingOne(oid, otherParams, callback){
   itemOp.updateOne({"oid": oid, "hasContracts.extid" : otherParams.ctid}, {$set: { "hasContracts.$.approved" : true }})
   .then(function(response){
     return commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST');
@@ -401,7 +401,7 @@ function adding(oid, otherParams, callback){
 Remove items from contract group in commServer
 Extends to moveItemsInContract
 */
-function deleting(oid, otherParams, callback){
+function deletingOne(oid, otherParams, callback){
   commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'DELETE')
   .then(function(response){
     logger.audit({user: otherParams.mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid });
@@ -535,3 +535,4 @@ module.exports.creating = creating;
 module.exports.accepting = accepting;
 module.exports.contractFeeds = contractFeeds;
 module.exports.contractInfo = contractInfo;
+module.exports.removeAllContract = removeAllContract;

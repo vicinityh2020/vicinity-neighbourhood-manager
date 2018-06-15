@@ -30,7 +30,7 @@ function changePrivacy(ids, userId, userMail, c_id){
         function(value, allresult, next, otherParams) {
           processingPrivacy(value, otherParams, function(toContinue, array) {
             if(toContinue){
-              for(var i = 0; i < array.length; i++){
+              for(var i = 0, l = array.length; i < l; i++){
                 allresult.push(array[i]);
               }
             }
@@ -40,18 +40,18 @@ function changePrivacy(ids, userId, userMail, c_id){
         },
         function(allresult) {
           if(cont === ids.length){
-            // ctChecks.checkContracts(allresult, userId, userMail)
-            // .then(function(response){
+            ctChecks.checkContracts(userId, userMail)
+            .then(function(response){
             resolve('Success');
-            // })
-            // .catch(function(error){
-            //   logger.debug(error);
-            //   reject(error);
-            // });
+            })
+            .catch(function(error){
+              logger.debug(error);
+              reject(error);
+            });
           }
         },
         false,
-        {knows:knows}
+        {knows:knows, mail: userMail}
       );
     });
   });
@@ -76,7 +76,7 @@ function removeFriend(my_id, friend_id, email, uid){
     .then(function(response){
       if(response){ items2 = response; }
       if(items1.length > 0){
-        for(var i = 0; i < items1.length; i++){
+        for(var i = 0, l = items1.length; i < l; i++){
           items.push(items1[i]._id);
         }
         return changePrivacy(items, uid, email, my_id);
@@ -85,7 +85,7 @@ function removeFriend(my_id, friend_id, email, uid){
     .then(function(response){
       if(items2.length > 0){
         items = [];
-        for(var j = 0; j < items2.length; j++){
+        for(var j = 0, l = items2.length; j < l; j++){
           items.push(items2[j]._id);
         }
         return changePrivacy(items, uid, email, friend_id);
@@ -114,7 +114,7 @@ function changeUserAccessLevel(uid, newAccessLevel, email){
     .then(function(items){
       if(items.length > 0){
         c_id = items[0].cid.id;
-        for(var i = 0; i < items.length; i++){
+        for(var i = 0, l = items.length; i < l; i++){
           ids.push(items[i]._id);
         }
         logger.debug(ids);
@@ -144,7 +144,43 @@ function changeUserAccessLevel(uid, newAccessLevel, email){
   });
 }
 
+/*
+Remove only one item from all contracts
+Case of reduce visibility or remove device
 
+*/
+function removeOneItem(oid, uid, cts_ctid, token_mail){
+  return new Promise(function(resolve, reject) {
+    return contractOp.updateOne({ctid: {$in: cts_ctid }},
+                    {$pull: {"iotOwner.items": {extid:oid}}},
+                    {multi:true})
+    .then(function(response){
+      return contractOp.update(
+        {ctid: {$in: cts_ctid }},
+        {$pull: {"foreignIot.items": {extid:oid}}},
+        {multi:true}
+      );
+    })
+    .then(function(response){
+      return updateCommServer(cts_ctid, oid, token_mail);
+    })
+    .then(function(response){
+      return ctChecks.checkContracts(uid, token_mail);
+    })
+    .then(function(response){
+      for(var i = 0, l = cts_ctid.length; i < l; i++){
+        logger.audit({user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i] });
+      }
+      resolve(oid);
+    })
+    .catch(function(err){
+      for(var i = 0, l = cts_ctid.length; i < l; i++){
+        logger.error({user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i], message: err });
+      }
+      reject(err);
+    });
+  });
+}
 
 // Private functions ================================
 
@@ -166,7 +202,7 @@ function processingPrivacy(id, otherParams, callback){
     if(contracts.length === 0){
       callback(false, {});
     } else {
-      for(var i = 0; i < contracts.length; i++){
+      for(var i = 0, l = contracts.length; i < l; i++){
         flag1 = response.accessLevel === 0;
         if(knows.length > 0){
           flag2 = knows.indexOf(contracts[i].contractingParty) === -1 && response.accessLevel === 1;
@@ -204,10 +240,10 @@ function processingPrivacy(id, otherParams, callback){
     );
   })
   .then(function(response){
-    return updateCommServer(cts_ctid, oid);
+    return updateCommServer(cts_ctid, oid, otherParams.mail);
   })
   .then(function(response){
-    callback(true, cts_id);
+    callback(true, cts_ctid);
   })
   .catch(function(error){
     logger.debug(error);
@@ -218,19 +254,20 @@ function processingPrivacy(id, otherParams, callback){
 /*
 Async update commserver groups to adapt to privacy changes
 */
-function updateCommServer(cts, oid){
+function updateCommServer(cts, oid, mail){
   var cont = 0;
   return new Promise(function(resolve, reject) {
     sync.forEachAll(cts,
       function(ctid, allresult, next, otherParams) {
         commServer.callCommServer({}, 'users/' + otherParams.oid + '/groups/' + ctid, 'DELETE')
         .then(function(response){
+          logger.audit({user: mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid });
           allresult.push({error: false, ctid: ctid});
           cont++;
           next();
         })
         .catch(function(err){
-          logger.debug(err);
+          logger.error({user: mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid, message: err });
           allresult.push({error: true, ctid: ctid});
           cont++;
           next();
@@ -249,7 +286,7 @@ function updateCommServer(cts, oid){
 
 /* get ids */
 function getOnlyId(array, toAdd){
-  for(var i = 0; i < toAdd.length; i++){
+  for(var i = 0, l = toAdd.length; i < l; i++){
     array.push(toAdd[i].id.toString());
   }
 }

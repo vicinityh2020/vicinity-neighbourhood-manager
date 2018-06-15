@@ -76,71 +76,65 @@ function acceptCheck(ctid, uid, cid, callback){
 }
 
 /*
-Modify contracts that need to remove items
-Check if the contracts need to be removed or just updated
+Checks if a user can be pulled from a contract
+Is the case of user is no contract admin and has no items in it
 */
-// function checkContracts(ids, userId, userMail){
-//   var cont = 0;
-//   return new Promise(function(resolve, reject) {
-//     if(ids.length !== 0){
-//       sync.forEachAll(ids,
-//         function(value, allresult, next, otherParams) {
-//           checkingContract(value, otherParams, function(error, ctid) {
-//             allresult.push({error: error, ctid: ctid});
-//             cont++;
-//             next();
-//           });
-//         },
-//         function(allresult) {
-//           if(cont === ids.length){
-//             resolve('success');
-//           }
-//         },
-//         false,
-//         {userId: userId, userMail: userMail}
-//       );
-//     } else {
-//       resolve('No contracts to modify');
-//     }
-//   });
-// }
+function checkContracts(userId, userMail){
+  var user_id =  mongoose.Types.ObjectId(userId);
+  var ctids_notAdmin = [];
+  userOp.findOne({_id: user_id}, {hasContracts:1} )
+  .then(function(response){
+    // Get only the contracts of which the user is not ADMIN
+      getOnlyIdCondition(ctids_notAdmin, response.hasContracts);
+      removeUserFromContract(ctids_notAdmin, user_id, userMail);
+  })
+  .then(function(response){
+    resolve(true);
+  })
+  .catch(function(err){
+    reject(err);
+  });
+}
 
 // Private functions
 
-/*
-Send each contract to delete or to modify
-*/
-// function checkingContract(ctid, otherParams, callback){
-//   contractOp.findOne({_id: ctid, status: {$ne: 'deleted'}}, {'foreignIot.items':1, 'iotOwner.items':1})
-//   .then(function(response){
-//     if(!response){
-//       // TODO Notify/audit update contract
-//       logger.debug("Contract already deleted...");
-//       callback(false, ctid);
-//     }else{
-//       logger.debug(JSON.stringify(response));
-//       var hasNoItems = response.foreignIot.items.length * response.iotOwner.items.length === 0;
-//       logger.debug(response.foreignIot.items.length + '  ' + response.iotOwner.items.length );
-//       if(hasNoItems){
-//         logger.debug('remove contract total');
-//         ctHelper.removing(ctid, function(err,response){
-//           if(err){
-//             callback(true, ctid);
-//           } else {
-//             callback(false, ctid);
-//           }
-//         });
-//       } else {
-//         // TODO Notify/audit update contract
-//         callback(false, ctid);
-//       }
-//     }
-//   })
-//   .catch(function(err){
-//     logger.debug('Error checking contract validity: ' + err);
-//     callback(true, ctid);
-//   });
-// }
+function removeUserFromContract(ctids, uid, mail){
+  return new Promise(function(resolve, reject) {
+    if(ctids.length > 0){ // Check if there is any contracts to check
+      sync.forEachAll(ctids,
+        function(value, allresult, next, otherParams) {
+          var ctid = mongoose.Types.ObjectId(value);
+          itemsOp.find({'uid.id': uid, 'hasContracts.id': ctid}, {oid: 1})
+          .then(function(data){
+            if(data){
+              // If there are devices still, do not pull the user from the contract
+              return new Promise(function(resolve, reject) { reject(true); });
+            } else {
+              return contractOp.update({"_id": ctid}, {$pull: {"iotOwner.uid": {id: uid}} });
+            }
+          })
+          .then(function(response){
+            allresult.push(true);
+            next();
+          })
+          .catch(function(err){
+            allresult.push(true);
+            next();
+          });
+        },
+        function(allresult) {
+          if(allresult.length === ctids.length){
+            resolve(true);
+          }
+        },
+        false,
+        {}
+      );
+    } else {
+      resolve(false);
+    }
+  });
+}
 
 /*
 Check that I am part of the contract
@@ -219,9 +213,17 @@ function getOnlyId(items, toAdd){
   }
 }
 
+function getOnlyIdCondition(items, toAdd){
+  for(var i = 0; i < toAdd.length; i++){
+    if(!toAdd[i].imAdmin){
+      items.push(toAdd[i].id);
+    }
+  }
+}
+
 // modules exports
 
 module.exports.postCheck = postCheck;
 module.exports.deleteCheck = deleteCheck;
 module.exports.acceptCheck = acceptCheck;
-// module.exports.checkContracts = checkContracts;
+module.exports.checkContracts = checkContracts;

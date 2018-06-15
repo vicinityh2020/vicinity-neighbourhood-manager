@@ -11,6 +11,7 @@ var logger = require("../../middlewares/logger");
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var delUser = require('../../services/users/deleteUsers');
 var myNode = require('../../services/nodes/processNode');
+var sContracts = require('../../services/contracts/contracts');
 // var audits = require('../../services/audit/audit');
 
 // Public functions
@@ -31,7 +32,7 @@ function put(cid, update, callback) {
 Removes organisation and everything under:
 Users, nodes, items
 */
-function remove(cid, mail, callback) {
+function remove(cid, uid, mail, callback) {
   var deletingResults = {};
 
   logger.debug('Removing organisation... ' + cid);
@@ -44,11 +45,16 @@ function remove(cid, mail, callback) {
         var companyDataParsed = companyData.toObject();
         var users = [];
         getOids(companyDataParsed.accountOf, users, 'id');
-        delUser.deleteAllUsers(users, mail)
+
+        removeContracts(users, uid, mail)
+        .then(function(response){
+          delUser.deleteAllUsers(users, mail);
+        })
         .then(function(response){
           deletingResults.users = response;
           var nodes = [];
           getOids(companyDataParsed.hasNodes, nodes, 'extid');
+            // When deleting a node all items under
           return myNode.deleteNode(nodes, mail);
         })
         .then(function(response){
@@ -89,6 +95,38 @@ function remove(cid, mail, callback) {
 }
 
 // Private functions
+
+function removeContracts(users, uid, mail){
+  var contracts = [];
+  return new Promise(function(resolve, reject) {
+    userOp.find({"_id": {$in: users}}, {hasContracts: 1})
+    .then(function(response){
+      for(var i = 0, l = response.length; i < l; i++){
+        for(var j = 0, k = response.length; j < k; j++){
+          contracts.push(response[i].hasContracts[j].id);
+        }
+      }
+      var uniqueContracts = [];
+      getUnique(uniqueContracts, contracts);
+      for(var ii = 0, ll = uniqueContracts.length; ii < ll; ii ++){
+        sContracts.removeAllContract(uniqueContracts[ii], uid, mail);
+      }
+      resolve(true);
+    })
+    .catch(function(err){
+      resolve(err);
+    });
+  });
+}
+
+function getUnique(uniqueContracts, contracts){
+  for(var i = 0, l = contracts.length; i < l; i ++){
+    if(uniqueContracts.indexOf(contracts[i]) !== -1){
+      uniqueContracts.push(contracts[i]);
+    }
+  }
+}
+
 
 function getOids(array, friends, type){
   var aux;
