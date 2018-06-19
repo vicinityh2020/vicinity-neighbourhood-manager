@@ -80,19 +80,21 @@ Checks if a user can be pulled from a contract
 Is the case of user is no contract admin and has no items in it
 */
 function checkContracts(userId, userMail){
-  var user_id =  mongoose.Types.ObjectId(userId);
-  var ctids_notAdmin = [];
-  userOp.findOne({_id: user_id}, {hasContracts:1} )
-  .then(function(response){
-    // Get only the contracts of which the user is not ADMIN
-      getOnlyIdCondition(ctids_notAdmin, response.hasContracts);
-      removeUserFromContract(ctids_notAdmin, user_id, userMail);
-  })
-  .then(function(response){
-    resolve(true);
-  })
-  .catch(function(err){
-    reject(err);
+  return new Promise(function(resolve, reject) {
+    var user_id =  mongoose.Types.ObjectId(userId);
+    var ctids_notAdmin = [];
+    userOp.findOne({_id: user_id}, {hasContracts:1} )
+    .then(function(response){
+      // Get only the contracts of which the user is not ADMIN
+        getOnlyIdCondition(ctids_notAdmin, response.hasContracts);
+        removeUserFromContract(ctids_notAdmin, user_id, userMail);
+    })
+    .then(function(response){
+      resolve(true);
+    })
+    .catch(function(err){
+      reject(err);
+    });
   });
 }
 

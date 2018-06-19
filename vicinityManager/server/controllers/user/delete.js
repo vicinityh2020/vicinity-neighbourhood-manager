@@ -14,7 +14,7 @@ function deleteUser(req, res, next) {
   .then(
     function(response){
       logger.debug("Users deleted...");
-      res.json({'status': 'success', 'message': response});
+      res.json(response);
     }
   )
   .catch(

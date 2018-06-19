@@ -9,6 +9,7 @@ remove: remove organisation
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
+var userOp = require('../../models/vicinityManager').user;
 var delUser = require('../../services/users/deleteUsers');
 var myNode = require('../../services/nodes/processNode');
 var sContracts = require('../../services/contracts/contracts');
@@ -43,22 +44,30 @@ function remove(cid, uid, mail, callback) {
         callback(true, err);
       } else {
         var companyDataParsed = companyData.toObject();
+        var friends = [];
         var users = [];
+        var nodes = [];
+        getOids(companyDataParsed.knows, friends, 'id');
         getOids(companyDataParsed.accountOf, users, 'id');
+        getOids(companyDataParsed.hasNodes, nodes, 'extid');
 
         removeContracts(users, uid, mail)
         .then(function(response){
-          delUser.deleteAllUsers(users, mail);
+          // Remove cid from friends knows array
+          return companyAccountOp.update({"_id": {$in: friends}}, {$pull: {knows: {id: cid} }}, {multi: true});
         })
         .then(function(response){
-          deletingResults.users = response;
-          var nodes = [];
-          getOids(companyDataParsed.hasNodes, nodes, 'extid');
             // When deleting a node all items under
           return myNode.deleteNode(nodes, mail);
         })
         .then(function(response){
           deletingResults.nodes = response;
+          // Users are the last thing to be removeFriend
+          // To remove a user it cannot have any item or contract under
+          return delUser.deleteAllUsers(users, mail);
+        })
+        .then(function(response){
+          deletingResults.users = response;
           // TODO uncomment/comment next 8 lines to test or have real behaviour
           companyData.location = "";
           companyData.hasNotifications = [];
@@ -70,14 +79,6 @@ function remove(cid, uid, mail, callback) {
           companyData.status = "deleted";
           return companyData.save();
         })
-        // .then(function(response){ // TODO Decide if necessary - Nobody to log the audit to
-        //   return audits.putAuditInt(
-        //     cid,
-        //     { orgOrigin: companyData.cid, // extid
-        //       user: mail,
-        //       eventType: 2 }
-        //   );
-        // })
         .then(function(response){
           deletingResults.organisation = {cid: cid, result: 'Success'};
           logger.audit({user: mail, action: 'deleteOrganisation', item: cid });
@@ -86,6 +87,7 @@ function remove(cid, uid, mail, callback) {
           callback(false, deletingResults);
         })
         .catch(function(err){
+          logger.debug(err);
           logger.error({user: mail, action: 'deleteOrganisation', item: cid, message: err});
           callback(true, err);
         });
@@ -121,7 +123,7 @@ function removeContracts(users, uid, mail){
 
 function getUnique(uniqueContracts, contracts){
   for(var i = 0, l = contracts.length; i < l; i ++){
-    if(uniqueContracts.indexOf(contracts[i]) !== -1){
+    if(uniqueContracts.indexOf(contracts[i]) === -1){
       uniqueContracts.push(contracts[i]);
     }
   }

@@ -63,7 +63,9 @@ Change the user Roles
 */
 function putRoles(uid, updates, userMail, userId, callback) {
   var data = {}; // Initialize variable to hold actual updates
-  userOp.findOne({_id: uid}, {hasItems:1, 'authentication.principalRoles':1, cid:1, email:1}).populate('hasItems.id', 'typeOfItem').exec(function(err, response){
+  userOp.findOne({_id: uid}, {hasItems:1, hasContracts:1, 'authentication.principalRoles':1, cid:1, email:1})
+  .populate('hasItems.id', 'typeOfItem')
+  .exec(function(err, response){
     if(err){
       logger.debug('err: ' + err);
       callback(true, err, false);
@@ -71,6 +73,10 @@ function putRoles(uid, updates, userMail, userId, callback) {
       responseParsed = response.toObject();
       var cid = responseParsed.cid;
       var ownerMail = responseParsed.email;
+      var things = {};
+      things.contracts = (responseParsed.hasContracts.length > 0);
+      things.devices = findType(responseParsed.hasItems, 'device');
+      things.services = findType(responseParsed.hasItems, 'service');
       // Complete update payload -- Check if something is missing
       if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1 && updates.roles.indexOf('devOps') === -1){
          updates.roles.push('devOps'); // If it is devOps keep status
@@ -84,9 +90,14 @@ function putRoles(uid, updates, userMail, userId, callback) {
       var data = {"authentication.principalRoles": updates.roles}; //Ensure only right fields sent to update
 
       var canServices = updates.roles.indexOf('service provider') !== -1;
-      var canDevs = updates.roles.indexOf('infrastructure operator') !== -1;
+      var canDevs = updates.roles.indexOf('device owner') !== -1;
+      var canContracts = updates.roles.indexOf('infrastructure operator') !== -1;
       var couldServices = responseParsed.authentication.principalRoles.indexOf('service provider') !== -1;
-      var couldDevs = responseParsed.authentication.principalRoles.indexOf('infrastructure operator') !== -1;
+      var couldDevs = responseParsed.authentication.principalRoles.indexOf('device owner') !== -1;
+      var couldContracts = responseParsed.authentication.principalRoles.indexOf('infrastructure operator') !== -1;
+      var stopServices = (couldServices && !canServices && things.services); // Losing service provider role and still having services
+      var stopDevices = (couldDevs && !canDevs && things.devices); // Losing device owner role and still having devices
+      var stopContracts = (couldContracts && !canContracts && things.contracts); // Losing infrastructure operator role and still having contracts
       var willAdmin = updates.roles.indexOf('administrator') !== -1;
       var isAdmin = responseParsed.authentication.principalRoles.indexOf('administrator') !== -1;
       var canChange = true;
@@ -99,19 +110,12 @@ function putRoles(uid, updates, userMail, userId, callback) {
         callback(false, 'Only a different administrator can modify your administrator role', false);
       } else if(invalidRoles.invalid){
         callback(false, invalidRoles.message + ' is an invalid role...', false);
-      } else if((couldServices && !canServices) || (couldDevs && !canDevs)){
-        var items = [];
-        getItems(responseParsed.hasItems, canDevs, canServices, items);
-        sUpdItems.updateManyItems(items, updates.roles, userMail, cid.extid, cid.id, userId, function(err, response){
-          if(!err){
-            doUpdate(uid, data, userMail, userId, function(err, response, success){
-              if(err){ callback(true, err, success); } else { callback(false, response, success); }
-            });
-          } else {
-            logger.debug(err);
-            callback(true, err, false);
-          }
-        });
+      } else if( stopServices || stopDevices || stopContracts ){
+        var msg = "User cannot change roles, please remove its:";
+        if(stopDevices) msg = msg + " devices";
+        if(stopServices) msg = msg + " services";
+        if(stopContracts) msg = msg + " contracts";
+        callback(false, msg, false);
       } else {
         doUpdate(uid, data, userMail, userId, function(err, response, success){
           if(err){ callback(true, err, success); } else { callback(false, response, success); }
@@ -203,15 +207,15 @@ function doUpdate(uid, updates, userMail, userId, callback){
 }
 
 /*
-Aux function
-Selects type of item to be removed based on new user Roles
-Can be both, one or none
+Check if there are devices and/or services
 */
-function getItems(allItems, canDevs, canServices, items){
-  for(var i = 0, l = allItems.length; i < l; i++){
-    if(!canDevs && allItems[i].id.typeOfItem === 'device') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'device'});
-    if(!canServices && allItems[i].id.typeOfItem === 'service') items.push({o_id: allItems[i].id._id, oid: allItems[i].extid, status: 'disabled', typeOfItem: 'service'});
-   }
+function findType(items, type){
+  for(var i = 0, l = items.length; i < l; i++){
+    if(items[i].id.typeOfItem === type){
+      return true;
+    }
+  }
+  return false;
 }
 
 /*
@@ -219,7 +223,7 @@ Validates Roles
 If role does not exist throw error message
 */
 function checkRoles(roles){
-  var possibleRoles =  ["service provider", "device owner", "infrastructure operator", "administrator", "system integrator", "devOps", "user"];
+  var possibleRoles =  ["service provider", "device owner", "infrastructure operator", "administrator", "system integrator", "devOps", "user", "superUser"];
   for(var i = 0, l = roles.length; i < l; i++){
     if(possibleRoles.indexOf(roles[i]) === -1){
       return {invalid: true, message: roles[i]};

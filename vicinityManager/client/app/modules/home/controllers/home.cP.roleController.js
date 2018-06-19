@@ -35,6 +35,11 @@ function ($scope, $window, commonHelpers, $stateParams, userAPIService, Notifica
       userAPIService.editInfoAboutUser($scope.selectedUser._id,data)
         .then(
           function successCallback(response){
+            if(response.data.success){
+              Notification.success("User role modified");
+            } else {
+              Notification.warning(response.data.message);
+            }
             $scope.myInit();
           },
             function errorCallback(){Notification.error("Problem updating user profile");
@@ -78,7 +83,6 @@ function ($scope, $window, commonHelpers, $stateParams, userAPIService, Notifica
         var query = {'data':{'roles':$scope.newRoles}, 'type': 'roles'};
         $scope.updateUserInfo(query);
         $scope.cancelChanges();
-        Notification.success("User role modified");
       }else{
         Notification.warning("There must be at least one administrator");
         $scope.cancelChanges();
@@ -100,10 +104,16 @@ function ($scope, $window, commonHelpers, $stateParams, userAPIService, Notifica
           userAPIService.deleteUser($scope.selectedUser._id)
           .then(
             function(response){
-              Notification.success("User removed");
-              $scope.myInit();
+              if(response.data[0].result === 'Success'){
+                Notification.success("User removed");
+                $scope.myInit();
+              } else {
+                Notification.warning(response.data[0].result);
+              }
             },
-            function(err){Notification.warning("Error: " + err);}
+            function(err){
+              Notification.warning("Error: " + err);
+            }
           );
         }
       }else{
