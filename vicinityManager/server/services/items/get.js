@@ -49,8 +49,6 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
       projection = { status: 0 };
     }
 
-    logger.debug(query);
-
     itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
       if (err) {
         logger.debug('error','Find Items Error: ' + err.message);
@@ -83,7 +81,6 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
     if(response.knows !== 'undefined'){
         getIds(response.knows, friends);
     }
-    logger.debug(friends);
 
     if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
       query = {'cid.id': mycid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
@@ -94,8 +91,6 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
         query = {'cid.id': mycid, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
       }
     }
-
-    logger.debug(query);
 
     if(api){
       projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0 };

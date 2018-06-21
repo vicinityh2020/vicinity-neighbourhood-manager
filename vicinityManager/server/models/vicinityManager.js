@@ -216,6 +216,9 @@ var notification = new Schema({
     34 - partnershipAccepted - info
     35 - partnershipRequested - info
     36 - partnershipRequestCancelled - info
+    41 - moveThingRequest - waiting
+    42 - moveThingAccept - info
+    43 - moveThingReject - info
     ...
     */
 });
@@ -316,7 +319,7 @@ user.index({email: 1}, { unique: false });
 item.index({name: 1}, { unique: false });
 item.index({oid: 1}, { unique: false });
 node.index({adid: 1}, { unique: false });
-contract.index({ctid: 1}, { unique: true});
+contract.index({ctid: 1}, { unique: true });
 
 // Exports models  ===============================
 

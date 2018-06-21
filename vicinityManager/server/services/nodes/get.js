@@ -17,7 +17,7 @@ function getOrgAgents(cid, api, callback){
 // Return all items under an agent/node
 function getNodeItems(adid, callback){
   var query = checkInput(adid);
-  nodeOp.findOne(query, {adid:1, 'hasItems.id':1}).populate('hasItems.id', 'info -_id')
+  nodeOp.findOne(query, {adid:1, 'hasItems.id':1}).populate('hasItems.id', 'info')
   .then(function(response){
     var data = response.hasItems;
     callback(false, data);

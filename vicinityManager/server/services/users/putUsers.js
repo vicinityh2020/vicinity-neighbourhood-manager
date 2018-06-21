@@ -77,16 +77,21 @@ function putRoles(uid, updates, userMail, userId, callback) {
       things.contracts = (responseParsed.hasContracts.length > 0);
       things.devices = findType(responseParsed.hasItems, 'device');
       things.services = findType(responseParsed.hasItems, 'service');
+      // Forbidden user roles (only web admin)
+      var indexDevOps = updates.roles.indexOf('devOps');
+      if(indexDevOps !== -1) updates.roles.splice(indexDevOps, 1);
+      var indexSU = updates.roles.indexOf('superUser');
+      if(indexSU !== -1) updates.roles.splice(indexSU, 1);
       // Complete update payload -- Check if something is missing
-      if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1 && updates.roles.indexOf('devOps') === -1){
-         updates.roles.push('devOps'); // If it is devOps keep status
-       }
-       if(responseParsed.authentication.principalRoles.indexOf('superUser') !== -1 && updates.roles.indexOf('superUser') === -1){
-          updates.roles.push('superUser'); // If it is superUser keep status
-        }
-       if(updates.roles.indexOf('user') === -1){
-          updates.roles.push('user'); // User has to be always a role
-        }
+      if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1){
+        updates.roles.push('devOps'); // If it is devOps keep status
+      }
+      if(responseParsed.authentication.principalRoles.indexOf('superUser') !== -1){
+        updates.roles.push('superUser'); // If it is superUser keep status
+      }
+      if(updates.roles.indexOf('user') === -1){
+        updates.roles.push('user'); // User has to be always a role
+      }
       var data = {"authentication.principalRoles": updates.roles}; //Ensure only right fields sent to update
 
       var canServices = updates.roles.indexOf('service provider') !== -1;
