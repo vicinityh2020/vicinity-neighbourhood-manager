@@ -14,8 +14,22 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
   $scope.isMyItem = false;
   $scope.isMyOrgItem = false;
   $scope.imDeviceOwner = false;
+  $scope.imAdmin = false;
   $scope.loaded = false;
   $scope.item = {};
+  $scope.owner = "";
+  $scope.gateway = {};
+
+  // initialize DOM
+  $('div#moveEdit').show();
+  $('a#moveSave').hide();
+  $('a#moveCancel').hide();
+  $('select#editMoveName').hide();
+  $('a#accessEdit').show();
+  $('a#accessSave').hide();
+  $('a#accessCancel').hide();
+  $('select#editAccessName').hide();
+  $('p#accessName').show();
 
   initData();
 
@@ -37,6 +51,9 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         if(payload.roles[i] === 'device owner'){
           $scope.imDeviceOwner = true;
         }
+        if(payload.roles[i] === 'administrator'){
+          $scope.imAdmin = true;
+        }
       }
     }
 
@@ -44,7 +61,15 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         $scope.item = response.data.message[0];
         $scope.name = $scope.item.cid.id.name;
         $scope.item.uid = $scope.item.uid === undefined ? {} : $scope.item.uid; // Case device disabled
+        $scope.owner = $scope.item.uid.extid;
         $scope.itemEnabled = ($scope.item.status === 'enabled');
+        $scope.gateway = {
+          id: $scope.item.adid.id,
+          adid: $scope.item.adid.extid,
+          name: $scope.item.adid.name,
+          type: $scope.item.adid.type,
+          logo: $scope.item.adid.type === "shq" ? "img/logos/shqlogo.png" : "img/logos/vcntlogo.png"
+        };
 
         var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
         $scope.ALcaption = aux[$scope.item.accessLevel];
@@ -101,15 +126,9 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
       }
   };
 
-
 // HIDE && SHOW DOM =========================
 
   //Access Level
-  $('a#accessEdit').show();
-  $('a#accessSave').hide();
-  $('a#accessCancel').hide();
-  $('select#editAccessName').hide();
-  $('p#accessName').show();
 
   $scope.changeToInput = function () {
     $('a#accessEdit').hide();
@@ -156,7 +175,114 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
       };
 
 
-  // Serial Number
+  // Move / Change item owner/gateway
+
+  $scope.changeToInputMove = function () {
+    $('div#moveEdit').hide();
+    $('select#editMoveName').fadeIn('slow');
+    $('a#moveSave').fadeIn('slow');
+    $('a#moveCancel').fadeIn('slow');
+  };
+
+  $scope.backToEditMove = function () {
+    $('a#moveCancel').fadeOut('slow');
+    $('a#moveSave').fadeOut('slow');
+    $('select#editMoveName').fadeOut('slow');
+    setTimeout(function() {
+      $('div#moveEdit').fadeIn('fast');
+    }, 600);
+  };
+
+  $scope.saveNewAccessMove = function(){
+    var newThing = JSON.parse($('select#editMoveName').val());
+    var item = {
+      id: $scope.item._id,
+      extid: $scope.item.oid,
+      name: $scope.item.name
+    };
+    if(newThing.hasOwnProperty("adid")){
+      var adid = {
+        id: newThing._id,
+        extid: newThing.adid,
+        name: newThing.name,
+        type: $scope.gateway.type
+      };
+      itemsAPIService.changeGateway({oid: item, adid: adid})
+      .then(function(response){
+        Notification.success('Gateway changed successfuly');
+        initData();
+        $scope.backToEditMove();
+      })
+      .catch(function(error){
+        Notification.error('Error changing gateway: ' + error);
+        $scope.backToEditMove();
+      });
+    } else {
+      var uidNew = {
+        id: newThing._id,
+        extid: newThing.email,
+        name: newThing.name
+      };
+      var uidOld = {
+        id: $scope.item.uid.id,
+        extid: $scope.item.uid.extid,
+        name: $scope.item.uid.name
+      };
+      itemsAPIService.moveItem({oid: item, uidNew: uidNew, uidOld: uidOld})
+      .then(function(response){
+        Notification.success('Owner changed successfuly');
+        initData();
+        $scope.backToEditMove();
+      })
+      .catch(function(error){
+        Notification.error('Error changing gateway: ' + error);
+        $scope.backToEditMove();
+      });
+    }
+  };
+
+  $scope.changeOwner = function(){
+    $scope.moveThings = [];
+    itemsAPIService.getMoveUsers('device')
+    .then(function(response){
+      if(response.data.message.length > 0){
+        $scope.moveThings = response.data.message;
+        $scope.changeToInputMove();
+        removeCurrent($scope.item.uid.id);
+      } else {
+        Notification.warning("There aren't available users...");
+      }
+    })
+    .catch(function(error){
+      Notification.error(error);
+    });
+  };
+
+  $scope.changeGateway = function(){
+    $scope.moveThings = [];
+    itemsAPIService.getMoveGateways($scope.gateway.type)
+    .then(function(response){
+      if(response.data.message.length > 0){
+        $scope.moveThings = response.data.message;
+        $scope.changeToInputMove();
+        removeCurrent($scope.gateway.id);
+      } else {
+        Notification.warning("There aren't available gateways...");
+      }
+    })
+    .catch(function(error){
+      Notification.error(error);
+    });
+  };
+
+  function removeCurrent(id){
+      for(var i = 0, l = $scope.moveThings.length; i < l; i++){
+          if($scope.moveThings[i]._id.toString() === id.toString()){
+            $scope.moveThings.splice(i,1);
+            return true;
+          }
+      }
+  }
 
   // Location
 

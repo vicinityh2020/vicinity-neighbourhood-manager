@@ -68,6 +68,25 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.delete(configuration.apiUrl + '/items/contract/' + id);
   };
 
+  /*
+  Infrastructure
+  */
+  itemsAPI.getMoveUsers = function(type){
+    return $http.get(configuration.apiUrl + '/infrastructure/users?type=' + type);
+  };
+
+  itemsAPI.getMoveGateways = function(type){
+    return $http.get(configuration.apiUrl + '/infrastructure/gateways?type=' + type);
+  };
+
+  itemsAPI.changeGateway = function(payload){
+    return $http.put(configuration.apiUrl + '/infrastructure/changeGateway', payload);
+  };
+
+  itemsAPI.moveItem = function(payload){
+    return $http.put(configuration.apiUrl + '/infrastructure/moveItem', payload);
+  };
+
   return itemsAPI;
 
 }]);

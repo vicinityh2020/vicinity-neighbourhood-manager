@@ -33,7 +33,7 @@ function moveItem(oid, uidNew, uidOld){
       // TODO consider checking if ater removing the item the user has contracts without items
       return userOp.update(
         {"_id": uidOld.id},
-        {$pull: {hasItems: {id: oid.id} } }
+        {$pull: {hasItems: {extid: oid.extid} } }
       );
     })
     .then(function(response){
@@ -49,16 +49,21 @@ function moveItem(oid, uidNew, uidOld){
       userContracts = response.hasContracts;
       cid = response.cid.id;
       // First change visibility of device, because it might remove some contracts
+      logger.debug(Number(userVisibility));
+      logger.debug(Number(itemVisibility));
       if(Number(userVisibility) < Number(itemVisibility)){
-        return sharingRules.changePrivacy([oid.id], uidNew.id, uidNew.extid, cid);
+        return itemOp.update({"_id": oid.id}, {$set: {accessLevel: Number(userVisibility)}})
+        .then(function(response){
+          return sharingRules.changePrivacy([oid.id], uidNew.id, uidNew.extid, cid);
+        });
       } else {
         return false;
       }
     })
     .then(function(response){
-      if(itemsContracts){
+      if(itemContracts){
         // After being sure contracts are still valid, add them to new user
-        return addContracts(itemsContracts, uidNew);
+        return addContracts(itemContracts, uidNew);
       } else {
         return false;
       }
@@ -67,8 +72,8 @@ function moveItem(oid, uidNew, uidOld){
       resolve("Success");
     })
     .catch(function(err){
-      logger.debug(error);
-      reject(error);
+      logger.debug(err);
+      reject(err);
     });
   });
 }
@@ -170,7 +175,8 @@ function changeGateway(oid, adid){
       );
     })
     .then(function(response){
-      nodeOp.update( {"_id": response.adid.id}, {$pull: {hasItems: {id : oid.id} } });
+      var id = response.toObject().adid.extid;
+      return nodeOp.update({"adid": id}, {$pull: {"hasItems": {"extid" : oid.extid} } });
     })
     .then(function(response){
       resolve("Success");
@@ -267,7 +273,7 @@ function getRole(type){
 /* Available platforms object */
 function getPlatform(type){
   var platforms = {
-    vcnt: 'generic.adapter.vicinity.eur',
+    vcnt: 'generic.adapter.vicinity.eu',
     shq: 'generic.adapter.sharq.eu'
   };
   return platforms[type];

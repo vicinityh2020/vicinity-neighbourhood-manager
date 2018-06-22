@@ -4,7 +4,7 @@
 
 
 <section class="content">
-      <div class="row" >
+      <div class="row">
         <div class="coll-md-1" ng-hide="loaded" style="margin: auto; width:60%">
           <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
         </div>
@@ -48,26 +48,29 @@
                 <li class="list-group-item" ng-show="itemEnabled">
                   <i class="fa fa-eye margin-r-5"></i>
                   <strong>Access level</strong>
-                     <a ng-show="isMyItem" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInput()">Edit</a>
-                     <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
-                     <a ng-click="backToEdit()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-
-                    <p id="accessName" class="text-muted" style="display: block">
-                      {{ALcaption}}
-                    </p>
-
-                    <select id="editAccessName" name="menu">
-                      <option value="0" selected>Change status to:</option>
-                      <option value="1">Private</option>
-                      <option value="2">Partners with Data Under Request</option>
-                      <option value="3">Public with Data Under Request</option>
-                    </select>
-
-                  </li>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <p id="accessName" class="text-muted" style="display: block">
+                        {{ALcaption}}
+                      </p>
+                      <select id="editAccessName" name="menu">
+                        <option value="0" selected>Change status to:</option>
+                        <option value="1">Private</option>
+                        <option value="2">Partners with Data Under Request</option>
+                        <option value="3">Public with Data Under Request</option>
+                      </select>
+                    </div>
+                    <div class="col-md-8">
+                     <a ng-show="isMyItem" id="accessEdit" class="pull-right btn-sm btn-info edit_profile" ng-click="changeToInput()">Edit</a>
+                     <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                     <a ng-click="backToEdit()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+                   </div>
+                 </div>
+                </li>
 
                   <!-- Ownership -->
                   <li class="list-group-item">
-                    <i class="fa fa-briefcase margin-r-5"></i>
+                    <i class="fa fa-user margin-r-5"></i>
                     <strong>Owner</strong>
                     <br>
                     <a ui-sref="root.main.companyProfile.devices({companyAccountId: item.cid.id._id})">{{name}}</a>
@@ -76,15 +79,52 @@
                     <a class="text-muted" ng-show="!itemEnabled">Unassigned</a>
                   </li>
 
-                  <!-- Serial Number -->
+                  <!-- Infrastructure -->
+                  <li class="list-group-item">
+                    <i class="fa fa-sitemap margin-r-5"></i>
+                    <strong>Gateway</strong>
+                    <br>
+                    <div class="row">
+                      <div class="col-md-9">
+                        <span>{{gateway.adid}}</span>
+                        <span>{{gateway.name}}</span>
+                      </div>
+                      <div class="col-md-3">
+                        <img class="pull-right node-logo" src="{{gateway.logo}}" />
+                    </div>
+                  </div>
+                  </li>
 
-                  <!-- Location -->
+                  <!-- Shift item -->
+                  <li class="list-group-item" ng-show="isMyItem || imAdmin">
+                    <i class="fa fa-exchange margin-r-5"></i>
+                    <strong>Move item</strong>
+                    <div id="moveEdit" class="row">
+                      <div class="col-md-6">
+                        <button ng-click="changeOwner()" ng-disabled="!itemEnabled" class="btn btn-info btn-block"><i class="fa fa-user"></i><b> Change Owner</b></button>
+                      </div>
+                      <div class="col-md-6">
+                        <button ng-click="changeGateway()" class="btn btn-info btn-block"><i class="fa fa-sitemap"></i><b> Change Gateway</b></button>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <select id="editMoveName" name="menu">
+                          <option value="{{thing}}" ng-repeat="thing in moveThings">{{thing.name}}</option>
+                        </select>
+                      </div>
+                      <div class="col-md-8">
+                       <a ng-click="saveNewAccessMove()" id="moveSave" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+                       <a ng-click="backToEditMove()" style="margin-left: 35%" id="moveCancel" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+                     </div>
+                   </div>
+                  </li>
 
                   <!-- Delete button -->
                   <li class="list-group-item" ng-show="isMyItem">
                     <i class="fa fa-times margin-r-5"></i>
                     <strong>Remove device</strong>
-                    <a ng-click="deleteItem()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"> Delete </a>
+                    <a ng-click="deleteItem()" class="pull-right btn-sm btn-danger" style="margin-left: 5px"> Delete </a>
                   </li>
 
               </ul>

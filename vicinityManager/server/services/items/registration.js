@@ -33,6 +33,7 @@ function create(data, callback){
           callback(true, "Invalid adid/agid identificator");
         } else {
           var nodeId = data._id;
+          var nodeName = data.name;
           var cid = data.cid;
           var doSemanticValidation = config.enabledAdapters.indexOf(data.type[0]) !== -1;
           var adapterType = data.type[0] === "generic.adapter.sharq.eu" ? "shq" : "vcnt"; // TODO cover more types when needed
@@ -81,7 +82,14 @@ function create(data, callback){
                   }
                 },
                 false,
-                {adid: adid, cid:cid, nodeId: nodeId, data:data, types:semanticTypes, semanticValidation:doSemanticValidation, adapterType: adapterType } // additional parameters
+                { adid: adid,
+                  cid:cid,
+                  nodeId: nodeId,
+                  data:data,
+                  types:semanticTypes,
+                  semanticValidation:doSemanticValidation,
+                  adapterType: adapterType,
+                  nodeName: nodeName } // additional parameters
               );
             }
           )
@@ -106,7 +114,7 @@ function saveDocuments(objects, otherParams, callback){
   // Create one item document
   obj.typeOfItem = findType(objects.type, otherParams.types); // Use collection of semanticTypes to find if service/device/unknown
   // Adding important fields for Vicinity
-  obj.adid = {'id': otherParams.nodeId, 'extid': otherParams.adid, 'type': otherParams.adapterType};
+  obj.adid = {'id': otherParams.nodeId, 'extid': otherParams.adid, 'type': otherParams.adapterType, 'name': otherParams.nodeName};
   obj.name = objects.name; // Name in commServer
   obj.cid = otherParams.cid; // CID, obtained from mongo
   obj.accessLevel = 0; // private by default
