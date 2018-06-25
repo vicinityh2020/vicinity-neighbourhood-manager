@@ -86,8 +86,8 @@
                     <br>
                     <div class="row">
                       <div class="col-md-9">
+                        <span><b>{{gateway.name}}</b></span>
                         <span>{{gateway.adid}}</span>
-                        <span>{{gateway.name}}</span>
                       </div>
                       <div class="col-md-3">
                         <img class="pull-right node-logo" src="{{gateway.logo}}" />
@@ -123,7 +123,7 @@
                   <!-- Delete button -->
                   <li class="list-group-item" ng-show="isMyItem">
                     <i class="fa fa-times margin-r-5"></i>
-                    <strong>Remove device</strong>
+                    <b>Remove device</b>
                     <a ng-click="deleteItem()" class="pull-right btn-sm btn-danger" style="margin-left: 5px"> Delete </a>
                   </li>
 

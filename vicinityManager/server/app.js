@@ -22,6 +22,7 @@ var registrations = require('./routes/registrations');
 var nodes = require('./routes/nodes');
 var commServer = require('./routes/commServer');
 var search = require('./routes/search');
+var infrastructure = require('./routes/infrastructure');
 
 // Custom MIDDLEWARES Import === jwauth && Winston Debugger
 var jwtauth = require("./middlewares/jwtauth");
@@ -65,6 +66,7 @@ app.use('/search', [jwtauth, search]);
 app.use('/audit', [jwtauth, audit]);
 app.use('/invitations', [invitations]);
 app.use('/registrations', [registrations]);
+app.use('/infrastructure', [jwtauth, infrastructure]);
 
 /*
 Error and not found handlers
