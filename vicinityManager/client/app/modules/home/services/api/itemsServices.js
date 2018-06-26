@@ -87,6 +87,10 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.put(configuration.apiUrl + '/infrastructure/moveItem', payload);
   };
 
+  itemsAPI.moveContract = function(payload){
+    return $http.put(configuration.apiUrl + '/infrastructure/moveContract', payload);
+  };
+
   return itemsAPI;
 
 }]);

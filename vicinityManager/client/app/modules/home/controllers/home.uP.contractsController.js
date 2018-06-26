@@ -16,17 +16,20 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   $scope.uid = $window.sessionStorage.userAccountId;
   $scope.contracts = [];
   $scope.contractItems = [];
+  $scope.wholeContract = {};
   $scope.noItems = false;
   $scope.loaded = false;
   $scope.detailShow = false;
   $scope.edit = false;
+  $scope.exchange = false;
   $scope.mainTitle = "My Contracts";
 
   $scope.searchParam = $location.search(); // GET
 
   function init(){
     itemsAPIService.getContracts($stateParams.userAccountId)
-      .then(successCallback, errorCallback);
+      .then(successCallback)
+      .catch(errorCallback);
   }
 
   init();
@@ -38,7 +41,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     $scope.noItems = ($scope.contracts.length === 0);
     if(!$scope.noItems){myContractDetails();}
     $scope.loaded = true;
-    if($scope.searchParam){
+    if($scope.searchParam.contractId !== undefined){
       $scope.showDetails($scope.searchParam.contractId, false);
     }
   }
@@ -65,11 +68,82 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
       .then(function(response){
         $scope.contracts = [];
         Notification.success("The contract was cancelled!");
+        $scope.closeDetails();
         init();
       },
         function(error){ Notification.error("Problem canceling contract: " + error); }
       );
   };
+
+  $scope.moveContract = function(ctid){
+    $scope.getAvailableUsers();
+  };
+
+  $scope.saveMoveContract = function(){
+    var newThing = JSON.parse($('select#editMoveName').val());
+    var ctid = {
+      id: $scope.wholeContract._id,
+      ctid: $scope.wholeContract.oid
+    };
+    var uidNew = {
+      id: newThing._id,
+      extid: newThing.email,
+      name: newThing.name
+    };
+    var uidOld = {
+      id: $scope.uid
+      // extid: $scope.item.uid.extid,
+      // name: $scope.item.uid.name
+    };
+    itemsAPIService.moveContract({ctid: ctid, uidNew: uidNew, uidOld: uidOld})
+      .then(function(response){
+        $scope.moveThings = [];
+        $scope.exchange = false;
+        Notification.success("The contract owner was changed!");
+        init();
+        $scope.closeDetails();
+      },
+        function(error){
+          $scope.moveThings = [];
+          $scope.exchange = false;
+          $scope.closeDetails();
+          Notification.error("Problem canceling contract: " + error); }
+      );
+  };
+
+  $scope.cancelMoveContract = function(ctid){
+    $scope.moveThings = [];
+    $scope.exchange = false;
+  };
+
+  $scope.getAvailableUsers = function(){
+    $scope.moveThings = [];
+    itemsAPIService.getMoveUsers('contract')
+    .then(function(response){
+      if($scope.exchange){
+        $scope.moveThings = [];
+        $scope.exchange = false;
+      } else if(response.data.message.length > 0){
+        $scope.moveThings = response.data.message;
+        $scope.exchange = true;
+        removeCurrent($scope.uid);
+      } else {
+        Notification.warning("There aren't available users...");
+      }
+    })
+    .catch(function(error){
+      Notification.error(error);
+    });
+  };
+
+  function removeCurrent(id){
+    for(var i = 0, l = $scope.moveThings.length; i < l; i++){
+      if($scope.moveThings[i]._id.toString() === id.toString()){
+        $scope.moveThings.splice(i,1);
+        return true;
+      }
+    }
+  }
 
   $scope.showDetails = function(id,edit){
     $location.search('contractId', id); // SET

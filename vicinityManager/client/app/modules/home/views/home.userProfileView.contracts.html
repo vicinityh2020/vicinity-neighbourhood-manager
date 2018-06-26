@@ -65,8 +65,37 @@
     <!-- Contract details -->
     <div class="box box-body" ng-show="detailsShow">
       <div class="box-header with-border well">
-          <h3 class="box-title">Main Info</h3>
-          <button class="pull-right paddedSides" ng-click="closeDetails()"><i class="fa fa-times"></i></button>
+        <div class="row">
+          <div class="col-sm-8">
+            <h3 class="box-title">Main Info</h3>
+          </div>
+          <div class="col-sm-4">
+            <div class="row">
+              <div class="col-sm-4">
+                <button class="pull-right" ng-show="wholeContract.active && wholeContract.imAdmin" ng-click="moveContract(contract._id)"><i class="fa fa-exchange"></i></button>
+                <button class="pull-right" ng-show="!wholeContract.active" ng-click="acceptContract(wholeContract._id)"><i class="fa fa-check"></i></button>
+              </div>
+              <div class="col-sm-4">
+                <button ng-click="removeContract(wholeContract._id)"><i class="fa fa-times"></i></button>
+              </div>
+              <div class="col-sm-4">
+                <button class="pull-left" ng-click="closeDetails()">CLOSE</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div ng-show="exchange" class="row">
+          <div class="col-sm-10">
+            <select id="editMoveName" class="pull-right" name="menu">
+              <option value="{{thing}}" ng-repeat="thing in moveThings">{{thing.name}}</option>
+            </select>
+          </div>
+          <div class="col-sm-2">
+           <a ng-click="saveMoveContract()" class="btn-sm btn-info edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
+           <a ng-click="cancelMoveContract()" class="btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+         </div>
+       </div>
       </div>
       <div class="box-body">
         <p><b>ID:</b> {{wholeContract.ctid}}</p>

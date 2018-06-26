@@ -49,8 +49,6 @@ function moveItem(oid, uidNew, uidOld){
       userContracts = response.hasContracts;
       cid = response.cid.id;
       // First change visibility of device, because it might remove some contracts
-      logger.debug(Number(userVisibility));
-      logger.debug(Number(itemVisibility));
       if(Number(userVisibility) < Number(itemVisibility)){
         return itemOp.update({"_id": oid.id}, {$set: {accessLevel: Number(userVisibility)}})
         .then(function(response){
@@ -89,29 +87,34 @@ function moveItem(oid, uidNew, uidOld){
  * @return {String} Success/error
  */
 function moveContract(ctid, uidNew, uidOld){
-  var typeOfUser; // Stores whether the user is iotOwner or foreignIot
+  var ct = {}; // Concrete contract to be dealt with
   return new Promise(function(resolve, reject) {
     // Find if user that was contract admin still has devices in it
-    itemOp.find({"uid.id": uidOld.id, "hasContracts.ctid": ctid.extid}, {oid: 1},
+    itemOp.find({"uid.id": uidOld.id, "hasContracts.ctid": ctid.ctid}, {oid: 1},
       function(error, response){
         if(error){
           logger.debug(error);
           reject(error);
         }
-        else if(response){ // Has devices, then keep old user in contract without admin role
-           userOp.findOneAndupdate(
-              {"_id": uidOld.id, "hasContracts.ctid": ctid.ctid},
-              {$set: {"hasContracts.$.admin": false} },
+        else if(response.length > 0){ // Has devices, then keep old user in contract without admin role
+           userOp.findOneAndUpdate(
+              {_id: uidOld.id, "hasContracts.ctid": ctid.ctid},
+              {$set: {"hasContracts.$.imAdmin": false} },
               { projection: {hasContracts: 1}, returnNewDocument: false } // return old document
             )
           .then(function(response){ // Fetch contract object and give it to new user
             var contracts = response.hasContracts;
-            var ct = getContract(contracts, ctid.ctid);
-            typeOfUser = ct.imForeign ? "foreignIot.uid" : "iotOwner.uid";
-            return userOp.findOneAndupdate( {"_id": uidNew.id}, {$push: {hasContracts: ct} });
+            ct = getContract(contracts, ctid.ctid);
+            return userOp.find({_id: uidNew.id, "hasContracts.ctid": ct.ctid}, {email: 1});
           })
           .then(function(response){
-            return contractOp.update({"_id": ctid.id}, {$push: { typeOfUser: uidNew} });
+            if(response.length > 0){
+              // New user is in contract as non admin
+              return userOp.update( {_id: uidNew.id, "hasContracts.ctid": ctid.ctid}, {$set: {"hasContracts.$.imAdmin" : true} });
+            } else {
+              // New user is not in contract
+              return addNewUser(ct, uidNew);
+            }
           })
           .then(function(response){
             resolve('Success');
@@ -121,24 +124,30 @@ function moveContract(ctid, uidNew, uidOld){
             reject(err);
           });
         } else { // Does not have devices, then completely remove old user from contract
-          userOp.findOneAndupdate(
-              { "_id": uidOld.id },
+          userOp.findOneAndUpdate(
+              { _id: uidOld.id },
               { $pull: {hasContracts: {ctid: ctid.ctid} } },
               { projection: {hasContracts: 1}, returnNewDocument: false } // return old document
             )
           .then(function(response){ // Fetch contract object and give it to new user
             var contracts = response.hasContracts;
-            var ct = getContract(contracts, ctid.ctid);
-            typeOfUser = ct.imForeign ? "foreignIot.uid" : "iotOwner.uid";
-            return userOp.findOneAndupdate(
-              {"_id": uidNew.id},
-              {$push: {hasContracts: ct} });
+            ct = getContract(contracts, ctid.ctid);
+            return userOp.find({_id: uidNew.id, "hasContracts.ctid": ct.ctid}, {email: 1});
           })
           .then(function(response){
-            return contractOp.update({"_id": ctid.id}, { $pull: { typeOfUser: {id: uidOld.id} } });
+            if(response.length > 0){
+              // New user is in contract as non admin
+              return userOp.update( {_id: uidNew.id, "hasContracts.ctid": ctid.ctid}, {$set: {"hasContracts.$.imAdmin" : true} });
+            } else {
+              // New user is not in contract
+              return addNewUser(ct, uidNew);
+            }
           })
           .then(function(response){
-            return contractOp.update({"_id": ctid.id}, { $push: { typeOfUser: uidNew} });
+            var query = ct.imForeign ?
+            { "foreignIot.uid" : {id: uidOld.id} } :
+            { "iotOwner.uid": {id: uidOld.id} };
+            return contractOp.update({_id: ctid.id}, { $pull: query });
           })
           .then(function(response){
             resolve('Success');
@@ -306,6 +315,20 @@ function addContracts(array, uid){
       logger.debug(err);
       reject(err);
     });
+}
+
+function addNewUser(ct, uidNew){
+  return new Promise(function(resolve, reject) {
+    return userOp.update( {"_id": uidNew.id}, {$push: {hasContracts: ct} })
+    .then(function(response){
+      var query = ct.imForeign ?
+      { "foreignIot.uid" : uidNew } :
+      { "iotOwner.uid": uidNew };
+      return contractOp.update({"_id": ct.id}, { $push: query });
+    })
+    .then(function(response){ resolve(response); })
+    .catch(function(error){ reject(error); });
+  });
 }
 
 // Export Functions
