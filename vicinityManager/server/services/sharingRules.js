@@ -296,3 +296,4 @@ function getOnlyId(array, toAdd){
 module.exports.changePrivacy = changePrivacy;
 module.exports.changeUserAccessLevel = changeUserAccessLevel;
 module.exports.removeFriend = removeFriend;
+module.exports.removeOneItem = removeOneItem;

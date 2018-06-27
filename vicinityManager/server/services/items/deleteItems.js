@@ -126,7 +126,7 @@ function deleting(oid, otherParams, callback){
   */
   function getOnlyCtid(array, toAdd){
     for(var i = 0, l = toAdd.length; i < l; i++){
-      aray.push(toAdd[i].extid);
+      array.push(toAdd[i].extid);
     }
   }
 

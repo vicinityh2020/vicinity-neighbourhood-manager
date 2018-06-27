@@ -20,7 +20,8 @@ function postOne(raw, company_id, cid, userMail, userId, callback){
   db.name = raw.name;
   db.eventUri = raw.eventUri || "NA";
   db.agent = raw.agent || "NA";
-  db.type = typeof raw.type === 'undefined' ? "generic.adapter.vicinity.eu" : raw.type;
+  var newType = raw.type === "vicinity" ? "generic.adapter.vicinity.eu" : "generic.adapter.sharq.eu";
+  db.type = raw.type === "generic.adapter.vicinity.eu" ? "generic.adapter.vicinity.eu" : newType;
   db.status = "active";
   db.cid = {"id": company_id, "extid": cid};
   db.adid = uuid();
