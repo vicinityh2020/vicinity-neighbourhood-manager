@@ -106,6 +106,22 @@ function getItemWithAdd(req, res, next) {
     });
   }
 
+  /*
+  Gets items count
+  Query input organisation or user. If undefined --> organisation.
+  Returns: Items in organisation or for my user.
+  Divided in services and devices
+  */
+
+  function getCount(req, res, next){
+    var myId = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+    var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+    var onlyUser = req.params.type === 'user' ? true : false;
+    sGet.getCount(myId, myCid, onlyUser, function(err, response){
+      res.json({error: err, message: response});
+    });
+  }
+
 // Function exports ================================
 
 module.exports.getAllItems = getAllItems;
@@ -114,3 +130,4 @@ module.exports.getArrayOfItems = getArrayOfItems;
 module.exports.getItemWithAdd = getItemWithAdd;
 module.exports.getUserItems = getUserItems;
 module.exports.getMyContractItems = getMyContractItems;
+module.exports.getCount = getCount;

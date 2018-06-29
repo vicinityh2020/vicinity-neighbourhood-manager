@@ -16,17 +16,12 @@ function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $
   $scope.isNeighbour = false;
   $scope.friends = [];
   $scope.users = [];
-  $scope.devices = [];
-  $scope.services = [];
+  $scope.devices = 0;
+  $scope.services = 0;
   $scope.loaded = false;
   $scope.showInput = false;
 
   // Initializa DOM elements
-  $('p#org1').show();
-  $('a#org2').show();
-  $('input#org3').hide();
-  $('a#org4').hide();
-  $('a#org5').hide();
   $('a#loc2').show();
   $('p#loc1').show();
   $('a#loc4').hide();
@@ -37,151 +32,110 @@ function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $
   $('a#not4').hide();
   $('a#not5').hide();
   $('textarea#not3').hide();
-  $('a#bid2').show();
-  $('p#bid1').show();
-  $('a#bid4').hide();
-  $('a#bid5').hide();
-  $('input#bid3').hide();
-
-  // TODO Check exact function of below
-
-      // var promise = {};
-      //
-      // // When the DOM element is removed from the page,
-      // // AngularJS will trigger the $destroy event on
-      // // the scope. Here we cancel our promise.
-      // $scope.$on('$destroy', function(){
-      //     $timeout.cancel(promise);
-      // });
-      //
-      // // Refresh scope data every 5 sec
-      //   $scope.intervalFunction = function(){
-      //     promise = $timeout(function() {
-      //       $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
-      //       $scope.myInit();
-      //       $scope.intervalFunction();
-      //     }, 5000);
-      //   };
-      //
-      //   $scope.intervalFunction();
 
 // Get resources & data ================
 $scope.myInit = function(){
-
-userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
-  .then(
-  function successCallback(response){
-    updateScopeAttributes(response);
-    $scope.loaded = true;
-  },
-  function errorCallback(response){}
-);
-
-itemsAPIService.getMyItems($stateParams.companyAccountId, 'device')
-  .then(
-    function successCallback(response){
-      $scope.devices = response.data.message;
-    },
-    function errorCallback(response){}
-  );
-
-  itemsAPIService.getMyItems($stateParams.companyAccountId, 'service')
-    .then(
-      function successCallback(response){
-        $scope.services = response.data.message;
-      },
-      function errorCallback(response){}
-    );
-};
+  userAccountAPIService.getUserAccountProfile($stateParams.companyAccountId)
+    .then(function(response){
+      updateScopeAttributes(response);
+      $scope.loaded = true;
+      return itemsAPIService.itemsCount('organisation');
+    })
+    .then(function(response){
+      $scope.devices = Number(response.data.message.devices);
+      $scope.services = Number(response.data.message.services);
+      // Check if it is the company profile and if the user is its admin
+      $scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
+      var payload = tokenDecoder.deToken();
+      var keyword = new RegExp('administrator');
+      $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
+    })
+    .catch(function(error){
+      commonHelpers.errorCallback(error);
+    });
+  };
 
 $scope.myInit();
 
-// Check if it is the company profile and if the user is its admin
-
-$scope.isMyProfile = ($window.sessionStorage.companyAccountId === $stateParams.companyAccountId);
-var payload = tokenDecoder.deToken();
-var keyword = new RegExp('administrator');
-$scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
-
 // Functions Neighbours ==================
 
-    $scope.sendNeighbourRequest = function () {
-        var result = userAccountAPIService
-            .sendNeighbourRequest($stateParams.companyAccountId)
-                .then(
-                  function successCallback(response) {
-                    if (response.data.error === true) {
-                        Notification.error("Sending partnership request failed!");
-                    } else {
-                        Notification.success("Partnership request sent!");
-                    }
-                    $scope.onlyRefreshAccount();
-                },
-                function errorCallback(response){}
-              );
-    };
+  $scope.sendNeighbourRequest = function () {
+      var result = userAccountAPIService
+          .sendNeighbourRequest($stateParams.companyAccountId)
+              .then(
+                function successCallback(response) {
+                  if (response.data.error === true) {
+                      Notification.error("Sending partnership request failed!");
+                  } else {
+                      Notification.success("Partnership request sent!");
+                  }
+                  $scope.onlyRefreshAccount();
+              },
+              commonHelpers.errorCallback
+            );
+  };
 
-    $scope.acceptNeighbourRequest = function () {
-        userAccountAPIService.acceptNeighbourRequest($stateParams.companyAccountId)
-            .then(
-              function successCallback(response){
-                if (response.data.error === true) {
-                    Notification.error("Partnership request acceptation failed :(");
-                } else {
-                    Notification.success("Partnership request accepted!");
-                }
-                $scope.onlyRefreshAccount();
-            },
-            function errorCallback(response){}
-          );
-    };
+  $scope.acceptNeighbourRequest = function () {
+      userAccountAPIService.acceptNeighbourRequest($stateParams.companyAccountId)
+          .then(
+            function successCallback(response){
+              if (response.data.error === true) {
+                  Notification.error("Partnership request acceptation failed :(");
+              } else {
+                  Notification.success("Partnership request accepted!");
+              }
+              $scope.onlyRefreshAccount();
+          },
+          commonHelpers.errorCallback
+        );
+  };
 
-    $scope.rejectNeighbourRequest = function() {
-        userAccountAPIService.rejectNeighbourRequest($stateParams.companyAccountId)
-            .then(
-              function successCallback(response){
-                if (response.data.error === true) {
-                    Notification.error("Partnership request rejection failed :(");
-                } else {
-                    Notification.success("Partnership request rejected!");
-                }
-                $scope.onlyRefreshAccount();
-            },
-            function errorCallback(response){}
-          );
-    };
+  $scope.rejectNeighbourRequest = function() {
+      userAccountAPIService.rejectNeighbourRequest($stateParams.companyAccountId)
+          .then(
+            function successCallback(response){
+              if (response.data.error === true) {
+                  Notification.error("Partnership request rejection failed :(");
+              } else {
+                  Notification.success("Partnership request rejected!");
+              }
+              $scope.onlyRefreshAccount();
+          },
+          commonHelpers.errorCallback
+        );
+  };
 
-    $scope.cancelNeighbourRequest = function() {
-        userAccountAPIService.cancelNeighbourRequest($stateParams.companyAccountId)
-            .then(
-              function successCallback(response){
-                if (response.data.error === true) {
-                    Notification.error("Partnership request cancelation failed :(");
-                } else {
-                    Notification.success("Partnership request canceled!");
-                }
-                $scope.onlyRefreshAccount();
-            },
-            function errorCallback(response){}
-          );
-    };
+  $scope.cancelNeighbourRequest = function() {
+      userAccountAPIService.cancelNeighbourRequest($stateParams.companyAccountId)
+          .then(
+            function successCallback(response){
+              if (response.data.error === true) {
+                  Notification.error("Partnership request cancelation failed :(");
+              } else {
+                  Notification.success("Partnership request canceled!");
+              }
+              $scope.onlyRefreshAccount();
+          },
+          commonHelpers.errorCallback
+        );
+  };
 
-    $scope.cancelNeighbourship = function() {
-      if(confirm('Are you sure? May affect existing contracts.')){
-        userAccountAPIService.cancelNeighbourship($stateParams.companyAccountId)
-            .then(
-              function successCallback(response){
-                if (response.data.error === true) {
-                    Notification.error("Partnership cancelation failed :(");
-                } else {
-                    Notification.success("Partnership canceled!");
-                }
-                $scope.onlyRefreshAccount();
-            },
-            function errorCallback(response){}
-          );
-        }
-    };
+  $scope.cancelNeighbourship = function() {
+    if(confirm('Are you sure? May affect existing contracts.')){
+      userAccountAPIService.cancelNeighbourship($stateParams.companyAccountId)
+          .then(
+            function successCallback(response){
+              if (response.data.error === true) {
+                  Notification.error("Partnership cancelation failed :(");
+              } else {
+                  Notification.success("Partnership canceled!");
+              }
+              $scope.onlyRefreshAccount();
+          },
+          commonHelpers.errorCallback
+        );
+      }
+  };
 
 // Refresh $scope =================
 
@@ -191,7 +145,7 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
         function successCallback(response){
           updateScopeAttributes(response);
         },
-        function errorCallback(response){}
+        commonHelpers.errorCallback
       );
   };
 
@@ -281,17 +235,17 @@ $scope.imAdmin = ($scope.isMyProfile && keyword.test(payload.roles));
         $rootScope.bckColor = 'bck-' + $rootScope.skinColor;
         Notification.success('Configuration successfully updated!');
       },
-      function errorCallback(err){
-        Notification.error('Something went wrong: ' + err);
-      }
+      commonHelpers.errorCallback
     );
  });
 
 $scope.updateCompany = function(data){
   userAccountAPIService.updateUserAccounts($window.sessionStorage.companyAccountId,data)
     .then(
-      function successCallback(response){},
-      function errorCallback(response){}
+      function successCallback(response){
+        $scope.onlyRefreshAccount();
+      },
+      commonHelpers.errorCallback
     );
   };
 
@@ -304,9 +258,7 @@ $scope.updateCompany = function(data){
             $cookies.remove("rM_V"); // If log out remove rememberMe cookie
             AuthenticationService.signout("/login");
           },
-          function errorCallback(err){
-            Notification.error('Something went wrong: ' + err);
-        }
+          commonHelpers.errorCallback
       );
     }
   };
@@ -366,7 +318,7 @@ $scope.updateCompany = function(data){
             $('img#pic').fadeIn('slow');
          }, 600);
         },
-        function errorCallback(response){}
+        commonHelpers.errorCallback
       );
   };
 

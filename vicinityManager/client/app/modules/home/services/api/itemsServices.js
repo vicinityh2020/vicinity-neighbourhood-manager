@@ -46,6 +46,14 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   };
 
   /*
+  Count
+  */
+
+  itemsAPI.itemsCount = function(type){
+    return $http.get(configuration.apiUrl + '/items/count/' + type);
+  };
+
+  /*
   Contract management
   */
   itemsAPI.getContracts = function(id){

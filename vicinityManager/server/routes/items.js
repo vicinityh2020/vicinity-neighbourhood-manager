@@ -20,6 +20,7 @@ router
   .delete('/contract/:id', contractHelper.removeContract)
 
 // When userAccount requires devices/services
+  .get('/count/:type', getHelper.getCount)
   .get('/:cid/organisation/myItems', getHelper.getMyItems)
   .get('/:cid/contract/:oid', getHelper.getMyContractItems)
   .post('/array', getHelper.getArrayOfItems)

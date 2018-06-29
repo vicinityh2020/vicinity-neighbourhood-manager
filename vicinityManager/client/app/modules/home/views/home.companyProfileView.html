@@ -51,16 +51,16 @@
                   <a ui-sref="root.main.companyProfile.userAccounts"> <b>User accounts</b> <span class="pull-right">{{users.length}}</span></a>
                 </li>
                 <li ng-show="!isMyProfile" class="list-group-item">
-                  <a ui-sref="root.main.companyProfile.devices"> <b>Devices</b> <span class="pull-right">{{devices.length}}</span></a>
+                  <a ui-sref="root.main.companyProfile.devices"> <b>Devices</b> <span class="pull-right">{{devices}}</span></a>
                 </li>
                 <li ng-show="!isMyProfile" class="list-group-item">
-                  <a ui-sref="root.main.companyProfile.services"> <b>Services</b> <span class="pull-right">{{services.length}}</span></a>
+                  <a ui-sref="root.main.companyProfile.services"> <b>Services</b> <span class="pull-right">{{services}}</span></a>
                 </li>
                 <li ng-show="isMyProfile" class="list-group-item">
-                  <b>Devices</b> <span class="pull-right">{{devices.length}}</span>
+                  <b>Devices</b> <span class="pull-right">{{devices}}</span>
                 </li>
                 <li ng-show="isMyProfile" class="list-group-item">
-                  <b>Services</b> <span class="pull-right">{{services.length}}</span>
+                  <b>Services</b> <span class="pull-right">{{services}}</span>
                 </li>
               </ul>
 
@@ -78,8 +78,7 @@
                 </ul>
               </div>
               <a class="btn btn-primary btn-block" ng-show="canSendNeighbourRequest"
-                 ng-click="sendNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Send partnership
-                request</b></a>
+                 ng-click="sendNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Send partnership request</b></a>
               <a class="btn btn-default btn-block" ng-show="canCancelNeighbourRequest"
                  ng-click="cancelNeighbourRequest()"><i class="fa fa-user-plus"></i>&nbsp;<b>Cancel partnership request</b></a>
               <a class="btn btn-default btn-block" ng-show="isNeighbour"
@@ -90,10 +89,7 @@
           </div>
           <!-- /.box -->
 
-
-      <!-- About me box -->
-
-      <!-- About Me Box -->
+          <!-- About Me Box -->
           <div class="box box-primary">
             <div class="box-header with-border">
               <h3 class="box-title">About Me</h3>
@@ -101,41 +97,27 @@
             <!-- /.box-header -->
             <div class="box-body">
 
-                <strong><i class="fa fa-university margin-r-5"></i> Organisation</strong><br>
-
-                  <a ng-show="false" ng-click="orgEdit()" id="org2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
-                  <a id="org4" ng-click="orgSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
-                  <a id="org5" ng-click="orgCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-                  <p class="text-muted" id="org1">{{name}}</p>
-                  <input id="org3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="organisationNew"/>
-
+              <strong><i class="fa fa-university margin-r-5"></i> Organisation</strong><br>
+                <p class="text-muted">{{name}}</p>
               <hr>
 
               <strong><i class="fa fa-list-alt margin-r-5"></i> BID</strong>
-
-                <a ng-show="false" ng-click="bidEdit()" id="bid2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
-                <a id="bid4" ng-click="bidSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
-                <a id="bid5" ng-click="bidCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-                <p class="text-muted" id="bid1">{{bid}}</p>
-                <input id="bid3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="bidNew"/>
-
+                <p class="text-muted">{{bid}}</p>
               <hr>
 
               <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
-
-                <a ng-show="imAdmin" ng-click="locEdit()" id="loc2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
-                <a id="loc4" ng-click="locSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
-                <a id="loc5" ng-click="locCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+                <a ng-show="imAdmin" ng-click="locEdit()" id="loc2" class="pull-right btn-sm btn-info edit_profile">Edit</a>
+                <a id="loc4" ng-click="locSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-info edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
+                <a id="loc5" ng-click="locCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
                 <p class="text-muted" id="loc1">{{location}}</p>
                 <input id="loc3" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="locationNew"/>
-
               <hr>
 
               <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
-              <a ng-show="imAdmin" ng-click="notEdit()" id="not2" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
-              <a id="not4" ng-click="notSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
-              <a id="not5" ng-click="notCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-              <textarea id="not3" rows="4" cols="40" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="notesNew"></textarea>
+                <a ng-show="imAdmin" ng-click="notEdit()" id="not2" class="pull-right btn-sm btn-info edit_profile">Edit</a>
+                <a id="not4" ng-click="notSave()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-info edit_profile"><i style="color: green" class="fa fa-check"></i>Save</a>
+                <a id="not5" ng-click="notCancel()" style="display: block; margin-top: 5px; margin-left: 2px" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+                <textarea id="not3" rows="4" cols="40" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="notesNew"></textarea>
               <p id="not1">{{notes}}</p>
 
               <hr ng-show="isMyProfile">
@@ -156,8 +138,7 @@
 
               <strong ng-show="imAdmin"><i class="fa fa-exclamation-triangle margin-r-5"></i> Remove organisation</strong>
 
-              <a ng-show="imAdmin" ng-click="removeOrg()" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-times"></i> Remove</a>
-
+              <a ng-show="imAdmin" ng-click="removeOrg()" class="pull-right btn-sm btn-danger" style="margin-left: 5px"> Delete </a>
             </div>
             <!-- /.box-body -->
           </div>

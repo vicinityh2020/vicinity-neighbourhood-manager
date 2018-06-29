@@ -260,7 +260,34 @@ function getItemWithAdd(oid, cid, callback) {
       logger.debug(error);
       callback(true, error);
     });
+  }
 
+  /*
+  Gets one item based on the OID
+  Receives following parameters:
+  - Organisation cid
+  - Item oid
+  */
+  function getCount(id, cid, onlyUser, callback) {
+    var result = {};
+    var query = onlyUser ?
+                {'uid.id': id} :
+                {'cid.id': cid};
+    query.status = {$nin: ['disabled', 'deleted']};
+    query.typeOfItem = 'service';
+    itemOp.count(query)
+    .then(function(response){
+      result.services = response;
+      query.typeOfItem = 'device';
+      return itemOp.count(query);
+    })
+    .then(function(response){
+      result.devices = response;
+      callback(false, result);
+    })
+    .catch(function(error){
+      callback(true, error);
+    });
   }
 
 // Private functions
@@ -321,3 +348,4 @@ module.exports.getItemWithAdd = getItemWithAdd;
 module.exports.getUserItems = getUserItems;
 module.exports.getArrayOfItems = getArrayOfItems;
 module.exports.getMyContractItems = getMyContractItems;
+module.exports.getCount = getCount;
