@@ -21,7 +21,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
 
   function init(){
     itemsAPIService.getUserItems($stateParams.userAccountId, $stateParams.companyAccountId, 'service')
-      .then(successCallback, errorCallback);
+      .then(successCallback, commonHelpers.errorCallback);
   }
 
   init();
@@ -29,14 +29,16 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   // Callbacks
 
   function successCallback(response) {
-    $scope.cid = response.data.message.cid;
-    $scope.things = response.data.message.items;
-    $scope.noItems = ($scope.things.length === 0);
-    $scope.loaded = true;
-  }
-
-  function errorCallback(err){
-    Notification.error("Problem retrieving services: " + err);
+    if(response.data.error){
+      commonHelpers.errorCallback('Error retrieving services');
+      $scope.loaded = true;
+      $scope.noItems = true;
+    } else {
+      $scope.cid = response.data.message.cid;
+      $scope.things = response.data.message.items;
+      $scope.noItems = ($scope.things.length === 0);
+      $scope.loaded = true;
+    }
   }
 
 });

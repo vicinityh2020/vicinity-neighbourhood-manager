@@ -42,9 +42,9 @@
 
             <!-- Name  -->
             <strong><i class="fa fa fa-male margin-r-5"></i> Name</strong>
-            <a id="nameButt" ng-show="isMyProfile" ng-click="changeToInput()" href="" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
-            <a id="edits2" ng-click="saveNewName()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
-            <a id="edits1" ng-click="backToEdit()" style="margin-left: 35%" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+            <a id="nameButt" ng-show="isMyProfile" ng-click="changeToInput()" href="" class="pull-right btn-sm btn-info edit_profile">Edit</a>
+            <a id="edits2" ng-click="saveNewName()" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+            <a id="edits1" ng-click="backToEdit()" style="margin-left: 35%" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
             <p id="myName" class="text-muted">{{name}}</p>
             <input id="editNameInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="name"></input>
 
@@ -54,9 +54,9 @@
             <strong><i class="fa fa-at margin-r-5"></i> Email</strong>
             <p class="text-muted">{{email}}</p>
             <strong><i class="fa fa-envelope margin-r-5"></i> Contact Mail</strong>
-            <a id="nameButt2" ng-show="isMyProfile" href="" ng-click="changeToInput2()" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i>Edit</a>
-            <a id="edits22" ng-click="saveNewMail()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
-            <a id="edits12" ng-click="backToEdit2()" style="margin-left: 35%" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+            <a id="nameButt2" ng-show="isMyProfile" href="" ng-click="changeToInput2()" class="pull-right btn-sm btn-info edit_profile">Edit</a>
+            <a id="edits22" ng-click="saveNewMail()" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+            <a id="edits12" ng-click="backToEdit2()" style="margin-left: 35%" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
             <span id="nameP21">
               <p class="text-muted" ng-if="contactMail">{{contactMail}}</p>
               <p class="text-muted" ng-if="!contactMail">{{email}}</p>
@@ -67,9 +67,9 @@
 
             <!-- If my profile, let me change password -->
             <strong ng-show="isMyProfile"><i class="fa fa-unlock margin-r-5"></i> Password</strong>
-            <a id="passButt" ng-show="isMyProfile" ng-click="changeToInput3()" href="" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i> Edit</a>
-            <a id="edits23" ng-click="saveNewPassport()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
-            <a id="edits13" ng-click="backToEdit3()" style="margin-left: 35%" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+            <a id="passButt" ng-show="isMyProfile" ng-click="changeToInput3()" href="" class="pull-right btn-sm btn-info edit_profile">Edit</a>
+            <a id="edits23" ng-click="saveNewPassport()" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+            <a id="edits13" ng-click="backToEdit3()" style="margin-left: 35%" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
             <input id="editPassOldInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="password" placeholder="Old password" ng-model="oldPass"></input>
             <input id="editPassNew1Input" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="password" placeholder="New password" ng-model="pass1"></input>
             <input id="editPassNew2Input" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="password" placeholder="New password again" ng-model="pass2"></input>
@@ -94,9 +94,9 @@
 
             <!-- Occupation -->
             <strong><i class="fa fa-briefcase margin-r-5"></i> Occupation</strong>
-            <a id="nameButt1" ng-show="isMyProfile" href="" ng-click="changeToInput1()" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: black" class="fa fa-pencil"></i>Edit</a>
-            <a id="edits21" ng-click="saveNewOccupation()" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
-            <a id="edits11" ng-click="backToEdit1()" style="margin-left: 35%" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+            <a id="nameButt1" ng-show="isMyProfile" href="" ng-click="changeToInput1()" class="pull-right btn-sm btn-info edit_profile">Edit</a>
+            <a id="edits21" ng-click="saveNewOccupation()" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+            <a id="edits11" ng-click="backToEdit1()" style="margin-left: 35%" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
             <p id="nameP1" class="text-muted">{{occupation}}</p>
             <input id="editOccupationInput" style="display: block; margin-top: 5px; margin-left: 0px" class="style-1" type="text" ng-model="occupation"></input>
 
@@ -104,9 +104,9 @@
 
             <!-- Access level-->
             <strong ng-show="isMyProfile"><i class="fa fa-eye margin-r-5"></i> Who can see?</strong>
-             <a ng-show="isMyProfile" id="accessEdit" class="pull-right btn-sm btn-primary-bvr edit_profile" ng-click="changeToInputAL()"><i style="color: black" class="fa fa-pencil"></i>Edit</a>
-             <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-primary-bvr edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
-             <a ng-click="backToEditAL()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-primary-bvr edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
+             <a ng-show="isMyProfile" id="accessEdit" class="pull-right btn-sm btn-info edit_profile" ng-click="changeToInputAL()">Edit</a>
+             <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
+             <a ng-click="backToEditAL()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
 
               <p id="accessName" class="text-muted" style="display: block" ng-show="isMyProfile">
                 {{accessLevelCaption}}

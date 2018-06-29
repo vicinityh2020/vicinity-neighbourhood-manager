@@ -20,8 +20,8 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   $scope.loaded = false;
 
   function init(){
-    itemsAPIService.getUserItems($stateParams.userAccountId, $stateParams.companyAccountId,'device')
-      .then(successCallback, errorCallback);
+    itemsAPIService.getUserItems($stateParams.userAccountId, $stateParams.companyAccountId, 'device')
+      .then(successCallback, commonHelpers.errorCallback);
   }
 
   init();
@@ -29,14 +29,15 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
   // Callbacks
 
   function successCallback(response) {
-    $scope.cid = response.data.message.cid;
-    $scope.things = response.data.message.items;
-    $scope.noItems = ($scope.things.length === 0);
-    $scope.loaded = true;
+    if(response.data.error){
+      commonHelpers.errorCallback('Error retrieving devices');
+      $scope.loaded = true;
+      $scope.noItems = true;
+    } else {
+      $scope.cid = response.data.message.cid;
+      $scope.things = response.data.message.items;
+      $scope.noItems = ($scope.things.length === 0);
+      $scope.loaded = true;
+    }
   }
-
-  function errorCallback(err){
-    Notification.error("Problem retrieving devices: " + err);
-  }
-
 });

@@ -70,7 +70,7 @@ $scope.myInit = function(){
       updateScopeAttributes(resource);
       $scope.loaded = true;
     },
-    errorCallback
+    commonHelpers.errorCallback
   );
 };
 
@@ -123,7 +123,7 @@ NAME
              $('span#nameUnderAvatar').hide();
              $('span#newNameUnderAvatar').show();
            },
-           errorCallback
+           commonHelpers.errorCallback
          );
        $('a#edits1').fadeOut('slow');
        $('a#edits2').fadeOut('slow');
@@ -133,7 +133,7 @@ NAME
          $('p#myName').fadeIn('fast');
        }, 600);
      },
-    errorCallback
+    commonHelpers.errorCallback
   );
 };
 
@@ -168,7 +168,7 @@ $scope.backToEdit1 = function () {
                $('p#occupationUnderAvatar').hide();
                $('p#newOccupationUnderAvatar').show();
              },
-             errorCallback
+             commonHelpers.errorCallback
           );
          $('a#edits11').fadeOut('slow');
          $('a#edits21').fadeOut('slow');
@@ -178,7 +178,7 @@ $scope.backToEdit1 = function () {
             $('p#nameP1').fadeIn('fast');
         }, 600);
       },
-    errorCallback
+    commonHelpers.errorCallback
     );
   };
 
@@ -212,7 +212,7 @@ $scope.backToEdit1 = function () {
               function successCallback(response) {
                 $scope.contactMail = response.data.message.contactMail;
                },
-               errorCallback
+               commonHelpers.errorCallback
             );
            $('a#edits12').fadeOut('slow');
            $('a#edits22').fadeOut('slow');
@@ -222,7 +222,7 @@ $scope.backToEdit1 = function () {
              $('span#nameP21').fadeIn('fast');
           }, 600);
         },
-      errorCallback
+      commonHelpers.errorCallback
       );
     };
 
@@ -359,12 +359,6 @@ function getCaption(lvl){
       return ret;
     }
 
-// Handle errors
-
-function errorCallback(err){
-  Notification.error('Something went wrong: ' + err);
-}
-
 // Picture upload/change
 
 var base64String= "";
@@ -423,10 +417,10 @@ userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {avatar: b
               $('img#pic').fadeIn('slow');
            }, 600);
          },
-         errorCallback
+         commonHelpers.errorCallback
       );
     },
-    errorCallback
+    commonHelpers.errorCallback
   );
 };
 
