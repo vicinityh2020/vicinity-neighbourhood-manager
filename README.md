@@ -18,4 +18,6 @@ In order to register device and service user needs to create so called gateway a
 
 VICINITY Neighbourhood Manager is publicly accessible over the [internet](https://vicinity.bavenir.eu).
 
-## Visit the [WIKI](https://github.com/vicinityh2020/vicinity-neighbourhood-manager/wiki) to learn everything about it
+--- 
+
+<h3 align="center">Visit the <a href="https://github.com/vicinityh2020/vicinity-neighbourhood-manager/wiki">WIKI</a> to learn everything about it</h3>
