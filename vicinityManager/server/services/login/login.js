@@ -18,8 +18,12 @@ function authenticate(userName, userRegex, pwd, callback) {
   if(userName && pwd){
     userOp.find({ email: { $regex: userRegex } }, {_id:1, email:1, authentication:1})
     .then(function(response){
-        if (!response || response.length !== 1){
+      if(!response || response.length === 0){
+        logger.debug("User not found: " + userRegex);
         callback(true, "User not found");
+      } else if(response.length > 1){
+        logger.debug("Duplicated mail: " + userRegex);
+        callback(true, "Duplicated mail");
       } else {
         myUser = response[0];
         hash = myUser.authentication.hash;
