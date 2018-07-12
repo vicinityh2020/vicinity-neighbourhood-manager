@@ -10,7 +10,7 @@
 
         <div ng-show = "!giveNote && loaded" class="col-md-6" ng-repeat="friend in friends">
             <!-- Widget: user widget style 1 -->
-            <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: friend._id})">
+            <div class="box box-widget widget-user-2" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: friend.id._id})">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-gold">
                     <div class="widget-user-image">
