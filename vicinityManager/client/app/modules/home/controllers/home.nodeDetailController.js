@@ -21,9 +21,8 @@ angular.module('VicinityManagerApp.controllers').
             $scope.nAgent = "";
             $scope.nPass = "";
             $scope.nPass2 = "";
-            $scope.nType = "";
             $scope.nId = "";
-            $scope.nAgentType = "generic.adapter.vicinity.eu";
+            $scope.nAgentType = "";
 
             $scope.modify = true;
             $scope.nodeId = $state.params.nodeId;
@@ -37,12 +36,14 @@ angular.module('VicinityManagerApp.controllers').
                   $scope.nName = response.data.message.name;
                   $scope.nUri = response.data.message.eventUri;
                   $scope.nAgent = response.data.message.agent;
-                  $scope.nType = response.data.message.type[0];
+                  $scope.nAgentType = response.data.message.type[0];
                   $scope.nId = response.data.message.adid;
                   $scope.myNode = $scope.nName + " profile view";
                 },
                 function errorCallback(response){}
               );
+            } else {
+              $scope.nAgentType = "generic.adapter.vicinity.eu";
             }
 
 // ======== Main functions =========

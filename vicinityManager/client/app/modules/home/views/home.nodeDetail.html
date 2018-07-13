@@ -15,12 +15,8 @@
         <label>Gateway name</label>
         <input class="form-control" ng-model="nName" placeholder="Enter name" required>
       </div>
-      <!-- <div class="form-group">
-        <label>URI</label>
-        <input class="form-control" ng-model="nUri" placeholder="Enter URI" required>
-      </div> -->
 
-      <div class="form-group">
+      <div class="form-group" ng-show="nodeId === '0'">
         <label>Gateway type</label>
         <div class="form-group">
           <div class="row radio">
@@ -47,6 +43,30 @@
           </div>
         </div>
       </div>
+
+      <div class="form-group" ng-show="nodeId !== '0'">
+        <label>Gateway type</label>
+          <div ng-show="nAgentType === 'generic.adapter.vicinity.eu' ">
+            <div class="col-sm-1">
+              <img class="pull-left node-logo" src="img/logos/vcntlogo.png"/>
+            </div>
+            <div class="col-sm-11">
+              <label>
+                Vicinity agent
+              </label>
+            </div>
+          </div>
+          <div ng-show="nAgentType !== 'generic.adapter.vicinity.eu' ">
+            <div class="col-sm-1">
+              <img class="pull-left node-logo" src="img/logos/shqlogo.png"/>
+            </div>
+            <div class="col-sm-11">
+              <label>
+                Sharq adapter
+              </label>
+            </div>
+          </div>
+        </div>
 
       <div class="form-group">
         <label>Password</label>
@@ -85,26 +105,33 @@
         <label>Gateway name</label>
         <p>{{nName}}</p>
       </div>
-      <!-- <div class="form-group">
-        <label>URI</label>
-        <p>{{nUri}}</p>
-      </div>
-      <div class="form-group">
-        <label>Agent</label>
-        <p>{{nAgent}}</p>
-      </div> -->
-      <!-- <div class="form-group">
-        <label>Password</label>
-        <p>{{nPass}}</p>
-      </div> -->
       <div class="form-group">
         <label>ADID</label>
         <p>{{nId}}</p>
       </div>
       <div class="form-group">
-        <label>Type</label>
-        <p>{{nType}}</p>
-      </div>
+        <label>Gateway type</label>
+          <div ng-show="nAgentType === 'generic.adapter.vicinity.eu' ">
+            <div class="col-sm-1">
+              <img class="pull-left node-logo" src="img/logos/vcntlogo.png"/>
+            </div>
+            <div class="col-sm-11">
+              <label>
+                Vicinity agent
+              </label>
+            </div>
+          </div>
+          <div ng-show="nAgentType !== 'generic.adapter.vicinity.eu' ">
+            <div class="col-sm-1">
+              <img class="pull-left node-logo" src="img/logos/shqlogo.png"/>
+            </div>
+            <div class="col-sm-11">
+              <label>
+                Sharq adapter
+              </label>
+            </div>
+          </div>
+        </div>
     </div>
 
   <div class="box-footer">

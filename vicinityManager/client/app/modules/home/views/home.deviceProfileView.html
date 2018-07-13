@@ -80,7 +80,7 @@
                   </li>
 
                   <!-- Infrastructure -->
-                  <li class="list-group-item">
+                  <li class="list-group-item" ng-show="isMyOrgItem">
                     <i class="fa fa-sitemap margin-r-5"></i>
                     <strong>Gateway</strong>
                     <br>
@@ -139,7 +139,7 @@
           <!-- Nav tabs -->
             <ul class="nav nav-tabs">
               <li ui-sref-active="active"><a ui-sref="root.main.deviceProfile.whoSee"><i class="fa fa-eye"></i>&nbsp;Who see</a></li>
-              <li ui-sref-active="active"><a ui-sref="root.main.deviceProfile.history"><i class="fa fa-clock-o"></i>&nbsp;History</a></li>
+              <li ui-sref-active="active" ng-show="isMyOrgItem"><a ui-sref="root.main.deviceProfile.history"><i class="fa fa-clock-o"></i>&nbsp;History</a></li>
               <li ui-sref-active="active"><a ui-sref="root.main.deviceProfile.description"><i class="fa fa-cube"></i>&nbsp;Description</a></li>
             </ul>
             <!-- Tab panes -->
