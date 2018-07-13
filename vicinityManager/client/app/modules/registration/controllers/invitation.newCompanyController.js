@@ -69,7 +69,7 @@ angular.module('Registration')
          );
        }else{
          loopArray($scope.duplicities);
-         Notification.warning('There are duplicated values!!!');
+         Notification.warning('The mail or company name are duplicated!!!');
          $scope.duplicities = [];
        }
        }else{
