@@ -16,35 +16,35 @@
 
         <form id="regUser-wrap" name="formUser" role="form" ng-submit="findMeDuplicates()">
 
-        <div  id="org2">
+        <div id="org2">
           <div  class="form-group has-feedback">
-            <span > Company Name </span>
+            <span> Company Name </span>
             <span ng-model="companynameUs" style="width: 60%" class="pull-right">{{companynameUs}}</span>
           </div>
 
           <div  class="form-group has-feedback">
-            <span > Email </span><span style="color: red">*</span>
+            <span> Email </span><span style="color: red">*</span>
             <input ng-model="emailUs" style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
           </div>
 
           <div  class="form-group has-feedback">
-            <span > Password </span><span style="color: red">*</span>
+            <span> Password </span><span style="color: red">*</span>
             <input id="pwUs1" ng-model="password1Us" style="width: 60%" type="password"  class="pull-right" placeholder="Password" required/>
           </div>
 
           <div  class="form-group has-feedback">
-            <span > Repeat password </span><span style="color: red">*</span>
+            <span> Repeat password </span><span style="color: red">*</span>
             <input id="pwUs2" ng-model="password2Us" style="width: 60%" type="password"  class="pull-right" placeholder="Same password again" required/>
           </div>
 
           <div  class="form-group has-feedback">
-            <span > Name </span>
-            <input ng-model="nameUs" style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of user" />
+            <span> Name </span><span style="color: red">*</span>
+            <input ng-model="nameUs" style="width: 60%" type="text"  class="pull-right" placeholder="First and last name of user" required/>
           </div>
 
           <div  class="form-group has-feedback">
-            <span > Occupation </span>
-            <input ng-model="occupationUs" style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of user" />
+            <span> Occupation </span><span style="color: red">*</span>
+            <input ng-model="occupationUs" style="width: 60%" type="text"  class="pull-right" placeholder="Occupation of user" required/>
           </div>
         </div>
 
@@ -64,17 +64,18 @@
     <div id="verEmailSent">
       <h3 style="color: green" class="login-box-msg"> Verification email was sent! <i class="fa fa-check fa-3x" style="color: green"></i></h3>
     </div>
-
+    <div align="center"><h3><i class="fa fa-check fa-3x" style="color: green"></i></h3></div>
     </div>
   </div>
 
 <div ng-show="alreadyUsed">
   <div class="login-logo">
-    <img src="img/logos/vicinity_logo.png"/>
+    <img src="img/logos/vcntlogo_big.png"/>
   </div>
   <div>
     <h3 style="color: green" class="login-box-msg" >This invitation has expired <i class="fa fa-times fa-3x" style="color: red"></i></h3>
   </div>
+  <div align="center"><h3><i class="fa fa-times fa-3x" style="color: red"></i></h3></div>
 </div>
 
   <!-- Terms and conditions -->

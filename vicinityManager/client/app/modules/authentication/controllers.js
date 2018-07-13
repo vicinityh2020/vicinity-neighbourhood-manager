@@ -12,13 +12,7 @@ angular.module('Authentication')
                AuthenticationService.ClearCredentials();
                $scope.duplicities = [];
                $scope.isError = false;
-              //  $scope.visib = 'visible';
-              //  $scope.visib2 = 'hidden';
                $scope.showPass = "password";
-              //  $scope.newRegisHide = true;
-              //  $scope.newRegis = false;
-              //  $scope.newComp = false;
-              //  $scope.newUser = false;
                $scope.number = 1;
                $scope.note ="Register new company";
                $scope.note2 = "Log in to start your session";

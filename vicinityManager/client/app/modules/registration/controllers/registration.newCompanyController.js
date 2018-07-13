@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('registrationNewCompanyController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService){
+             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
+             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
      //rest login status
     //  AuthenticationService.ClearCredentials();
 
@@ -37,22 +37,25 @@ angular.module('Registration')
       registrationsAPIService.getOne($stateParams.registrationId).then(
         function successCallback(response){
           $scope.registration = response.data.message;
-          if ($scope.registration.status == "open" || $scope.registration.status == "pending"){
+          if ($scope.registration.status === "open" || $scope.registration.status === "pending"){
             registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).then(
               function successCallback(){
               // $window.alert("verified");
             },
-            function errorCallback(){$window.alert("verification failed");}
+            function errorCallback(){
+              Notification.error("Verification failed");
+            }
           );
-          }
-          else{
-            // $window.alert("verified")
+          } else {
+            Notification.error("Already verified");
           }
         },
-        function errorCallback(){$window.alert("verification failed");}
+        function errorCallback(){
+          Notification.error("Verification failed");
+        }
       );
     };
 
      myInit();
-     
+
 }]);

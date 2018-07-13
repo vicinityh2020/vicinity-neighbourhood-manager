@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('registrationNewUserController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService){
+             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
+             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
                //rest login status
               //  AuthenticationService.ClearCredentials();
 
@@ -32,14 +32,18 @@ angular.module('Registration')
          $scope.registration = response.data.message;
         if ($scope.registration.status == "open" || $scope.registration.status == "pending"){
            registrationsAPIService.putOne($stateParams.registrationId, {status: "verified"}).then(
-           function successCallback(){
-           },
-           function errorCallback(){$window.alert("verification failed");}
-         );
+           function successCallback(){},
+           function errorCallback(){
+             Notification.error("Verification failed");
+            }
+           );
+          } else {
+            Notification.error("Already verified");
           }
-          else{$window.alert("already verified")}
        },
-       function errorCallback(){$window.alert("verification failed");}
+       function errorCallback(){
+         Notification.error("Verification failed");
+       }
      );
    };
 

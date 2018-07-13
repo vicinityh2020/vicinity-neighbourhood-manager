@@ -49,13 +49,13 @@
           </div>
 
           <div  class="form-group has-feedback">
-            <span > Name</span>
-            <input style="width: 60%" type="text" ng-model="nameReg" class="pull-right" placeholder="First and last name of administrator" />
+            <span> Name</span><span style="color: red">*</span>
+            <input style="width: 60%" type="text" ng-model="nameReg" class="pull-right" placeholder="First and last name of administrator" required/>
           </div>
 
           <div  class="form-group has-feedback">
-            <span > Occupation</span>
-            <input style="width: 60%" type="text" ng-model="occupationReg" class="pull-right" placeholder="Occupation of administrator" />
+            <span> Occupation</span><span style="color: red">*</span>
+            <input style="width: 60%" type="text" ng-model="occupationReg" class="pull-right" placeholder="Occupation of administrator" required/>
           </div>
 
         </div>
@@ -77,18 +77,19 @@
     <div id="verEmailSent">
       <h3 style="color: green" class="login-box-msg">Verification email was sent! <i class="fa fa-check fa-3x" style="color: green"></i></h3>
     </div>
-
+    <div align="center"><h3><i class="fa fa-check fa-3x" style="color: green"></i></h3></div>
     </div>
   </div>
 
 
   <div ng-show="alreadyUsed">
     <div class="login-logo">
-      <img src="img/logos/vicinity_logo.png"/>
+      <img src="img/logos/vcntlogo_big.png"/>
     </div>
     <div>
       <h3 style="color: green" class="login-box-msg" >This invitation has expired <i class="fa fa-times fa-3x" style="color: red"></i></h3>
     </div>
+    <div align="center"><h3><i class="fa fa-times fa-3x" style="color: red"></i></h3></div>
   </div>
 
   <!-- Terms and conditions -->
