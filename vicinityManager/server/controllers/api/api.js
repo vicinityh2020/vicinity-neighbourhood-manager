@@ -754,9 +754,10 @@ Search --------------------------------------------------
  */
 function searchOrgs(req, res, next) {
   var searchTerm = req.query.searchTerm;
+  var cid =  mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var sT = new RegExp(searchTerm, 'i');
   var api = true; // Call origin api or webApp
-  sGetSearch.searchOrganisation(sT, api, function(err, response){
+  sGetSearch.searchOrganisation(sT, cid, api, function(err, response){
     res.json({error: err, message: response});
   });
 }

@@ -9,133 +9,193 @@
       <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
       <hr>
     </div>
-
-<!-- FOUND ORGANISATIONS -->
-  <div class="row" style="padding:10px">
-    <div class="col-md-3" ng-repeat="result in resultsOrganisations" ng-show="loaded1 && search">
-      <!-- Widget: user widget style 1 -->
-      <div class="box box-widget widget-user-2" style="margin-top: 5px">
-        <!-- Add the bg color to the header using any of the bg-* classes -->
-        <div class="widget-user-header3 bg-gold">
-          <div class="widget-user-image">
-            <img ng-show="activeCompanyID.toString() === result._id.toString()" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
-            <img ng-show="!(activeCompanyID.toString() === result._id.toString())" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
-          </div>
-          <i ng-if="myFriends.indexOf(result._id.toString()) !== -1" class="tooltip2 fa fa-users push-right" aria-hidden="true"></i>
-          <!-- /.widget-user-image -->
-          <h3 ng-show="activeCompanyID.toString() === result._id.toString()" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">{{result.name}}</a></h3>
-          <h3 ng-show="!(activeCompanyID.toString() === result._id.toString())" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">{{result.name}}</a></h3>
-          <!-- <h5 class="widget-user-desc">{{result._id}}</h5> -->
-          <h5 class="widget-user-desc"><i class="fa fa-map-marker margin-r-5"></i>{{result.location}}</h5>
-        </div>
-          <a ng-show="activeCompanyID.toString() === result._id.toString()" href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
-          <a ng-show="!(activeCompanyID.toString() === result._id.toString())" href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
   </div>
 
-<!-- FOUND USERS -->
-  <div class="row" style="padding:10px">
-    <div class="col-md-3" ng-repeat="result2 in resultsUsers" ng-show="loaded2 && search">
-      <div class="box box-widget widget-user-2" style="margin-top: 5px">
-          <!-- Add the bg color to the header using any of the bg-* classes -->
-          <div class="widget-user-header3 bg-user">
-              <div class="widget-user-image">
-                  <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})" class="img-circle" ng-src="{{result2.avatar}}" alt="User Avatar">
+  <!-- FOUND ORGANISATIONS -->
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-sm-2">
+            <b>ORGANISATIONS</b>
+          </div>
+          <div class="col-sm-2">
+            <span class="label label-success" ng-if="count.organisation > 0">Found: {{count.organisation}} match(es)</span>
+            <span class="label label-danger" ng-if="count.organisation === 0">Found: {{count.organisation}} match(es)</span>
+          </div>
+          <div class="col-sm-8">
+            <a class="pull-right" ng-show="collapsed.organisation" ng-click="collapseFlag('organisation')" data-toggle="collapse" data-target="#lvl_org"><i style="color:white" class="fa fa-plus-square fa-2x"></i></a>
+            <a class="pull-right" ng-show="!collapsed.organisation" ng-click="collapseFlag('organisation')" data-toggle="collapse" data-target="#lvl_org"><i style="color:white" class="fa fa-minus-square fa-2x"></i></a>
+          </div>
+        </div>
+      </div>
+      <div id="lvl_org" class="collapse">
+          <div class="row" style="padding:10px">
+            <div class="col-md-3" ng-repeat="result in resultsOrganisations" ng-show="loaded1 && search">
+              <!-- Widget: user widget style 1 -->
+              <div class="box box-widget widget-user-2" style="margin-top: 5px">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header3 bg-gold">
+                  <div class="widget-user-image">
+                    <img ng-show="activeCompanyID.toString() === result._id.toString()" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
+                    <img ng-show="!(activeCompanyID.toString() === result._id.toString())" style="cursor: pointer" onmouseover="" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})" class="img-circle" ng-src="{{result.avatar}}" alt="Comapany Avatar">
+                  </div>
+                  <i ng-if="result.friend" class="tooltip2 fa fa-users push-right" aria-hidden="true"></i>
+                  <!-- /.widget-user-image -->
+                  <h3 ng-show="activeCompanyID.toString() === result._id.toString()" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">{{result.name}}</a></h3>
+                  <h3 ng-show="!(activeCompanyID.toString() === result._id.toString())" class="widget-user-username"><a style="color: #FFF" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">{{result.name}}</a></h3>
+                  <!-- <h5 class="widget-user-desc">{{result._id}}</h5> -->
+                  <h5 class="widget-user-desc"><i class="fa fa-map-marker margin-r-5"></i>{{result.location}}</h5>
+                </div>
+                  <a ng-show="activeCompanyID.toString() === result._id.toString()" href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.companyProfile.friends({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                  <a ng-show="!(activeCompanyID.toString() === result._id.toString())" href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.companyProfile.devices({companyAccountId: result._id})">More info <i class="fa fa-arrow-circle-right"></i></a>
               </div>
-              <!-- /.widget-user-image -->
-              <h3 class="widget-user-username"><a style="color: #FFF" href="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})">{{result2.name}}</a></h3>       <!-- {{friend.accountOf.name}}-->
-              <h5 class="widget-user-desc">{{result2.occupation}}</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
+            </div>
           </div>
-          <a href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})">More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
-  </div>
 
-<!-- FOUND ITEMS -->
-  <div class="row" style="padding:10px">
-    <div class="col-md-3" ng-repeat="dev in resultsItems" ng-show="loaded3 && search && dev.typeOfItem === 'device'">
-      <!-- Widget: user widget style 1 -->
-      <div class="box box-widget widget-user-2">
-        <!-- Add the bg color to the header using any of the bg-* classes -->
-        <div style="z-index: -2" class="widget-user-header2 bg-yellow">
-          <div class="round">
-            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+    <!-- FOUND USERS -->
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-sm-2">
+              <b>USERS</b>
+            </div>
+            <div class="col-sm-2">
+              <span class="label label-success" ng-if="count.user > 0">Found: {{count.user}} match(es)</span>
+              <span class="label label-danger" ng-if="count.user === 0">Found: {{count.user}} match(es)</span>
+            </div>
+            <div class="col-sm-8">
+              <a class="pull-right" ng-show="collapsed.user" ng-click="collapseFlag('user')" data-toggle="collapse" data-target="#lvl_user"><i style="color:white" class="fa fa-plus-square fa-2x"></i></a>
+              <a class="pull-right" ng-show="!collapsed.user" ng-click="collapseFlag('user')" data-toggle="collapse" data-target="#lvl_user"><i style="color:white" class="fa fa-minus-square fa-2x"></i></a>
+            </div>
           </div>
-
-          <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-            <span class=" tooltiptext2" > Unknown </span>
-          </div>
-
-          <!-- /.widget-user-image -->
-          <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-          <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.cid.id.name}}</a></h5>
-          <h5 class="widget-user-desc2">{{dev.accessLevelCaption}}</h5>
         </div>
-
-
-        <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPublic" >
-        <span><i href="/#" class="fa fa-bar-chart fa-1x"></i> <strong> Device is public </strong> </span>
+        <div id="lvl_user" class="collapse">
+            <div class="row" style="padding:10px">
+              <div class="col-md-3" ng-repeat="result2 in resultsUsers" ng-show="loaded2 && search">
+                <div class="box box-widget widget-user-2" style="margin-top: 5px">
+                    <!-- Add the bg color to the header using any of the bg-* classes -->
+                    <div class="widget-user-header3 bg-user">
+                        <div class="widget-user-image">
+                            <img style="cursor: pointer" onmouseover="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})" class="img-circle" ng-src="{{result2.avatar}}" alt="User Avatar">
+                        </div>
+                        <!-- /.widget-user-image -->
+                        <h3 class="widget-user-username"><a style="color: #FFF" href="" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})">{{result2.name}}</a></h3>       <!-- {{friend.accountOf.name}}-->
+                        <h5 class="widget-user-desc">{{result2.occupation}}</h5>             <!--{{friend.accountOf.occupation}} - {{friend._id}}-->
+                    </div>
+                    <a href="" class="widget-user-footer-moreinfo6" ui-sref="root.main.userProfile({userAccountId: result2._id, companyAccountId: result2.cid.id})">More info <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
+            </div>
         </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isFriendData">
-        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPrivate">
-        <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Private data</strong></span>
-        </div>
-
-        <div class="widget-user-footer-moreinfo3" ng-show="dev.isOwner">
-        <span><strong>My device</strong></span>
-        </div>
-
-          <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo">More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
-    </div>
-  </div>
 
-  <!-- FOUND SERVICES -->
-    <div class="row" style="padding:10px">
-      <div class="col-md-3" ng-repeat="dev in resultsItems" ng-show="loaded3 && search && dev.typeOfItem === 'service'">
-        <!-- Widget: user widget style 1 -->
-        <div class="box box-widget widget-user-2">
-          <!-- Add the bg color to the header using any of the bg-* classes -->
-          <div style="z-index: -2" class="widget-user-header3 bg-service">
-            <div class="round">
-              <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+    <!-- FOUND ITEMS -->
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-sm-2">
+              <b>ITEMS</b>
+            </div>
+            <div class="col-sm-2">
+              <span class="label label-success" ng-if="count.item > 0">Found: {{count.item}} match(es)</span>
+              <span class="label label-danger" ng-if="count.item === 0">Found: {{count.item}} match(es)</span>
+            </div>
+            <div class="col-sm-8">
+              <a class="pull-right" ng-show="collapsed.item" ng-click="collapseFlag('item')" data-toggle="collapse" data-target="#lvl_it"><i style="color:white" class="fa fa-plus-square fa-2x"></i></a>
+              <a class="pull-right" ng-show="!collapsed.item" ng-click="collapseFlag('item')" data-toggle="collapse" data-target="#lvl_it"><i style="color:white" class="fa fa-minus-square fa-2x"></i></a>
+            </div>
+          </div>
+        </div>
+        <div id="lvl_it" class="collapse">
+
+          <!-- FOUND DEVICES -->
+            <div class="row" style="padding:10px">
+              <div class="col-md-3" ng-repeat="dev in resultsItems" ng-show="loaded3 && search && dev.typeOfItem === 'device'">
+                <!-- Widget: user widget style 1 -->
+                <div class="box box-widget widget-user-2">
+                  <!-- Add the bg color to the header using any of the bg-* classes -->
+                  <div style="z-index: -2" class="widget-user-header2 bg-yellow">
+                    <div class="round">
+                      <img style="cursor: pointer" onmouseover="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+                    </div>
+
+                    <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+                      <span class=" tooltiptext2" > Unknown </span>
+                    </div>
+
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username2"><a style="color: #FFF; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
+                    <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.cid.id._id})">{{dev.cid.id.name}}</a></h5>
+                    <h5 class="widget-user-desc2">{{dev.accessLevelCaption}}</h5>
+                  </div>
+
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPublic" >
+                  <span><i href="/#" class="fa fa-bar-chart fa-1x"></i> <strong> Device is public </strong> </span>
+                  </div>
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isFriendData">
+                  <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                  </div>
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPrivate">
+                  <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Private data</strong></span>
+                  </div>
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="dev.isOwner">
+                  <span><strong>My device</strong></span>
+                  </div>
+
+                    <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo">More info <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
             </div>
 
-            <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
-              <span class=" tooltiptext2" > Unknown </span>
+            <!-- FOUND SERVICES -->
+            <div class="row" style="padding:10px">
+              <div class="col-md-3" ng-repeat="dev in resultsItems" ng-show="loaded3 && search && dev.typeOfItem === 'service'">
+                <!-- Widget: user widget style 1 -->
+                <div class="box box-widget widget-user-2">
+                  <!-- Add the bg color to the header using any of the bg-* classes -->
+                  <div style="z-index: -2" class="widget-user-header3 bg-service">
+                    <div class="round">
+                      <img style="cursor: pointer" onmouseover="" ui-sref="root.main.serviceProfile.whoSee({serviceId: dev._id})" ng-src="{{dev.avatar}}" alt="Company Avatar">
+                    </div>
+
+                    <div class="tooltip2" id="circle_gray" style="cursor:default"> &nbsp; &nbsp; &nbsp;
+                      <span class=" tooltiptext2" > Unknown </span>
+                    </div>
+
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: dev._id})">{{dev.name}}</a></h3>
+                    <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.services({companyAccountId: dev.cid.id._id})">{{dev.cid.id.name}}</a></h5>
+                    <h5 class="widget-user-desc2">{{dev.accessLevelCaption}}</h5>
+                  </div>
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPublic" >
+                  <span><i href="/#" class="fa fa-bar-chart fa-1x"></i> <strong> Service is public </strong> </span>
+                  </div>
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isFriendData">
+                  <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
+                  </div>
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPrivate">
+                  <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Private data</strong></span>
+                  </div>
+
+                  <div class="widget-user-footer-moreinfo3" ng-show="dev.isOwner">
+                  <span><strong>My service</strong></span>
+                  </div>
+
+                    <a href="" ui-sref="root.main.serviceProfile.whoSee({serviceId: dev._id})" class="widget-user-footer-moreinfo">More info <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
             </div>
 
-            <!-- /.widget-user-image -->
-            <h3 class="widget-user-username2"><a style="color: #000; z-index: -1" href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})">{{dev.name}}</a></h3>
-            <h5 class="widget-user-desc2"><a style="text-decoration: underline; color: #FFF" href="" ui-sref="root.main.companyProfile.devices({companyAccountId: dev.hasAdministrator[0]._id})">{{dev.cid.id.name}}</a></h5>
-            <h5 class="widget-user-desc2">{{dev.accessLevelCaption}}</h5>
-          </div>
-
-          <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPublic" >
-          <span><i href="/#" class="fa fa-bar-chart fa-1x"></i> <strong> Service is public </strong> </span>
-          </div>
-
-          <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isFriendData">
-          <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Access for friends</strong></span>
-          </div>
-
-          <div class="widget-user-footer-moreinfo3" ng-show="!dev.isOwner && dev.isPrivate">
-          <span><i href="/#" class="fa fa-bar-chart fa-1x" > </i> <strong>Private data</strong></span>
-          </div>
-
-          <div class="widget-user-footer-moreinfo3" ng-show="dev.isOwner">
-          <span><strong>My service</strong></span>
-          </div>
-
-            <a href="" ui-sref="root.main.deviceProfile.whoSee({deviceId: dev._id})" class="widget-user-footer-moreinfo">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
       </div>
-    </div>
 
-  </div>
 </section>

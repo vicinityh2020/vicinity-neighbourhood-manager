@@ -10,31 +10,36 @@ angular.module('VicinityManagerApp.controllers').
   $scope.resultsOrganisations = [];
   $scope.resultsUsers = [];
   $scope.resultsItems = [];
+  $scope.count = {organisation: 0, user: 0, item: 0};
+  $scope.collapsed = {organisation: true, user: true, item: true};
   $scope.loaded = false;
   $scope.tempId = "";
   $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
   $scope.search = $stateParams.searchTerm;
 
-
   searchAPIService.searchOrganisation($scope.search)
-    .then(searchUsers,errorCallback)
-    .then(searchItems,errorCallback)
-    .then(searchFinish,errorCallback);
+    .then(searchUsers)
+    .then(searchItems)
+    .then(searchFinish)
+    .catch(errorCallback);
 
     function searchUsers(response){
       $scope.resultsOrganisations = response.data.message;
+      $scope.count.organisation = $scope.resultsOrganisations.length;
       $scope.loaded1 = true;
       return searchAPIService.searchUser($scope.search);
     }
 
     function searchItems(response){
       $scope.resultsUsers = response.data.message;
+      $scope.count.user = $scope.resultsUsers.length;
       $scope.loaded2 = true;
       return searchAPIService.searchItem($scope.search);
     }
 
     function searchFinish(response){
       $scope.resultsItems = response.data.message;
+      $scope.count.item = $scope.resultsItems.length;
       $scope.loaded3 = true;
       $scope.loaded = true;
     }
@@ -42,5 +47,12 @@ angular.module('VicinityManagerApp.controllers').
     function errorCallback(err){
       Notification.error('Problem with the search: ' + err);
     }
+
+    $scope.collapseFlag = function(type){
+      if(type === 'organisation') $scope.collapsed.organisation = !($scope.collapsed.organisation);
+      if(type === 'user') $scope.collapsed.user = !($scope.collapsed.user);
+      if(type === 'item') $scope.collapsed.item = !($scope.collapsed.item);
+    };
+
 
   });

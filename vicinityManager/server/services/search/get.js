@@ -16,18 +16,30 @@ var asyncHandler = require('../../services/asyncHandler/sync');
   Organisation is used as a index and it is the field we compare
   Text index are not used because do not support substring look up!
   */
-  function searchOrganisation(sT, api, callback) {
+  function searchOrganisation(sT, cid, api, callback) {
     var projection = {};
+    var friends = [];
     if(api){
       projection.name = 1;
       projection.cid = 1;
-    } else { projection.skinColor = 0; }
-    userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, projection, function(err, data) {
-      if (err) {
-        callback(true, err);
-      } else {
-        callback(false, data);
+    } else {
+      projection.skinColor = 0;
+    }
+
+    userAccountOp.findById(cid, {knows:1})
+    .then(function(response){
+      getOnlyId(friends, response.knows.toObject());
+      return userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, projection);
+    })
+    .then(function(data){
+      for(var i = 0, l = data.length; i < l; i++){
+        data[i]._doc.friend = friends.indexOf(data[i]._id.toString()) !== -1;
       }
+      callback(false, data);
+    })
+    .catch(function(err){
+      logger.debug(err);
+      callback(true, err);
     });
   }
 
@@ -59,7 +71,6 @@ var asyncHandler = require('../../services/asyncHandler/sync');
       ],
       name: {$regex: sT}
       };
-      logger.debug(query);
       return userOp.find(query, projection);
     })
     .then(function(response){
@@ -97,7 +108,7 @@ var asyncHandler = require('../../services/asyncHandler/sync');
       if(api){
         projection = { avatar: 0, hasContracts: 0, hasAudits: 0 };
       } else {
-        projection = { hasAudits: 0 }; 
+        projection = { hasAudits: 0 };
       }
 
       return itemOp.find(query).select(projection).populate('cid.id','name');
@@ -146,7 +157,6 @@ var asyncHandler = require('../../services/asyncHandler/sync');
 
     return new Promise(function(resolve, reject) {
     if(searchTerms.length > 0){ // Check if there is any item to delete
-      logger.debug('Start async handler...');
       asyncHandler.forEachAll(searchTerms,
         function(value, allresult, next, otherParams) {
           getOids(value, otherParams, function(value, result) {

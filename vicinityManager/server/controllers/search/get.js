@@ -14,8 +14,9 @@ var sGet = require("../../services/search/get");
   function searchOrganisation(req, res, next) {
     var searchTerm = req.query.searchTerm;
     var sT = new RegExp(searchTerm, 'i');
+    var cid =  mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var api = false; // Call origin api or webApp
-    sGet.searchOrganisation(sT, api, function(err, response){
+    sGet.searchOrganisation(sT, cid,  api, function(err, response){
       res.json({error: err, message: response});
     });
   }
@@ -29,7 +30,7 @@ var sGet = require("../../services/search/get");
     var searchTerm = req.query.searchTerm;
     var cid =  mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var sT = new RegExp(searchTerm, 'i');
-    var api = true; // Call origin api or webApp
+    var api = false; // Call origin api or webApp
     sGet.searchUser(sT, cid, api, function(err, response){
       res.json({error: err, message: response});
     });
