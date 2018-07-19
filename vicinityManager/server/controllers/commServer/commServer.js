@@ -56,7 +56,7 @@ function deleteItems(req, res){
   logger.debug('You are DELETING...');
   var adid = req.body.agid || req.body.adid;
   var data = req.body.oids;
-  nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
+  nodeOp.findOne({adid:adid},{hasItems:1, type:1}) // Check if oids belong under agent
   .then(function(response){
     var toRemove = [];
     for(var i = 0; i < data.length; i++){
@@ -66,7 +66,7 @@ function deleteItems(req, res){
         }
       }
     }
-    return sDelItems.deleteItems(toRemove, "Agent:" + adid); // TODO send toRemove
+    return sDelItems.deleteItems(toRemove, "Agent:" + adid, response.type[0]); // TODO send toRemove
   })
   .then(function(response){ res.json({"error": false, "message": response});})
   .catch(function(err){ res.json({"error": true, "message": err});});

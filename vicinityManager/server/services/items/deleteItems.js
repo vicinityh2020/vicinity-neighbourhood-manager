@@ -17,7 +17,7 @@ var audits = require('../../services/audit/audit');
 /*
 Deletes either a selection of oids or all oids under a node
 */
-function deleteItems(oids, email){
+function deleteItems(oids, email, typeAgent){
   return new Promise(function(resolve, reject) {
     if(oids.length > 0){ // Check if there is any item to delete
       logger.debug('Start async handler...');
@@ -36,7 +36,7 @@ function deleteItems(oids, email){
           }
         },
         false,
-        {userMail:email}
+        {userMail:email, typeAgent: typeAgent}
       );
     } else {
       logger.warn({user:email, action: 'deleteItem', message: "No items to be removed"});
@@ -96,7 +96,13 @@ function deleting(oid, otherParams, callback){
             return false;
           }
         })
-        .then(function(response){ return semanticRepo.callSemanticRepo({}, "td/remove/" + oid, 'DELETE'); })
+        .then(function(response){
+          if(otherParams.typeAgent !== "generic.adapter.sharq.eu" && otherParams.typeAgent !== "shq"){
+            return semanticRepo.callSemanticRepo({}, "td/remove/" + oid, 'DELETE');
+          } else {
+            return false;
+          }
+        })
         .then(function(response){ return commServer.callCommServer({}, 'users/' + oid, 'DELETE'); })
         .then(function(response){
           return audits.create(
