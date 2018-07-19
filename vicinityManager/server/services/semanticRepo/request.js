@@ -6,7 +6,7 @@ var logger = require('../../middlewares/logger');
 var request = require('request-promise');
 var head = {
   // 'authorization' : config.commServerToken,
-  'Content-Type' : 'application/json',
+  'Content-Type' : 'application/json; charset=utf-8',
   'Accept' : 'application/json',
   'simple': false
 };
