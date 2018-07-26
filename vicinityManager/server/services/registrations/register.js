@@ -26,11 +26,7 @@ function findDuplicatesUser(data) {
       if (err) {
         reject(err);
       } else {
-        if(output.length === 0){
-          resolve(false); // No duplicates
-        } else {
-          resolve(true); // Duplicates found
-        }
+        resolve(output.length > 0); // false == No duplicates
       }
     });
   });
@@ -41,20 +37,16 @@ Looking for duplicates in company registration
 */
 function findDuplicatesCompany(data) {
   companyName = data.companyName;
-  bid = data.businessId;
-  var query = {
-    $or:[ {name: companyName},
-          {businessId: bid} ] };
+  // bid = data.businessId;
+  // var query = {
+  //   $or:[ {name: companyName},
+  //         {businessId: bid} ] };
   return new Promise(function(resolve, reject) {
-    userAccountOp.find(query, {cid:1}, function(err, output) {
+    userAccountOp.find({name: companyName}, {cid:1}, function(err, output) {
       if (err) {
         reject(err);
       } else {
-        if(output.length === 0){
-          resolve(false); // No duplicates
-        } else {
-          resolve(true); // Duplicates found
-        }
+        resolve(output.length > 0); // false == No duplicates
       }
     });
   });
@@ -220,6 +212,35 @@ function fastRegistration(data, token_mail, callback){
         callback(true, err);
       }
     });
+  }
+}
+
+
+/**
+* Validate body of registration request
+* @param {Object} body
+* @param {Boolean} fast Fast registration yes/no
+*
+* @return {Object} validation errors if any
+*/
+function validateBody(data, fast, callback){
+  var validationErrors = [];
+  var error = false;
+  try{
+    if(fast){
+      if(data.organisation.companyName == null) validationErrors.push('Missing companyName');
+      if(data.user.userName == null) validationErrors.push('Missing userName');
+      if(data.user.password == null) validationErrors.push('Missing password');
+    } else {
+      if(data.companyName == null) validationErrors.push('Missing companyName');
+      if(data.userName == null) validationErrors.push('Missing userName');
+      if(data.email == null) validationErrors.push('Missing email');
+      if(data.password == null) validationErrors.push('Missing password');
+    }
+    error = validationErrors.length > 0;
+    callback(error, validationErrors);
+  } catch(err){
+    callback(true, "Multiple validation errors: " + err);
   }
 }
 
@@ -399,3 +420,4 @@ module.exports.requestReg = requestReg;
 module.exports.fastRegistration = fastRegistration;
 module.exports.findDuplicatesUser = findDuplicatesUser;
 module.exports.findDuplicatesCompany = findDuplicatesCompany;
+module.exports.validateBody = validateBody;

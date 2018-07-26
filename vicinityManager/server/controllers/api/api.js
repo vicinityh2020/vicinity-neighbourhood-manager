@@ -70,7 +70,7 @@ function getMyOrganisation(req, res, next) {
     if(!err){
       res.json({error: false, message: response});
     } else {
-      res.json({error: true, message: err});
+      res.json({error: true, message: 'Server error: ' + err});
     }
   });
 }
@@ -87,6 +87,7 @@ function getOrganisations(req, res, next) {
   var type = 0; // 0 all, 1 friends, else not friends
   var api = true;
   sGetOrganisation.getAll(cid, type, api, function(err, response){
+    if(err) response = 'Server error: ' + response;
     res.json({error: err, message: response});
   });
 }
@@ -103,6 +104,7 @@ function getFriends(req, res, next) {
   var type = 1; // 0 all, 1 friends, else not friends
   var api = true;
   sGetOrganisation.getAll(cid, type, api, function(err, response){
+    if(err) response = 'Server error: ' + response;
     res.json({error: err, message: response});
   });
 }
@@ -118,15 +120,20 @@ function getUsers(req, res, next) {
   var othercid = mongoose.Types.ObjectId(req.params.cid);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = true;
-  sGetUser.getAll(othercid, mycid, api, function(err,response){
-    res.json({error: err, message: response});
-  });
+  if(othercid == null){
+    res.json({error: true, message: "Missing organisation ID"});
+  } else {
+    sGetUser.getAll(othercid, mycid, api, function(err,response){
+      if(err) response = 'Server error: ' + response;
+      res.json({error: err, message: response});
+    });
+  }
 }
 
 /**
  * Get organisation users
  *
- * @param {String} id
+ * @param {String} cid
  * @param {String} type (query)
  * @param {String} offset (query)
  * @param {String} limit (query)
@@ -140,15 +147,20 @@ function getItems(req, res, next) {
   var offset = req.query.offset === 'undefined' ? 0 : req.query.offset;
   var type = (req.query.type !== "device" && req.query.type !== "service") ? "all" : req.query.type;
   var api = true; // Call origin api or webApp
-  sGetItems.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
-    res.json({error: err, message: response});
-  });
+  if(cid == null){
+    res.json({error: true, message: "Missing organisation ID"});
+  } else {
+    sGetItems.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
+      if(err) response = 'Server error: ' + response;
+      res.json({error: err, message: response});
+    });
+  }
 }
 
 /**
  * Get organisation users
  *
- * @param {String} id
+ * @param null
  *
  * @return {Object} Array of agents
  */
@@ -156,6 +168,7 @@ function getAgents(req, res, next) {
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = true; // Call origin api or webApp
   sGetAgents.getOrgAgents(mycid, api, function(err, response){
+    if(err) response = 'Server error: ' + response;
     res.json({error: err, message: response});
   });
 }
@@ -177,16 +190,18 @@ function createOrganisation(req, res, next) {
     if(!dup){
       return sRegister.findDuplicatesCompany(data);
     }else{
-      finalRes = {error: false, message: "Mail already registered"};
+      finalRes = {error: true, message: "Mail already registered"};
       return true; // Duplicates found at mail stage
     }
   }).then(function(dup){
     if(!dup){
-      sRegister.requestReg(data, function(err, response){
-        res.json({error: err, message: response});
+      sRegister.validateBody(data, false, function(err, response){
+        sRegister.requestReg(data, function(err, response){
+          res.json({error: err, message: response});
+        });
       });
     }else{
-      if(typeof finalRes !== "object"){ finalRes = {error: false, message: "Company name or business ID already exist"}; } // Dups found at org stage
+      if(typeof finalRes !== "object"){ finalRes = {error: true, message: "Company name or business ID already exist"}; } // Dups found at org stage
       res.json(finalRes);
     }
   }).catch(function(err){
@@ -207,15 +222,29 @@ function createOrganisation(req, res, next) {
 function createOrganisationAuto(req, res, next){
   var mail = req.body.decoded_token.sub;
   if(req.body.decoded_token.roles.indexOf('superUser') !== -1){
-    sRegister.fastRegistration(req.body, mail, function(err, response){
-      if(!err){
-        res.json(response);
+    sRegister.findDuplicatesCompany(req.body.organisation)
+    .then(function(dup){
+      if(!dup){
+        sRegister.validateBody(req.body, true, function(err, response){
+          if(!err){
+            sRegister.fastRegistration(req.body, mail, function(err, response){
+              if(!err){
+                res.json(response);
+              } else {
+                res.json({error: err, message: response});
+              }
+            });
+          } else {
+            res.json({error: err, message: response});
+          }
+        });
       } else {
-        res.json({error: err, message: response});
+        res.json({error: true, message: 'Organisation name duplicated'});
       }
-    });
+    })
+    .catch(function(err){ res.json({error: true, message: 'Server error: ' + err}); });
   } else {
-    res.json({error: false, message: 'Unauthorized'});
+    res.json({error: true, message: 'Unauthorized'});
   }
 }
 
@@ -233,8 +262,9 @@ function removeOrganisation(req, res, next) {
   if(req.body.decoded_token.roles.indexOf('administrator') === -1){
     res.json({'error': false, 'message': "Need admin privileges to remove an organisation..."});
   } else {
-    sOrgConfiguration.remove(cid, uid, mail, function(err, data){
-      res.json({"error": err, "message": data});
+    sOrgConfiguration.remove(cid, uid, mail, function(err, response){
+      if(err) response = 'Server error: ' + response;
+      res.json({"error": err, "message": response});
     });
   }
 }
