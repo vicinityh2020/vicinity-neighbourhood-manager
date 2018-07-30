@@ -68,6 +68,17 @@ function requestReg(data, callback) {
       db.hash = hash;
       return registrationPendingApproval(db);
     })
+    .then(function(){
+      var mailInfo = {
+          link : "",
+          tmpName : "notifyApprover",
+          name : data.userName,
+          organisation : data.companyName,
+          subject : 'New registration request',
+          emailTo : config.approverMail
+        };
+      return mailing.sendMail(mailInfo);
+    })
     .then(function(response){
       callback(false, "Registration request created");
     })

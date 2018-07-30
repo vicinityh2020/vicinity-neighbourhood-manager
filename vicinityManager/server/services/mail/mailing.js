@@ -29,6 +29,7 @@ function sendMail(mailInfo){
         fs.readFile( __dirname + "/" + mailInfo.tmpName + ".html", function(error, data) {
           var mailContent = String(data);
           if(mailInfo.name){mailContent = mailContent.replace("#name", mailInfo.name);}
+          if(mailInfo.organisation){mailContent = mailContent.replace("#organisation", mailInfo.organisation);}
           if(mailInfo.sentByName){mailContent = mailContent.replace("#sentByName", mailInfo.sentByName);}
           if(mailInfo.sentByOrg){mailContent = mailContent.replace("#sentByOrg", mailInfo.sentByOrg);}
           mailContent = mailContent.replace("#link", mailInfo.link);
