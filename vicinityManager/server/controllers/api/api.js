@@ -436,6 +436,7 @@ function getAnnotations(req, res, next){
     res.json(JSON.parse(response));
   })
   .catch(function(error){
+    logger.debug(error);
     res.json({error: true, message: error});
   });
 }

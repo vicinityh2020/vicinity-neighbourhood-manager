@@ -5,6 +5,7 @@ var nodeOp = require('../../models/vicinityManager').node;
 var notifHelper = require('../../services/notifications/notificationsHelper');
 var logger = require('../../middlewares/logger');
 var config = require('../../configuration/configuration');
+var map = require('../../configuration/map');
 var commServer = require('../../services/commServer/request');
 var semanticRepo = require('../../services/semanticRepo/request');
 var sync = require('../../services/asyncHandler/sync');
@@ -39,11 +40,8 @@ function create(data, callback){
           var adapterType = data.type[0] === "generic.adapter.sharq.eu" ? "shq" : "vcnt"; // TODO cover more types when needed
           var semanticTypes = {};
 
-          // Get available item types in the semantic repository
-          semanticRepo.getTypes()
-          .then(function(response){
-            return parseGetTypes(JSON.parse(response).data);
-          })
+          // Get available item types in the semantic repository or static file
+          getTypes(doSemanticValidation)
           .then(function(response){
             semanticTypes.services = response.services;
             semanticTypes.devices = response.devices;
@@ -325,6 +323,33 @@ function parseGetTypes(arr){
     catch(err)
     {
       reject("(Error parsing types) " + err);
+    }
+  });
+}
+
+/*
+Get service and device types from semantic repo or static file
+*/
+function getTypes(fromSemantiRepo){
+  return new Promise(function(resolve, reject) {
+    var data = {};
+    if(fromSemantiRepo){
+      semanticRepo.getTypes()
+      .then(function(response){
+        data = parseGetTypes(JSON.parse(response).data);
+        resolve(data);
+      })
+      .catch(function(err){
+        reject(err);
+      });
+    } else {
+      try{
+        data.services = map.map.data.service;
+        data.devices = map.map.data.device;
+        resolve(data);
+      } catch(err) {
+        reject(err);
+      }
     }
   });
 }

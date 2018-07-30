@@ -115,9 +115,9 @@ function deletingNodes(adid, otherParams, callback){
       22, null);
   })
   .then(function(response){
-    var friends = [];
-    getOids(aux.hasItems, friends);
-    return myItems.deleteItems(friends, otherParams.userMail); })
+    var things = [];
+    getOids(aux.hasItems, things);
+    return myItems.deleteItems(things, otherParams.userMail, aux.type[0]); })
   .then(function(response){
     itemsRes = response;
   return commServer.callCommServer({}, 'users/' + adid, 'DELETE'); // Update node in commServer
@@ -142,9 +142,9 @@ function deletingNodes(adid, otherParams, callback){
 
 // Private functions
 
-function getOids(array, friends){
+function getOids(array, things){
   for(var i = 0; i < array.length; i++){
-    friends.push(array[i].extid);
+    things.push(array[i].extid);
   }
 }
 
