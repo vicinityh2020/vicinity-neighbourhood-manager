@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var logger = require("../../middlewares/logger");
 var userOp = require("../../models/vicinityManager").user;
 var userAccountOp = require("../../models/vicinityManager").userAccount;
+var nodeOp = require("../../models/vicinityManager").node;
 
 var sLogin = require("../../services/login/login");
 var sRegister = require("../../services/registrations/register.js");
@@ -196,9 +197,13 @@ function createOrganisation(req, res, next) {
   }).then(function(dup){
     if(!dup){
       sRegister.validateBody(data, false, function(err, response){
-        sRegister.requestReg(data, function(err, response){
+        if(err){
           res.json({error: err, message: response});
-        });
+        } else {
+          sRegister.requestReg(data, function(err, response){
+            res.json({error: err, message: response});
+          });
+        }
       });
     }else{
       if(typeof finalRes !== "object"){ finalRes = {error: true, message: "Company name or business ID already exist"}; } // Dups found at org stage
@@ -222,7 +227,7 @@ function createOrganisation(req, res, next) {
 function createOrganisationAuto(req, res, next){
   var mail = req.body.decoded_token.sub;
   if(req.body.decoded_token.roles.indexOf('superUser') !== -1){
-    sRegister.findDuplicatesCompany(req.body.organisation)
+    sRegister.findDuplicatesCompany({companyName: req.body.organisation.companyName})
     .then(function(dup){
       if(!dup){
         sRegister.validateBody(req.body, true, function(err, response){
@@ -436,7 +441,6 @@ function getAnnotations(req, res, next){
     res.json(JSON.parse(response));
   })
   .catch(function(error){
-    logger.debug(error);
     res.json({error: true, message: error});
   });
 }
@@ -490,9 +494,18 @@ Agents --------------------------------------------------
  */
 function getAgentItems(req, res, next) {
   var adid = req.params.id;
-  // TODO check if the requester org is authorized to see the agent items
-  sGetNodeItems.getNodeItems(adid, function(err, response){
-    res.json({error: err, message: response});
+  nodeOp.findOne({adid:adid}, {cid:1}, function(err, response){
+    if(err){
+      res.json({error: true, message: err});
+    } else {
+      if(response.cid.extid === req.body.decoded_token.cid){
+        sGetNodeItems.getNodeItems(adid, function(err, response){
+          res.json({error: err, message: response});
+        });
+      } else {
+        res.json({error: true, message: "You are not the owner of the adapter/agent"});
+      }
+    }
   });
 }
 
@@ -532,13 +545,22 @@ function removeAgent(req, res, next) {
   var cid = req.body.decoded_token.cid;
   var userMail = req.body.decoded_token.sub !== 'undefined' ? req.body.decoded_token.sub : "unknown";
   var userId = req.body.decoded_token.uid !== 'undefined' ? req.body.decoded_token.uid : "unknown";
-  // TODO check if the requester org is authorized to see the agent items
-  sRemoveNode.deleteNode(agid, userMail, userId)
-  .then(function(response){
-    res.json(response);
-  })
-  .catch(function(err){
-    res.json({error: true, message: err});
+  nodeOp.findOne({adid:agid[0]}, {cid:1}, function(err, response){
+    if(err){
+      res.json({error: true, message: err});
+    } else {
+      if(response.cid.extid === req.body.decoded_token.cid){
+        sRemoveNode.deleteNode(agid, userMail, userId)
+        .then(function(response){
+          res.json(response);
+        })
+        .catch(function(err){
+          res.json({error: true, message: err});
+        });
+      } else {
+        res.json({error: true, message: "You are not the owner of the adapter/agent"});
+      }
+    }
   });
 }
 
@@ -604,7 +626,6 @@ function managePartnership(req, res, next) {
   var type = req.body.type;
   sFriending.friendshipStatus(my_id, friend_id.toString(), function(err, response){
     if(err){
-      logger.debug(response);
       res.json({"error": true, "message": err });
     } else {
       switch(type) {
