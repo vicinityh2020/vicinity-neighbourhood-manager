@@ -56,6 +56,7 @@ angular.module('VicinityManagerApp.controllers').
         else{ $scope.entitiesCaption = "Other organisations"; }
         $scope.loaded = false;
         $scope.resultsList = [];
+        $scope.offset = 0;
         init();
       };
 

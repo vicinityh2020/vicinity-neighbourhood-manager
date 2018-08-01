@@ -17,7 +17,7 @@ function getAll(cid, type, offset, limit, api, callback) {
   }
   if(type === 0){
     qry = {status: { $not: /^del.*/} };
-    userAccountOp.find(qry).select(projection) // if the field status exists, is also equal to deleted
+    userAccountOp.find(qry).select(projection).skip(Number(offset)).limit(Number(limit)) // if the field status exists, is also equal to deleted
     .then( function(data) { callback(false, data); })
     .catch( function(err) { callback(true, err); });
   } else {
