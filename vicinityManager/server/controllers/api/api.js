@@ -87,7 +87,9 @@ function getOrganisations(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = 0; // 0 all, 1 friends, else not friends
   var api = true;
-  sGetOrganisation.getAll(cid, type, api, function(err, response){
+  var offset = 0;
+  var limit = 0;
+  sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
     if(err) response = 'Server error: ' + response;
     res.json({error: err, message: response});
   });
@@ -104,7 +106,9 @@ function getFriends(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = 1; // 0 all, 1 friends, else not friends
   var api = true;
-  sGetOrganisation.getAll(cid, type, api, function(err, response){
+  var offset = 0;
+  var limit = 0;
+  sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
     if(err) response = 'Server error: ' + response;
     res.json({error: err, message: response});
   });

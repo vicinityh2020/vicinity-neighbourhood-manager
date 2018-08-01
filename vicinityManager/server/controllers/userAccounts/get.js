@@ -11,7 +11,9 @@ function getAll(req, res, next) {
   var api = false;
   // var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = req.query.type; // 0 all, 1 friends, else not friends
-  sGet.getAll(cid, Number(type), api, function(err, response){
+  var offset = req.query.offset; // 0 all, 1 friends, else not friends
+  var limit = 12;
+  sGet.getAll(cid, Number(type), offset, limit, api, function(err, response){
     res.json({error: err, message: response});
   });
 }

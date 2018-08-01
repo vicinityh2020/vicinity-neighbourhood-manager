@@ -18,8 +18,8 @@ factory('userAccountAPIService', ['$http', 'configuration', '$window', function(
     return $http.put(configuration.apiUrl +'/useraccounts/' + id, data);
   };
 
-  userAccountAPI.getUserAccounts = function(id, filter){
-    return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/organisations?type=' + filter);
+  userAccountAPI.getUserAccounts = function(id, filter, offset){
+    return $http.get(configuration.apiUrl + '/useraccounts/' + id + '/organisations?type=' + filter + '&offset=' + offset);
   };
 
   // Neigbourhood management

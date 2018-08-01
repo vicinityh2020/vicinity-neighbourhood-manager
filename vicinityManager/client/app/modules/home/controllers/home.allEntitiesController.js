@@ -9,20 +9,25 @@ angular.module('VicinityManagerApp.controllers').
     $scope.resultsList = [];
     $scope.loaded = false;
     $scope.activeCompanyID = $window.sessionStorage.companyAccountId;
+    $scope.offset = 0;
     $scope.filterNumber = 0;
     $scope.entitiesCaption = "All organisations";
     $scope.myFriends = [];
+    $scope.allItemsLoaded = false;
 
     // ====== Triggers window resize to avoid bug =======
     commonHelpers.triggerResize();
 
     // Get initial resources
     function init(){
-      userAccountAPIService.getUserAccounts($scope.activeCompanyID, $scope.filterNumber)
+      userAccountAPIService.getUserAccounts($scope.activeCompanyID, $scope.filterNumber, $scope.offset)
         .then(
           function successCallback(response){
-            $scope.resultsList = response.data.message;
+            for(var i = 0; i < response.data.message.length; i++){
+                $scope.resultsList.push(response.data.message[i]);
+            }
             getFriends();
+            $scope.allItemsLoaded = response.data.message.length < 12;
             $scope.loaded = true;
           },
           function errorCallback(response){
@@ -49,6 +54,8 @@ angular.module('VicinityManagerApp.controllers').
         if(n === 0){ $scope.entitiesCaption = "All organisations"; }
         else if(n === 1){ $scope.entitiesCaption = "My partners"; }
         else{ $scope.entitiesCaption = "Other organisations"; }
+        $scope.loaded = false;
+        $scope.resultsList = [];
         init();
       };
 
@@ -56,6 +63,14 @@ angular.module('VicinityManagerApp.controllers').
         for(var i = 0; i < array.length; i++){
           $scope.myFriends.push(array[i].id);
         }
+      };
+
+      // Trigers load of more items
+
+      $scope.loadMore = function(){
+          $scope.loaded = false;
+          $scope.offset += 12;
+          init();
       };
 
   });
