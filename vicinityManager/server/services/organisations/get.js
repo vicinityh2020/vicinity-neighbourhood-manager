@@ -30,7 +30,7 @@ function getAll(cid, type, offset, limit, api, callback) {
       }
       if(type === 1){ qry = {_id: {$in: friends}, status: { $not: /^del.*/}}; }
       else { qry = {_id: {$not: {$in: friends} }, status: { $not: /^del.*/}}; }
-      return userAccountOp.find(qry).select(projection).sort({name:1}).skip(Number(offset)).limit(limit); // if the field status exists, is also equal to deleted
+      return userAccountOp.find(qry).select(projection).skip(Number(offset)).limit(Number(limit)); // if the field status exists, is also equal to deleted
     })
     .then( function(data){callback(false, data); })
     .catch( function(err){callback(true, err); });
