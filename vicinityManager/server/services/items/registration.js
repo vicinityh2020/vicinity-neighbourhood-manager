@@ -12,6 +12,7 @@ var sync = require('../../services/asyncHandler/sync');
 var audits = require('../../services/audit/audit');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 var crypto = require('crypto');
+var fs = require("fs");
 
 // Public Function -- Main
 
@@ -344,7 +345,7 @@ function getTypes(fromSemantiRepo){
         reject(err);
       });
     } else {
-      var file = fs.readFile("/etc/getAnnotations/annotations.json", 'utf8', function(err, response){
+      fs.readFile("/etc/getAnnotations/annotations.json", 'utf8', function(err, response){
         if(err || !response){
           // Case of error: Get data from backUp annotations (Might be old dated)
           data.services = map.map.data.service;
