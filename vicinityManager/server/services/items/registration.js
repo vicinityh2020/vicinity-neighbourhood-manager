@@ -353,8 +353,9 @@ function getTypes(fromSemantiRepo){
           resolve(data);
         } else {
           // Get annotations from annotations service (Updates every day)
-          data.services = file.data.service;
-          data.devices = file.data.device;
+          var parsedFile = JSON.parse(file);
+          data.services = parsedFile.data.service;
+          data.devices = parsedFile.data.device;
           resolve(data);
         }
       });
