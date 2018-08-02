@@ -201,7 +201,6 @@ function removing(id, token_uid, token_mail, callback){
 function contractFeeds(uid, callback){
   userOp.findOne({_id: uid}, {hasContracts:1})
   .then(function(response){
-    logger.debug(response);
     var openContracts = [];
     for(var i = 0; i < response.hasContracts.length; i++){
       if(!response.hasContracts[i].approved){
@@ -227,10 +226,11 @@ function contractInfo(ctid, uid, callback){
   var query = checkInput(ctid);
   contractOp.findOne(query)
   .then(function(response){
+    var data = response.toObject();
     if(!response){
       callback(false, "The contract with: " + JSON.stringify(query) + " could not be found...");
-    } else if(response.iotOwner.uid.id.toString() !== uid.toString() && response.serviceProvider.uid.id.toString() !== uid.toString()) {
-      callback(false, "You are not part of the contract with ctid: " + response.ctid);
+    } else if(!uidInContract(uid, data)) {
+      callback(false, "You are not part of the contract with ctid: " + data.ctid);
     } else {
       callback(false, response);
     }
@@ -340,18 +340,15 @@ Add items to the contract
 function moveItemsInContract(ctid, token_mail, items, add){
   return new Promise(function(resolve, reject) {
     if(items.length > 0){ // Check if there is any item to delete
-      // logger.debug('Start async handler...');
       sync.forEachAll(items,
         function(value, allresult, next, otherParams) {
           if(add){
             addingOne(value, otherParams, function(value, result) {
-                // logger.debug('END execution with value =', value, 'and result =', result);
                 allresult.push({value: value, result: result});
                 next();
             });
           } else {
             deletingOne(value, otherParams, function(value, result) {
-                // logger.debug('END execution with value =', value, 'and result =', result);
                 allresult.push({value: value, result: result});
                 next();
             });
@@ -359,7 +356,7 @@ function moveItemsInContract(ctid, token_mail, items, add){
         },
         function(allresult) {
           if(allresult.length === items.length){
-            logger.debug('Completed async handler: ' + JSON.stringify(allresult));
+            // logger.debug('Completed async handler: ' + JSON.stringify(allresult));
             resolve({"error": false, "message": allresult });
           }
         },
@@ -527,6 +524,23 @@ function checkInput(ctid){
     return {ctid: ctid};
   }
 }
+
+/**
+* Looks for the user id in the contracts
+* @return {Boolean}
+*/
+function uidInContract(uid, data){
+  var array = [];
+  array = data.iotOwner.uid;
+  array = array.concat(data.foreignIot.uid);
+  for(var i = 0, l = array.length; i < l; i++){
+    if(uid === array[i].id.toString()){
+      return true;
+    }
+  }
+  return false;
+}
+
 
 // modules exports ---------------------------
 
