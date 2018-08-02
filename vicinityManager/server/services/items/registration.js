@@ -333,6 +333,7 @@ Get service and device types from semantic repo or static file
 function getTypes(fromSemantiRepo){
   return new Promise(function(resolve, reject) {
     var data = {};
+    // Gets annotations directly from semantic repository
     if(fromSemantiRepo){
       semanticRepo.getTypes()
       .then(function(response){
@@ -343,13 +344,19 @@ function getTypes(fromSemantiRepo){
         reject(err);
       });
     } else {
-      try{
-        data.services = map.map.data.service;
-        data.devices = map.map.data.device;
-        resolve(data);
-      } catch(err) {
-        reject(err);
-      }
+      var file = fs.readFile("/etc/getAnnotations/annotations.json", 'utf8', function(err, response){
+        if(err || !response){
+          // Case of error: Get data from backUp annotations (Might be old dated)
+          data.services = map.map.data.service;
+          data.devices = map.map.data.device;
+          resolve(data);
+        } else {
+          // Get annotations from annotations service (Updates every day)
+          data.services = file.data.service;
+          data.devices = file.data.device;
+          resolve(data);
+        }
+      });
     }
   });
 }
