@@ -345,8 +345,8 @@ function getTypes(fromSemantiRepo){
         reject(err);
       });
     } else {
-      fs.readFile("/etc/getAnnotations/annotations.json", 'utf8', function(err, response){
-        if(err || !response){
+      fs.readFile("/etc/getAnnotations/annotations.json", 'utf8', function(err, file){
+        if(err || !file){
           // Case of error: Get data from backUp annotations (Might be old dated)
           data.services = map.map.data.service;
           data.devices = map.map.data.device;
