@@ -7,6 +7,7 @@ var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var logger = require("../../middlewares/logger");
 var itemProperties = require("../../services/items/additionalItemProperties");
+var commServer = require('../../services/commServer/request');
 
 /*
 Public functions
@@ -83,7 +84,11 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
     }
 
     if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
-      query = {'cid.id': mycid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
+      if(api){
+        callback(false, 'You cannot request a contract with your own devices, choose a service from a different organisation');
+      } else {
+        query = {'cid.id': mycid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
+      }
     } else {
       if(friends.indexOf(mycid.toString()) !== -1) {
         query = {'cid.id': mycid, accessLevel: { $gt:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
@@ -110,6 +115,34 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
   .catch(function(err){callback(true, err);} );
 }
 
+/**
+* Get the items that are sharing data with a certain service
+*/
+function getItemsContracted(oid, mycid, api, callback) {
+  var oids = [];
+  itemOp.count({oid: oid, 'cid.id': mycid})
+  .then(function(response){
+    if(response === 0 ) callback(true, 'The service is not yours');
+    return commServer.callCommServer({}, 'users/' + oid + '/roster', 'GET');
+  })
+  .then(function(response){
+    var data = JSON.parse(response);
+    for( var i = 0, l = data.rosterItem.length; i < l; i++){
+      var aux = data.rosterItem[i].jid;
+      var n = aux.indexOf("@");
+      oids.push(aux.substring(0, n));
+    }
+    logger.debug(oids);
+    return itemOp.find({oid: {$in: oids}, 'cid.id': {$ne: mycid} }, {info: 1});
+  })
+  .then(function(response){
+    if(!response) response = "No items found";
+    callback(false, response);
+  })
+  .catch(function(err){
+    callback(true, err);
+  });
+}
 
 /*
 Gets array of items:
@@ -348,4 +381,5 @@ module.exports.getItemWithAdd = getItemWithAdd;
 module.exports.getUserItems = getUserItems;
 module.exports.getArrayOfItems = getArrayOfItems;
 module.exports.getMyContractItems = getMyContractItems;
+module.exports.getItemsContracted = getItemsContracted;
 module.exports.getCount = getCount;

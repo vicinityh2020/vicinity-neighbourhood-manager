@@ -704,7 +704,7 @@ function contractInfo(req, res, next) {
 }
 
 /**
- * Get items valid for contract
+ * Get my items valid for sharing data with a third party service
  * @param {String} cid
  * @param {String} oid
  *
@@ -716,6 +716,21 @@ function contractValidItems(req, res, next) {
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = true; // Call origin api or webApp
   sGetItems.getMyContractItems(cid, oid, mycid, api, function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
+/**
+ * Get the items that are sharing data with a certain service
+ * @param {String} oid
+ *
+ * @return {Array} items
+ */
+function contractContractedItems(req, res, next) {
+  var oid = req.params.oid;
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var api = true; // Call origin api or webApp
+  sGetItems.getItemsContracted(oid, mycid, api, function(err, response){
     res.json({error: err, message: response});
   });
 }
@@ -888,6 +903,7 @@ module.exports.managePartnership = managePartnership;
 
 module.exports.contractFeeds = contractFeeds;
 module.exports.contractInfo = contractInfo;
+module.exports.contractContractedItems = contractContractedItems;
 module.exports.contractValidItems = contractValidItems;
 module.exports.requestContract = requestContract;
 module.exports.manageContract = manageContract;
