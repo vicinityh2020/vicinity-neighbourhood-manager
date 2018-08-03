@@ -136,7 +136,8 @@ var item = new Schema({
   hasAudits: [ auditSchema ],
   accessLevel: {type: Number, enum: [0, 1, 2], default: 0},
   typeOfItem: {type: String, enum: ['device','service']},
-  status: {type: String, enum: ['disabled', 'enabled', 'deleted'], default: 'disabled'}, // Enabled, disabled or deleted
+  status: {type: String, enum: ['disabled', 'enabled', 'deleted', 'pending'], default: 'disabled'}, // Enabled, disabled or deleted
+  mode: {type: String, enum: ['production', 'testing'], default: 'production'},
   info: mongoose.Schema.Types.Mixed // Thing description, object with flexible schema
 });
 
@@ -312,13 +313,13 @@ item.index({name: 'text'}); */
 // Indexes for common field searchUser  =================
 // TODO set the index as unique once server side and agent are prepared
 userAccount.index({name: 1}, { unique: false });
-userAccount.index({cid: 1}, { unique: false });
+userAccount.index({cid: 1}, { unique: true });
 user.index({name: 1}, { unique: false });
-user.index({email: 1}, { unique: false });
+user.index({email: 1}, { unique: true });
 // item.index({name: 1, oid: 1}); // Compound indexes cannot be created in the schema definition!
 item.index({name: 1}, { unique: false });
-item.index({oid: 1}, { unique: false });
-node.index({adid: 1}, { unique: false });
+item.index({oid: 1}, { unique: true });
+node.index({adid: 1}, { unique: true });
 contract.index({ctid: 1}, { unique: true });
 
 // Exports models  ===============================
