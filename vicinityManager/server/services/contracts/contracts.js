@@ -335,7 +335,7 @@ function removeOneUser(id, uid, mail, imForeign){
 }
 
 /*
-Add items to the contract
+Add or remove items to the contract
 */
 function moveItemsInContract(ctid, token_mail, items, add){
   return new Promise(function(resolve, reject) {
