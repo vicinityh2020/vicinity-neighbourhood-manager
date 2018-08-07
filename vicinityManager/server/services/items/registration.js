@@ -26,8 +26,6 @@ function create(data, callback){
           callback(true, "Error in Mongo: " + err);
         }else if(!data){
           callback(true, "Invalid adid/agid identificator");
-        } else if(data.adid.extid !== adid){
-          callback(true, "The item does not belong to the agent/adapter");
         } else {
           var nodeId = data._id;
           var nodeName = data.name;
@@ -106,9 +104,8 @@ function create(data, callback){
             callback(true, "Error in Mongo: " + err);
           }else if(!node){
             callback(true, "Invalid adid/agid identificator");
-          } else if(node.adid.extid !== adid){
-            callback(true, "The item does not belong to the agent/adapter");
           } else {
+            var cid = node.cid;
             var doSemanticValidation = config.enabledAdapters.indexOf(node.type[0]) !== -1;
             var adapterType = node.type[0] === "generic.adapter.sharq.eu" ? "shq" : "vcnt"; // TODO cover more types when needed
             var semanticTypes = {};
@@ -140,7 +137,7 @@ function create(data, callback){
                         finalRes.push(allresult[item].data);
                         if(allresult[item].result === 'Success'){someSuccess = true;}
                       }
-                      if(someSuccess){regisHelper.deviceActivityNotif(cid, 0);} // Notify only if some item was registered
+                      // if(someSuccess){regisHelper.deviceActivityNotif(cid, 0);} // Notify only if some item was registered
                       callback(false, finalRes);
                       // console.timeEnd("ALL REGISTRATION EXECUTION");
                     })
@@ -166,3 +163,4 @@ function create(data, callback){
 
 // Export Functions
 module.exports.create = create;
+module.exports.update = update;

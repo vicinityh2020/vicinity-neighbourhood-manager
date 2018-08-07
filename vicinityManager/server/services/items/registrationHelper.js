@@ -68,8 +68,10 @@ Updates all oids in the request
 function updateDocuments(thing, otherParams, callback){
   var updThing = {};
   var oldThing = {};
+  var infra_id = thing["infrastructure-id"];
+
   // If there is not oid, it is not possible to update
-  if(thing.oid === undefined) callback(thing["infrastructure-id"], "Missing oid");
+  if(thing.oid === undefined) callback({"infrastructure-id": infra_id, "error": "Missing oid"}, "Missing oid");
 
   // Remove unused properties
   delete thing["infrastructure-id"]; // remove infrastructure-id, no need to pass it further
@@ -81,19 +83,25 @@ function updateDocuments(thing, otherParams, callback){
   itemOp.findOne({oid: thing.oid})
   .then(function(response){
     if(!response){
-      callback(thing.oid, "Item not found");
+      callback({"infrastructure-id": infra_id, "oid": thing.oid, "error": "Item not found"}, "Item not found");
     } else {
       oldThing = response;
       // The main type of the item has to remain equal (service or device)
-      if(oldThing.typeOfItem !== newItemType) callback(thing.oid, "It is not possible to convert devices into services, or services into devices");
-      return resetItemInCommServer(thing.oid, oldThing.cid.extid);
-    }
-  })
-  .then(function(response){
-    if(otherParams.semanticValidation){
-      return semanticUpdate(thing);
-    } else {
-      return false;
+      if(oldThing.typeOfItem !== newItemType) callback({"infrastructure-id": infra_id,
+                                                        "oid": thing.oid,
+                                                        "error": "It is not possible to convert devices into services, or services into devices"},
+                                                        "It is not possible to convert devices into services, or services into devices");
+      // The adid requesting the update must be the same as the adid of the item to be updated
+      if(oldThing.adid.extid !== otherParams.adid) callback({"infrastructure-id": infra_id,
+                                                              "oid": thing.oid,
+                                                              "error": "The item does not belong to the agent/adapter"},
+                                                              "The item does not belong to the agent/adapter");
+
+      if(otherParams.semanticValidation){
+        return semanticUpdate(thing);
+      } else {
+        return false;
+      }
     }
   })
   .then(function(response){
@@ -104,22 +112,32 @@ function updateDocuments(thing, otherParams, callback){
     }
     // Check if name has changed, if it has update other entities accordingly
     if(thing.name !== oldThing.name){
-      oldThing.info = thing.name;
+      oldThing.info.name = thing.name;
+      oldThing.name = thing.name;
       return updateFriendlyName(thing.oid, oldThing.uid.id, oldThing.adid.id, thing.name);
     } else {
       return false;
     }
   })
   .then(function (response) {
-    updThing = addInteractions(oldThing);
     // TODO update contracts and testing
+    return false;
+  })
+  .then(function (response) {
+    updThing = addInteractions(oldThing);
     return updThing.save();
   })
   .then(function (response) {
-    callback(td.oid, 'success');
+    callback({"infrastructure-id": infra_id,
+              "oid":updThing.oid,
+              "status": "Success"},
+              'Success');
   })
   .catch(function(err){
-    callback(td.oid, err);
+    callback({"infrastructure-id": infra_id,
+              "oid": thing.oid,
+              "error": err},
+              err);
   });
 }
 
@@ -411,26 +429,6 @@ function commServerProcess(docOid, docName, docPassword){
         }
       );
     }
-
-  /*
-  Removes user from all groups
-  Adds user to organisation group
-  */
-  function resetItemInCommServer(oid, cid){
-    return new Promise(function(resolve, reject) {
-      commServer.callCommServer({}, 'users/' +  oid + '/groups', 'DELETE')
-      .then(function(response){
-        return commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST');
-      })
-      .then(function (response) {
-        logger.debug(response);
-        resolve(true);
-      })
-      .catch(function(err){
-        reject('Error in commServer: ' + err);
-      });
-    });
-  }
 
     /*
     Checks if the oid is in Mongo
