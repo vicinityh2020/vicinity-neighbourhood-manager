@@ -66,7 +66,6 @@ function create(data, callback){
                       finalRes.push(allresult[item].data);
                       if(allresult[item].result === 'Success'){someSuccess = true;}
                     }
-                    if(someSuccess){regisHelper.deviceActivityNotif(cid, 13);} // Notify only if some item was registered
                     callback(false, finalRes);
                     // console.timeEnd("ALL REGISTRATION EXECUTION");
                   })
@@ -129,7 +128,7 @@ function create(data, callback){
                   // Final part: Return results, update node and notify
                   if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
                     logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-                    regisHelper.createAuditLogs(cid, allresult, adid)
+                    regisHelper.createAuditLogs(cid, allresult, adid, 46)
                     .then(function(response){
                       var finalRes = [];
                       var someSuccess = false; // true if some registration was successful
@@ -137,7 +136,6 @@ function create(data, callback){
                         finalRes.push(allresult[item].data);
                         if(allresult[item].result === 'Success'){someSuccess = true;}
                       }
-                      // if(someSuccess){regisHelper.deviceActivityNotif(cid, 0);} // Notify only if some item was registered
                       callback(false, finalRes);
                       // console.timeEnd("ALL REGISTRATION EXECUTION");
                     })

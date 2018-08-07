@@ -65,6 +65,7 @@
                       <span ng-show="notif.type===11"><span class="label label-default paddedSides">Item enabled</span></span>
                       <span ng-show="notif.type===12"><span class="label label-default paddedSides">Item disabled</span></span>
                       <span ng-show="notif.type===13"><span class="label label-default paddedSides">Item discovered</span></span>
+                      <span ng-show="notif.type===14"><span class="label label-default paddedSides">Item updated</span></span>
                       <span ng-show="notif.type===21"><span class="label label-default paddedSides">Contract request</span></span>
                       <span ng-show="notif.type===22"><span class="label label-default paddedSides">Contract accepted</span></span>
                       <span ng-show="notif.type===23"><span class="label label-default paddedSides">Contract cancelled</span></span>
@@ -89,7 +90,8 @@
 
                   <!-- Description -->
                   <span class="padded" ng-show="notif.type === 1"><b>{{notif.actor.item.companyName}}</b> wants to register in Vicinity</span>
-                  <span class="padded" ng-show="notif.type === 13">New device(s) have been discovered!</span>
+                  <span class="padded" ng-show="notif.type === 13">A new device has been discovered: <b>{{notif.object.item.name}}</b></span>
+                  <span class="padded" ng-show="notif.type === 14">A device has been updated: <b>{{notif.object.item.name}}</b></span>
                   <span class="padded" ng-show="notif.type === 11"><b>{{notif.object.item.name}}</b> has been enabled.</span>
                   <span class="padded" ng-show="notif.type === 12"><b>{{notif.object.item.name}}</b> has been disabled.</span>
 
@@ -129,7 +131,7 @@
                     </span>
                   </div>
 
-                  <div class="centered" ng-show="[11, 12, 13].indexOf(notif.type) !== -1">
+                  <div class="centered" ng-show="[11, 12, 13, 14].indexOf(notif.type) !== -1">
                     <span>
                       <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.object.item._id})"><i class="fa fa-search fa-lg "></i></a>
                     </span>

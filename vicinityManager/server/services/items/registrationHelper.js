@@ -114,7 +114,9 @@ function updateDocuments(thing, otherParams, callback){
     if(thing.name !== oldThing.name){
       oldThing.info.name = thing.name;
       oldThing.name = thing.name;
-      return updateFriendlyName(thing.oid, oldThing.uid.id, oldThing.adid.id, thing.name);
+      // Check case you are updating an object that has no user owner
+      var checkUid = oldThing.uid === undefined ? null : oldThing.uid.id;
+      return updateFriendlyName(thing.oid, checkUid, oldThing.adid.id, thing.name);
     } else {
       return false;
     }
@@ -128,8 +130,20 @@ function updateDocuments(thing, otherParams, callback){
     return updThing.save();
   })
   .then(function (response) {
+    var oid = {id: updThing._id, extid: updThing.oid};
+    var notifObj = {uid: updThing.uid, oid: oid, adid: updThing.adid};
+    // Check case you are updating an object that has no user owner
+    if(updThing.uid === undefined){
+      notifObj.cid = updThing.cid;
+    } else {
+      notifObj.uid = updThing.uid;
+    }
+    deviceActivityNotif(notifObj, 14);
     callback({"infrastructure-id": infra_id,
               "oid":updThing.oid,
+              "name":updThing.name,
+              "nm-id": updThing._id,
+              "error": false,
               "status": "Success"},
               'Success');
   })
@@ -147,12 +161,19 @@ Totally new TD --> Expects new instance to be created
 function createInstance(objData, pwd, infra_id, callback){
   var objWithInteractions = addInteractions(objData);
   var obj = new itemOp(objWithInteractions);
+  var oid = {};
+  var cid = {};
+  var adid = {};
   obj.save()
   .then(function(response){
+    oid = {extid: response.oid, id: response._id};
+    cid = response.cid;
+    adid = response.adid;
     return commServerProcess(obj.oid, obj.name, pwd);
   })
   .then(function(response){
-    callback({oid: obj.oid, password: pwd, "infrastructure-id": infra_id, "nm-id": obj._id, error: false}, "Success");
+    deviceActivityNotif({cid: cid, oid: oid, adid: adid}, 13);
+    callback({oid: obj.oid, password: pwd, "infrastructure-id": infra_id, "nm-id": obj._id, "name": obj.name, error: false}, "Success");
   })
   .catch(function(err){
     callback({"infrastructure-id": infra_id, error: err}, err);
@@ -176,13 +197,13 @@ function updateItemsList(items, allresult){
         }
         for(j = 0; j < allresult.length; j++){
           if(itemsOid.indexOf(allresult[j].data.oid) === -1 && allresult[j].result === "Success"){
-            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid});
+            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid, name: allresult[j].data.name});
           }
         }
       } else {
         for(j = 0; j < allresult.length; j++){
           if(allresult[j].result === "Success"){
-            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid});
+            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid, name: allresult[j].data.name});
           }
         }
       }
@@ -277,16 +298,27 @@ Update agent.hasItems and user.hasItems
 */
 function updateFriendlyName(oid, uid, adid, name){
   return new Promise(function(resolve, reject) {
-    userOp.update({"_id": uid, "hasItems.extid": oid}, {$set:{ "hasItems.$.name" : name }})
-    .then(function(response){
-      return nodeOp.update({"_id": adid, "hasItems.extid": oid}, {$set:{ "hasItems.$.name" : name }});
-    })
-    .then(function(response){
-      resolve(true);
-    })
-    .catch(function(err){
-      reject(err);
-    });
+    // If user == null update only node
+    if(uid !== null){
+      userOp.update({"_id": uid, "hasItems.extid": oid}, {$set:{ "hasItems.$.name" : name }})
+      .then(function(response){
+        return nodeOp.update({"_id": adid, "hasItems.extid": oid}, {$set:{ "hasItems.$.name" : name }});
+      })
+      .then(function(response){
+        resolve(true);
+      })
+      .catch(function(err){
+        reject(err);
+      });
+    } else {
+      nodeOp.update({"_id": adid, "hasItems.extid": oid}, {$set:{ "hasItems.$.name" : name }})
+      .then(function(response){
+        resolve(true);
+      })
+      .catch(function(err){
+        reject(err);
+      });
+    }
   });
 }
 
@@ -350,11 +382,21 @@ function findType(objType, types){
 /*
 Sends a notification to the organisation after successful discovery
 */
-function deviceActivityNotif(cid, type){
+function deviceActivityNotif(data, type){
+  var target = {};
+  if(data.hasOwnProperty("cid")){
+    target.kind = "userAccount";
+    target.item = data.cid.id;
+    target.extid = data.cid.extid;
+  } else {
+    target.kind = "user";
+    target.item = data.uid.id;
+    target.extid = data.uid.extid;
+  }
   return notifHelper.createNotification(
-    { kind: 'userAccount', item: cid.id, extid: cid.extid },
-    { kind: 'userAccount', item: cid.id, extid: cid.extid },
-    { kind: 'userAccount', item: cid.id, extid: cid.extid },
+    { kind: 'node', item: data.adid.id, extid: data.adid.extid },
+    target,
+    { kind: 'item', item: data.oid.id, extid: data.oid.extid },
     'info', type, null);
 }
 
@@ -457,7 +499,7 @@ function commServerProcess(docOid, docName, docPassword){
     // module.exports.commServerProcess = commServerProcess;
     // module.exports.creatingAudit = creatingAudit;
     module.exports.createAuditLogs = createAuditLogs;
-    module.exports.deviceActivityNotif = deviceActivityNotif;
+    // module.exports.deviceActivityNotif = deviceActivityNotif;
     // module.exports.findType = findType;
     // module.exports.parseGetTypes = parseGetTypes;
     // module.exports.addInteractions = addInteractions;

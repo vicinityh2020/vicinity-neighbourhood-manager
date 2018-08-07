@@ -206,6 +206,7 @@ var notification = new Schema({
     11 - itemEnabled - info
     12 - itemDisabled - info
     13 - itemDiscovered - info
+    14 - itemUpdated - info
     21 - contractRequest - info
     22 - contractAccepted - info
     23 - contractCancelled - info
@@ -244,7 +245,7 @@ var auditLog = new Schema({
     name: String
   },
   description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
-  type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
+  type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 46, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
     /*
     Organisation:
     1 - Created ->
@@ -266,6 +267,7 @@ var auditLog = new Schema({
     43 - Item enabled ->
     44 - Item disabled ->
     45 - Privacy change ->
+    46 - Item updated ->
     51 - Request contract <->
     52 - Accept contract <->
     53 - Cancel contract <->

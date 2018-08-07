@@ -37,7 +37,7 @@
             <a ng-click="changeIsUnread(notif._id)" ng-show="[32, 35].lastIndexOf(notif.type) !== -1" ui-sref="root.main.userProfile.devices({userAccountId: notif.actor.item._id, companyAccountId: notif.object.item._id})">
               <img ng-src="{{notif.actor.item.avatar}}" alt="Company Avatar">
             </a>
-            <a ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 13">
+            <a ng-click="changeIsUnread(notif._id)" ng-show="[13, 14].lastIndexOf(notif.type) !== -1">
               <img ng-src="./img/icons/data_request.png" alt="Company Avatar"/>
             </a>
             <a ng-click="changeIsUnread(notif._id)" ng-show="[23, 25].lastIndexOf(notif.type) !== -1" ui-sref="root.main.userProfile.contracts({companyAccountId: orgId,userAccountId: userId})">
@@ -49,7 +49,8 @@
             <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 1">You have received a registration request from:<a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.actor.item._id})">{{notif.actor.item.companyName}}</a></p>
             <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 11">A device has been activated:  <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.object.item._id})">{{notif.object.item.name}}</a>.</p>
             <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 12">A device has been deactivated:  <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.object.item._id})">{{notif.object.item.name}}</a>.</p>
-            <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 13">You have discovered new device(s) </p>
+            <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 13">You have discovered a new device: <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.object.item._id})">{{notif.object.item.name}}</a> </p>
+            <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 14">You have updated a device: <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.object.item._id})">{{notif.object.item.name}}</a> </p>
             <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 21">There is a <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId, userAccountId: userId, contractId: notif.object.item._id})">contract</a> request from <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId, userAccountId: userId, contractId: notif.object.item._id})">{{notif.actor.item.name}}</a>.</p>
             <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 22">The <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId, userAccountId: userId, contractId: notif.object.item._id})">contract</a> with <a ui-sref="root.main.userProfile.devices({userAccountId: notif.actor.item._id, companyAccountId: notif.object.item._id})">{{notif.actor.item.name}}</a> has been accepted.</p>
             <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 23">The <a ui-sref="root.main.userProfile.contracts({companyAccountId: orgId, userAccountId: userId, contractId: notif.object.item._id})">contract</a> with <a ui-sref="root.main.userProfile.devices({userAccountId: notif.actor.item._id, companyAccountId: notif.object.item._id})">{{notif.actor.item.name}}</a> has been removed.</p>
