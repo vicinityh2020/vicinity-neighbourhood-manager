@@ -71,6 +71,7 @@
                     <span ng-show="log.type===45"><i class="fa fa-eye"/></span>
                     <span ng-show="[52, 54].lastIndexOf(log.type) !== -1"><i class="fa fa-chain my-blue"/></span>
                     <span ng-show="[53, 55].lastIndexOf(log.type) !== -1"><i class="fa fa-chain-broken"/></span>
+                    <span ng-show="[46, 56].lastIndexOf(log.type) !== -1"><i class="fa fa-wrench"/></span>
                   </div>
 
                 </h3>
@@ -96,12 +97,14 @@
                 <span ng-show="log.type===43">The {{log.target.item.name}} was enabled</span>
                 <span ng-show="log.type===44">The {{log.target.item.name}} was disabled</span>
                 <span ng-show="log.type===45">Privacy change in {{log.target.item.name}}: {{log.description}} </span>
+                <span ng-show="log.type===46">Item updated: {{log.target.item.name}}</span>
 
                 <span ng-show="log.type===51">Contract request between {{log.target.item.name}} and {{log.actor.item.name}} with id: {{log.object.extid}}</span>
                 <span ng-show="log.type===52">Contract accepted by {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
                 <span ng-show="log.type===53">Contract cancelled by {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
                 <span ng-show="log.type===54">Contract joined by {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
                 <span ng-show="log.type===55">Contract abandoned {{log.target.item.name}} and {{log.actor.item.name}} with new id: {{log.object.extid}}</span>
+                <span ng-show="log.type===55">Contract {{log.target.item.name}} updated by {{log.actor.item.name}}</span>
 
                 <br>
 

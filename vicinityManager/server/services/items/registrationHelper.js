@@ -8,13 +8,14 @@ var map = require('../../configuration/map');
 var audits = require('../../services/audit/audit');
 var sync = require('../../services/asyncHandler/sync');
 var commServer = require('../../services/commServer/request');
+var contracts = require('../../services/contracts/contracts');
 var notifHelper = require('../../services/notifications/notificationsHelper');
 var config = require('../../configuration/configuration');
 var crypto = require('crypto');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 var logger = require('../../middlewares/logger');
 
-// Functions to support registration and agent calls
+// Functions to support registration and agent calls --- Main functions
 
 /*
 Inserts all oids in the request
@@ -69,6 +70,7 @@ function updateDocuments(thing, otherParams, callback){
   var updThing = {};
   var oldThing = {};
   var infra_id = thing["infrastructure-id"];
+  var contractResult = [];
 
   // If there is not oid, it is not possible to update
   if(thing.oid === undefined) callback({"infrastructure-id": infra_id, "error": "Missing oid"}, "Missing oid");
@@ -96,7 +98,6 @@ function updateDocuments(thing, otherParams, callback){
                                                               "oid": thing.oid,
                                                               "error": "The item does not belong to the agent/adapter"},
                                                               "The item does not belong to the agent/adapter");
-
       if(otherParams.semanticValidation){
         return semanticUpdate(thing);
       } else {
@@ -115,17 +116,29 @@ function updateDocuments(thing, otherParams, callback){
       oldThing.info.name = thing.name;
       oldThing.name = thing.name;
       // Check case you are updating an object that has no user owner
-      var checkUid = oldThing.uid === undefined ? null : oldThing.uid.id;
+      var checkUid = oldThing.uid === undefined ? undefined : oldThing.uid.id;
       return updateFriendlyName(thing.oid, checkUid, oldThing.adid.id, thing.name);
     } else {
       return false;
     }
   })
   .then(function (response) {
-    // TODO update contracts and testing
-    return false;
+
+    if(oldThing.hasContracts.length > 0){
+      var cts = separateContracts(oldThing.hasContracts);
+      var oid = {id: oldThing._id, extid: oldThing.oid};
+      return contracts.pauseContracts(oid, cts.toPause, oldThing.uid)
+      .then(function (response) {
+        contractResult.push(response);
+        // If service provider, all contract members must agree on new service conditions
+        return contracts.resetContract(cts.toReset, oldThing.uid);
+      });
+    } else {
+      return false;
+    }
   })
   .then(function (response) {
+    contractResult.push(response);
     updThing = addInteractions(oldThing);
     return updThing.save();
   })
@@ -144,16 +157,23 @@ function updateDocuments(thing, otherParams, callback){
               "name":updThing.name,
               "nm-id": updThing._id,
               "error": false,
+              "contracts": contractResult,
               "status": "Success"},
               'Success');
   })
   .catch(function(err){
+    logger.debug(err);
     callback({"infrastructure-id": infra_id,
               "oid": thing.oid,
               "error": err},
               err);
   });
 }
+
+
+
+// Other support functions ---------------------------------------------------
+
 
 /*
 Totally new TD --> Expects new instance to be created
@@ -299,7 +319,7 @@ Update agent.hasItems and user.hasItems
 function updateFriendlyName(oid, uid, adid, name){
   return new Promise(function(resolve, reject) {
     // If user == null update only node
-    if(uid !== null){
+    if(uid !== undefined){
       userOp.update({"_id": uid, "hasItems.extid": oid}, {$set:{ "hasItems.$.name" : name }})
       .then(function(response){
         return nodeOp.update({"_id": adid, "hasItems.extid": oid}, {$set:{ "hasItems.$.name" : name }});
@@ -349,6 +369,24 @@ function addInteractions(objData){
 }
 
 /*
+Separate contracts in:
+Contracts with devices to pause
+Contracts to be reset
+*/
+function separateContracts(cts){
+  var contracts = {toPause: [], toReset: []};
+  for(var i = 0, l = cts.length; i < l; i++){
+    // If I am the service provider send to reset contract
+    if(cts[i].imForeign){
+      contracts.toReset.push(cts[i].toObject());
+    } else {
+      contracts.toPause.push(cts[i].toObject());
+    }
+  }
+  return contracts;
+}
+
+/*
 Extract valuable info from the types request static service
 */
 function parseGetTypes(arr){
@@ -378,6 +416,7 @@ function findType(objType, types){
     return("unknown");
   }
 }
+
 
 /*
 Sends a notification to the organisation after successful discovery

@@ -49,7 +49,8 @@ var ctidSchema = Schema({
   readWrite: {type: Boolean, default: false},
   approved: {type: Boolean, default: false},
   imAdmin: {type: Boolean, default: false},
-  imForeign: {type: Boolean, default: false}
+  imForeign: {type: Boolean, default: false},
+  inactive: [String]
 },{ _id : false });
 
 var contractSubschema = Schema({
@@ -148,7 +149,7 @@ iotOwner: contractSubschema,
 readWrite: Boolean, // True RW -- False R
 legalDescription: String,
 type: { type: String, enum: ['serviceRequest', 'deviceUse']},
-status: { type: String, enum: ['pending', 'accepted', 'rejected', 'deleted'], default: 'pending'}
+status: { type: String, enum: ['active', 'deleted'], default: 'active'}
 });
 
 var invitation = new Schema({
@@ -212,6 +213,7 @@ var notification = new Schema({
     23 - contractCancelled - info
     24 - contractJoined - info
     25 - contractAbandoned - info
+    26 - contractUpdated - info
     31 - partnershipRequest  - toAnswer
     32 - partnershipCancelled - info
     33 - partnershipRejected - info
@@ -245,7 +247,7 @@ var auditLog = new Schema({
     name: String
   },
   description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
-  type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 46, 51, 52, 53, 54, 55], required: true } // Actual situation which triggered the audit
+  type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 46, 51, 52, 53, 54, 55, 56], required: true } // Actual situation which triggered the audit
     /*
     Organisation:
     1 - Created ->
@@ -273,6 +275,7 @@ var auditLog = new Schema({
     53 - Cancel contract <->
     54 - Join contract <->
     55 - Abandon contract <->
+    56 - Update contract <->
     User:
     */
 });

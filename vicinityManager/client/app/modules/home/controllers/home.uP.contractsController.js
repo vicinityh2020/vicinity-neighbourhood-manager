@@ -202,6 +202,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     for(var i = 0; i < $scope.contracts.length; i++){
       if($scope.contracts[i]._id.toString() === id){
         $scope.wholeContract = $scope.contracts[i];
+        // TODO $scope.wholeContract.serviceStatus ... 
       }
     }
   }

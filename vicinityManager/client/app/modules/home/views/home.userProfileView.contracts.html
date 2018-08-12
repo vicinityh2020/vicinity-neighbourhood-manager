@@ -44,8 +44,8 @@
       <div class="col-sm-1">
         <table style="width:100%">
           <tr><td><label> Status </label></td></tr>
-          <tr><td><span ng-show="contract.status === 'pending'" class="label label-warning">{{contract.status}}</span></td></tr>
-          <tr><td><span ng-show="contract.status === 'accepted'" class="label label-success">{{contract.status}}</span></td></tr>
+          <tr><td><span ng-show="!contract.agreed" class="label label-warning">PENDING</span></td></tr>
+          <tr><td><span ng-show="contract.agreed" class="label label-success">ACCEPTED</span></td></tr>
         </table>
       </div>
       <div class="col-sm-1">
