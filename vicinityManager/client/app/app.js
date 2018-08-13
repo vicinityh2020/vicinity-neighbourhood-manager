@@ -129,6 +129,17 @@ angular.module('VicinityManagerApp', [
           }
         })
 
+        .state('root.main.contracts', {
+          url: '/contracts',
+          views: {
+            'mainContentView@root':
+              {
+                templateUrl: 'modules/home/views/home.contracts.html',
+                controller: 'contractsController'
+              }
+          }
+        })
+
         .state('root.main.myNotifications', {
           url: '/myNotifications',
           views: {
@@ -364,17 +375,17 @@ angular.module('VicinityManagerApp', [
           }
         })
 
-        .state('root.main.userProfile.contracts', {
-          url: '/contracts?contractId',
-          reloadOnSearch : false,
-          views: {
-            'tabPanel@root.main.userProfile':
-            {
-              templateUrl: 'modules/home/views/home.userProfileView.contracts.html',
-              controller:  'uPcontractsController'
-            }
-          }
-        })
+        // .state('root.main.userProfile.contracts', {
+        //   url: '/contracts?contractId',
+        //   // reloadOnSearch : false, // DEBUG case use query parameters to change view
+        //   views: {
+        //     'tabPanel@root.main.userProfile':
+        //     {
+        //       templateUrl: 'modules/home/views/home.userProfileView.contracts.html',
+        //       controller:  'uPcontractsController'
+        //     }
+        //   }
+        // })
 
         .state('root.main.registrationProfile', {
           url: '/profile/registration/:registrationId',
@@ -394,6 +405,17 @@ angular.module('VicinityManagerApp', [
             {
               templateUrl: 'modules/home/views/home.registrationProfile.regAdminView.html',
               controller:  'rPregAdminController'
+            }
+          }
+        })
+
+        .state('root.main.contractDetail', {
+          url: '/contractDetail/:contractId',
+          views: {
+            'mainContentView@root':
+            {
+              templateUrl: 'modules/home/views/home.contractDetail.html',
+              controller:  'contractDetailController'
             }
           }
         })

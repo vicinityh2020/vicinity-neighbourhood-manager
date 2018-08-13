@@ -1,0 +1,195 @@
+<section class="content-header">
+    <h1>User contracts</h1>
+</section>
+
+<div class="coll-md-1" ng-show="!loaded" style="margin: auto; width:60%">
+  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+</div>
+
+<!-- /.box-header -->
+<div class="row">
+  <div class="col-sm-12">
+    <img class="pull-right" src="img/logos/shqlogo.png"/>
+  </div>
+</div>
+
+<section ng-show="loaded">
+  <!-- No items found -->
+  <div class="box padded">
+    <!-- <div class="box-header bg-gray">
+      <p class="pull-right">Filters ...</p>
+    </div> -->
+    <div class="box-body">
+      <div class="active tab-pane">
+        <div class="centered" ng-show="noItems">
+           <h3 class="well">No items found...</h3>
+        </div>
+        <!-- Contracts summary -->
+        <div class="box-body box" ng-repeat="contract in contracts" ng-show="!detailsShow">
+          <div class="col-sm-1">
+            <i class="fa fa-arrow-right fa-4x my-green" ng-show="!contract.imServiceProv" aria-hidden="true"></i>
+            <i class="fa fa-arrow-left fa-4x my-red" ng-show="contract.imServiceProv" aria-hidden="true"></i>
+          </div>
+          <div class="col-sm-3">
+            <table style="width:100%">
+              <tr><td><label> Service Name </label></td></tr>
+              <tr><td><span>{{contract.foreignIot.items[0].name}}</span></td></tr>
+              <tr><td><span>{{contract.ctid}}</span></td></tr>
+            </table>
+          </div>
+          <div class="col-sm-2">
+            <table style="width:100%">
+              <tr><td><label> Service Provider </label></td></tr>
+              <tr ng-show="!contract.imServiceProv"><td><span>{{contract.foreignIot.uid[0].extid}}</span></td></tr>
+              <tr ng-show="contract.imServiceProv"><td><span>Me</span></td></tr>
+            </table>
+          </div>
+          <div class="col-sm-2">
+            <table style="width:100%">
+              <tr><td><label> IoT Owner </label></td></tr>
+              <tr><td><span>{{contract.iotOwner.cid.name}}</span></td></tr>
+            </table>
+          </div>
+          <div class="col-sm-1">
+            <table style="width:100%">
+              <tr><td align="center"><label> # Items </label></td></tr>
+              <tr><td align="center"><span>{{contract.numberOfItems}}</span></td></tr>
+            </table>
+          </div>
+          <div class="col-sm-1">
+            <table style="width:100%">
+              <tr><td align="center"><label> Status </label></td></tr>
+              <tr><td align="center"><span ng-show="!contract.serviceAgreed && !contract.infrastructureAgreed" class="label label-warning">Pending</span></td></tr>
+              <tr><td align="center"><span ng-show="contract.serviceAgreed && !contract.infrastructureAgreed" class="label label-warning">Waiting Infrastructure</span></td></tr>
+              <tr><td align="center"><span ng-show="!contract.serviceAgreed && contract.infrastructureAgreed" class="label label-warning">Waiting Service</span></td></tr>
+              <tr><td align="center"><span ng-show="contract.serviceAgreed && contract.infrastructureAgreed" class="label label-success">Active</span></td></tr>
+              <tr><td align="center"><span ng-show="contract.inactiveItems && contract.infrastructureAgreed && contract.numberOfItems > 0" class="label label-warning">Inactive items</span></td></tr>
+              <tr><td align="center"><span ng-show="contract.infrastructureAgreed && contract.numberOfItems === 0" class="label label-danger">No Active Items</span></td></tr>
+
+            </table>
+          </div>
+          <div class="col-sm-1">
+            <table style="width:100%">
+              <tr><td align="center"><label> Type </label></td></tr>
+              <tr><td align="center"><span class="label label-info">{{contract.type}}</span></td></tr>
+              <tr><td align="center"><span ng-show="contract.readWrite" class="label label-warning">Read/Write</span></td></tr>
+              <tr><td align="center"><span ng-hide="contract.readWrite" class="label label-warning">Read Only</span></td></tr>
+            </table>
+          </div>
+          <div class="col-sm-1 padded centered">
+            <button ng-show="!contract.active" class="btn-sm btn-default edit_profile" ng-click="acceptContract(contract._id)"><i style="color: green" class="fa fa-check"></i></button>
+            <button ng-click="showDetails(contract._id)" class="btn-sm btn-default edit_profile"><i style="color: black" class="fa fa-eye"></i></button>
+            <button ng-click="removeContract(contract._id)" class="btn-sm btn-default edit_profile"><i style="color: red" class="fa fa-times"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Contract details -->
+    <div class="box box-body" ng-show="detailsShow">
+      <div class="box-header with-border well">
+        <div class="row">
+          <div class="col-sm-8">
+            <h3 class="box-title">Main Info</h3>
+          </div>
+          <div class="col-sm-4">
+            <div class="row">
+              <div class="col-sm-4">
+                <button class="pull-right btn-sm btn-default edit_profile" ng-show="wholeContract.active && wholeContract.imAdmin" ng-click="moveContract(contract._id)"><i style="color: blue" class="fa fa-exchange"></i></button>
+                <button class="pull-right btn-sm btn-default edit_profile" ng-show="!wholeContract.active" ng-click="acceptContract(wholeContract._id)"><i style="color: green" class="fa fa-check"></i></button>
+              </div>
+              <div class="col-sm-4">
+                <button class="btn-sm btn-default edit_profile" ng-click="removeContract(wholeContract._id)"><i style="color: red" class="fa fa-times"></i></button>
+              </div>
+              <div class="col-sm-4">
+                <button class="pull-left btn-sm btn-default edit_profile" ng-click="closeDetails()"><b>CLOSE</b></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div ng-show="exchange" class="row">
+            <div class="col-sm-10">
+              <select id="editMoveName" class="pull-right" name="menu">
+                <option value="{{thing}}" ng-repeat="thing in moveThings">{{thing.name}}</option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+             <a ng-click="saveMoveContract()" class="btn-sm btn-default edit_profile"><i style="color: green" class="fa fa-check"></i></a>
+             <a ng-click="cancelMoveContract()" class="btn-sm btn-default edit_profile"><i style="color: red" class="fa fa-times"></i></a>
+           </div>
+        </div>
+      </div>
+      <div class="box-body">
+        <p><b>ID:</b> {{wholeContract.ctid}}</p>
+        <p><b>Service name:</b> {{wholeContract.foreignIot.items[0].name}}</p>
+        <p><b>Service owner:</b> {{wholeContract.foreignIot.uid[0].extid}}</p>
+        <p><b>Service requester:</b> {{wholeContract.iotOwner.cid.name}}</p>
+        <p><b>Write rights:</b>
+          <span class="label label-info" ng-show="!wholeContract.readWrite"> No </span>
+          <span class="label label-info" ng-show="wholeContract.readWrite"> Yes </span>
+        </p>
+        <p><b>Status:</b>
+          <span ng-show="!wholeContract.foreignIot.termsAndConditions" class="label label-warning">Pending</span>
+          <span ng-show="wholeContract.foreignIot.termsAndConditions" class="label label-success">Approved</span>
+        </p>
+      </div>
+      <div class="box-header with-border well">
+          <h3 class="box-title">Legal Description</h3>
+      </div>
+      <div class="box-body">
+        {{wholeContract.legalDescription}}
+      </div>
+      <div class="box-header with-border well">
+          <h3 class="box-title">IoT infrastructure components</h3>
+      </div>
+      <div class="box-body">
+        <table id="RegTable" class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name<i ng-click="orderByMe('name')" class="fa fa-fw fa-sort"/></th>
+              <th>OID<i ng-click="orderByMe('oid')" class="fa fa-fw fa-sort"/></th>
+              <th>Type<i ng-click="orderByMe('type')" class="fa fa-fw fa-sort"/></th>
+              <th>Owner<i ng-click="orderByMe('owner')" class="fa fa-fw fa-sort"/></th>
+              <th>Status<i ng-click="orderByMe('active')" class="fa fa-fw fa-sort"/></th>
+              <th align="center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="thing in alldevices | orderBy:myOrderBy:rev">
+              <td class="col-sm-1">
+                <div ng-show="thing.status" align="center"><i style="color: green" class="fa fa-arrow-up fa-lg"></i></div>
+                <div ng-hide="thing.status" align="center"><i style="color: red" class="fa fa-arrow-down fa-lg"></i></div>
+              </td>
+              <td class="col-sm-2">
+                <span>{{thing.name}}</span>
+              </td>
+              <td class="col-sm-3">
+                <span>{{thing.oid}}</span>
+              </td>
+              <td class="col-sm-1">
+                <span>{{thing.typeOfItem}}</span>
+              </td>
+              <td class="col-sm-2">
+                <span>{{thing.uid.extid}}</span>
+              </td>
+              <td class="col-sm-1">
+                <div align="center">
+                  <span ng-show="thing.status" class="label label-success">Enabled</span>
+                  <span ng-hide="thing.status" class="label label-danger">Disabled</span>
+                </div>
+              </td>
+              <td class="col-sm-2">
+                <div align="center" ng-show="thing.isMine">
+                  <a ng-hide="thing.status" ng-click="enableItem(thing)" class="btn-sm btn-default edit_profile"><i style="color: green" class="fa fa-check"></i></a>
+                  <a ng-show="thing.status" ng-click="disableItem(thing)" class="btn-sm btn-default edit_profile"><i style="color: orange" class="fa fa-pause"></i></a>
+                  <a ng-click="removeItem(thing)" class="btn-sm btn-default edit_profile"><i style="color: red" class="fa fa-times"></i></a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

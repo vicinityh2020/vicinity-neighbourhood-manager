@@ -59,6 +59,12 @@ angular.module('VicinityManagerApp.controllers')
         if(payload.roles[i] === 'infrastructure operator'){
           $scope.isInfOp = true;
         }
+        if(payload.roles[i] === 'device owner'){
+          $scope.isDevOwn = true;
+        }
+        if(payload.roles[i] === 'service provider'){
+          $scope.isServProv = true;
+        }
         if(payload.roles[i] === 'system integrator'){
           $scope.isIntegrator = true;
         }

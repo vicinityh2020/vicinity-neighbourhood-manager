@@ -78,6 +78,7 @@
           <li><a ui-sref="root.main.allServices"><i class="fa fa-link"></i> <span>Services</span></a></li>
           <li><a ui-sref="root.main.allEntities"><i class="fa fa-link"></i> <span>Organisations</span></a></li>
           <li><a ng-show="isIntegrator" ui-sref="root.main.myNodes"><i class="fa fa-link"></i> <span>Gateways</span></a></li>
+          <li><a ng-show="isIntegrator || isDevOwn || isServProv" ui-sref="root.main.contracts"><i class="fa fa-link"></i> <span>Contracts</span></a></li>
           <li><a ng-show="isDev" ui-sref="root.main.allRegistrations"><i class="fa fa-link"></i> <span>Registrations</span></a></li>
         </ul>
 

@@ -7,27 +7,24 @@ Filters the items based on the following rules:
   . are flagged as public
   . if I am partner of the company, also items flagged for friends
 */
-.controller('uPcontractsController',
-function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIService,  Notification) {
+.controller('contractsController',
+function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
   $scope.cid = { id: $window.sessionStorage.companyAccountId};
   $scope.uid = $window.sessionStorage.userAccountId;
   $scope.contracts = [];
-  $scope.contractItems = [];
   $scope.wholeContract = {};
   $scope.noItems = false;
   $scope.loaded = false;
-  $scope.detailShow = false;
-  $scope.edit = false;
   $scope.exchange = false;
   $scope.mainTitle = "My Contracts";
 
   $scope.searchParam = $location.search(); // GET
 
   function init(){
-    itemsAPIService.getContracts($stateParams.userAccountId)
+    itemsAPIService.getContracts($scope.uid)
       .then(successCallback)
       .catch(errorCallback);
   }
@@ -116,6 +113,9 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     $scope.exchange = false;
   };
 
+
+// Other functions
+
   $scope.getAvailableUsers = function(){
     $scope.moveThings = [];
     itemsAPIService.getMoveUsers('contract')
@@ -145,13 +145,11 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     }
   }
 
-  $scope.showDetails = function(id,edit){
+  $scope.showDetails = function(id){
     $location.search('contractId', id); // SET
     getOneContract(id);
-    getOnlyId();
-    $scope.edit = edit;
-
-    itemsAPIService.getArrayOfItems($scope.contractItems)
+    var contractItems = getOnlyId();
+    itemsAPIService.getArrayOfItems(contractItems)
     .then(function(response){
       $scope.alldevices = response.data.message;
       for(var i = 0; i < $scope.alldevices.length; i++){
@@ -175,46 +173,49 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
     $location.search('contractId', null); // SET
     $scope.detailsShow = false;
     $scope.wholeContract = {};
-    $scope.contractItems = [];
     $scope.data = {};
     $scope.mainTitle = "My Contracts";
-    $scope.edit = false;
     init();
   };
 
 // TODO Disable one device only
+  $scope.disableItem = function(){
+  };
+
+// TODO Remove one device only
   $scope.removeItem = function(){
   };
 
 // TODO Enable one device only
-  $scope.addItem = function(){
+  $scope.enableItem = function(){
   };
 
   // Private Functions
 
   function getOnlyId(){
+    var array = [];
     for(var i = 0; i < $scope.wholeContract.iotOwner.items.length; i++){
-      $scope.contractItems.push($scope.wholeContract.iotOwner.items[i].id);
+      array.push($scope.wholeContract.iotOwner.items[i].id);
     }
+    return array;
   }
 
   function getOneContract(id){
     for(var i = 0; i < $scope.contracts.length; i++){
       if($scope.contracts[i]._id.toString() === id){
         $scope.wholeContract = $scope.contracts[i];
-        // TODO $scope.wholeContract.serviceStatus ... 
+        // TODO $scope.wholeContract.serviceStatus ...
       }
     }
   }
 
+  // Only if there are contracts to avoid undefined exceptions
   function myContractDetails(){
     for(var i = 0; i < $scope.contracts.length; i++){
       $scope.contracts[i].imServiceProv = $scope.contracts[i].foreignIot.uid[0].id.toString() === $scope.uid.toString();
-      if($scope.contracts[i].imServiceProv){
-        $scope.contracts[i].agreed = $scope.contracts[i].foreignIot.termsAndConditions;
-      }else{
-        $scope.contracts[i].agreed = $scope.contracts[i].iotOwner.termsAndConditions;
-      }
+      $scope.contracts[i].serviceAgreed = $scope.contracts[i].foreignIot.termsAndConditions;
+      $scope.contracts[i].infrastructureAgreed = $scope.contracts[i].iotOwner.termsAndConditions;
+      $scope.contracts[i].numberOfItems = $scope.contracts[i].iotOwner.items.length;
     }
   }
 
@@ -226,6 +227,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
         cts[i].imAdmin = array[i].imAdmin;
         cts[i].imForeign = array[i].imForeign;
         cts[i].active = array[i].approved;
+        cts[i].inactiveItems = array[i].inactive.length > 0;
       }
     }
     return cts;
