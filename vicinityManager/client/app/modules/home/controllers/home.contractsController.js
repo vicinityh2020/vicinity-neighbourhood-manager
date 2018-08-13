@@ -178,16 +178,25 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     init();
   };
 
-// TODO Disable one device only
-  $scope.disableItem = function(){
+// Disable one device only
+  $scope.disableItem = function(thing){
+    itemsAPIService.ctDisableItem({oid: thing.oid, ct: { ctid: $scope.wholeContract.ctid, _id: $scope.wholeContract._id}, uid: thing.uid})
+      .then(successCallback)
+      .catch(errorCallback);
   };
 
-// TODO Remove one device only
-  $scope.removeItem = function(){
+// Remove one device only
+  $scope.removeItem = function(thing){
+    itemsAPIService.ctRemoveItem({oid: thing.oid, ct: $scope.wholeContract.ctid, uid: thing.uid})
+      .then(successCallback)
+      .catch(errorCallback);
   };
 
-// TODO Enable one device only
-  $scope.enableItem = function(){
+// Enable one device only
+  $scope.ctEnableItem = function(thing){
+    itemsAPIService.getContracts({oid: thing.oid, ct: $scope.wholeContract.ctid, uid: thing.uid})
+      .then(successCallback)
+      .catch(errorCallback);
   };
 
   // Private Functions

@@ -76,6 +76,18 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.delete(configuration.apiUrl + '/items/contract/' + id);
   };
 
+  itemsAPI.ctDisableItem = function(payload){
+    return $http.post(configuration.apiUrl + '/items/contract/disableItem', payload);
+  };
+
+  itemsAPI.ctRemoveItem = function(payload){
+    return $http.post(configuration.apiUrl + '/items/contract/removeItem', payload);
+  };
+
+  itemsAPI.ctEnableItem = function(payload){
+    return $http.post(configuration.apiUrl + '/items/contract/enableItem', payload);
+  };
+
   /*
   Infrastructure
   */
