@@ -15,6 +15,9 @@ router
 // Contract and item sharing
   .get('/contract/:id', contractHelper.fetchContract)
   .post('/contract', contractHelper.createContract)
+  .post('/contract/disableItem', contractHelper.disableOneItem)
+  .post('/contract/enableItem', contractHelper.enableOneItem)
+  .post('/contract/removeItem', contractHelper.removeOneItem)
   .put('/contract/:id/accept', contractHelper.acceptContract)
   .put('/contract/:id/modify', contractHelper.modifyContract)
   .delete('/contract/:id', contractHelper.removeContract)

@@ -62,6 +62,59 @@ function removeContract(req, res){
 }
 
 /*
+Disable one item
+*/
+function disableOneItem(req, res){
+  var oid = req.body.oid;
+  var ct = req.body.ct;
+  var uid = req.body.uid;
+  var cts = [];
+  cts.push(ct);
+  ctHelper.pauseContracts(oid, cts, uid)
+  .then(function(response){
+    res.json({error: false, message: response});
+  })
+  .catch(function(err){
+    logger.debug(err);
+    res.json({error: true, message: err});
+  });
+}
+
+/*
+Enable one item
+*/
+function enableOneItem(req, res){
+  var oid = req.body.oid;
+  var ct = req.body.ct;
+  var uid = req.body.uid;
+  ctHelper.enableOneItem(oid, ct, uid)
+  .then(function(response){
+    res.json({error: false, message: response});
+  })
+  .catch(function(err){
+    logger.debug(err);
+    res.json({error: true, message: err});
+  });
+}
+
+/*
+Enable one item
+*/
+function removeOneItem(req, res){
+  var oid = req.body.oid;
+  var ct = req.body.ct;
+  var uid = req.body.uid;
+  ctHelper.removeOneItem(oid, ct, uid)
+  .then(function(response){
+    res.json({error: false, message: response});
+  })
+  .catch(function(err){
+    logger.debug(err);
+    res.json({error: true, message: err});
+  });
+}
+
+/*
 Get contract
 */
 function fetchContract(req, res){
@@ -91,3 +144,6 @@ module.exports.removeContract = removeContract;
 module.exports.createContract = createContract;
 module.exports.acceptContract = acceptContract;
 module.exports.modifyContract = modifyContract;
+module.exports.disableOneItem = disableOneItem;
+module.exports.enableOneItem = enableOneItem;
+module.exports.removeOneItem = removeOneItem;

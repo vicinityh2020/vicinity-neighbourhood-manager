@@ -259,22 +259,38 @@ function pauseContracts(oid, cts, uid){
     if(cts.length > 0){ // Check if there is any item to delete
       sync.forEachAll(cts,
         function(value, allresult, next, otherParams) {
-          otherParams.ctid = value.extid; // iterate over the contracts in this case
-          deletingOne(otherParams.oid, otherParams, function(value, result) {
-              allresult.push({value: value.extid, result: result});
-              next();
+          // Add inactive items to user contract item
+          userOp.update({"_id": uid.id, "hasContracts.extid": value.extid},
+                        {$push: {"hasContracts.$.inactive": oid.extid } })
+          .then(function (response) {
+            deletingOne(otherParams.oid, {mail: otherParams.mail, ctid: value.extid}, function(value, result) {
+                allresult.push({value: oid.extid, result: result});
+                next();
+            });
+          })
+          .catch(function (error) {
+            allresult.push({value: value.extid, result: err});
+            next();
           });
         },
         function(allresult) {
           if(allresult.length === cts.length){
-            var ct_ids = [];
-            getOnlyId(ct_ids, cts);
-            itemOp.update({"_id": oid.id, "hasContracts.id" : {$in: ct_ids}},
-                            {$set: { "hasContracts.$.approved" : false }},
-                            {multi: true})
+            var ct_oids = [];
+            getOnlyOid(ct_oids, cts);
+            itemOp.findOne({"_id": oid.id})
             .then(function (response) {
-              return userOp.update({"_id": uid.id, "hasContracts.id" : {$in: ct_ids}},
-                              {$push: { "hasContracts.$.inactive" : oid.extid }},
+              // Set to approved false all contracts in an inactive item
+                for(var i = 0, l = response.hasContracts.length; i < l; i++){
+                  if(ct_oids.indexOf(response.hasContracts[i].extid) !== -1){
+                    response.hasContracts[i].approved = false;
+                  }
+                }
+                return response.save();
+            })
+            .then(function (response) {
+              // Only set to inactive infrastructure --> Service would reset whole contract
+              return contractOp.update({"ctid": {$in: ct_oids}, "iotOwner.items.id": oid.id },
+                              {$set: { "iotOwner.items.$.inactive" : true }},
                               {multi: true});
             })
             .then(function (response) {
@@ -292,6 +308,7 @@ function pauseContracts(oid, cts, uid){
               resolve({toPause: allresult});
             })
             .catch(function (err) {
+              logger.debug(err);
               reject(err);
             });
           }
@@ -313,7 +330,7 @@ Reactivate ONE item in ONE contract after update
 3 - Remove item from flags in user contract "inactive" items
 4 - Create notifications and logs
 */
-function reactivateItemInContract(oid, ct, uid){
+function enableOneItem(oid, ct, uid){
   return new Promise(function(resolve, reject) {
     var otherData = {ctid: ct, mail: uid.extid};
     addingOne(oid, otherData, function(err, response){
@@ -331,6 +348,40 @@ function reactivateItemInContract(oid, ct, uid){
      });
    });
   // TODO Notifs and logs
+  });
+}
+
+/*
+Remove ONE item from contract
+1 - Remove from ct comm server groups
+2 - Pull contract object from item
+3 - Pull item from user contract obj inactives (just in case)
+4 - Pull item from contract
+5 - Create notifications and logs (Deleting one function)
+*/
+function removeOneItem(oid, ct, uid){
+  return new Promise(function(resolve, reject) {
+    var otherData = {ctid: ct, mail: uid.extid};
+    deletingOne(oid, otherData, function(err, response){
+      itemOp.update({"oid": oid}, {$pull: { hasContracts: {extid : ct }}})
+     .then(function(response){
+       return userOp.update({"_id": uid.id, "hasContracts.extid" : ct},
+                      {$pull: { "hasContracts.$.inactive" : oid }});
+     })
+     .then(function(response){
+       return contractOp.update({"ctid": ct}, {$pull: { "foreignIot.items" : { extid: oid }}});
+     })
+     .then(function(response){
+       return contractOp.update({"ctid": ct}, {$pull: { "iotOwner.items" : { extid: oid }}});
+     })
+     .then(function (response) {
+       resolve('Success');
+     })
+     .catch(function(err){
+       reject(err);
+     });
+   });
+  // TODO Notifs
   });
 }
 
@@ -355,20 +406,31 @@ function resetContract(cts, uid){
           var users = [];
           contractOp.findOne({ctid: value.extid})
           .then(function(response){
+            // Set item has contract inactive to true
+            for(var i=0, l = response.iotOwner.items.length; i < l; i++){
+              response.iotOwner.items[i].inactive = true;
+            }
+            for(var j=0, k = response.foreignIot.items.length; j < k; j++){
+              response.foreignIot.items[j].inactive = true;
+            }
             // Gather contract data
             try{
-            contractData = response.toObject();
-            getOnlyId(uidService, contractData.foreignIot.uid);
-            getOnlyId(idsService, contractData.foreignIot.items);
-            getOnlyId(uidDevice, contractData.iotOwner.uid);
-            getOnlyId(idsDevice, contractData.iotOwner.items);
-            users = uidService.concat(uidDevice);
-            items = idsService.concat(idsDevice);
-          } catch(err){
-            logger.debug('error: ' + err);
-            allresult.push({value: value.extid, result: err});
-            next();
-          }
+              contractData = response.toObject();
+              getOnlyId(uidService, contractData.foreignIot.uid);
+              getOnlyId(idsService, contractData.foreignIot.items);
+              getOnlyId(uidDevice, contractData.iotOwner.uid);
+              getOnlyId(idsDevice, contractData.iotOwner.items);
+              users = uidService.concat(uidDevice);
+              items = idsService.concat(idsDevice);
+            } catch(err){
+              logger.debug('error: ' + err);
+              allresult.push({value: value.extid, result: err});
+              next();
+            }
+            // Save contract with changes (items inactive = true)
+            return response.save();
+          })
+          .then(function (response) {
             // Remove Contract group in comm server
             return cancelContract(value.extid);
           })
@@ -382,16 +444,13 @@ function resetContract(cts, uid){
                                     {multi:true});
           })
           .then(function (response) {
-            logger.debug(response);
             return itemOp.update({_id: {$in: items}, "hasContracts.extid" : contractData.ctid},
                                     {$set: { "hasContracts.$.approved" : false }},
                                     {multi:true});
           })
           .then(function (response) {
-            logger.debug(response);
-
             query = { $set: {"foreignIot.termsAndConditions": false, "iotOwner.termsAndConditions": false} };
-            return contractOp.findOneAndUpdate({"_id": contractData._id}, query, {new: true});
+            return contractOp.update({"_id": contractData._id}, query);
           })
           .then(function (response) {
             return createNotifAndAudit(contractData._id, contractData.ctid, uid.id, uid.extid, contractData.iotOwner.uid, contractData.foreignIot.uid, true, 'UPDATE'); // Accepted = true
@@ -562,6 +621,12 @@ Extends to moveItemsInContract
 function addingOne(oid, otherParams, callback){
   itemOp.updateOne({"oid": oid, "hasContracts.extid" : otherParams.ctid}, {$set: { "hasContracts.$.approved" : true }})
   .then(function(response){
+    return contractOp.update({"iotOwner.items.extid": oid, ctid : otherParams.ctid}, {$set: { "iotOwner.items.$.inactive" : false }});
+  })
+  .then(function(response){
+    return contractOp.update({"foreignIot.items.extid": oid, ctid : otherParams.ctid}, {$set: { "foreignIot.items.$.inactive" : false }});
+  })
+  .then(function(response){
     return commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST');
   })
   .then(function(response){
@@ -624,19 +689,6 @@ function createContract(id, descr){
     description: descr
   };
   return commServer.callCommServer(payload, 'groups', 'POST');
-}
-
-/*
-Creates array with oids
-*/
-function getOnlyOid(items, toAdd){
-  for(var i = 0; i < toAdd.length; i++){
-    if(toAdd[i].hasOwnProperty("extid")){
-      items.push(toAdd[i].extid);
-    } else {
-      items.push(toAdd[i].oid);
-    }
-  }
 }
 
 /*
@@ -710,6 +762,19 @@ function getOnlyId(array, toAdd){
 }
 
 /*
+Creates array with oids
+*/
+function getOnlyOid(items, toAdd){
+  for(var i = 0; i < toAdd.length; i++){
+    if(toAdd[i].hasOwnProperty("extid")){
+      items.push(toAdd[i].extid);
+    } else {
+      items.push(toAdd[i].oid);
+    }
+  }
+}
+
+/*
 Accepts or mongo id or external id
 */
 function checkInput(ctid){
@@ -748,5 +813,6 @@ module.exports.contractFeeds = contractFeeds;
 module.exports.contractInfo = contractInfo;
 module.exports.removeAllContract = removeAllContract;
 module.exports.pauseContracts = pauseContracts;
-module.exports.reactivateItemInContract = reactivateItemInContract;
+module.exports.enableOneItem = enableOneItem;
 module.exports.resetContract = resetContract;
+module.exports.removeOneItem = removeOneItem;

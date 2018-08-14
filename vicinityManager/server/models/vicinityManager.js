@@ -31,6 +31,13 @@ var oidSchema = Schema({
   name: String
 },{ _id : false });
 
+var contractItemSchema = Schema({
+  id: {type: ObjectId, ref: 'item'},
+  extid: String,
+  name: String,
+  inactive: {type: Boolean, default: true}
+},{ _id : false });
+
 var auditSchema = Schema({
   id: {type: ObjectId, ref: 'auditLog'},
   extid: String
@@ -57,7 +64,7 @@ var contractSubschema = Schema({
   cid: cidSchema,
   uid: [ uidSchema ],
   termsAndConditions: {type: Boolean, default: false},
-  items: [ oidSchema ]
+  items: [ contractItemSchema ]
 },{ _id : false });
 
 // Vicinity neighorhood schemas ============

@@ -34,6 +34,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
   // Callbacks
 
   function successCallback(response) {
+    $scope.contracts = [];
     $scope.contracts = parseContracts(response.data.message.hasContracts);
     $scope.noItems = ($scope.contracts.length === 0);
     if(!$scope.noItems){myContractDetails();}
@@ -180,23 +181,41 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
 
 // Disable one device only
   $scope.disableItem = function(thing){
-    itemsAPIService.ctDisableItem({oid: thing.oid, ct: { ctid: $scope.wholeContract.ctid, _id: $scope.wholeContract._id}, uid: thing.uid})
-      .then(successCallback)
-      .catch(errorCallback);
+    itemsAPIService.ctDisableItem({oid:{ extid: thing.oid, id: thing._id}, ct: { extid: $scope.wholeContract.ctid, id: $scope.wholeContract._id}, uid: thing.uid})
+    .then(function (response) {
+      if(response.error){
+        Notification.error('Problem disabling item: ' + response.message);
+      } else { init(); }
+    })
+    .catch(function(err){
+      Notification.error('Problem disabling item: ' + err);
+    });
   };
 
 // Remove one device only
   $scope.removeItem = function(thing){
     itemsAPIService.ctRemoveItem({oid: thing.oid, ct: $scope.wholeContract.ctid, uid: thing.uid})
-      .then(successCallback)
-      .catch(errorCallback);
+    .then(function (response) {
+      if(response.error){
+        Notification.error('Problem removing item: ' + response.message);
+      } else { init(); }
+    })
+    .catch(function(err){
+      Notification.error('Problem disabling item: ' + err);
+    });
   };
 
 // Enable one device only
-  $scope.ctEnableItem = function(thing){
-    itemsAPIService.getContracts({oid: thing.oid, ct: $scope.wholeContract.ctid, uid: thing.uid})
-      .then(successCallback)
-      .catch(errorCallback);
+  $scope.enableItem = function(thing){
+    itemsAPIService.ctEnableItem({oid: thing.oid, ct: $scope.wholeContract.ctid, uid: thing.uid})
+    .then(function (response) {
+      if(response.error){
+        Notification.error('Problem enabling item: ' + response.message);
+      } else { init(); }
+    })
+    .catch(function(err){
+      Notification.error('Problem disabling item: ' + err);
+    });
   };
 
   // Private Functions
@@ -233,10 +252,14 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     for(var i = 0; i < array.length; i++){
       if(array[i].id.status !== 'deleted'){
         cts.push(array[i].id);
-        cts[i].imAdmin = array[i].imAdmin;
-        cts[i].imForeign = array[i].imForeign;
-        cts[i].active = array[i].approved;
-        cts[i].inactiveItems = array[i].inactive.length > 0;
+          try{
+          cts[i].imAdmin = array[i].imAdmin;
+          cts[i].imForeign = array[i].imForeign;
+          cts[i].active = array[i].approved;
+          cts[i].inactiveItems = array[i].inactive.length > 0;
+        } catch(err){
+          init();
+        }
       }
     }
     return cts;
