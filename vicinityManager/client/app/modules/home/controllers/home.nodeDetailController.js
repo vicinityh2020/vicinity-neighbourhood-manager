@@ -26,7 +26,7 @@ angular.module('VicinityManagerApp.controllers').
 
             $scope.modify = true;
             $scope.nodeId = $state.params.nodeId;
-            $scope.myNode = "Creating new gateway";
+            $scope.myNode = "Creating new Access Point";
 
             if($scope.nodeId !== '0'){
             $scope.modify = false;
@@ -60,11 +60,11 @@ angular.module('VicinityManagerApp.controllers').
                 if($scope.nodeId === '0'){
                 nodeAPIService.postOne(query)
                 .then(function(response){
-                    Notification.success("Node successfully created!!");
+                    Notification.success("Access Point successfully created!!");
                     $scope.backToList();
                 })
                 .catch(function(err){
-                  Notification.error("Error creating node " + err);
+                  Notification.error("Error creating Access Point " + err);
                 });
 
                 }else{
@@ -72,11 +72,11 @@ angular.module('VicinityManagerApp.controllers').
                 nodeAPIService.updateOne($state.params.nodeId, query)
                   .then(
                     function successCallback(response){
-                      Notification.success("Node successfully modified!!");
+                      Notification.success("Access Point successfully modified!!");
                       $scope.backToList();
                     },
                     function errorCallback(err){
-                      Notification.error("Error updating node " + err);
+                      Notification.error("Error updating Access Point " + err);
                     }
                   );
                 }
@@ -96,7 +96,7 @@ angular.module('VicinityManagerApp.controllers').
 
             $scope.toModify= function(){
               $scope.modify = true;
-              $scope.myNode = "Modifying gateway: " + $scope.nName;
+              $scope.myNode = "Modifying Access Point: " + $scope.nName;
             };
 
   });

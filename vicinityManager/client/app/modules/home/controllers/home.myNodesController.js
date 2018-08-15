@@ -49,7 +49,7 @@ angular.module('VicinityManagerApp.controllers').
       nodeAPIService.updateOne(adid, {status : "deleted"}) // upd status to removed of node in MONGO
         .then(
           function successCallback(response){
-            Notification.success("Node successfully removed!!");
+            Notification.success("Access Point successfully removed!!");
             myInit();
           },
           errorCallback

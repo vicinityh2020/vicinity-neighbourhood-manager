@@ -1,5 +1,5 @@
 <section class="content-header">
-    <h1>Gateway detail</h1>
+    <h1>Access Point detail</h1>
 </section>
 
 <!-- MODIFY TEMPLATE -->
@@ -12,12 +12,12 @@
   <form name="form" role="form" ng-submit="submitNode()">
     <div class="box-body">
       <div class="form-group">
-        <label>Gateway name</label>
+        <label>Access Point name</label>
         <input class="form-control" ng-model="nName" placeholder="Enter name" required>
       </div>
 
       <div class="form-group" ng-show="nodeId === '0'">
-        <label>Gateway type</label>
+        <label>Access Point type</label>
         <div class="form-group">
           <div class="row radio">
             <div class="col-sm-1">
@@ -102,7 +102,7 @@
 
     <div class="box-body">
       <div class="form-group">
-        <label>Gateway name</label>
+        <label>Access Point name</label>
         <p>{{nName}}</p>
       </div>
       <div class="form-group">
@@ -110,7 +110,7 @@
         <p>{{nId}}</p>
       </div>
       <div class="form-group">
-        <label>Gateway type</label>
+        <label>Access Point type</label>
           <div ng-show="nAgentType === 'generic.adapter.vicinity.eu' ">
             <div class="col-sm-1">
               <img class="pull-left node-logo" src="img/logos/vcntlogo.png"/>
