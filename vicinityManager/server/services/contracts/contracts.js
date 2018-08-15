@@ -304,6 +304,16 @@ function pauseContracts(oid, cts, uid){
               }
               return true;
             })
+            .then(function(response){
+              for(var i = 0, l = cts.length; i < l; i++){
+                audits.create(
+                  { kind: 'user', item: uid.id, extid: uid.extid },
+                  {},
+                  { kind: 'contract', item: cts[i].id, extid: cts[i].extid },
+                  56, "Item " + oid.extid + " disabled");
+                }
+              return true;
+            })
             .then(function (response) {
               resolve({toPause: allresult});
             })
@@ -332,13 +342,20 @@ Reactivate ONE item in ONE contract after update
 */
 function enableOneItem(oid, ct, uid){
   return new Promise(function(resolve, reject) {
-    var otherData = {ctid: ct, mail: uid.extid};
+    var otherData = {ctid: ct.extid, mail: uid.extid};
     addingOne(oid, otherData, function(err, response){
-      itemOp.update({"oid": oid, "hasContracts.extid" : ct},
+      itemOp.update({"oid": oid, "hasContracts.extid" : ct.extid},
                      {$set: { "hasContracts.$.approved" : true }})
      .then(function(response){
-       return userOp.update({"_id": uid.id, "hasContracts.extid" : ct},
+       return userOp.update({"_id": uid.id, "hasContracts.extid" : ct.extid},
                       {$pull: { "hasContracts.$.inactive" : oid }});
+     })
+     .then(function(response){
+       return audits.create(
+         { kind: 'user', item: uid.id, extid: uid.extid },
+         {},
+         { kind: 'contract', item: ct.id, extid: ct.extid },
+         56, "Item " + oid + " enabled");
      })
      .then(function (response) {
        resolve('Success');
@@ -347,7 +364,7 @@ function enableOneItem(oid, ct, uid){
        reject(err);
      });
    });
-  // TODO Notifs and logs
+  // TODO Notifs
   });
 }
 
@@ -361,18 +378,25 @@ Remove ONE item from contract
 */
 function removeOneItem(oid, ct, uid){
   return new Promise(function(resolve, reject) {
-    var otherData = {ctid: ct, mail: uid.extid};
+    var otherData = {ctid: ct.extid, mail: uid.extid};
     deletingOne(oid, otherData, function(err, response){
-      itemOp.update({"oid": oid}, {$pull: { hasContracts: {extid : ct }}})
+      itemOp.update({"oid": oid}, {$pull: { hasContracts: {extid : ct.extid }}})
      .then(function(response){
-       return userOp.update({"_id": uid.id, "hasContracts.extid" : ct},
+       return userOp.update({"_id": uid.id, "hasContracts.extid" : ct.extid},
                       {$pull: { "hasContracts.$.inactive" : oid }});
      })
      .then(function(response){
-       return contractOp.update({"ctid": ct}, {$pull: { "foreignIot.items" : { extid: oid }}});
+       return contractOp.update({"ctid": ct.extid}, {$pull: { "foreignIot.items" : { extid: oid }}});
      })
      .then(function(response){
-       return contractOp.update({"ctid": ct}, {$pull: { "iotOwner.items" : { extid: oid }}});
+       return contractOp.update({"ctid": ct.extid}, {$pull: { "iotOwner.items" : { extid: oid }}});
+     })
+     .then(function(response){
+       return audits.create(
+         { kind: 'user', item: uid.id, extid: uid.extid },
+         {},
+         { kind: 'contract', item: ct.id, extid: ct.extid },
+         56, "Item " + oid + " removed");
      })
      .then(function (response) {
        resolve('Success');
@@ -699,6 +723,7 @@ function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imA
     var auditNumber;
     var notifNumber;
     var notifTarget = [];
+    var message = null;
     var allUsers = ownUsers.concat(foreignUsers);
     try{
       for(var n = 0; n < allUsers.length; n++){
@@ -714,7 +739,7 @@ function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imA
       } else if(!imAdmin && type === "DELETE"){
         notifNumber = 25; auditNumber = 55;
       } else if(type === "UPDATE"){
-        notifNumber = 26; auditNumber = 56;
+        notifNumber = 26; auditNumber = 56; message = "Reset contract";
       } else {
         resolve(false);
       }
@@ -727,14 +752,14 @@ function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imA
           { kind: 'user', item: uid, extid: mail },
           notifTarget[i],
           { kind: 'contract', item: ct_id, extid: ctid },
-          'info', notifNumber, null
+          'info', notifNumber, message
         );
       }
       audits.create(
         { kind: 'user', item: uid, extid: mail },
         {},
         { kind: 'contract', item: ct_id, extid: ctid },
-        auditNumber, null)
+        auditNumber, message)
       .then(function(response){
         resolve(true);
       })

@@ -194,7 +194,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
 
 // Remove one device only
   $scope.removeItem = function(thing){
-    itemsAPIService.ctRemoveItem({oid: thing.oid, ct: $scope.wholeContract.ctid, uid: thing.uid})
+    itemsAPIService.ctRemoveItem({oid: thing.oid, ct: { extid: $scope.wholeContract.ctid, id: $scope.wholeContract._id}, uid: thing.uid})
     .then(function (response) {
       if(response.error){
         Notification.error('Problem removing item: ' + response.message);
@@ -207,7 +207,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
 
 // Enable one device only
   $scope.enableItem = function(thing){
-    itemsAPIService.ctEnableItem({oid: thing.oid, ct: $scope.wholeContract.ctid, uid: thing.uid})
+    itemsAPIService.ctEnableItem({oid: thing.oid, ct: { extid: $scope.wholeContract.ctid, id: $scope.wholeContract._id}, uid: thing.uid})
     .then(function (response) {
       if(response.error){
         Notification.error('Problem enabling item: ' + response.message);
