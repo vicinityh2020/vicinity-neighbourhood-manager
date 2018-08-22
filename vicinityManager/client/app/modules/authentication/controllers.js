@@ -292,13 +292,14 @@ $(window).on('resize',function(){
 // ==== recoverPasswordController controller ========
 
 .controller('recoverPasswordController',
-           ['$scope', '$stateParams', 'AuthenticationService', 'Notification',
-           function ($scope, $stateParams, AuthenticationService, Notification){
+           ['$scope', '$stateParams', 'AuthenticationService', 'Notification', 'configuration',
+           function ($scope, $stateParams, AuthenticationService, Notification, configuration){
 
              $('div#recoverTmp').show();
              $('div#emailSentTmp').hide();
              $scope.password1 = "";
              $scope.password2 = "";
+             $scope.baseHref = configuration.baseHref + '/#/login';
 
              $scope.resetMyPwd = function(){
                if($scope.password1 === $scope.password2){

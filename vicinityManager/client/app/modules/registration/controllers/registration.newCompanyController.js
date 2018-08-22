@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('registrationNewCompanyController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
+             ['$scope', '$rootScope', '$location', '$state', 'configuration', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
+             function ($scope, $rootScope, $location, $state, configuration, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
      //rest login status
     //  AuthenticationService.ClearCredentials();
 
@@ -21,7 +21,7 @@ angular.module('Registration')
      $scope.number = 1;
      $scope.note ="Register new member";
      $scope.note2 = "Registration form";
-
+     $scope.baseHref = configuration.baseHref + '/#/login';
 
 
      $("#myCheck").prop("checked", false);

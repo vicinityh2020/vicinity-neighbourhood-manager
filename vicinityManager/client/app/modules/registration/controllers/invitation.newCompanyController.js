@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('invitationNewCompanyController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
+             ['$scope', '$rootScope', 'configuration', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
+             function ($scope, $rootScope, $location, configuration, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
 
       // Rest login status
       // AuthenticationService.ClearCredentials();
@@ -22,6 +22,7 @@ angular.module('Registration')
        $scope.note2 = "Registration form";
        $scope.compName = "";
        $scope.termsAccepted = false;
+       $scope.baseHref = configuration.baseHref + '/#/login';
        //$scope.newRegis2 = false;
        //$scope.comps = [];
 

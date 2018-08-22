@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('registrationNewUserController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
+             ['$scope', '$rootScope', '$location', 'configuration', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
+             function ($scope, $rootScope, $location, configuration, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
                //rest login status
               //  AuthenticationService.ClearCredentials();
 
@@ -23,6 +23,7 @@ angular.module('Registration')
                $scope.note2 = "Registration form";
                $scope.companyName = "";
                $scope.registration = {};
+               $scope.baseHref = configuration.baseHref + '/#/login';
 
 
 // ===== Update status to verified =======

@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('invitationNewUserController',
-             ['$scope', '$rootScope', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
-             function ($scope, $rootScope, $location, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
+             ['$scope', '$rootScope', '$location', '$state', 'configuration', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
+             function ($scope, $rootScope, $location, $state, configuration, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
      $scope.duplicities = [];
      $scope.isError = false;
      $scope.visib = 'visible';
@@ -20,6 +20,7 @@ angular.module('Registration')
      $scope.note ="Register new member";
      $scope.note2 = "Registration form";
      $scope.termsAccepted = false;
+     $scope.baseHref = configuration.baseHref + '/#/login';
 
      $('div#myModal1').hide();
      $('div#newOrganisationInfo').hide();
