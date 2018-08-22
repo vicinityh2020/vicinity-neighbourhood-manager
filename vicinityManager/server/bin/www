@@ -7,6 +7,7 @@
 process.env.VCNT_MNGR_DB = process.env.VCNT_MNGR_DB ? process.env.VCNT_MNGR_DB : 'mongodb://vicinity_user:Ysq.rvE!(wg#Vp4_@ds060478.mongolab.com:60478/vicinity_neighbourhood_manager';
 var app = require('../app');
 var debug = require('debug')('server:server');
+var config = require('../configuration/configuration');
 var https = require('https'); // Comment if no SSL
 // var http = require('http'); // Uncomment if no SSL
 var fs = require("fs");
@@ -16,8 +17,8 @@ var fs = require("fs");
  */
 
  var options = {
-   key: fs.readFileSync("/etc/letsencrypt/live/vicinity.bavenir.eu/privkey.pem"),
-   cert: fs.readFileSync("/etc/letsencrypt/live/vicinity.bavenir.eu/fullchain.pem")
+   key: fs.readFileSync(config.key),
+   cert: fs.readFileSync(config.cert)
  };
 
 /**

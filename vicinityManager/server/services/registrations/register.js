@@ -142,7 +142,7 @@ function createReg(id, data, callback) {
       // Case we just want to send verification mail
       }else if ((raw.type == "newCompany") && (raw.status == "pending")){
         mailInfo = {
-          link : "http://vicinity.bavenir.eu/#/registration/newCompany/" + raw._id ,
+          link : config.baseHref + "/#/registration/newCompany/" + raw._id ,
           tmpName : "activateCompany", name : raw.companyName,
           subject : "Verification email to join VICINITY", emailTo : raw.email
         };
@@ -289,7 +289,7 @@ function registrationAndVerificationMail(db){
     var mailInfo = {};
     if(product.type === 'newUser'){
       mailInfo = {
-        link : "http://vicinity.bavenir.eu/#/registration/newUser/" + product._id,
+        link : config.baseHref + "/#/registration/newUser/" + product._id,
         tmpName : "activateUser",
         name : product.userName,
         subject : 'Verification email to join VICINITY',
@@ -297,7 +297,7 @@ function registrationAndVerificationMail(db){
       };
     }else{
       mailInfo = {
-        link : "http://vicinity.bavenir.eu/#/registration/newCompany/" + product._id,
+        link : config.baseHref + "/#/registration/newCompany/" + product._id,
         tmpName : "activateCompany",
         name : product.companyName,
         subject : 'Verification email to join VICINITY',
