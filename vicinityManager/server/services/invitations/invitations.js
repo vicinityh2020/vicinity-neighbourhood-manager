@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var invitationOp = require('../../models/vicinityManager').invitation;
 var mailing = require('../../services/mail/mailing');
 var logger = require("../../middlewares/logger");
+var config = require('../../configuration/configuration');
 
 function getOne(o_id, callback) {
   // Not set the flag {new: true} --> returns old doc!
@@ -33,12 +34,12 @@ function postOne(userName, companyId, cid, organisation, emailTo, nameTo, type, 
   db.save()
   .then(function(product){
     if(product.type === 'newUser'){
-      thisLink = "http://vicinity.bavenir.eu/#/invitation/newUser/" ;
+      thisLink = config.baseHref + "/#/invitation/newUser/" ;
       thisTmp = "inviteUser";
       thisName = product.sentBy.email;
       thisOrg = false;
     }else{
-      thisLink = "http://vicinity.bavenir.eu/#/invitation/newCompany/";
+      thisLink = config.baseHref + "/#/invitation/newCompany/";
       thisTmp = "inviteCompany";
       thisName = product.sentBy.email;
       thisOrg = product.sentBy.organisation;
