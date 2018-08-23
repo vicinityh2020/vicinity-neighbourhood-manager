@@ -18,23 +18,27 @@ Create a contract request
 * @return {Callback}
 */
 function creating(data, token_uid, token_mail, callback){
-  var ct_id, ctid;
+  var ct_id, ctid; // Contract id internal/external
   var ct = new contractOp();
-  var idsService = [];
-  var idsDevice = [];
-  var uidService = [];
-  var uidDevice = [];
-  // Case contracting user not provided, assume it is the first in the array of contracted service
-  var contractingUser = data.contractingUser !== undefined ? data.uidsService[0] : data.contractingUser;
+  var idsService = []; // store internal ids services
+  var idsDevice = []; // store internal ids devices
+  var uidService = []; // store internal ids services owners
+  var uidDevice = []; // store internal ids devices owners
 
+  // Case contracting user not provided, assume it is the first in the array of contracted service
+  var contractingUser = data.contractingUser === undefined ? data.uidsService[0] : data.contractingUser;
+
+  //Building contract object
   ct.ctid = data.ctid === undefined ? uuid() : data.ctid;
   ct.foreignIot = { cid: data.cidService, uid: data.uidsService, termsAndConditions: false, items: data.oidsService };
   ct.iotOwner = { cid: data.cidDevice, uid: data.uidsDevice, termsAndConditions: true, items: data.oidsDevice };
   ct.readWrite = data.readWrite;
   ct.legalDescription = 'lorem ipsum';
   ct.type = 'serviceRequest';
+
+  // Save contract object
   ct.save(
-    function(error, response){
+  function(error, response){
       if(error){
         logger.debug(error);
         callback(true, error);
@@ -51,10 +55,13 @@ function creating(data, token_uid, token_mail, callback){
         var ctidDeviceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: data.uidsDevice.length === 1, readWrite: response.readWrite };
         var ctidDeviceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: false, readWrite: response.readWrite };
 
+        // Get internal ids
         getOnlyId(uidService, data.uidsService);
         getOnlyId(idsService, data.oidsService);
         getOnlyId(uidDevice, data.uidsDevice);
         getOnlyId(idsDevice, data.oidsDevice);
+
+        // Update items and users involved in the contract
         userOp.update({_id: {$in: uidDevice }}, { $push: {hasContracts: ctidDeviceUser} }, { multi: true })
         .then(function(response){ // Update main requester
           return userOp.update({_id: token_uid, "hasContracts.id" :ct_id},
@@ -74,14 +81,18 @@ function creating(data, token_uid, token_mail, callback){
           return itemOp.update({_id: {$in: idsService }}, { $push: {hasContracts: ctidServiceItem} }, { multi: true });
         })
         .then(function(response){
+          // Create contract group in comm server
           return createContract(ctid, 'Contract: ' + ct_type);
         })
-        .then(function(response){ // Get contract creator devices -- To add in contract
+        .then(function(response){
+          // Get contract creator devices -- To add in contract because we assume that contract requester agrees terms
           return itemOp.find({"_id": { $in: idsDevice }, 'uid.id': token_uid}, {oid:1});
         })
         .then(function(response){
           var items = [];
+          // Get OID of devices to be enabled in contract
           getOnlyOid(items, response);
+          // Add items in contract group of comm server
           return moveItemsInContract(ctid, token_mail, items, true); // add = true
         })
         .then(function(response){

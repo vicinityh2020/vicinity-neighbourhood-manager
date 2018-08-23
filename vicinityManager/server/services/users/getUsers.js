@@ -23,7 +23,6 @@ function getUserInfo(uid, myUid, myCid, callback) {
       getIds(response.knows, friends);
       userOp.findOne({_id:uid}, {name:1, email:1, cid:1, occupation:1, accessLevel:1, hasItems:1, hasContracts:1, 'authentication.principalRoles':1 }, function(err, response){
         data = response;
-        logger.debug(response);
         if(err){
           callback(true, err);
         } else {
