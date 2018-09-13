@@ -48,6 +48,8 @@ router
   .get('/search/items', jwt, apiController.searchItems)
 // Semantic Repository
   .post('/repository/validate', apiController.validateItemDescription)
-  .get('/repository/annotations', apiController.getAnnotations);
+  .get('/repository/annotations', apiController.getAnnotations)
+// Statistics
+  .get('/public/statistics', apiController.getStatistics);
 
 module.exports = router;

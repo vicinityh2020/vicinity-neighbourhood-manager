@@ -30,6 +30,9 @@ config.approverMail = process.env.approverMail;
 // Platform base href
 config.baseHref = process.env.baseHref;
 
+// Vicinity services dir
+config.vicinityServicesDir = process.env.vicinityServicesDir;
+
 // SSL certificates
 config.cert = process.env.cert;
 config.key = process.env.key;

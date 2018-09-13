@@ -21,6 +21,7 @@ var sGetAgents = require("../../services/nodes/get");
 var sGetOrganisation = require("../../services/organisations/get");
 var sGetSearch = require("../../services/search/get");
 var sOrgConfiguration = require('../../services/organisations/configuration');
+var sPublic = require("../../services/public/statistics");
 var sItemUpdate = require('../../services/items/update');
 var ctHelper = require("../../services/contracts/contracts.js");
 var ctChecks = require("../../services/contracts/contractChecks.js");
@@ -867,6 +868,20 @@ function searchItems(req, res, next) {
   });
 }
 
+/*
+Public --------------------------------------------------
+*/
+
+/**
+ * Get statistics
+ * @return {Object} JSON with NM statistics
+ */
+function getStatistics(req, res, next) {
+  sPublic.getStatistics(function(err, response){
+    res.json({error: err, message: response});
+  });
+}
+
 // Export functions --------------------------------------------------
 
 module.exports.authenticate = authenticate;
@@ -911,3 +926,5 @@ module.exports.manageContract = manageContract;
 module.exports.searchOrgs = searchOrgs;
 module.exports.searchUsers = searchUsers;
 module.exports.searchItems = searchItems;
+
+module.exports.getStatistics = getStatistics;
