@@ -51,7 +51,7 @@ function changePrivacy(ids, userId, userMail, c_id){
           }
         },
         false,
-        {knows:knows, mail: userMail}
+        {knows:knows, mail: userMail, uid: userId}
       );
     });
   });
@@ -168,6 +168,9 @@ function removeOneItem(oid, uid, cts_ctid, token_mail){
       return ctChecks.checkContracts(uid, token_mail);
     })
     .then(function(response){
+      return ctChecks.contractValidity(cts_ctid, uid, token_mail);
+    })
+    .then(function(response){
       for(var i = 0, l = cts_ctid.length; i < l; i++){
         logger.audit({user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i] });
       }
@@ -217,6 +220,9 @@ function processingPrivacy(id, otherParams, callback){
       if(cts_id.length === 0){ callback(false, {}); }
       return cts_id;
     }
+  })
+  .then(function(response){
+    return ctChecks.contractValidity(cts_ctid, otherParams.uid, otherParams.mail);
   })
   .then(function(response){
     return itemOp.update(

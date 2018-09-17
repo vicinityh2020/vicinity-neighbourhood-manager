@@ -852,3 +852,4 @@ module.exports.pauseContracts = pauseContracts;
 module.exports.enableOneItem = enableOneItem;
 module.exports.resetContract = resetContract;
 module.exports.removeOneItem = removeOneItem;
+module.exports.createNotifAndAudit = createNotifAndAudit;

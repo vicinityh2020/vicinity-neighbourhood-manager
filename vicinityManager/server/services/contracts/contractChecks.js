@@ -27,8 +27,8 @@ function postCheck(data, roles, cid, callback){
   result = imIotOperator && sameCompany;
 
   if(result){
-    getOnlyId(items, data.oidsDevice);
-    getOnlyId(items, data.oidsService);
+    getOnlyProp(items, data.oidsDevice, 'id');
+    getOnlyProp(items, data.oidsService, 'id');
 
     checkVisibility(items, cid, data.cidService.id)
     .then(function(response){
@@ -94,6 +94,54 @@ function checkContracts(userId, userMail){
     })
     .catch(function(err){
       reject(err);
+    });
+  });
+}
+
+
+/*
+Checks if a contract has to be removed
+Case one party has no items in it
+// TODO get the users of the contracts to remove to notify them
+*/
+function contractValidity(ctids, uid, mail){
+  logger.debug("DEBUG: removing contracts that have no items...");
+  var toRemoveCtid = [];
+  var toRemoveId = [];
+  var ownUsers = [];
+  var foreignUsers = [];
+  return new Promise(function(resolve, reject) {
+    contractOp.find(
+      {"ctid": {$in: ctids},
+      $or: [ {"foreignIot.items": { $exists: true, $size: 0 } },
+            {"iotOwner.items": { $exists: true, $size: 0 } } ]
+      }, {ctid: 1, 'foreignIot.users': 1, 'iotOwner.users': 1})
+    .then(function(data){
+      logger.debug("DEBUG: Contracts to remove... " + data);
+      getOnlyProp(toRemoveCtid, data, 'ctid');
+      getOnlyProp(toRemoveId, data, '_id');
+      getOnlyProp(foreignUsers, data, 'foreignIot.users');
+      getOnlyProp(ownUsers, data, 'iotOwner.users');
+      var newCt = {
+        foreignIot: {},
+        iotOwner: {},
+        legalDescription: "",
+        status: 'deleted'};
+      return contractOp.update({"ctid": {$in: toRemoveCtid}}, {$set: newCt}, {multi: true});
+    })
+    .then(function(data){
+      var notifications = [];
+      for(var i = 0, l = toRemoveCtid.length; i < l; i++ ){
+        notifications.push(ctHelper.createNotifAndAudit(toRemoveId[i], toRemoveCtid[i], uid, mail, ownUsers[i], foreignUsers[i], true, 'DELETE'));
+      }
+      return Promise.all(notifications);
+    })
+    .then(function(data){
+      resolve(true);
+    })
+    .catch(function(err){
+      logger.debug(err);
+      reject(false);
     });
   });
 }
@@ -180,7 +228,7 @@ function checkVisibility(items, cidIot, cidService){
   return new Promise(function(resolve, reject) {
     userAccountOp.findOne({_id:cidIot},{knows:1})
     .then(function(response){
-      getOnlyId(knows, response.knows);
+      getOnlyProp(knows, response.knows, 'id');
       for(var i = 0; i < knows.length; i++){
         if(cidService.toString() === knows[i].toString()){ friends = true; }
       }
@@ -209,9 +257,9 @@ function checkVisibility(items, cidIot, cidService){
 Extract one field per object in array
 Output: array of strings
 */
-function getOnlyId(items, toAdd){
+function getOnlyProp(items, toAdd, property){
   for(var i = 0; i < toAdd.length; i++){
-    items.push(toAdd[i].id);
+    items.push(toAdd[i][property]);
   }
 }
 
