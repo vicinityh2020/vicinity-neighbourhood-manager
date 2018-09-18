@@ -38,8 +38,8 @@ app.use(cors());
 // app.set('view engine', 'pug'); // Default view engine
 logger.debug("Overriding 'Express' logger");
 app.use(require('morgan')("combined",{ "stream": logger.stream }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet()); // Comment if no SSL
