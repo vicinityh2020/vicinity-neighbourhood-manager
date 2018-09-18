@@ -735,8 +735,8 @@ function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imA
     var notifNumber;
     var notifTarget = [];
     var message = null;
-    var allUsers = ownUsers.concat(foreignUsers);
     try{
+      var allUsers = ownUsers.concat(foreignUsers);
       for(var n = 0; n < allUsers.length; n++){
         notifTarget.push({kind: 'user', item: allUsers[n].id, extid: allUsers[n].extid});
       }

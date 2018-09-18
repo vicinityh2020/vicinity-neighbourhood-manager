@@ -27,8 +27,8 @@ function postCheck(data, roles, cid, callback){
   result = imIotOperator && sameCompany;
 
   if(result){
-    getOnlyProp(items, data.oidsDevice, 'id');
-    getOnlyProp(items, data.oidsService, 'id');
+    getOnlyProp(items, data.oidsDevice, ['id']);
+    getOnlyProp(items, data.oidsService, ['id']);
 
     checkVisibility(items, cid, data.cidService.id)
     .then(function(response){
@@ -108,20 +108,24 @@ function contractValidity(ctids, uid, mail){
   logger.debug("DEBUG: removing contracts that have no items...");
   var toRemoveCtid = [];
   var toRemoveId = [];
-  var ownUsers = [];
-  var foreignUsers = [];
+  var ownUsers = [], ownItems = [];
+  var foreignUsers = [], foreignItems = [];
+  var auxids = [];
+
   return new Promise(function(resolve, reject) {
     contractOp.find(
       {"ctid": {$in: ctids},
       $or: [ {"foreignIot.items": { $exists: true, $size: 0 } },
             {"iotOwner.items": { $exists: true, $size: 0 } } ]
-      }, {ctid: 1, 'foreignIot.users': 1, 'iotOwner.users': 1})
+      }, {ctid: 1, 'foreignIot': 1, 'iotOwner': 1})
     .then(function(data){
       logger.debug("DEBUG: Contracts to remove... " + data);
-      getOnlyProp(toRemoveCtid, data, 'ctid');
-      getOnlyProp(toRemoveId, data, '_id');
-      getOnlyProp(foreignUsers, data, 'foreignIot.users');
-      getOnlyProp(ownUsers, data, 'iotOwner.users');
+      getOnlyProp(toRemoveCtid, data, ['ctid']);
+      getOnlyProp(toRemoveId, data, ['_id']);
+      getOnlyProp(foreignUsers, data, ['foreignIot', 'uid']);
+      getOnlyProp(ownUsers, data, ['iotOwner', 'uid']);
+      getOnlyProp(foreignItems, data, ['foreignIot', 'items']);
+      getOnlyProp(ownItems, data, ['iotOwner', 'items']);
       var newCt = {
         foreignIot: {},
         iotOwner: {},
@@ -129,7 +133,25 @@ function contractValidity(ctids, uid, mail){
         status: 'deleted'};
       return contractOp.update({"ctid": {$in: toRemoveCtid}}, {$set: newCt}, {multi: true});
     })
-    .then(function(data){
+    .then(function(data){ // Remove contracts from users
+      var users = [];
+      for(var i = 0, l = toRemoveCtid.length; i < l; i++ ){
+        getOnlyProp(auxids, ownUsers[i].concat(foreignUsers[i]), ['id']);
+        users.push(userOp.update({_id: {$in: auxids} }, {$pull: { "hasContracts" : { extid: toRemoveCtid[i] }}}, {multi: true}));
+        auxids = [];
+      }
+      return Promise.all(users);
+    })
+    .then(function(data){ // Remove contracts from items
+      var items = [];
+      for(var i = 0, l = toRemoveCtid.length; i < l; i++ ){
+        getOnlyProp(auxids, ownItems[i].concat(foreignItems[i]), ['id']);
+        items.push(itemOp.update({_id: {$in: auxids} }, {$pull: { "hasContracts" : { extid: toRemoveCtid[i] }}}, {multi: true}));
+        auxids = [];
+      }
+      return Promise.all(items);
+    })
+    .then(function(data){ // Notify users
       var notifications = [];
       for(var i = 0, l = toRemoveCtid.length; i < l; i++ ){
         notifications.push(ctHelper.createNotifAndAudit(toRemoveId[i], toRemoveCtid[i], uid, mail, ownUsers[i], foreignUsers[i], true, 'DELETE'));
@@ -141,7 +163,7 @@ function contractValidity(ctids, uid, mail){
     })
     .catch(function(err){
       logger.debug(err);
-      reject(false);
+      reject(err);
     });
   });
 }
@@ -228,7 +250,7 @@ function checkVisibility(items, cidIot, cidService){
   return new Promise(function(resolve, reject) {
     userAccountOp.findOne({_id:cidIot},{knows:1})
     .then(function(response){
-      getOnlyProp(knows, response.knows, 'id');
+      getOnlyProp(knows, response.knows, ['id']);
       for(var i = 0; i < knows.length; i++){
         if(cidService.toString() === knows[i].toString()){ friends = true; }
       }
@@ -257,9 +279,14 @@ function checkVisibility(items, cidIot, cidService){
 Extract one field per object in array
 Output: array of strings
 */
-function getOnlyProp(items, toAdd, property){
-  for(var i = 0; i < toAdd.length; i++){
-    items.push(toAdd[i][property]);
+function getOnlyProp(items, toAdd, properties){
+  var aux;
+  for(var i = 0, l = toAdd.length; i < l; i++){
+    aux = toAdd[i];
+    for(var j = 0, k = properties.length; j < k; j++){
+      aux = aux[properties[j]];
+    }
+    items.push(aux);
   }
 }
 
@@ -277,3 +304,4 @@ module.exports.postCheck = postCheck;
 module.exports.deleteCheck = deleteCheck;
 module.exports.acceptCheck = acceptCheck;
 module.exports.checkContracts = checkContracts;
+module.exports.contractValidity = contractValidity;
