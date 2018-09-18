@@ -222,9 +222,6 @@ function processingPrivacy(id, otherParams, callback){
     }
   })
   .then(function(response){
-    return ctChecks.contractValidity(cts_ctid, otherParams.uid, otherParams.mail);
-  })
-  .then(function(response){
     return itemOp.update(
       {_id: id},
       {$pull: {"hasContracts": {id: {$in: cts_id }}}},
@@ -244,6 +241,9 @@ function processingPrivacy(id, otherParams, callback){
       {$pull: {"foreignIot.items": {id:id}}},
       {multi:true}
     );
+  })
+  .then(function(response){
+    return ctChecks.contractValidity(cts_ctid, otherParams.uid, otherParams.mail);
   })
   .then(function(response){
     return updateCommServer(cts_ctid, oid, otherParams.mail);
