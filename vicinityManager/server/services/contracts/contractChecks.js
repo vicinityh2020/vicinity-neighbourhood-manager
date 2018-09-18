@@ -87,7 +87,7 @@ function checkContracts(userId, userMail){
     .then(function(response){
       // Get only the contracts of which the user is not ADMIN
         getOnlyIdCondition(ctids_notAdmin, response.hasContracts);
-        removeUserFromContract(ctids_notAdmin, user_id, userMail);
+        return removeUserFromContract(ctids_notAdmin, user_id, userMail);
     })
     .then(function(response){
       resolve(true);
@@ -102,7 +102,6 @@ function checkContracts(userId, userMail){
 /*
 Checks if a contract has to be removed
 Case one party has no items in it
-// TODO get the users of the contracts to remove to notify them
 */
 function contractValidity(ctids, uid, mail){
   logger.debug("DEBUG: removing contracts that have no items...");

@@ -8,6 +8,7 @@ var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
 var notifHelper = require('../../services/notifications/notificationsHelper');
 var commServer = require('../../services/commServer/request');
+var ctChecks = require('../services/contracts/contractChecks.js');
 var sync = require('../../services/asyncHandler/sync');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
@@ -56,10 +57,10 @@ function creating(data, token_uid, token_mail, callback){
         var ctidDeviceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: false, readWrite: response.readWrite };
 
         // Get internal ids
-        getOnlyId(uidService, data.uidsService);
-        getOnlyId(idsService, data.oidsService);
-        getOnlyId(uidDevice, data.uidsDevice);
-        getOnlyId(idsDevice, data.oidsDevice);
+        getOnlyProp(uidService, data.uidsService, ['id']);
+        getOnlyProp(idsService, data.oidsService, ['id']);
+        getOnlyProp(uidDevice, data.uidsDevice, ['id']);
+        getOnlyProp(idsDevice, data.oidsDevice, ['id']);
 
         // Update items and users involved in the contract
         userOp.update({_id: {$in: uidDevice }}, { $push: {hasContracts: ctidDeviceUser} }, { multi: true })
@@ -91,7 +92,7 @@ function creating(data, token_uid, token_mail, callback){
         .then(function(response){
           var items = [];
           // Get OID of devices to be enabled in contract
-          getOnlyOid(items, response);
+          getOnlyProp(items, response, ['oid']);
           // Add items in contract group of comm server
           return moveItemsInContract(ctid, token_mail, items, true); // add = true
         })
@@ -154,15 +155,15 @@ function accepting(id, token_uid, token_mail, callback){
   .then(function(response){
     updItem = response;
     if(imForeign){
-      getOnlyId(items, updItem.foreignIot.items.toObject());
+      getOnlyProp(items, updItem.foreignIot.items.toObject(), ['id']);
     } else {
-      getOnlyId(items, updItem.iotOwner.items.toObject());
+      getOnlyProp(items, updItem.iotOwner.items.toObject(), ['id']);
     }
     return itemOp.find({"_id": { $in: items }, 'uid.id': token_uid}, {oid:1});
   })
   .then(function(response){
     items = [];
-    getOnlyOid(items, response);
+    getOnlyProp(items, response, ['oid']);
     return moveItemsInContract(updItem.ctid, token_mail, items, true); // add = true
   })
   .then(function(response){
@@ -287,7 +288,7 @@ function pauseContracts(oid, cts, uid){
         function(allresult) {
           if(allresult.length === cts.length){
             var ct_oids = [];
-            getOnlyOid(ct_oids, cts);
+            getOnlyProp(ct_oids, cts, ['extid']);
             itemOp.findOne({"_id": oid.id})
             .then(function (response) {
               // Set to approved false all contracts in an inactive item
@@ -403,6 +404,9 @@ function removeOneItem(oid, ct, uid){
        return contractOp.update({"ctid": ct.extid}, {$pull: { "iotOwner.items" : { extid: oid }}});
      })
      .then(function(response){
+       return ctChecks.contractValidity([ct.extid], uid.id, uid.extid);
+     })
+     .then(function(response){
        return audits.create(
          { kind: 'user', item: uid.id, extid: uid.extid },
          {},
@@ -451,10 +455,10 @@ function resetContract(cts, uid){
             // Gather contract data
             try{
               contractData = response.toObject();
-              getOnlyId(uidService, contractData.foreignIot.uid);
-              getOnlyId(idsService, contractData.foreignIot.items);
-              getOnlyId(uidDevice, contractData.iotOwner.uid);
-              getOnlyId(idsDevice, contractData.iotOwner.items);
+              getOnlyProp(uidService, contractData.foreignIot.uid, ['id']);
+              getOnlyProp(idsService, contractData.foreignIot.items, ['id']);
+              getOnlyProp(uidDevice, contractData.iotOwner.uid, ['id']);
+              getOnlyProp(idsDevice, contractData.iotOwner.items, ['id']);
               users = uidService.concat(uidDevice);
               items = idsService.concat(idsDevice);
             } catch(err){
@@ -539,10 +543,10 @@ function removeAllContract(id, token_uid, token_mail){
     })
     .then(function(response){
       ctid = {id: data._id, extid: data.ctid};
-      getOnlyId(users, data.foreignIot.uid);
-      getOnlyId(items, data.foreignIot.items);
-      getOnlyId(users, data.iotOwner.uid);
-      getOnlyId(items, data.iotOwner.items);
+      getOnlyProp(users, data.foreignIot.uid, ['id']);
+      getOnlyProp(items, data.foreignIot.items, ['id']);
+      getOnlyProp(users, data.iotOwner.uid, ['id']);
+      getOnlyProp(items, data.iotOwner.items, ['id']);
       return userOp.update({_id: {$in: users }}, { $pull: {hasContracts: ctid} }, { multi: true });
     })
     .then(function(response){
@@ -576,13 +580,13 @@ function removeOneUser(id, uid, mail, imForeign){
     .then(function(response){
       ctid = response.ctid;
       data = response;
-      if(imForeign){ getOnlyId(items, response.foreignIot.items.toObject()); }
-      else { getOnlyId(items, response.iotOwner.items.toObject()); }
+      if(imForeign){ getOnlyProp(items, response.foreignIot.items.toObject(), ['id']); }
+      else { getOnlyProp(items, response.iotOwner.items.toObject(), ['id']); }
       return itemOp.find({"_id": { $in: items }, 'uid.id': uid}, {oid:1});
     })
     .then(function(response){
-      getOnlyId(items_id, response);
-      getOnlyOid(items_oid, response);
+      getOnlyProp(items_id, response, ['_id']);
+      getOnlyProp(items_oid, response, ['oid']);
       if(imForeign){ query = { $pull: {"foreignIot.items": {id: {$in: items_id} } } }; }
       else { query = { $pull: {"iotOwner.items": {id: {$in: items_id} } } }; }
       return contractOp.update({"_id": id}, query, {multi: true});
@@ -784,31 +788,22 @@ function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imA
   });
 }
 
+
 /*
-Creates array with ids
+Extract one field per object in array
+Output: array of strings
 */
-function getOnlyId(array, toAdd){
-  for(var i = 0; i < toAdd.length; i++){
-    if(toAdd[i].hasOwnProperty("id")){
-      array.push(toAdd[i].id);
-    } else {
-      array.push(toAdd[i]._id);
+function getOnlyProp(items, toAdd, properties){
+  var aux;
+  for(var i = 0, l = toAdd.length; i < l; i++){
+    aux = toAdd[i];
+    for(var j = 0, k = properties.length; j < k; j++){
+      aux = aux[properties[j]];
     }
+    items.push(aux);
   }
 }
 
-/*
-Creates array with oids
-*/
-function getOnlyOid(items, toAdd){
-  for(var i = 0; i < toAdd.length; i++){
-    if(toAdd[i].hasOwnProperty("extid")){
-      items.push(toAdd[i].extid);
-    } else {
-      items.push(toAdd[i].oid);
-    }
-  }
-}
 
 /*
 Accepts or mongo id or external id
