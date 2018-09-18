@@ -153,17 +153,22 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     itemsAPIService.getArrayOfItems(contractItems)
     .then(function(response){
       $scope.alldevices = response.data.message;
-      for(var i = 0; i < $scope.alldevices.length; i++){
-        for(var j = 0; j < $scope.alldevices[i].hasContracts.length; j++){
-          if($scope.alldevices[i].hasContracts[j].id.toString() === $scope.searchParam.contractId.toString() ){
-              $scope.alldevices[i].status = $scope.alldevices[i].hasContracts[j].approved;
+      if($scope.alldevices.length === 0){
+        $scope.mainTitle = "My Contracts";
+        $scope.detailsShow = false;
+      } else {
+        for(var i = 0; i < $scope.alldevices.length; i++){
+          for(var j = 0; j < $scope.alldevices[i].hasContracts.length; j++){
+            if($scope.alldevices[i].hasContracts[j].id.toString() === $scope.searchParam.contractId.toString() ){
+                $scope.alldevices[i].status = $scope.alldevices[i].hasContracts[j].approved;
+            }
+            if(!$scope.alldevices[i].status){$scope.alldevices[i].status = false;} // If not approved show only for edit
           }
-          if(!$scope.alldevices[i].status){$scope.alldevices[i].status = false;} // If not approved show only for edit
         }
-      }
 
-      $scope.mainTitle = "Contract Details";
-      $scope.detailsShow = true;
+        $scope.mainTitle = "Contract Details";
+        $scope.detailsShow = true;
+      }
     })
     .catch(function(error){
       Notification.error("Problem retrieving contract details: " + error);

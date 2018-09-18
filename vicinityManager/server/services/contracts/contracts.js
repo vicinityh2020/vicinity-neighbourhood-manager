@@ -8,7 +8,7 @@ var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
 var notifHelper = require('../../services/notifications/notificationsHelper');
 var commServer = require('../../services/commServer/request');
-var ctChecks = require('../services/contracts/contractChecks.js');
+var ctChecks = require('./contractChecks.js');
 var sync = require('../../services/asyncHandler/sync');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 
