@@ -120,21 +120,13 @@ Get contract
 function fetchContract(req, res){
   var id = req.params.id; // User id
   var parsedData = {};
-  userOp.findOne({ _id: id}, {hasContracts:1}).populate('hasContracts.id')
+  ctHelper.fetchContract(id)
   .then(function(response){
     res.json({error: false, message: response});
   })
   .catch(function(error){
     res.json({error: true, message: error});
   });
-}
-
-// Private Functions
-
-function getOnlyId(array, toAdd){
-  for(var i = 0; i < toAdd.length; i++){
-    array.push(toAdd[i].id);
-  }
 }
 
 // Export modules

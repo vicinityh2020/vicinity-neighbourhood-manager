@@ -35,7 +35,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
 
   function successCallback(response) {
     $scope.contracts = [];
-    $scope.contracts = parseContracts(response.data.message.hasContracts);
+    $scope.contracts = parseContracts(response.data.message);
     $scope.noItems = ($scope.contracts.length === 0);
     if(!$scope.noItems){myContractDetails();}
     $scope.loaded = true;
@@ -254,14 +254,10 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     for(var i = 0; i < array.length; i++){
       if(array[i].id.status !== 'deleted'){
         cts.push(array[i].id);
-          try{
-          cts[i].imAdmin = array[i].imAdmin;
-          cts[i].imForeign = array[i].imForeign;
-          cts[i].active = array[i].approved;
-          cts[i].inactiveItems = array[i].inactive.length > 0;
-        } catch(err){
-          init();
-        }
+        cts[i].imAdmin = array[i].imAdmin;
+        cts[i].imForeign = array[i].imForeign;
+        cts[i].active = array[i].approved;
+        cts[i].inactiveItems = array[i].inactive.length > 0;
       }
     }
     return cts;

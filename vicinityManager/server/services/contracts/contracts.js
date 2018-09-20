@@ -518,6 +518,27 @@ function resetContract(cts, uid){
   });
 }
 
+/*
+Get user contracts
+*/
+function fetchContract(id){
+  var result = [];
+  var parsedRes = {};
+  return userOp.findOne({ _id: id}, {hasContracts:1}).populate('hasContracts.id')
+  .then(function(response){
+    parsedRes = response.toObject().hasContracts;
+    for( var i = 0, l = parsedRes.length; i < l; i++ ){
+      if(parsedRes[i].id.status !== 'deleted'){
+        result.push(parsedRes[i]);
+      }
+    }
+    Promise.resolve(result);
+  })
+  .catch(function(error){
+    Promise.reject(error);
+  });
+}
+
 
 // Private Functions -------------------------------------------------
 
@@ -848,3 +869,4 @@ module.exports.enableOneItem = enableOneItem;
 module.exports.resetContract = resetContract;
 module.exports.removeOneItem = removeOneItem;
 module.exports.createNotifAndAudit = createNotifAndAudit;
+module.exports.fetchContract = fetchContract;
