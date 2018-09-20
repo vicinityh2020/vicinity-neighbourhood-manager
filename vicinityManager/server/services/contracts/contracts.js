@@ -531,7 +531,7 @@ function fetchContract(id){
        return  Promise.resolve(result);
     } else {
         for( var i = 0, l = parsedRes.length; i < l; i++ ){
-        if(parsedRes[i].id.status !== 'deleted'){
+        if(parsedRes[i].id.status && parsedRes[i].id.status !== 'deleted'){
             result.push(parsedRes[i]);
         }
       }
