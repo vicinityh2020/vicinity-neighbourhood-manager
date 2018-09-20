@@ -527,15 +527,19 @@ function fetchContract(id){
   return userOp.findOne({ _id: id}, {hasContracts:1}).populate('hasContracts.id')
   .then(function(response){
     parsedRes = response.toObject().hasContracts;
-    for( var i = 0, l = parsedRes.length; i < l; i++ ){
-      if(parsedRes[i].id.status !== 'deleted'){
-        result.push(parsedRes[i]);
+    if(parsedRes.length === 0){
+       return  Promise.resolve(result);
+    } else {
+        for( var i = 0, l = parsedRes.length; i < l; i++ ){
+        if(parsedRes[i].id.status !== 'deleted'){
+            result.push(parsedRes[i]);
+        }
       }
+      return Promise.resolve(result);
     }
-    Promise.resolve(result);
   })
   .catch(function(error){
-    Promise.reject(error);
+    return Promise.reject(error);
   });
 }
 
