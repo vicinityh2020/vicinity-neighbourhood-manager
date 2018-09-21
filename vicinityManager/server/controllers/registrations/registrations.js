@@ -98,3 +98,4 @@ module.exports.requestRegistration = requestRegistration;
 module.exports.createRegistration = createRegistration;
 module.exports.findDuplicatesUser = findDuplicatesUser;
 module.exports.findDuplicatesCompany = findDuplicatesCompany;
+module.exports.findDuplicatesRegMail = findDuplicatesRegMail;

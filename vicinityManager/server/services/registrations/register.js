@@ -447,4 +447,5 @@ module.exports.requestReg = requestReg;
 module.exports.fastRegistration = fastRegistration;
 module.exports.findDuplicatesUser = findDuplicatesUser;
 module.exports.findDuplicatesCompany = findDuplicatesCompany;
+module.exports.findDuplicatesRegMail = findDuplicatesRegMail;
 module.exports.validateBody = validateBody;
