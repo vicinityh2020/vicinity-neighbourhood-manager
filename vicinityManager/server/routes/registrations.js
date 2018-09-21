@@ -10,6 +10,7 @@ router
   .put('/:id', regisController.createRegistration)
   // look for duplicates
   .post('/duplicatesUser', regisController.findDuplicatesUser)
-  .post('/duplicatesCompany', regisController.findDuplicatesCompany);
+  .post('/duplicatesCompany', regisController.findDuplicatesCompany)
+  .post('/duplicatesRegMail', regisController.findDuplicatesRegMail);
 
 module.exports = router;

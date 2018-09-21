@@ -76,6 +76,20 @@ function findDuplicatesCompany(req, res, next) {
     });
   }
 
+  /*
+  Looking for duplicates in user registration
+  */
+  function findDuplicatesRegMail(req, res, next) {
+    var data = req.body;
+    sRegister.findDuplicatesRegMail(data)
+    .then(function(response){
+      res.json({error: false, message: response});
+    })
+    .catch(function(err){
+      res.json({error: true, message: err});
+    });
+  }
+
 // Export functions
 
 module.exports.getOne = getOne;

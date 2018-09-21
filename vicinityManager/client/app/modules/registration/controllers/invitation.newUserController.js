@@ -49,60 +49,81 @@ angular.module('Registration')
  $scope.regisUser = function () {
   var $pass1 = $("#pwUs1");
   var $pass2 = $("#pwUs2");
-  if ($scope.password1Us){
     if ($scope.password1Us === $scope.password2Us){
-      if($scope.duplicities.length === 0){
-      registrationsAPIService.postOne({userName: $scope.nameUs, email: $scope.emailUs, password: $scope.password1Us, occupation: $scope.occupationUs, companyName: $scope.companynameUs ,companyId:$scope.companyIdUs, cid: $scope.cid, companyLocation: "", status: "pending", type: "newUser"})
-        .then(
-          function successCallback(response){
-            $('div#newUserInfo').fadeOut('slow');
-            setTimeout(function() {
-             $('div#verEmailSent').fadeIn();
-             }, 1000);
-          },
-          function errorCallback(){Notification.warning("There was an issue in the registration process...");}
-        );
-      }else{
-        loopArray($scope.duplicities);
-        Notification.warning('The mail or company name are duplicated!!!');
-        $scope.duplicities = [];
-      }
-      }else{
-        Notification.warning("Passwords do not match...");
-        $pass1.addClass("invalid");
-        $pass2.addClass("invalid");
-        setTimeout(function() {
-          $pass1.removeClass("invalid");
-          $pass2.removeClass("invalid");
-        }, 2000);
-      }
+      findMeDuplicates()
+      .then(function(response){
+      return registrationsAPIService.postOne(
+          { userName: $scope.nameReg,
+            email: $scope.emailReg,
+            password: $scope.password1Us,
+            occupation: $scope.occupationReg,
+            companyName: $scope.companynameReg,
+            companyLocation: $scope.locationReg,
+            businessId: $scope.bidReg,
+            termsAndConditions: true,
+            type: "newCompany"
+          });
+        })
+        .then(endRegistration)
+        .catch(function(err){
+          if(err !== "DUPLICATES"){
+            Notification.error("There was an issue in the registration process: " + err);
+          } else {
+            if($scope.emailReg === "" && $scope.companynameReg === ""){
+              Notification.warning('The mail and company name are duplicated!!!');
+            } else if($scope.emailReg === "" && $scope.companynameReg !== "") {
+              Notification.warning('The mail is duplicated!!!');
+            } else {
+              Notification.warning('The company name is duplicated!!!');
+            }
+          }
+        });
+    }else{
+      Notification.warning("Passwords do not match...");
+      $pass1.addClass("invalid");
+      $pass2.addClass("invalid");
+       setTimeout(function() {
+        $pass1.removeClass("invalid");
+        $pass2.removeClass("invalid");
+       }, 2000);
     }
   };
 
-  $scope.findMeDuplicates = function(){
-    registrationsAPIService.findDuplicatesUser({email: $scope.emailUs})
-    .then(
-      function successCallback(response){
-        if(response.data.message){
-          $scope.duplicities.push(response.data.message);
-        }
-        $scope.regisUser();
-        },
-        function errorCallback(reponse){}
-      );
+  /*
+  Check for duplicate mail or company name
+  Also in the registration document
+  TODO Check company BID
+  */
+    var findMeDuplicates = function(){
+      var aux = false;
+      registrationsAPIService.findDuplicatesUser({email: $scope.emailReg})
+      .then( function(response){
+        aux = response.data.message;
+        if(response.data.message) $scope.emailReg = "";
+        return registrationsAPIService.findDuplicatesCompany({companyName: $scope.companynameReg, businessID: $scope.bidReg});
+      })
+      .then( function(response){
+        if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
+        if(response.data.message) $scope.companynameReg = "";
+        return registrationsAPIService.findDuplicatesRegMail({email: $scope.emailReg});
+      })
+      .then( function(response){
+        if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
+        if(response.data.message) $scope.emailReg = "";
+        if(aux){ Promise.reject("DUPLICATES"); } else { Promise.resolve(aux); }
+      })
+      .catch( function(err){
+        Promise.reject(err);
+      });
     };
 
-    var loopArray = function(arr) {
-      if ( typeof(arr) == "object") {
-          for (var i = 0; i < arr.length; i++) {
-            // console.log(arr[i]);
-            if($scope.emailUs === arr[i].email){
-              $scope.emailUs = "";
-            }
-            loopArray(arr[i]);
-          }
-      }
-  };
+    // Handler of successful registration
+    var endRegistration = function(response){
+      $('div#allTemplates').fadeOut('slow');
+      setTimeout(function() {
+       $('div#verEmailSent').fadeIn();
+       }, 1000);
+    };
 
 // Handling modals
     $scope.alertPopUp1 = function () {

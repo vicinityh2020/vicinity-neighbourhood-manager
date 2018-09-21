@@ -28,5 +28,9 @@ factory('registrationsAPIService', ['$http', 'configuration', function($http, co
     return $http.post(configuration.apiUrl +'/registrations/duplicatesCompany', data);
   };
 
+  registrationsAPI.findDuplicatesRegMail = function(data) {
+    return $http.post(configuration.apiUrl +'/registrations/duplicatesRegMail', data);
+  };
+
   return registrationsAPI;
 }]);

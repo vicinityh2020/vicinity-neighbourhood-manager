@@ -53,6 +53,22 @@ function findDuplicatesCompany(data) {
 }
 
 /*
+Looking for duplicates in active registration mail
+*/
+function findDuplicatesRegMail(data) {
+  var email = data.email;
+  return new Promise(function(resolve, reject) {
+    registrationOp.find({email: email, status: {$in: ["open", "pending"]} }, {email:1}, function(err, output) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(output.length > 0); // false == No duplicates
+      }
+    });
+  });
+}
+
+/*
 Receives a request to create registration,
 Can be an already verified by the devOps request or
 some external request that needs to be validated
