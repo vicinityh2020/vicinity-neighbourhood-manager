@@ -53,16 +53,16 @@ angular.module('Registration')
       findMeDuplicates()
       .then(function(response){
       return registrationsAPIService.postOne(
-          { userName: $scope.nameReg,
-            email: $scope.emailReg,
-            password: $scope.password1Us,
-            occupation: $scope.occupationReg,
-            companyName: $scope.companynameReg,
-            companyLocation: $scope.locationReg,
-            businessId: $scope.bidReg,
-            termsAndConditions: true,
-            type: "newCompany"
-          });
+          {userName: $scope.nameUs,
+           email: $scope.emailUs,
+           password: $scope.password1Us,
+           occupation: $scope.occupationUs,
+           companyName: $scope.companynameUs,
+           companyId:$scope.companyIdUs,
+           cid: $scope.cid,
+           companyLocation: "",
+           status: "pending",
+           type: "newUser"});
         })
         .then(endRegistration)
         .catch(function(err){
@@ -121,7 +121,7 @@ angular.module('Registration')
 
     // Handler of successful registration
     var endRegistration = function(response){
-      $('div#allTemplates').fadeOut('slow');
+      $('div#newUserInfo').fadeOut('slow');
       setTimeout(function() {
        $('div#verEmailSent').fadeIn();
        }, 1000);

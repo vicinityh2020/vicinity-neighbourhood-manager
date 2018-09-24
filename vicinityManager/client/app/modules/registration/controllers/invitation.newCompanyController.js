@@ -64,6 +64,7 @@ angular.module('Registration')
             companyLocation: $scope.locationReg,
             businessId: $scope.bidReg,
             termsAndConditions: true,
+            status: "pending",
             type: "newCompany"
           });
         })
@@ -125,7 +126,7 @@ angular.module('Registration')
 
      // Handler of successful registration
      var endRegistration = function(response){
-       $('div#allTemplates').fadeOut('slow');
+       $('div#newOrganisationInfo').fadeOut('slow');
        setTimeout(function() {
         $('div#verEmailSent').fadeIn();
         }, 1000);
