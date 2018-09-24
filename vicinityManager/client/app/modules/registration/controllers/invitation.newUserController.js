@@ -97,20 +97,20 @@ angular.module('Registration')
     var findMeDuplicates = function(){
       var aux = false;
       return $q(function(resolve, reject) {
-        registrationsAPIService.findDuplicatesUser({email: $scope.emailReg})
+        registrationsAPIService.findDuplicatesUser({email: $scope.emailUs})
         .then( function(response){
           aux = response.data.message;
-          if(response.data.message) $scope.emailReg = "";
+          if(response.data.message) $scope.emailUs = "";
           return registrationsAPIService.findDuplicatesCompany({companyName: $scope.companynameReg, businessID: $scope.bidReg});
         })
         .then( function(response){
           if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
           if(response.data.message) $scope.companynameReg = "";
-          return registrationsAPIService.findDuplicatesRegMail({email: $scope.emailReg});
+          return registrationsAPIService.findDuplicatesRegMail({email: $scope.emailUs});
         })
         .then( function(response){
           if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
-          if(response.data.message) $scope.emailReg = "";
+          if(response.data.message) $scope.emailUs = "";
           if(aux){ reject("DUPLICATES"); } else { resolve(aux); }
         })
         .catch( function(err){
