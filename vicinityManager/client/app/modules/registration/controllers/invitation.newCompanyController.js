@@ -3,8 +3,8 @@
 angular.module('Registration')
 
   .controller('invitationNewCompanyController',
-             ['$scope', '$rootScope', 'configuration', '$location', '$state', '$window', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'userAccountAPIService', 'AuthenticationService', 'Notification',
-             function ($scope, $rootScope, $location, configuration, $state, $window, $stateParams, invitationsAPIService, registrationsAPIService, userAccountAPIService, AuthenticationService, Notification){
+             ['$scope', 'configuration', '$stateParams', 'invitationsAPIService', 'registrationsAPIService', 'Notification', '$q',
+             function ($scope, configuration, $stateParams, invitationsAPIService, registrationsAPIService, Notification, $q){
 
       // Rest login status
       // AuthenticationService.ClearCredentials();
@@ -100,24 +100,26 @@ angular.module('Registration')
    */
      var findMeDuplicates = function(){
        var aux = false;
-       registrationsAPIService.findDuplicatesUser({email: $scope.emailReg})
-       .then( function(response){
-         aux = response.data.message;
-         if(response.data.message) $scope.emailReg = "";
-         return registrationsAPIService.findDuplicatesCompany({companyName: $scope.companynameReg, businessID: $scope.bidReg});
-       })
-       .then( function(response){
-         if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
-         if(response.data.message) $scope.companynameReg = "";
-         return registrationsAPIService.findDuplicatesRegMail({email: $scope.emailReg});
-       })
-       .then( function(response){
-         if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
-         if(response.data.message) $scope.emailReg = "";
-         if(aux){ Promise.reject("DUPLICATES"); } else { Promise.resolve(aux); }
-       })
-       .catch( function(err){
-         Promise.reject(err);
+       return $q(function(resolve, reject) {
+         registrationsAPIService.findDuplicatesUser({email: $scope.emailReg})
+         .then( function(response){
+           aux = response.data.message;
+           if(response.data.message) $scope.emailReg = "";
+           return registrationsAPIService.findDuplicatesCompany({companyName: $scope.companynameReg, businessID: $scope.bidReg});
+         })
+         .then( function(response){
+           if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
+           if(response.data.message) $scope.companynameReg = "";
+           return registrationsAPIService.findDuplicatesRegMail({email: $scope.emailReg});
+         })
+         .then( function(response){
+           if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
+           if(response.data.message) $scope.emailReg = "";
+           if(aux){ reject("DUPLICATES"); } else { resolve(aux); }
+         })
+         .catch( function(err){
+           reject(err);
+         });
        });
      };
 
