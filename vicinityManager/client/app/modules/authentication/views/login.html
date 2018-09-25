@@ -1,235 +1,214 @@
 <section class="content" style="background-color:#FFF">
 
-<div class="login-box">
+  <div class="login-box">
 
-  <!-- // LOGIN LOGO ========================== -->
+  <!--  LOGIN LOGO  -->
 
-  <div class="login-logo">
-    <img src="img/logos/vcntlogo_big.png"/>
-  </div>
+    <div class="login-logo">
+      <img src="img/logos/vcntlogo_big.png"/>
+    </div>
 
-<!-- // START LOGIN AREA ====================== -->
+<!--  START LOGIN AREA -->
 
-  <div id="allTemplates" class="login-box-body">
+    <div id="allTemplates" class="login-box-body">
 
-    <!-- // About project and type of form (login/reg) -->
-    <p class="login-box-msg"> <a href="http://www.vicinity-h2020.eu"> About project </a> </p>
-    <p class="login-box-msg">{{note2}}</p>      <!-- Log in to start your session -->
+        <!-- About project and type of form (login/reg) -->
+        <p class="login-box-msg"> <a href="http://www.vicinity-h2020.eu"> About project </a> </p>
+        <p class="login-box-msg">{{note2}}</p>      <!-- Log in to start your session -->
 
-  <!-- // LOGIN form template ================ -->
-    <div id="login-wrap">
-      <form name="form" role="form" ng-submit="login()">
+        <!-- LOGIN form template  -->
 
-      <!-- username -->
-      <div class="form-group has-feedback">
-        <input id="user" name="username" class="form-control" ng-model="username" placeholder="Email" required/>
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-        <span ng-show="form.username.$dirty && form.username.$error.required" class="help-block">Email address as username is required</span>
-      </div>
+        <div id="login-wrap">
+          <form name="form" role="form" ng-submit="login()">
 
-      <!-- password -->
-      <div  class="form-group has-feedback">
-        <input  type="password" id="pass" class="form-control" placeholder="Password" name="password" username="password" ng-model="password" required/>
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-      </div>
-
-      <div  style="text-align: center" id="alert2" ng-show="isError">{{error}}</div>
-
-      <div>
-        <div class="col-xs-6">
-          <div style="margin-bottom: 20px" class="checkbox">
-            <label>
-             <input type="checkbox" id="myCheck"> &nbsp; Show password
-            </label>
+          <!-- username -->
+          <div class="form-group has-feedback">
+            <input id="user" name="username" class="form-control" ng-model="username" placeholder="Email" required/>
+            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            <span ng-show="form.username.$dirty && form.username.$error.required" class="help-block">Email address as username is required</span>
           </div>
-        </div>
-        <div class="col-xs-6">
-          <div style="margin-bottom: 20px" class="checkbox">
-            <label>
-             <input type="checkbox" ng-model="rememberMe"> &nbsp; Remember Me
-            </label>
+
+          <!-- password -->
+          <div  class="form-group has-feedback">
+            <input  type="password" id="pass" class="form-control" placeholder="Password" name="password" username="password" ng-model="password" required/>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
           </div>
-        </div>
 
-      <div style="margin-top: 20px">
-        <button type="submit" class="btn btn-primary btn-block btn-flat" ng-disabled="form.$invalid || dataLoading">Log In</button>
-        <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
-      </div>
+          <div  style="text-align: center" id="alert2" ng-show="isError">{{error}}</div>
 
-      </div>
-
-      <div style="margin-top: 20px" class="col-xs-6">
-        <!-- Register new member-->
-        <a  href="" ng-click="registerNew()" class="text-center">{{note}}</a>
-      </div>
-      <div style="margin-top: 20px" class="col-xs-6">
-        <a href="" ng-click="forgotPwd()" class="text-center">Forgot my password</a>
-      </div>
-    </form>
-  </div>
-
-
-
-  <!-- // REGISTER organization form template ================ -->
-
-    <div id="newOrganisationInfo" >
-
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> <strong> Company </strong> </span>
-
-      <form name="formComp" role="form" ng-submit="registerCompany()">
-
-      <div>
-        <div  class="form-group has-feedback">
-          <span > Name </span><span style="color: red">*</span>
-          <input style="width: 60%" type="text" ng-model="companynameReg" value="{{companynameReg}}" class="pull-right" placeholder="Name of your organisation" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span>Location</span><span style="color: red">*</span>
-          <input style="width: 60%" type="text" ng-model="locationReg" class="pull-right" placeholder="Location of your organisation" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span> BID </span><span style="color: red">*</span>
-          <input style="width: 60%" type="text" ng-model="bidReg" class="pull-right" placeholder="Business ID" required/>
-        </div>
-      </div>
-
-      <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> <strong> Administrator </strong> </span>
-
-      <div>
-        <div class="form-group has-feedback">
-          <span > Email </span><span style="color: red">*</span>
-          <input style="width: 60%" type="email" ng-model="emailReg" class="pull-right" placeholder="Email of administrator" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span > Password </span><span style="color: red">*</span>
-          <input id="pw1" style="width: 60%" type="password" ng-model="password1Reg" class="pull-right" placeholder="Password" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span> Repeat password </span><span style="color: red">*</span>
-          <input id="pw2" style="width: 60%" type="password" ng-model="password2Reg" class="pull-right" placeholder="Same password again" required/>
-        </div>
-
-        <span class="help-block" style="color: green" ng-show="password1Reg===password2Reg && password2Reg"><i class="fa fa-check"></i> Passwords match!</span>
-        <span class="help-block" style="color: red" ng-show="password1Reg!==password2Reg && password2Reg"><i class="fa fa-times"></i> Passwords not matching</span>
-
-        <div  class="form-group has-feedback">
-          <span>Name</span><span style="color: red">*</span>
-          <input style="width: 60%" type="text" ng-model="nameReg" class="pull-right" placeholder="First and last name of administrator" required/>
-        </div>
-
-        <div  class="form-group has-feedback">
-          <span> Occupation</span><span style="color: red">*</span>
-          <input style="width: 60%" type="text" ng-model="occupationReg" class="pull-right" placeholder="Occupation of administrator" required/>
-        </div>
-
-      </div>
-
-      <div class="col-xs-6">
-        <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>      <!-- Register new member-->
-      </div>
-      <div class="col-xs-6" style="padding-right: 0px">
-          <input type="checkbox" ng-model="termsAccepted"></input>
-          <a href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
-      </div>
-      <div style="margin-top: 50px">
-        <button type="submit" ng-disabled="!termsAccepted || password1Reg!==password2Reg" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
-      </div>
-
-    </form>
-  </div>
-
- <!-- Terms and conditions -->
-
-    <div id="myModal1" class="modal">
-
-      <form name="myForm" id="login-wrap" role="form">
-
-        <div class="modal-content">
-          <div class="modal-header" id="bvrModal">
-            <span ng-click="closeNow1()" id="closing" class="close">×</span>
-            <h2>Terms and conditions</h2>
-          </div>
-          <div class="modal-body">
-            <p> ... Place content ... </p>
-          </div>
-          <a ng-click="acceptTerms()" href="">
-            <div class="modal-footer" id="bvrModal-footer" ng-model="termsAccepted">
-              <h3>Accept conditions</h3>
+          <div>
+            <div class="col-xs-6">
+              <div style="margin-bottom: 20px" class="checkbox">
+                <label>
+                 <input type="checkbox" id="myCheck"> &nbsp; Show password
+                </label>
+              </div>
             </div>
-          </a>
+            <div class="col-xs-6">
+              <div style="margin-bottom: 20px" class="checkbox">
+                <label>
+                 <input type="checkbox" ng-model="rememberMe"> &nbsp; Remember Me
+                </label>
+              </div>
+            </div>
+
+          <div style="margin-top: 20px">
+            <button type="submit" class="btn btn-primary btn-block btn-flat" ng-disabled="form.$invalid || dataLoading">Log In</button>
+            <img ng-if="dataLoading" ng-src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+          </div>
+
+          </div>
+
+          <div style="margin-top: 20px" class="col-xs-6">
+            <!-- Register new member-->
+            <a  href="" ng-click="registerNew()" class="text-center">{{note}}</a>
+          </div>
+          <div style="margin-top: 20px" class="col-xs-6">
+            <a href="" ng-click="forgotPwd()" class="text-center">Forgot my password</a>
+          </div>
+        </form>
         </div>
 
-      </form>
+
+        <!-- REGISTER organization form template  -->
+
+        <div id="newOrganisationInfo" >
+
+          <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> <strong> Company </strong> </span>
+
+          <form name="formComp" role="form" ng-submit="registerCompany()">
+
+          <div>
+            <div  class="form-group has-feedback">
+              <span > Name </span><span style="color: red">*</span>
+              <input style="width: 60%" type="text" ng-model="companynameReg" value="{{companynameReg}}" class="pull-right" placeholder="Name of your organisation" required/>
+            </div>
+
+            <div  class="form-group has-feedback">
+              <span>Location</span><span style="color: red">*</span>
+              <input style="width: 60%" type="text" ng-model="locationReg" class="pull-right" placeholder="Location of your organisation" required/>
+            </div>
+
+            <div  class="form-group has-feedback">
+              <span> BID </span><span style="color: red">*</span>
+              <input style="width: 60%" type="text" ng-model="bidReg" class="pull-right" placeholder="Business ID" required/>
+            </div>
+          </div>
+
+          <span style="position: relative; margin-left: 5px; padding-right: 3px; z-index: 1000; background-color: #FFF"> <strong> Administrator </strong> </span>
+
+          <div>
+            <div class="form-group has-feedback">
+              <span > Email </span><span style="color: red">*</span>
+              <input style="width: 60%" type="email" ng-model="emailReg" class="pull-right" placeholder="Email of administrator" required/>
+            </div>
+
+            <div  class="form-group has-feedback">
+              <span > Password </span><span style="color: red">*</span>
+              <input id="pw1" style="width: 60%" type="password" ng-model="password1Reg" class="pull-right" placeholder="Password" required/>
+            </div>
+
+            <div  class="form-group has-feedback">
+              <span> Repeat password </span><span style="color: red">*</span>
+              <input id="pw2" style="width: 60%" type="password" ng-model="password2Reg" class="pull-right" placeholder="Same password again" required/>
+            </div>
+
+            <span class="help-block" style="color: green" ng-show="password1Reg===password2Reg && password2Reg"><i class="fa fa-check"></i> Passwords match!</span>
+            <span class="help-block" style="color: red" ng-show="password1Reg!==password2Reg && password2Reg"><i class="fa fa-times"></i> Passwords not matching</span>
+
+            <div  class="form-group has-feedback">
+              <span>Name</span><span style="color: red">*</span>
+              <input style="width: 60%" type="text" ng-model="nameReg" class="pull-right" placeholder="First and last name of administrator" required/>
+            </div>
+
+            <div  class="form-group has-feedback">
+              <span> Occupation</span><span style="color: red">*</span>
+              <input style="width: 60%" type="text" ng-model="occupationReg" class="pull-right" placeholder="Occupation of administrator" required/>
+            </div>
+
+          </div>
+
+          <div class="col-xs-6">
+            <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>      <!-- Register new member-->
+          </div>
+          <div class="col-xs-6" style="padding-right: 0px">
+              <input type="checkbox" ng-model="termsAccepted"></input>
+              <a href="" ng-click="alertPopUp1()" class="text-center">Terms and Conditions</a>
+          </div>
+          <div style="margin-top: 50px">
+            <button type="submit" ng-disabled="!termsAccepted || password1Reg!==password2Reg" class="btn btn-primary btn-block btn-flat" >Register me</button>    <!-- ng-disabled="form.$invalid || dataLoading" -->
+          </div>
+
+        </form>
+        </div>
+
+
+        <!-- Terms and conditions -->
+
+        <div modal></div>
+
+        <!-- Forgot my password functionality -->
+
+        <div id="forgot1">
+          <h3 style="color: black" class="login-box-msg"> Dear user, please introduce your email address.</h3>
+          <form role="form" ng-submit="recoverPwd()">
+            <div  class="well centered">
+              <span> User email </span><span style="color: red">*</span>
+              <input ng-model="emailRecover" style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
+            </div>
+            <div class="col-xs-6">
+              <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>
+            </div>
+            <div class="col-xs-6">
+              <button type="submit"  class="btn btn-primary btn-block btn-flat">Reset password</button>
+            </div>
+          </form>
+          </div>
 
     </div>
-
-<!-- Forgot my password functionality -->
-
-  <div id="forgot1">
-    <h3 style="color: black" class="login-box-msg"> Dear user, please introduce your email address.</h3>
-    <form role="form" ng-submit="recoverPwd()">
-      <div  class="well centered">
-        <span> User email </span><span style="color: red">*</span>
-        <input ng-model="emailRecover" style="width: 60%" type="email"  class="pull-right" placeholder="Email of user" required/>
-      </div>
-      <div class="col-xs-6">
-        <a href="" ng-click="backToLogin()" class="text-center">{{note}}</a>
-      </div>
-      <div class="col-xs-6">
-        <button type="submit"  class="btn btn-primary btn-block btn-flat">Reset password</button>
-      </div>
-    </form>
-    </div>
-
-  </div>
 
   <!-- Confirmation mail sent registration and pwd -->
 
-  <div id="verEmailSent">
-    <div>
-      <h3 style="color: green" class="login-box-msg"> Dear user thanks for registering, you will receive a mail with further instructions.</h3>
+    <div id="verEmailSent">
+        <div>
+          <h3 style="color: green" class="login-box-msg"> Dear user thanks for registering, you will receive a mail with further instructions.</h3>
+        </div>
+        <div align="center"><h3><i class="fa fa-check fa-3x" style="color: green"></i></h3></div>
     </div>
-    <div align="center"><h3><i class="fa fa-check fa-3x" style="color: green"></i></h3></div>
-  </div>
 
-  <div id="forgot2">
-    <div>
-      <h3 style="color: green" class="login-box-msg"> Dear user, follow the instructions sent by mail in order to reset the password.</h3>
+    <div id="forgot2">
+        <div>
+          <h3 style="color: green" class="login-box-msg"> Dear user, follow the instructions sent by mail in order to reset the password.</h3>
+        </div>
+        <div align="center"><h3><i class="fa fa-check fa-3x" style="color: green"></i></h3></div>
     </div>
-    <div align="center"><h3><i class="fa fa-check fa-3x" style="color: green"></i></h3></div>
+
   </div>
-
-</div>
-
 </section>
 
+<!-- Footer section -->
+
 <section>
-<footer class="main-footer2" ng-show="!imMobile">
-  <!-- To the right -->
-  <div class="pull-right hidden-xs">
-    v0.1
-  </div>
-  <!-- Default to the left -->
-  <img src="img/logos/logo_eu.jpg"/>&nbsp; This project has received funding from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under grant agreement no 688467 and no LCE-01-2016/731285/SHAR-Q.
-  <br>
-  <br>
-  <strong>Copyright &copy; 2015-2018 <a href="http://www.bavenir.eu" target="_blank">bAvenir, s.r.o </a>.</strong> All rights reserved.
-</footer>
 
-<footer class="main-footer" ng-show="imMobile">
-  <!-- To the right -->
-  <div class="pull-right hidden-xs">
-    v0.1
-  </div>
+    <footer class="main-footer2" ng-show="!imMobile">
+      <div class="pull-right hidden-xs">
+        v0.1
+      </div>
+      <img src="img/logos/logo_eu.jpg"/>&nbsp; This project has received funding from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under grant agreement no 688467 and no LCE-01-2016/731285/SHAR-Q.
+      <br>
+      <br>
+      <strong>Copyright &copy; 2015-2018 <a href="http://www.bavenir.eu" target="_blank">bAvenir, s.r.o </a>.</strong> All rights reserved.
+    </footer>
 
-  <!-- Default to the left -->
-  <img src="img/logos/logo_eu.jpg"/>&nbsp; This project has received funding from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under grant agreement no 688467 and no LCE-01-2016/731285/SHAR-Q.
-  <br>
-  <br>
-  <strong>Copyright &copy; 2015-2018 <a href="http://www.bavenir.eu" target="_blank">bAvenir, s.r.o </a>.</strong> All rights reserved.
-</footer>
+    <!-- Mobile version -->
+    <footer class="main-footer" ng-show="imMobile">
+      <div class="pull-right hidden-xs">
+        v0.1
+      </div>
+      <img src="img/logos/logo_eu.jpg"/>&nbsp; This project has received funding from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under grant agreement no 688467 and no LCE-01-2016/731285/SHAR-Q.
+      <br>
+      <br>
+      <strong>Copyright &copy; 2015-2018 <a href="http://www.bavenir.eu" target="_blank">bAvenir, s.r.o </a>.</strong> All rights reserved.
+    </footer>
+
 </section>

@@ -3,6 +3,18 @@ App css stylesheet
 *******************/
 
 /*
+Modal - Custom
+*/
+
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    height: 250px;
+    overflow-y: auto;
+}
+
+/*
 Common
 */
 
