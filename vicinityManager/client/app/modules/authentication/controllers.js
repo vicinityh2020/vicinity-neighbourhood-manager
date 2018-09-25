@@ -326,7 +326,9 @@ TODO Check company BID
               setTimeout(function() {
                 $('div#emailSentTmp').fadeIn('slow');
               }, 1000);
-            }, function errorCallback(response){
+            },
+            function errorCallback(response){
+              Notification.error(response.data.message);
             }
           );
         }else{

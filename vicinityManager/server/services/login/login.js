@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var userOp = require('../../models/vicinityManager').user;
 var rememberOp = require('../../models/vicinityManager').remember;
 var userAccountsOp = require('../../models/vicinityManager').userAccount;
+var config = require('../../configuration/configuration');
 var jwt = require('../../services/jwtHelper');
 var logger = require("../../middlewares/logger");
 var mailing = require('../../services/mail/mailing');
@@ -77,11 +78,13 @@ Recover password - Sends link to the provided mail
 The link provided redirects to updatePwd function in this same module
 */
 function findMail(userName, callback){
-  userOp.findOne({ email: userName })
+  var userNameRegex = new RegExp("^" + userName.toLowerCase(), "i");
+  userOp.findOne({ email:  { $regex: userNameRegex } }, {contactMail:1, email:1, name:1})
   .then(function(result){
+    if(!result) return false;
     var mailInfo = {
-      link : "http://vicinity.bavenir.eu/#/authentication/recoverPassword/" + result._id,
-      emailTo : result.email,
+      link : config.baseHref + "/#/authentication/recoverPassword/" + result._id,
+      emailTo : result.contactMail || result.email,
       subject : 'Password recovery email VICINITY',
       tmpName :'recoverPwd',
       name : result.name
@@ -89,10 +92,12 @@ function findMail(userName, callback){
     return mailing.sendMail(mailInfo);
   })
   .then(function(response){
+    if(!response) callback(true, "Username not found");
     callback(false, response);
   })
   .catch(function(err){
-    callback(true, err);
+    logger.debug("Error recovering password: " + err);
+    callback(true, "Error recovering password...");
   });
 }
 
