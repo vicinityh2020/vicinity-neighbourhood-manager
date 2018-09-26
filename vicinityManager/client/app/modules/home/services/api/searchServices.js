@@ -4,19 +4,6 @@ factory('searchAPIService', ['$http', 'configuration', '$window', function($http
 
   var searchAPI = {};
 
-  searchAPI.getSubclass = function(filter) {
-    return $http.get(configuration.apiUrl + '/search/subclass?searchTerm=' + filter );
-  };
-
-  searchAPI.getAllSubclass = function(filter) {
-    return $http.get(configuration.apiUrl + '/search/allSubclass?searchTerm=' + filter );
-  };
-
-  searchAPI.getOids = function(filter, predicate, getGraph) {
-    var obj = {searchTerm: filter, predicate: predicate, getGraph: getGraph};
-    return $http.post(configuration.apiUrl + '/search/getOids', obj);
-  };
-
   searchAPI.searchOrganisation = function(filter) {
     return $http.get(configuration.apiUrl + '/search/organisation?searchTerm=' + filter );
   };

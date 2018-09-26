@@ -53,46 +53,8 @@ var sGet = require("../../services/search/get");
     });
   }
 
-  /*
-  Looks for valid subclasses and types in the ontology given a class (Type or thing)
-  Excludes inferences
-  */
-  function searchInOntology(req, res, next){
-    var searchTerm = req.query.searchTerm;
-    sGet.searchInOntology(searchTerm, function(err, response){
-      res.json({error: err, message: response});
-    });
-  }
-
-  /*
-  Looks for valid subclasses and types in the ontology given a class (Type or thing)
-  Includes inferences
-  */
-  function searchInOntologyWithInferences(req, res, next){
-    var searchTerm = req.query.searchTerm;
-    sGet.searchInOntologyWithInferences(searchTerm, function(err, response){
-      res.json({error: err, message: response});
-    });
-  }
-
-  /*
-  Looks for valid subclasses in the ontology given a class (Type or thing)
-  Asynchronous calls -- Input: Array
-  */
-  function getOidFromOntology(req, res, next){
-    var searchTerms = req.body.searchTerm;
-    var predicate = req.body.predicate;
-    var getGraph = req.body.getGraph;
-    sGet.getOidFromOntology(searchTerms, predicate, getGraph, function(err, response){
-      res.json({error: err, message: response});
-    });
-  }
-
 // Export modules
 
   module.exports.searchOrganisation = searchOrganisation;
   module.exports.searchUser = searchUser;
   module.exports.searchItem = searchItem;
-  module.exports.searchInOntology = searchInOntology;
-  module.exports.searchInOntologyWithInferences = searchInOntologyWithInferences;
-  module.exports.getOidFromOntology = getOidFromOntology;
