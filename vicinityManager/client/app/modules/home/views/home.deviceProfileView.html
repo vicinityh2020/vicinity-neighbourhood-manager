@@ -121,7 +121,7 @@
                   </li>
 
                   <!-- Delete button -->
-                  <li class="list-group-item" ng-show="isMyItem">
+                  <li class="list-group-item" ng-show="(isMyOrgItem && !itemEnabled) || isMyItem">
                     <i class="fa fa-times margin-r-5"></i>
                     <b>Remove device</b>
                     <a ng-click="deleteItem()" class="pull-right btn-sm btn-danger" style="margin-left: 5px"> Delete </a>
