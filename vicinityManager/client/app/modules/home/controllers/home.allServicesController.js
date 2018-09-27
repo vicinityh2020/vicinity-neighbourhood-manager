@@ -90,7 +90,11 @@ $scope.refresh = function(value){
      $scope.allItemsLoaded = response.data.message.length < 12;
      $scope.loaded = true;
      $scope.loadedPage = true;
-     if($scope.itemType !== "all") $scope.header = $scope.header + "  with type: " + $scope.itemType;
+     if($scope.itemType !== "all") {
+       $scope.header = $scope.header + "  with type: <" + $scope.itemType + ">";
+     } else {
+       changeHeader($scope.filterNumber);
+     }
    })
    .catch(function(err){
      Notification.error(err);
