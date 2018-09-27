@@ -68,6 +68,7 @@ angular.module('VicinityManagerApp.controllers')
        $scope.allItemsLoaded = response.data.message.length < 12;
        $scope.loaded = true;
        $scope.loadedPage = true;
+       if($scope.itemType !== "all") $scope.header = $scope.header + "  with type: " + $scope.itemType;
      })
      .catch(function(err){
        Notification.error(err);
@@ -75,6 +76,13 @@ angular.module('VicinityManagerApp.controllers')
  };
 
  // Prepare FILTERS
+
+ $scope.filterItems = function(n){
+     $scope.filterNumber = n;
+     $scope.offset = 0;
+     changeHeader(n);
+     $scope.refresh($scope.itemType);
+ };
 
   function changeHeader(n){
     switch (n) {
