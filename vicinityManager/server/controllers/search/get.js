@@ -53,8 +53,24 @@ var sGet = require("../../services/search/get");
     });
   }
 
+  /*
+  Gets ontology hierarchy
+  From file stored and updated every day in server
+  If above method fails, gets file from backup stored in code
+  */
+  function getOntology(req, res, next) {
+    sGet.getOntology()
+    .then(function(response){
+      res.json({error: false, message: response});
+    })
+    .catch(function(err){
+      res.json({error: true, message: err});
+    });
+  }
+
 // Export modules
 
   module.exports.searchOrganisation = searchOrganisation;
   module.exports.searchUser = searchUser;
   module.exports.searchItem = searchItem;
+  module.exports.getOntology = getOntology;

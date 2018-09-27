@@ -23,18 +23,29 @@ angular.module('VicinityManagerApp.controllers')
    $scope.typeOfItem = "devices";
    $scope.header = "All Devices";
    $scope.isCollapsed = true;
+   // Ontology search
+   $scope.itemType = "all"; // Store user selection
+   $scope.ontologyTypes = {}; // Store ontology types
+   $scope.itemFilter = {};
 
    init();
 
    function init(){
      $scope.loaded = false;
-      itemsAPIService.getAllItems($scope.myId, "device", $scope.offset, $scope.filterNumber, $scope.oidsFilter)
+      itemsAPIService.getAllItems($scope.myId, "device", $scope.offset, $scope.filterNumber, ["all"])
       .then(function(response){
         for(var i = 0; i < response.data.message.length; i++){
             $scope.devs.push(response.data.message[i]);
         }
         $scope.noItems = ($scope.devs.length === 0);
         $scope.allItemsLoaded = response.data.message.length < 12;
+        return searchAPIService.getOntologyTypes();
+      })
+      .then(function(response){
+        $scope.ontologyTypes.devices = response.data.message.data["device-hierarchy"];
+        // $scope.ontologyTypes.services = response.data.message.data["service-hierarchy"];
+        // $scope.ontologyTypes.properties = response.data.message.data["property-hierarchy"];
+        itemFilter($scope.itemType);
         $scope.loaded = true;
         $scope.loadedPage = true;
       })
@@ -43,36 +54,27 @@ angular.module('VicinityManagerApp.controllers')
       });
   }
 
-// Manage access request functions =====================
+  $scope.refresh = function(value){
+    $scope.devs=[];
+    $scope.loaded = false;
+    $scope.itemType = value;
+    itemFilter($scope.itemType);
+     itemsAPIService.getAllItems($scope.myId, "device", $scope.offset, $scope.filterNumber, addSubclasses($scope.itemType))
+     .then(function(response){
+       for(var i = 0; i < response.data.message.length; i++){
+           $scope.devs.push(response.data.message[i]);
+       }
+       $scope.noItems = ($scope.devs.length === 0);
+       $scope.allItemsLoaded = response.data.message.length < 12;
+       $scope.loaded = true;
+       $scope.loadedPage = true;
+     })
+     .catch(function(err){
+       Notification.error(err);
+     });
+ };
 
-   $scope.processMyAccess = function(dev_id) {
-     itemsAPIService.processItemAccess(dev_id)
-     .then(itemsHelpers.processingAccess,itemsHelpers.errorCallback)
-     .then(updateScopeAttributes,itemsHelpers.errorCallback);
-    };
-
-   $scope.cancelMyRequest = function(dev_id) {
-     itemsAPIService.cancelItemRequest(dev_id)
-     .then(itemsHelpers.cancellingRequest,itemsHelpers.errorCallback)
-     .then(updateScopeAttributes,itemsHelpers.errorCallback);
-    };
-
-   $scope.cancelMyAccess = function(dev_id) {
-     $scope.note = "";
-     itemsAPIService.cancelItemAccess(dev_id)
-     .then(itemsHelpers.cancellingAccess,itemsHelpers.errorCallback)
-     .then(updateScopeAttributes,itemsHelpers.errorCallback);
-   };
-
-// Refresh scope
-
-  function updateScopeAttributes(response){
-    for (var dev in $scope.devs){
-      if ($scope.devs[dev]._id.toString() === response.data.message[0]._id.toString()){
-          $scope.devs[dev] = response.data.message[0];
-      }
-    }
-  }
+ // Prepare FILTERS
 
   function changeHeader(n){
     switch (n) {
@@ -103,9 +105,85 @@ angular.module('VicinityManagerApp.controllers')
           }
       }
 
+ /* Item filter */
+ function itemFilter(value){
+   var array = $scope.ontologyTypes.devices;
+   var exitLoop = false;
+   var result = {};
+   if(value === "all") value = "core:Device";
+   try{
+     while(!exitLoop){
+       exitLoop = array.class === value;
+       if(!exitLoop){
+         var innerArray = array["sub-classes"];
+         result = innerSubClass(innerArray, value);
+         exitLoop = true;
+       } else {
+         result.path = array.path;
+         result.subclasses = getSubclasses(array);
+         result.class = array.class;
+       }
+     }
+   } catch(err){
+     result.subclasses = [];
+     result.subclasses.push("all");
+     result.class = "core:Device";
+     result.path = ["core:Device"];
+     Notification.warning("Problem fetching ontology classes: " + err);
+   }
+   $scope.itemFilter = result;
+ }
+
+/* Search nested subclass arrays */
+ function innerSubClass(innerArray, value){
+   var result = {};
+   var innerLength = innerArray.length;
+   var cont = 0;
+   while(!result.finish && cont < innerLength){
+     if(innerArray[cont].class === value){
+       result.path = innerArray[cont].path;
+       result.subclasses = getSubclasses(innerArray[cont]);
+       result.class = innerArray[cont].class;
+       result.finish = true;
+     } else if(innerArray[cont].hasOwnProperty("sub-classes")) {
+       result = innerSubClass(innerArray[cont]["sub-classes"], value);
+       cont++;
+     } else {
+       cont++;
+       // Case class not found
+       if(cont === innerLength){
+         result.subclasses = [];
+         result.subclasses.push("all");
+       }
+     }
+   }
+   return result;
+ }
+
+/* When proper class is found, get lower level to build filter */
+ function getSubclasses(innerArray){
+   var classes = [];
+   if(innerArray.hasOwnProperty("sub-classes")){
+     for( var i = 0, l = innerArray["sub-classes"].length; i < l; i++){
+       classes.push(innerArray["sub-classes"][i].class);
+     }
+   }
+   classes.push("all");
+   return classes;
+ }
+
+/* Returns items that need to be sent to the server filter */
+ function addSubclasses(value){
+   if(value === "all") return ["all"];
+   try{
+     return $scope.itemFilter.subclasses.concat([value]);
+   } catch(err){
+     Notification.warning(err);
+     return ["all"];
+   }
+ }
 
   // Trigers load of more items
-
   $scope.loadMore = function(){
       $scope.loaded = false;
       $scope.offset += 12;

@@ -8,6 +8,7 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
 var itemProperties = require("../../services/items/additionalItemProperties");
 var semanticRepo = require("../../services/semanticRepo/request");
 var asyncHandler = require('../../services/asyncHandler/sync');
+var map = require("../../configuration/map");
 
 // Public functions
 
@@ -127,6 +128,18 @@ var asyncHandler = require('../../services/asyncHandler/sync');
     });
   }
 
+  /*
+  Gets ontology hierarchy
+  From file stored and updated every day in server
+  If above method fails, gets file from backup stored in code
+  */
+  function getOntology() {
+    // TODO get from file in server
+    return new Promise(function(resolve, reject) {
+      resolve(map.hierarchy);
+    });
+  }
+
 /*
   Private functions
 */
@@ -146,3 +159,4 @@ function getOnlyId(array, toAdd){
   module.exports.searchOrganisation = searchOrganisation;
   module.exports.searchUser = searchUser;
   module.exports.searchItem = searchItem;
+  module.exports.getOntology = getOntology;

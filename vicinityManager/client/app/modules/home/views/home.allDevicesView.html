@@ -27,6 +27,14 @@
          <li><a ng-click="filterItems(7)" ui-sref="root.main.allDevices">All {{typeOfItem}}</a></li>
       </ul>
      </div>
+     <div class="dropdown" style="margin: 10px">
+       <a ui-sref="root.main.allDevices" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Device types
+         <span class="caret"></span>
+       </a>
+       <ul class="dropdown-menu" role="menu">
+          <li ng-repeat="item in itemFilter.subclasses"><a ng-click="refresh(item)" ui-sref="root.main.allDevices">{{item}}</a></li>
+       </ul>
+      </div>
     </div>
   </div>
 

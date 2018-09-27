@@ -196,8 +196,9 @@ function getAllItems(oid, type, offset, filterNumber, filterOntology, callback) 
       }
 
     // Filters oids based on ontology matches to the user selection
-    if(filterOntology.length > 0){query.oid = {$in: filterOntology}; }
-
+    logger.debug(filterOntology);
+    if(filterOntology.length > 1){ query["info.type"] = {$in: filterOntology}; }
+logger.debug(query);
     query = updateQueryWithFilterNumber(query, filterNumber, oid);
 
     itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
