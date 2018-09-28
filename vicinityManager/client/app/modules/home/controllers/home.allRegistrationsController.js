@@ -21,28 +21,24 @@ angular.module('VicinityManagerApp.controllers').
     init();
 
     function init(){
-    registrationsAPIService.getAll()
-      .then(
-        function successCallback(response){
-          $scope.regisList = response.data.message;
-          $scope.loadedPage = true;
-        },
-        function errorCallback(response){}
-      );
+      registrationsAPIService.getAll()
+      .then(function(response){
+        $scope.regisList = response.data.message;
+        $scope.loadedPage = true;
+      })
+      .catch(errorCallback);
     }
 
 // Functions
 
   $scope.verifyAction = function(id){
-  registrationsAPIService.putOne(id,{status: "pending" })
-  .then(function(response){
-    Notification.success("Verification mail was sent to the company!");
-    $scope.status = 'pending';
-    init();
-  })
-  .catch(function(err){
-    errorCallback(err);
-  });
+    registrationsAPIService.putOne(id,{status: "pending" })
+    .then(function(response){
+      Notification.success("Verification mail was sent to the company!");
+      $scope.status = 'pending';
+      init();
+    })
+    .catch(errorCallback);
   };
 
   $scope.declineAction = function(id){
@@ -52,10 +48,10 @@ angular.module('VicinityManagerApp.controllers').
       $scope.status = 'declined';
       init();
     })
-    .catch(function(err){
-      errorCallback(err);
-    });
+    .catch(errorCallback);
   };
+
+  // Private functions
 
   $scope.orderByMe = function(x) {
     if($scope.myOrderBy === x){
@@ -69,7 +65,8 @@ angular.module('VicinityManagerApp.controllers').
   };
 
   function errorCallback(err){
-    Notification.error("Something went wrong..." + JSON.stringify(err));
+    console.log(JSON.stringify(err))
+    Notification.error("Server error");
   }
 
 });

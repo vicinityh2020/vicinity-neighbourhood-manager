@@ -6,8 +6,6 @@ function ($scope,
           $timeout,
           $state,
           notificationsAPIService,
-          tokenDecoder,
-          itemsAPIService,
           userAccountsHelpers,
           commonHelpers,
           registrationsHelpers,
@@ -31,7 +29,7 @@ $scope.intervalFunction = function(){
   promise = $timeout(function(){
     init();
     $scope.intervalFunction();
-  }, 5000);
+  }, 10000);
 };
 
 $scope.intervalFunction();
@@ -48,18 +46,28 @@ $scope.$on('$destroy', function(){
   function init(){
     $scope.tempNotifs = [];
     notificationsAPIService.getNotifications(null, null)
-    .then(getNotifs, commonHelpers.errorCallback);
+    .then(getNotifs)
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Server error");
+    });
   }
 
   function getNotifs(response){
-    $scope.tempNotifs = response.data.message;
-    numberOfUnreadNotifs();
-    if($scope.notifCount < $scope.tempNotifs.length){
-      var count = Number($scope.tempNotifs.length) - $scope.notifCount;
-      Notification.success('You have ' + String($scope.tempNotifs.length) + ' new notifications!');
+    try{
+      $scope.tempNotifs = response.data.message;
+      numberOfUnreadNotifs();
+      if($scope.notifCount < $scope.tempNotifs.length){
+        var count = Number($scope.tempNotifs.length) - $scope.notifCount;
+        Notification.success('You have ' + String($scope.tempNotifs.length) + ' new notifications!');
+      }
+      sortNotifs();
+      $scope.notifCount = $scope.notifs.length;
+    } catch(err) {
+      console.log(err);
+      Notification.warning("Notifications could not be processed");
+      $timeout.cancel(promise);
     }
-    sortNotifs();
-    $scope.notifCount = $scope.notifs.length;
   }
 
     // ========= Other Functions ===============
@@ -72,14 +80,22 @@ $scope.$on('$destroy', function(){
     $scope.changeIsUnreadAndResponded = function(notifID){   // Need to be call external, no need for hoisting
       $scope.notifCount = $scope.notifCount - 1;
       notificationsAPIService.changeIsUnreadToFalse(notifID)
-        .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'), commonHelpers.errorCallback)
-        .then(init(), commonHelpers.errorCallback);
+        .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'))
+        .then(init())
+        .catch(function(err){
+          console.log(err);
+          Notification.error("Server error");
+        });
     };
 
     $scope.changeIsUnread = function(notifID){
       $scope.notifCount = $scope.notifCount - 1;
       notificationsAPIService.changeIsUnreadToFalse(notifID)
-        .then(init(),commonHelpers.errorCallback);
+        .then(init())
+        .catch(function(err){
+          console.log(err);
+          Notification.error("Server error");
+        });
     };
 
     $scope.seeAll = function(){
@@ -87,11 +103,13 @@ $scope.$on('$destroy', function(){
       var allNotifs = [];
       retrieveAllNotifs($scope.notifs, allNotifs);
       notificationsAPIService.changeIsUnreadToFalse('0',{ids: allNotifs})
-        .then(
-          function successCallback(){
-            init();
-          }, commonHelpers.errorCallback
-        );
+        .then(function(){
+          init();
+        })
+        .catch(function(err){
+          console.log(err);
+          Notification.error("Server error");
+        });
       $state.go('root.main.myNotifications');
     };
 
@@ -106,49 +124,41 @@ $scope.$on('$destroy', function(){
   $scope.acceptNeighbourRequest = function (notifId, friendId){
     $scope.notifCount = $scope.notifCount - 1;
     userAccountsHelpers.acceptNeighbourRequest(friendId)
-    .then(init(), userAccountsHelpers.errorCallback)
-    .catch(userAccountsHelpers.errorCallback);
+    .then(init)
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Error accepting neighbour request");
+    });
   };
 
     $scope.rejectNeighbourRequest = function(notifId, friendId){
       $scope.notifCount = $scope.notifCount - 1;
       userAccountsHelpers.rejectNeighbourRequest(friendId)
-      .then(init(),userAccountsHelpers.errorCallback)
-      .catch(userAccountsHelpers.errorCallback);
+      .then(init)
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Error rejecting neighbour request");
+      });
     };
-
-    // $scope.acceptContract = function(id){
-    //   itemsAPIService.acceptContract(id, {})
-    //     .then(function(response){
-    //       Notification.success("The contract was agreed!");
-    //       init();
-    //     },
-    //       function(error){ Notification.error("Problem accepting contract: " + error); }
-    //     );
-    //   };
-    //
-    // $scope.removeContract = function(id){
-    //   itemsAPIService.removeContract(id)
-    //     .then(function(response){
-    //       Notification.success("The contract was cancelled!");
-    //       init();
-    //     },
-    //       function(error){ Notification.error("Problem canceling contract: " + error); }
-    //     );
-    // };
 
     $scope.acceptRegistration = function (notifId, reg_id) {
       $scope.notifCount = $scope.notifCount - 1;
       registrationsHelpers.acceptRegistration(reg_id, notifId)
-        .then(init,registrationsHelpers.errorCallback)
-        .catch(registrationsHelpers.errorCallback);
+        .then(init)
+        .catch(function(err){
+          console.log(err);
+          Notification.error("Error accepting registration");
+        });
     };
 
     $scope.rejectRegistration = function (notifId, reg_id) {
       $scope.notifCount = $scope.notifCount - 1;
       registrationsHelpers.rejectRegistration(reg_id, notifId)
-        .then(init,registrationsHelpers.errorCallback)
-        .catch(registrationsHelpers.errorCallback);
+        .then(init)
+        .catch(function(err){
+          console.log(err);
+          Notification.error("Error rejecting registration");
+        });
     };
 
     // ========= Time related functions ===============

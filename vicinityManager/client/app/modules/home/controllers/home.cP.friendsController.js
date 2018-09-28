@@ -10,13 +10,18 @@ function ($scope, $stateParams, commonHelpers, userAccountAPIService, $window) {
   $scope.loaded = false;
 
   userAccountAPIService.getUserAccounts($stateParams.companyAccountId, 1)
-    .then(
-      function successCallback(response) {
-        $scope.friends = response.data.message;
-        $scope.loaded = true;
-      },
-      function errorCallback(response){}
-    );
+    .then(successCallback)
+    .catch(errorCallback);
+
+    function successCallback(response) {
+      $scope.friends = response.data.message;
+      $scope.loaded = true;
+    }
+
+    function errorCallback(err){
+      console.log(err);
+      Notification.error("Server error");
+    }
 
   }
 );

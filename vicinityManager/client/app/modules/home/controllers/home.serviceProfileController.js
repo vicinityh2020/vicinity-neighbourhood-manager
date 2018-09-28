@@ -33,22 +33,63 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
   $('a#moveCancel').hide();
   $('select#editMoveName').hide();
 
+
+  // INITIALIZING
+
   initData();
 
   function initData(){
     itemsAPIService.getItemWithAdd($stateParams.serviceId)
-      .then(
-        function successCallback(response){
-          $scope.isMyItem = false;
-          $scope.isMyOrgItem = false;
-          $scope.loaded = false;
-          updateScopeAttributes(response);
-          $scope.loaded = true;
-        },
-        function errorCallback(response){
-          Notification.error('Problem fetching data');
+    .then(function(response){
+      try{
+        $scope.isMyItem = false;
+        $scope.isMyOrgItem = false;
+        $scope.loaded = false;
+        updateScopeAttributes(response);
+        getToken();
+        $scope.loaded = true;
+      } catch(err){
+        console.log(err);
+        Notification.error('Problem parsing data');
+      }
+    })
+    .catch(function(err){
+      console.log(err);
+      Notification.error('Server error');
+    });
+  }
+
+  function updateScopeAttributes(response){
+      $scope.item = response.data.message[0];
+      $scope.name = $scope.item.cid.id.name;
+      $scope.item.uid = $scope.item.uid === undefined ? {} : $scope.item.uid; // Case device disabled
+      $scope.itemEnabled = ($scope.item.status === 'enabled');
+      $scope.owner = $scope.item.uid.extid;
+      $scope.gateway = {
+        id: $scope.item.adid.id,
+        adid: $scope.item.adid.extid,
+        name: $scope.item.adid.name,
+        type: $scope.item.adid.type,
+        logo: $scope.item.adid.type === "shq" ? "img/logos/shqlogo.png" : "img/logos/vcntlogo.png"
+      };
+
+      var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
+      $scope.ALcaption = aux[$scope.item.accessLevel];
+
+      if($scope.itemEnabled) $scope.isMyItem = ($window.sessionStorage.userAccountId.toString() === $scope.item.uid.id.toString());
+      $scope.isMyOrgItem = ($window.sessionStorage.companyAccountId.toString() === $scope.item.cid.id._id.toString());
+
+      $scope.nContracts = 0;
+      $scope.contracted = false;
+      for(var i = 0; i <  $scope.item.hasContracts.length; i++){
+        if($scope.item.hasContracts[i].contractingUser.toString() === $window.sessionStorage.userAccountId.toString()){
+          $scope.contracted = true;
+          $scope.nContracts = $scope.nContracts + 1;
         }
-      );
+      }
+    }
+
+    function getToken(){
       var payload = tokenDecoder.deToken();
       for(var i in payload.roles){
         if(payload.roles[i] === 'service provider'){
@@ -63,35 +104,7 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
       }
     }
 
-    function updateScopeAttributes(response){
-        $scope.item = response.data.message[0];
-        $scope.name = $scope.item.cid.id.name;
-        $scope.item.uid = $scope.item.uid === undefined ? {} : $scope.item.uid; // Case device disabled
-        $scope.itemEnabled = ($scope.item.status === 'enabled');
-        $scope.owner = $scope.item.uid.extid;
-        $scope.gateway = {
-          id: $scope.item.adid.id,
-          adid: $scope.item.adid.extid,
-          name: $scope.item.adid.name,
-          type: $scope.item.adid.type,
-          logo: $scope.item.adid.type === "shq" ? "img/logos/shqlogo.png" : "img/logos/vcntlogo.png"
-        };
-
-        var aux = ["Private", "Partners with Data Under Request", "Public with Data Under Request"];
-        $scope.ALcaption = aux[$scope.item.accessLevel];
-
-        if($scope.itemEnabled) $scope.isMyItem = ($window.sessionStorage.userAccountId.toString() === $scope.item.uid.id.toString());
-        $scope.isMyOrgItem = ($window.sessionStorage.companyAccountId.toString() === $scope.item.cid.id._id.toString());
-
-        $scope.nContracts = 0;
-        $scope.contracted = false;
-        for(var i = 0; i <  $scope.item.hasContracts.length; i++){
-          if($scope.item.hasContracts[i].contractingUser.toString() === $window.sessionStorage.userAccountId.toString()){
-            $scope.contracted = true;
-            $scope.nContracts = $scope.nContracts + 1;
-          }
-        }
-      }
+    // MAIN FUNCTIONS
 
     $scope.changeStatus = function(){
       var query = {};
@@ -112,31 +125,31 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
       }
       itemsAPIService.putOne(query)
         .then(
-          function successCallback(response){
+          function(response){
             if(response.data.success){
               Notification.success('Service status updated!!');
               initData();
             } else {
               Notification.warning('Unauthorized');
             }
-          },
-          function errorCallback(response){
-          }
-        );
-    };
+          })
+          .catch(function(err){
+            console.log(err);
+            Notification.error('Problem changing the status');
+          });
+        };
 
   $scope.deleteItem = function(){
     if(confirm('Are you sure?')){
       itemsAPIService.deleteItem($scope.item.oid)
-        .then(
-          function successCallback(response){
-            Notification.success('service deleted');
-            $state.go("root.main.allServices");
-          },
-          function errorCallback(response){
-            Notification.error('Problem deleting item');
-          }
-        );
+      .then(function(response){
+          Notification.success('service deleted');
+          $state.go("root.main.allServices");
+        })
+        .catch(function(err){
+          console.log(err);
+          Notification.error('Problem deleting item');
+        });
       }
     };
 
@@ -183,7 +196,8 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
             }
           )
           .catch(function(err){
-            Notification.error(err);
+            console.log(err);
+            Notification.error("Problem saving access level");
           });
         }
       };
@@ -227,7 +241,8 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
             $scope.backToEditMove();
           })
           .catch(function(error){
-            Notification.error('Error changing gateway: ' + error);
+            console.log(error);
+            Notification.error('Error changing gateway');
             $scope.backToEditMove();
           });
         } else {
@@ -248,7 +263,8 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
             $scope.backToEditMove();
           })
           .catch(function(error){
-            Notification.error('Error changing gateway: ' + error);
+            console.log(error);
+            Notification.error('Error changing gateway');
             $scope.backToEditMove();
           });
         }
@@ -267,7 +283,8 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           }
         })
         .catch(function(error){
-          Notification.error(error);
+          console.log(error);
+          Notification.error("Error finding suitable users");
         });
       };
 
@@ -284,7 +301,8 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
           }
         })
         .catch(function(error){
-          Notification.error(error);
+          console.log(error);
+          Notification.error("Error finding suitable gateways");
         });
       };
 
@@ -363,8 +381,9 @@ $scope.uploadPic = function(){
                Notification.warning('Unauthorized');
              }
            },
-           function errorCallback(response){
-             Notification.error(response);
+           function errorCallback(error){
+             console.log(error);
+             Notification.error("Error changing avatar picture");
            }
          );
       }

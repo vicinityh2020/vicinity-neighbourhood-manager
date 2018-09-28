@@ -8,7 +8,7 @@ Filters the items based on the following rules:
   . if I am partner of the company, also items flagged for friends
 */
 .controller('cPdevicesController',
-function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAPIService, itemsAPIService, AuthenticationService,  Notification) {
+function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -22,7 +22,8 @@ function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAP
 
   function init(){
     itemsAPIService.getMyItems($stateParams.companyAccountId,'device', $scope.offset, $scope.cid)
-      .then(successCallback, errorCallback);
+      .then(successCallback)
+      .catch(errorCallback);
   }
 
   init();
@@ -48,7 +49,8 @@ function ($scope, $window, commonHelpers, $stateParams, $location, userAccountAP
   }
 
   function errorCallback(err){
-    Notification.error("Problem retrieving devices: " + err);
+    console.log(err);
+    Notification.error("Problem retrieving devices");
   }
 
 });

@@ -9,13 +9,14 @@ function ($scope, $window, $stateParams, commonHelpers, $location, registrations
   $scope.loaded = false;
 
     registrationsAPIService.getOne($stateParams.registrationId)
-      .then(
-        function successCallback(response){
+      .then(function(response){
           updateScopeAttributes(response);
           $scope.loaded = true;
-        },
-        function errorCallback(response){
-        }
+        })
+        .catch(function(err){
+          console.log(err);
+          Notification.error("Server error");
+        });
       );
 
     function updateScopeAttributes(response){

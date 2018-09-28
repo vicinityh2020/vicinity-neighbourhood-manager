@@ -1,15 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers').
   controller('myNodesController',
-  function ($scope,
-            $state,
-            $stateParams,
-            $window,
-            $location,
-            $http,
-            commonHelpers,
-            nodeAPIService,
-            Notification) {
+  function ($scope, $state, $window, commonHelpers, nodeAPIService, Notification) {
 
 // ======== Set initial variables ==========
 
@@ -17,7 +9,7 @@ angular.module('VicinityManagerApp.controllers').
   commonHelpers.triggerResize();
 
   // Ensure scroll on top onLoad
-      $window.scrollTo(0, 0);
+  $window.scrollTo(0, 0);
 
   $scope.imMobile = Number($window.innerWidth) < 768;
   $(window).on('resize',function(){
@@ -30,42 +22,47 @@ angular.module('VicinityManagerApp.controllers').
 
   var myInit = function(){
   nodeAPIService.getAll($window.sessionStorage.companyAccountId)
-    .then(
-      function successCallback(response){
-        $scope.nodes = response.data.message;
+  .then(function(response){
+      $scope.nodes = response.data.message;
+      try{
         countItems();
         $scope.loadedPage = true;
-      },
-      function errorCallback(response){}
-    );
+      } catch(err) {
+        console.log(err);
+        Notification.warning("Node items could not be counted");
+        $scope.loadedPage = true;
+      }
+    })
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Server error");
+    });
   };
 
   myInit();
 
 // ======== Main functions =========
 
-  $scope.deleteNode = function(adid){
-    if(confirm('Are you sure?')){
-      nodeAPIService.updateOne(adid, {status : "deleted"}) // upd status to removed of node in MONGO
-        .then(
-          function successCallback(response){
-            Notification.success("Access Point successfully removed!!");
-            myInit();
-          },
-          errorCallback
-        );
-      }
-    };
-
-    function errorCallback(err){
-      Notification.error("Something went wrong: " + err);
+$scope.deleteNode = function(adid){
+  if(confirm('Are you sure?')){
+    nodeAPIService.updateOne(adid, {status : "deleted"}) // upd status to removed of node in MONGO
+    .then(
+      function successCallback(response){
+        Notification.success("Access Point successfully removed!!");
+        myInit();
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Error deleting node");
+      });
     }
+  };
 
-    function countItems(){
-      for(var i = 0; i < $scope.nodes.length; i++){
-        $scope.nodes[i].numItems = $scope.nodes[i].hasItems.length;
-      }
+  function countItems(){
+    for(var i = 0; i < $scope.nodes.length; i++){
+      $scope.nodes[i].numItems = $scope.nodes[i].hasItems.length;
     }
+  }
 
 // ==== Navigation functions =====
 

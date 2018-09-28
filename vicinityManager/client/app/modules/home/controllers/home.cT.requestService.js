@@ -55,7 +55,8 @@ function ($scope, $stateParams, $state, $window, $q, commonHelpers, itemsAPIServ
             Notification.warning("You do not have items to share with this service!!");
             $state.go("root.main.allServices");
           } else {
-            Notification.error(error);
+            console.log(error);
+            Notification.error("Server error");
             $state.go("root.main.allServices");
           }
         });
@@ -81,7 +82,8 @@ function ($scope, $stateParams, $state, $window, $q, commonHelpers, itemsAPIServ
           $state.go("root.main.allServices");
         })
         .catch(function(error){
-          Notification.error('Problem processing the contract: ' + error);
+          console.log(error);
+          Notification.error('Problem processing the contract');
         });
       } else {
         Notification.warning('Select some device to proceed');
@@ -90,18 +92,25 @@ function ($scope, $stateParams, $state, $window, $q, commonHelpers, itemsAPIServ
 
     $scope.countDevices = function(){
       var n = 0;
-      $scope.data.oidsDevice = [];
-      for(var i = 0; i < $scope.things.length; i++){
-        if($scope.things[i].status){
-          n++;
-          $scope.data.oidsDevice.push({ 'id': $scope.things[i]._id, 'extid': $scope.things[i].oid, 'name': $scope.things[i].name });
-          if(!$scope.usersIn.hasOwnProperty($scope.things[i].uid.extid)){
-            $scope.usersIn[$scope.things[i].uid.extid] = 1;
-            $scope.data.uidsDevice.push({ 'id': $scope.things[i].uid.id, 'extid': $scope.things[i].uid.extid });
+      try{
+        $scope.data.oidsDevice = [];
+        for(var i = 0; i < $scope.things.length; i++){
+          if($scope.things[i].status){
+            n++;
+            $scope.data.oidsDevice.push({ 'id': $scope.things[i]._id, 'extid': $scope.things[i].oid, 'name': $scope.things[i].name });
+            if(!$scope.usersIn.hasOwnProperty($scope.things[i].uid.extid)){
+              $scope.usersIn[$scope.things[i].uid.extid] = 1;
+              $scope.data.uidsDevice.push({ 'id': $scope.things[i].uid.id, 'extid': $scope.things[i].uid.extid });
+            }
           }
         }
+        return n;
+      } catch(err) {
+        console.log(err);
+        Notification.warning("It was not possible to find any items for the contract");
+        n = 0;
+        return n;
       }
-      return n;
     };
 
     $scope.setCaption = function(){

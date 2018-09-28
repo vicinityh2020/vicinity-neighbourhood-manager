@@ -23,22 +23,25 @@ function ($scope, $stateParams, commonHelpers, auditAPIService, Notification) {
       $scope.dates = [];
       $scope.logs = [];
       auditAPIService.getAll($stateParams.deviceId, 'item', $scope.dateFrom)
-      .then(
-        function(response){
+      .then(function(response){
+        try{
           var myAudits = getAudits(response.data.message.hasAudits);
           commonHelpers.addTimestamp(myAudits, function(array, dates){
             $scope.dates = dates;
             $scope.logs = array;
+            $scope.logs.reverse();
             $scope.noLogs = array.length !== 0 ? false : true;
             $scope.loadedPage = true;
           });
-          $scope.logs.reverse();
-        })
-        .catch(
-          function(error){
-            Notification.error("Something went wrong: " + error);
-          }
-        );
+        }catch(err){
+          console.log(err);
+          Notification.error("Error processing the logs");
+        }
+      })
+      .catch(function(error){
+        console.log(error);
+        Notification.error("Server error");
+      });
     }
 
     function getAudits(array){

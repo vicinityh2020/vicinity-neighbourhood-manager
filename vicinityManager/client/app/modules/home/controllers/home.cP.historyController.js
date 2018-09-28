@@ -12,11 +12,11 @@ function ($scope, $stateParams, commonHelpers, auditAPIService, Notification) {
     $scope.logs = [];
 
     // ====== Sets from which date we retrieve notifications at init =====
-
     $scope.dateFrom =  moment().subtract(7, 'days'); // Initialized to one week ago
     $scope.period = 'week';
 
     init();
+
     function init(){
       $scope.loadedPage = false;
       $scope.dates = [];
@@ -35,7 +35,8 @@ function ($scope, $stateParams, commonHelpers, auditAPIService, Notification) {
         })
         .catch(
           function(error){
-            Notification.error("Something went wrong: " + error);
+            console.log(error);
+            Notification.error("Server error");
           }
         );
     }

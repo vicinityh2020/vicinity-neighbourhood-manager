@@ -1,6 +1,6 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers').
-controller('companyAccountController', function($scope, $window, commonHelpers, userAccountAPIService, AuthenticationService) {
+controller('companyAccountController', function($scope, $window, commonHelpers, userAccountAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -11,15 +11,19 @@ controller('companyAccountController', function($scope, $window, commonHelpers, 
   $scope.loaded = false;
 
   userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
-    .then(
-      function successCallback(response) {
-        $scope.name = response.data.message.name;
-        $scope.avatar = response.data.message.avatar;
-        $scope.companyAccountId = response.data.message._id;
-        $scope.loaded = true;
-      },
-      function errorCallback(response){
-      }
-    );
-  }
-);
+  .then( function(response) {
+    try{
+      $scope.name = response.data.message.name;
+      $scope.avatar = response.data.message.avatar;
+      $scope.companyAccountId = response.data.message._id;
+      $scope.loaded = true;
+    } catch(err){
+      console.log(err);
+      Notification.warning("Problem fetching data");
+    }
+  })
+  .catch( function(err){
+    console.log(err);
+    Notification.error("Server error");
+  });
+});

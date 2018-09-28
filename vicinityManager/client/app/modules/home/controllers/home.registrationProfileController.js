@@ -2,12 +2,9 @@
 angular.module('VicinityManagerApp.controllers')
 .controller('registrationProfileController',
 function ($scope,
-          $window,
           $stateParams,
-          $location,
           commonHelpers,
           registrationsAPIService,
-          notificationsAPIService,
           Notification) {
 
   $scope.loaded = false;
@@ -19,13 +16,11 @@ function ($scope,
 
   function init(){
     registrationsAPIService.getOne($stateParams.registrationId)
-    .then(
-      function successCallback(response){
-        updateScopeAttributes(response);
-        $scope.loaded = true;
-      },
-      errorCallback
-    );
+    .then(function(response){
+      updateScopeAttributes(response);
+      $scope.loaded = true;
+    })
+    .catch(errorCallback);
   }
 
   function updateScopeAttributes(response){
@@ -46,9 +41,7 @@ function ($scope,
       $scope.status = 'pending';
       init();
     })
-    .catch(function(err){
-      errorCallback(err);
-    });
+    .catch(errorCallback);
   };
 
   $scope.declineAction = function(){
@@ -58,13 +51,12 @@ function ($scope,
       $scope.status = 'declined';
       init();
     })
-    .catch(function(err){
-      errorCallback(err);
-    });
+    .catch(errorCallback);
   };
 
   function errorCallback(err){
-    Notification.warning("Something went wrong..." + err);
+    console.log(err);
+    Notification.error("Server error");
   }
 
 });

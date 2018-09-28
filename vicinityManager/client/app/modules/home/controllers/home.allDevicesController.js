@@ -50,7 +50,8 @@ angular.module('VicinityManagerApp.controllers')
         $scope.loadedPage = true;
       })
       .catch(function(err){
-        Notification.error(err);
+        console.log(err);
+        Notification.error("Server error");
       });
   }
 
@@ -75,7 +76,8 @@ angular.module('VicinityManagerApp.controllers')
        }
       })
      .catch(function(err){
-       Notification.error(err);
+       console.log(err);
+       Notification.error("Server error");
      });
  };
 
@@ -141,7 +143,8 @@ angular.module('VicinityManagerApp.controllers')
      result.subclasses.push("all");
      result.class = "core:Device";
      result.path = ["core:Device"];
-     Notification.warning("Problem fetching ontology classes: " + err);
+     console.log(err);
+     Notification.warning("Problem fetching ontology classes");
    }
    $scope.itemFilter = result;
  }
@@ -190,7 +193,8 @@ angular.module('VicinityManagerApp.controllers')
    try{
      return $scope.itemFilter.subclasses.concat([value]);
    } catch(err){
-     Notification.warning(err);
+     console.log(err);
+     Notification.warning("Problem fetching ontology classes");
      return ["all"];
    }
  }

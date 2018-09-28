@@ -8,7 +8,7 @@ Filters the items based on the following rules:
   . if I am partner of the company, also items flagged for friends
 */
 .controller('uPservicesController',
-function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIService,  Notification) {
+function ($scope, $window, commonHelpers, $stateParams, itemsAPIService,  Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -21,7 +21,11 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
 
   function init(){
     itemsAPIService.getUserItems($stateParams.userAccountId, $stateParams.companyAccountId, 'service')
-      .then(successCallback, commonHelpers.errorCallback);
+    .then(successCallback)
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Server error");
+    });
   }
 
   init();
@@ -30,7 +34,7 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
 
   function successCallback(response) {
     if(response.data.error){
-      commonHelpers.errorCallback('Error retrieving services');
+      Notification.error('Error retrieving devices');
       $scope.loaded = true;
       $scope.noItems = true;
     } else {
@@ -40,5 +44,4 @@ function ($scope, $window, commonHelpers, $stateParams, $location, itemsAPIServi
       $scope.loaded = true;
     }
   }
-
 });

@@ -33,10 +33,11 @@ angular.module('VicinityManagerApp.controllers')
         }
       },
       function errorCallback(err){
-          $rootScope.skinColor = 'blue'; //Default on error
-          $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
-          $rootScope.myColor = 'my-' + $rootScope.skinColor;
-          $rootScope.bckColor = 'bck-' + $rootScope.skinColor;
+        console.log(err);
+        $rootScope.skinColor = 'blue'; //Default on error
+        $rootScope.styles = ['hold-transition', 'skin-' + $rootScope.skinColor, 'sidebar-mini'];
+        $rootScope.myColor = 'my-' + $rootScope.skinColor;
+        $rootScope.bckColor = 'bck-' + $rootScope.skinColor;
       }
     );
 

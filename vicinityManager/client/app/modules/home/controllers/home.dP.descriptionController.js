@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('dPdescriptionController',
-function ($scope, $window, $stateParams, commonHelpers, itemsAPIService) {
+function ($scope, $window, $stateParams, commonHelpers, itemsAPIService, Notification) {
 
 // Variables and initData
 // ====== Triggers window resize to avoid bug =======
@@ -18,14 +18,19 @@ function ($scope, $window, $stateParams, commonHelpers, itemsAPIService) {
 
   function initData(){
     itemsAPIService.getItemWithAdd($stateParams.deviceId)
-      .then(
-        function successCallback(response){
+      .then(function(response){
+        try{
           updateScopeAttributes(response);
           $scope.loaded = true;
-        },
-        function errorCallback(response){
+        } catch(err){
+          console.log(err);
+          Notification.error("It was not possible to build the view");
         }
-      );
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Server error");
+      });
     }
 
 // Functions and helpers

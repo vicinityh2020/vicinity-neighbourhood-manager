@@ -45,7 +45,8 @@ angular.module('VicinityManagerApp.controllers').
     }
 
     function errorCallback(err){
-      Notification.error('Problem with the search: ' + err);
+        console.log(err);
+        Notification.error("Server error");
     }
 
     $scope.collapseFlag = function(type){

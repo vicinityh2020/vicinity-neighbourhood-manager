@@ -7,14 +7,14 @@ angular.module('VicinityManagerApp.controllers').
             notificationsAPIService,
             tokenDecoder,
             registrationsHelpers,
-            itemsHelpers,
-            userAccountsHelpers) {
+            userAccountsHelpers,
+            Notification) {
 
 // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
-  // Ensure scroll on top onLoad
-      $window.scrollTo(0, 0);
+// Ensure scroll on top onLoad
+  $window.scrollTo(0, 0);
 
 // ======= Set initial variables ==========
   $scope.loadedPage = false;
@@ -45,7 +45,11 @@ $scope.period = 'week';
     $scope.dates = [];
     $scope.notifsWithDate = [];
     notificationsAPIService.getNotifications(1, $scope.dateFrom)
-    .then(getNotifs, commonHelpers.errorCallback);
+    .then(getNotifs)
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Server error");
+    });
   }
 
   function getNotifs(response){
@@ -82,39 +86,38 @@ $scope.period = 'week';
 
   $scope.acceptNeighbourRequest = function (notifId, friendId){
     userAccountsHelpers.acceptNeighbourRequest(friendId)
-    .then(init, userAccountsHelpers.errorCallback)
-    .catch(userAccountsHelpers.errorCallback);
+    .then(init)
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Error accepting neighbourhood request");
+    });
   };
 
   $scope.rejectNeighbourRequest = function(notifId, friendId) {
     userAccountsHelpers.rejectNeighbourRequest(friendId)
-    .then(init,userAccountsHelpers.errorCallback)
-    .catch(userAccountsHelpers.errorCallback);
+    .then(init)
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Error rejecting neighbourhood request");
+    });
   };
-
-  // $scope.acceptDataRequest = function (dev_id, notifId) {
-  //   itemsHelpers.acceptDataRequest(dev_id, notifId)
-  //   .then(init,itemsHelpers.errorCallback)
-  //   .catch(itemsHelpers.errorCallback);
-  // };
-  //
-  // $scope.rejectDataRequest = function (dev_id, notifId) {
-  //   itemsHelpers.rejectDataRequest(dev_id, notifId)
-  //   .then(init,itemsHelpers.errorCallback)
-  //   .catch(itemsHelpers.errorCallback);
-  // };
 
   $scope.acceptRegistration = function (notifId, reg_id) {
    registrationsHelpers.acceptRegistration(reg_id, notifId)
-    .then(init,registrationsHelpers.errorCallback)
-    .catch(registrationsHelpers.errorCallback);
+    .then(init)
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Error accepting registration");
+    });
   };
-
 
   $scope.rejectRegistration = function (notifId, reg_id) {
     registrationsHelpers.rejectRegistration(reg_id, notifId)
-      .then(init,registrationsHelpers.errorCallback)
-      .catch(registrationsHelpers.errorCallback);
+      .then(init)
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Error rejecting registration");
+      });
   };
 
   // ==== Sorting ====

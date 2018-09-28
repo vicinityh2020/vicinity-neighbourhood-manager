@@ -66,12 +66,14 @@ $scope.sameCompany = ($stateParams.companyAccountId.toString() === $window.sessi
 $scope.myInit = function(){
   userAPIService.getUser($stateParams.userAccountId)
   .then(
-    function successCallback(resource){
+    function(resource){
       updateScopeAttributes(resource);
       $scope.loaded = true;
-    },
-    commonHelpers.errorCallback
-  );
+    })
+    .catch(function(error){
+      console.log(error)
+      Notification.error("Server error");
+    });
 };
 
 // Updating resources
@@ -115,16 +117,18 @@ NAME
   $scope.saveNewName = function () {
     userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {name: $scope.name}, 'type': 'metadata'}).
     then(
-      function successCallback(response){
+      function(response){
       userAPIService.getUser($stateParams.userAccountId)
         .then(
-          function successCallback(response) {
+          function(response) {
             $scope.name = response.data.message.name;
              $('span#nameUnderAvatar').hide();
              $('span#newNameUnderAvatar').show();
-           },
-           commonHelpers.errorCallback
-         );
+           })
+           .catch(function(error){
+             console.log(error)
+             Notification.error("Problem saving name");
+           });
        $('a#edits1').fadeOut('slow');
        $('a#edits2').fadeOut('slow');
        $('input#editNameInput').fadeOut('slow');
@@ -132,9 +136,11 @@ NAME
          $('a#nameButt').fadeIn('fast');
          $('p#myName').fadeIn('fast');
        }, 600);
-     },
-    commonHelpers.errorCallback
-  );
+     })
+     .catch(function(error){
+       console.log(error)
+       Notification.error("Problem saving name");
+     });
 };
 
 /*
@@ -161,15 +167,17 @@ $scope.backToEdit1 = function () {
   $scope.saveNewOccupation = function () {
     userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {occupation: $scope.occupation}, 'type': 'metadata'})
       .then(
-        function successCallback(response){
+        function(response){
           userAPIService.getUser($stateParams.userAccountId).then(
-            function successCallback(response) {
+            function(response) {
               $scope.occupation = response.data.message.occupation;
                $('p#occupationUnderAvatar').hide();
                $('p#newOccupationUnderAvatar').show();
-             },
-             commonHelpers.errorCallback
-          );
+             })
+             .catch(function(error){
+               console.log(error)
+               Notification.error("Problem saving occupation");
+             });
          $('a#edits11').fadeOut('slow');
          $('a#edits21').fadeOut('slow');
          $('input#editOccupationInput').fadeOut('slow');
@@ -177,9 +185,11 @@ $scope.backToEdit1 = function () {
            $('a#nameButt1').fadeIn('fast');
             $('p#nameP1').fadeIn('fast');
         }, 600);
-      },
-    commonHelpers.errorCallback
-    );
+      })
+      .catch(function(error){
+        console.log(error)
+        Notification.error("Problem saving occupation");
+      });
   };
 
   /*
@@ -206,14 +216,16 @@ $scope.backToEdit1 = function () {
     $scope.saveNewMail = function () {
       userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {contactMail: $scope.contactMail}, 'type': 'metadata'})
         .then(
-          function successCallback(response){
+          function(response){
             userAPIService.getUser($stateParams.userAccountId)
             .then(
-              function successCallback(response) {
+              function(response) {
                 $scope.contactMail = response.data.message.contactMail;
-               },
-               commonHelpers.errorCallback
-            );
+              })
+              .catch(function(error){
+                console.log(error)
+                Notification.error("Problem saving contactMail");
+              });
            $('a#edits12').fadeOut('slow');
            $('a#edits22').fadeOut('slow');
            $('input#editMailInput').fadeOut('slow');
@@ -221,9 +233,11 @@ $scope.backToEdit1 = function () {
              $('a#nameButt2').fadeIn('fast');
              $('span#nameP21').fadeIn('fast');
           }, 600);
-        },
-      commonHelpers.errorCallback
-      );
+        })
+        .catch(function(error){
+          console.log(error)
+          Notification.error("Problem saving contactMail");
+        });
     };
 
   /*
@@ -277,7 +291,8 @@ $scope.backToEdit1 = function () {
          }, 600);
         })
         .catch(function(error){
-          Notification.error(error);
+          console.log(error)
+          Notification.error("Problem saving password");
         });
     }else{
        Notification.warning('New passwords do not match!');
@@ -332,12 +347,16 @@ $scope.saving = function(lvl){
   userAPIService.editInfoAboutUser($stateParams.userAccountId,
   {'data': {accessLevel: lvl}, 'type': 'visibility'})
   .then(
-    function successCallback(response){
+    function(response){
       $scope.accessLevel = Number(response.data.message.accessLevel);
       $scope.accessLevelCaption = getCaption($scope.accessLevel);
       $scope.backToEditAL();
     }
-  );
+  )
+  .catch(function(error){
+    console.log(error)
+    Notification.error("Problem saving access level");
+  });
 };
 
 function getCaption(lvl){
@@ -403,10 +422,10 @@ $scope.cancelLoadPic = function(){
 $scope.uploadPic = function(){
 userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {avatar: base64String}, 'type': 'metadata'})
   .then(
-    function successCallback(response){
+    function(response){
       userAPIService.getUser($stateParams.userAccountId)
         .then(
-          function successCallback(response) {
+          function(response) {
             $scope.avatar = response.data.message.avatar;
             $('#editCancel1').fadeOut('slow');
             $('#editUpload2').fadeOut('slow');
@@ -416,12 +435,16 @@ userAPIService.editInfoAboutUser($stateParams.userAccountId, {'data': {avatar: b
               $("img#pic").prop("src",$scope.avatar);
               $('img#pic').fadeIn('slow');
            }, 600);
-         },
-         commonHelpers.errorCallback
-      );
-    },
-    commonHelpers.errorCallback
-  );
+         })
+         .catch(function(error){
+           console.log(error)
+           Notification.error("Problem saving password");
+         });
+    })
+    .catch(function(error){
+      console.log(error)
+      Notification.error("Problem saving password");
+    });
 };
 
 });

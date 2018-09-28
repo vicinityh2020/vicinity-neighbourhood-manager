@@ -18,15 +18,20 @@ function ($scope, $window, $stateParams, commonHelpers, itemsAPIService, Notific
 
     function initData(){
       itemsAPIService.getItemWithAdd($stateParams.serviceId)
-        .then(
-          function successCallback(response){
-            updateScopeAttributes(response);
-            $scope.loaded = true;
-          },
-          function errorCallback(response){
-          }
-        );
-      }
+      .then(function(response){
+        try{
+          updateScopeAttributes(response);
+          $scope.loaded = true;
+        } catch(err){
+          console.log(err);
+          Notification.error("It was not possible to build the view");
+        }
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Server error");
+      });
+    }
 
   // Functions and helpers
 

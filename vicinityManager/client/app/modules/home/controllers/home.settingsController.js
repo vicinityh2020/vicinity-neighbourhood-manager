@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('settingsController',
-function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, tokenDecoder, userAccountAPIService, invitationsAPIService, userAPIService, Notification) {
+function ($scope, $window, commonHelpers, tokenDecoder, userAccountAPIService, invitationsAPIService, userAPIService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -26,30 +26,32 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, tok
         $('div#myModal1').hide();
         $('div#myModal2').hide();
     }
-});
+  });
 
   userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
-    .then(
-      function successCallback(response) {
-        $scope.comp = response.data.message;
-        var index = 0;
-        for (index in $scope.comp.accountOf){
-          if ($scope.comp.accountOf[index].id._id.toString() === $window.sessionStorage.userAccountId.toString()){
-            var payload = tokenDecoder.deToken();
-            if(payload.roles.indexOf('administrator') !== -1){
-              $scope.isAdmin = true;
-            }
+  .then(function(response) {
+      $scope.comp = response.data.message;
+      var index = 0;
+      for (index in $scope.comp.accountOf){
+        if ($scope.comp.accountOf[index].id._id.toString() === $window.sessionStorage.userAccountId.toString()){
+          var payload = tokenDecoder.deToken();
+          if(payload.roles.indexOf('administrator') !== -1){
+            $scope.isAdmin = true;
           }
         }
-      },
-      function errorCallback(response){
       }
-    );
+    })
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Server error");
+    });
 
   userAPIService.getUser($window.sessionStorage.userAccountId)
-    .then( function successCallback(response) { $scope.user = response.data.message; },
-      function errorCallback(response){
-      });
+    .then(function(response) { $scope.user = response.data.message; })
+    .catch(function(err){
+      console.log(err);
+      Notification.error("Server error");
+    });
 
   $scope.alertPopUp1 = function () {
     $('div#myModal1').show();
@@ -76,11 +78,13 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, tok
           type: "newCompany"};
       invitationsAPIService.postOne(data)
       .then(
-        function successCallback(){
+        function(response){
         $('div#myModal2').hide();
-      },
-        function errorCallback(){}
-    );
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Error inviting company");
+      });
     }else{
       $('input#emailVer2').addClass("invalid");
       setTimeout(function() {
@@ -99,11 +103,13 @@ function ($scope, $window, $stateParams, $location, $timeout, commonHelpers, tok
 
       invitationsAPIService.postOne(data)
       .then(
-        function successCallback(){
+        function(response){
         $('div#myModal1').hide();
-      },
-      function errorCallback(){}
-    );
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Error inviting user");
+      });
     }else{
       $('input#emailVer').addClass("invalid");
       setTimeout(function() {

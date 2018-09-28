@@ -1,7 +1,7 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers')
 .controller('cPuserAccountsController',
-function ($scope, $stateParams, commonHelpers, userAPIService) {
+function ($scope, $stateParams, commonHelpers, userAPIService, Notification) {
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
 
@@ -16,8 +16,12 @@ function ($scope, $stateParams, commonHelpers, userAPIService) {
         $scope.userAccounts = response.data.message;
         $scope.loaded = true;
         if(response.data.message.length === 0){$scope.noUsers = true;}
-      },
-      function errorCallback(response){}
-    );
+      })
+      .catch(errorCallback);
+
+    function errorCallback(err){
+      console.log(err);
+      Notification.error("Server error");
+    }
 
 });

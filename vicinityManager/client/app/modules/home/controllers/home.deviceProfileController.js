@@ -31,21 +31,33 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
   $('select#editAccessName').hide();
   $('p#accessName').show();
 
+
+/* INITIALIZATION */
+
   initData();
 
   function initData(){
     itemsAPIService.getItemWithAdd($stateParams.deviceId)
-      .then(
-        function successCallback(response){
-          $scope.isMyItem = false;
-          $scope.isMyOrgItem = false;
-          $scope.loaded = false;
+      .then(function(response){
+        $scope.isMyItem = false;
+        $scope.isMyOrgItem = false;
+        $scope.loaded = false;
+        try{
           updateScopeAttributes(response);
           $scope.loaded = true;
-        },
-        function errorCallback(response){
+          getToken();
+        } catch(err) {
+          console.log(err);
+          Notification.error("Problem initializing data");
         }
-      );
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Server error");
+      });
+    }
+
+    function getToken(){
       var payload = tokenDecoder.deToken();
       for(var i in payload.roles){
         if(payload.roles[i] === 'device owner'){
@@ -78,52 +90,53 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         $scope.isMyOrgItem = ($window.sessionStorage.companyAccountId.toString() === $scope.item.cid.id._id.toString());
     }
 
-    $scope.changeStatus = function(){
-      var query = {};
-      if($scope.item.status === 'enabled'){
-        query = {
-          "status":'disabled',
-          "o_id": $scope.item._id,
-          "oid": $scope.item.oid,
-          "typeOfItem": "device"
-        };
-      }else{
-        query = {
-          "status":'enabled',
-          "o_id": $scope.item._id,
-          "oid": $scope.item.oid,
-          "typeOfItem": "device"
-        };
-      }
-      itemsAPIService.putOne(query)
-      .then(
-        function successCallback(response){
-          if(response.data.success){
-            Notification.success('Device status updated!!');
-            initData();
-          } else {
-            Notification.warning('Unauthorized');
-          }
-        },
-        function errorCallback(response){
-          Notification.error(response);
+/* MAIN FUNCTIONS */
+
+  $scope.changeStatus = function(){
+    var query = {};
+    if($scope.item.status === 'enabled'){
+      query = {
+        "status":'disabled',
+        "o_id": $scope.item._id,
+        "oid": $scope.item.oid,
+        "typeOfItem": "device"
+      };
+    }else{
+      query = {
+        "status":'enabled',
+        "o_id": $scope.item._id,
+        "oid": $scope.item.oid,
+        "typeOfItem": "device"
+      };
+    }
+    itemsAPIService.putOne(query)
+    .then(
+      function(response){
+        if(response.data.success){
+          Notification.success('Device status updated!!');
+          initData();
+        } else {
+          Notification.warning('Unauthorized');
         }
-      );
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Error changing status");
+      });
     };
 
   $scope.deleteItem = function(){
     if(confirm('Are you sure?')){
       itemsAPIService.deleteItem($scope.item.oid)
-        .then(
-          function successCallback(response){
-            Notification.success('Device deleted');
-            $state.go("root.main.home");
-          },
-          function errorCallback(response){
-            Notification.error(response);
-          }
-        );
-      }
+      .then(function(response){
+        Notification.success('Device deleted');
+        $state.go("root.main.home");
+      })
+      .catch(function(err){
+        console.log(err);
+        Notification.error("Error deleting item");
+      });
+    }
   };
 
 // HIDE && SHOW DOM =========================
@@ -169,7 +182,8 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
             }
           )
           .catch(function(err){
-            Notification.error(err);
+            console.log(err);
+            Notification.error("Error saving new access level");
           });
         }
       };
@@ -214,7 +228,8 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         $scope.backToEditMove();
       })
       .catch(function(error){
-        Notification.error('Error changing gateway: ' + error);
+        console.log(error);
+        Notification.error('Error changing gateway');
         $scope.backToEditMove();
       });
     } else {
@@ -235,7 +250,8 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         $scope.backToEditMove();
       })
       .catch(function(error){
-        Notification.error('Error changing gateway: ' + error);
+        console.log(error);
+        Notification.error('Error changing owner');
         $scope.backToEditMove();
       });
     }
@@ -254,7 +270,8 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
       }
     })
     .catch(function(error){
-      Notification.error(error);
+      console.log(error);
+      Notification.error("Error changing owner");
     });
   };
 
@@ -271,7 +288,8 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
       }
     })
     .catch(function(error){
-      Notification.error(error);
+      console.log(error);
+      Notification.error('Error changing gateway');
     });
   };
 
@@ -349,8 +367,9 @@ $scope.uploadPic = function(){
                Notification.warning('Unauthorized');
              }
            },
-           function errorCallback(response){
-             Notification.error(response);
+           function errorCallback(err){
+             console.log(err);
+             Notification.error("Error uploading picture");
            }
          );
       }

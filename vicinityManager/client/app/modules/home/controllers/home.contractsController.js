@@ -26,7 +26,10 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
   function init(){
     itemsAPIService.getContracts($scope.uid)
       .then(successCallback)
-      .catch(errorCallback);
+      .catch(function(error){
+        console.log(error);
+        Notification.error("Problem retrieving contracts");
+      });
   }
 
   init();
@@ -44,11 +47,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     }
   }
 
-  function errorCallback(error){
-    Notification.error("Problem retrieving contracts: " + error);
-  }
-
-  // Buttons
+  // Buttons -- Functions accessed from UI
 
   $scope.acceptContract = function(ctid){
     itemsAPIService.acceptContract(ctid)
@@ -56,9 +55,11 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
         $scope.contracts = [];
         Notification.success("The contract was agreed!");
         init();
-      },
-        function(error){ Notification.error("Problem accepting contract: " + error); }
-      );
+      })
+      .catch(function(error){
+        console.log(error);
+        Notification.error("Problem accepting contract");
+      });
     };
 
   $scope.removeContract = function(ctid){
@@ -68,9 +69,11 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
         Notification.success("The contract was cancelled!");
         $scope.closeDetails();
         init();
-      },
-        function(error){ Notification.error("Problem canceling contract: " + error); }
-      );
+      })
+      .catch(function(error){
+        console.log(error);
+        Notification.error("Problem canceling contract");
+      });
   };
 
   $scope.moveContract = function(ctid){
@@ -105,7 +108,8 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
           $scope.moveThings = [];
           $scope.exchange = false;
           $scope.closeDetails();
-          Notification.error("Problem canceling contract: " + error); }
+          console.log(error);
+          Notification.error("Problem moving contract"); }
       );
   };
 
@@ -115,7 +119,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
   };
 
 
-// Other functions
+// Functions supporting contract management
 
   $scope.getAvailableUsers = function(){
     $scope.moveThings = [];
@@ -133,10 +137,12 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
       }
     })
     .catch(function(error){
-      Notification.error(error);
+      console.log(error);
+      Notification.error("Problem getting suitable users for receiving contract");
     });
   };
 
+// Remove one contract from array
   function removeCurrent(id){
     for(var i = 0, l = $scope.moveThings.length; i < l; i++){
       if($scope.moveThings[i]._id.toString() === id.toString()){
@@ -146,6 +152,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     }
   }
 
+// Build details view
   $scope.showDetails = function(id){
     $location.search('contractId', id); // SET
     getOneContract(id);
@@ -165,10 +172,12 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
       $scope.detailsShow = true;
     })
     .catch(function(error){
-      Notification.error("Problem retrieving contract details: " + error);
+      console.log(error);
+      Notification.error("Problem retrieving contract details");
     });
   };
 
+  // Close details view
   $scope.closeDetails = function(){
     $location.search('contractId', null); // SET
     $scope.detailsShow = false;
@@ -187,7 +196,8 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
       } else { init(); }
     })
     .catch(function(err){
-      Notification.error('Problem disabling item: ' + err);
+      console.log(err);
+      Notification.error('Problem disabling item');
     });
   };
 
@@ -203,7 +213,8 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
       }
     })
     .catch(function(err){
-      Notification.error('Problem disabling item: ' + err);
+      console.log(err);
+      Notification.error('Problem removing item');
     });
   };
 
@@ -216,19 +227,10 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
       } else { init(); }
     })
     .catch(function(err){
-      Notification.error('Problem disabling item: ' + err);
+      console.log(err);
+      Notification.error('Problem enabling item');
     });
   };
-
-  // Private Functions
-
-  function getOnlyId(){
-    var array = [];
-    for(var i = 0; i < $scope.wholeContract.iotOwner.items.length; i++){
-      array.push($scope.wholeContract.iotOwner.items[i].id);
-    }
-    return array;
-  }
 
   function getOneContract(id){
     for(var i = 0; i < $scope.contracts.length; i++){
@@ -249,6 +251,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     }
   }
 
+  // Add content to the contract array items
   function parseContracts(array){
     var cts = [];
     for(var i = 0; i < array.length; i++){
@@ -263,6 +266,17 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     return cts;
   }
 
+  // Other functions
+
+  function getOnlyId(){
+    var array = [];
+    for(var i = 0; i < $scope.wholeContract.iotOwner.items.length; i++){
+      array.push($scope.wholeContract.iotOwner.items[i].id);
+    }
+    return array;
+  }
+
+  // Support sorting
   $scope.orderByMe = function(x) {
     if($scope.myOrderBy === x){
       $scope.rev=!($scope.rev);
@@ -270,6 +284,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     $scope.myOrderBy = x;
   };
 
+  // Support sorting
   $scope.onSort = function(order){
     $scope.rev = order;
   };

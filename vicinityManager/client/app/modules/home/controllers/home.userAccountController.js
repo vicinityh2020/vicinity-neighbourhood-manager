@@ -1,6 +1,6 @@
 'use strict';
 angular.module('VicinityManagerApp.controllers').
-controller('userAccountController', function($scope, $window, $cookies, commonHelpers, userAccountAPIService, AuthenticationService) {
+controller('userAccountController', function($scope, $window, $cookies, commonHelpers, userAccountAPIService, AuthenticationService, Notification) {
   $scope.name = {};
   $scope.avatar = {};
   $scope.occupation = {};
@@ -19,28 +19,27 @@ controller('userAccountController', function($scope, $window, $cookies, commonHe
     console.log("End: Signout");
   };
 
-  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId).then(
-    function successCallback(response){
-
-    var i=0;
-    var j=0;
-    while (i === 0){
-      if (response.data.message.accountOf[j].id.email === $window.sessionStorage.username){
-        $scope.name =response.data.message.accountOf[j].id.name;
-        $scope.occupation=response.data.message.accountOf[j].id.occupation;
-        $scope.avatar =response.data.message.accountOf[j].id.avatar;
-        $scope.userAccountId = $window.sessionStorage.userAccountId;
-        i=1;
+  userAccountAPIService.getUserAccountProfile($window.sessionStorage.companyAccountId)
+  .then(function(response){
+      var i=0;
+      var j=0;
+      while (i === 0){
+        if (response.data.message.accountOf[j].id.email === $window.sessionStorage.username){
+          $scope.name =response.data.message.accountOf[j].id.name;
+          $scope.occupation=response.data.message.accountOf[j].id.occupation;
+          $scope.avatar =response.data.message.accountOf[j].id.avatar;
+          $scope.userAccountId = $window.sessionStorage.userAccountId;
+          i=1;
+        }
+        j++;
       }
-      j++;
-    }
-    $scope.organisation = response.data.message.name;
-    $scope.companyAccountId = response.data.message._id;
-    $scope.loaded = true;
-  },
-  function errorCallback(response){
-  }
-);
-
+      $scope.organisation = response.data.message.name;
+      $scope.companyAccountId = response.data.message._id;
+      $scope.loaded = true;
+  })
+  .catch(function(err){
+    console.log(err);
+    Notification.error("Server error");
+  });
 
 });
