@@ -5,6 +5,7 @@ The level of verbosity can be customized based on needs
 */
 
 var winston = require('winston');
+
 winston.emitErrs = true;
 
 var myCustomLevels = {
@@ -19,7 +20,7 @@ var myCustomLevels = {
     error: 'red',
     warn: 'yellow',
     audit: 'green',
-    info: 'black',
+    info: 'gray',
     debug: 'blue'
   }
 };
@@ -42,6 +43,7 @@ var logger = new winston.Logger({
             level: 'audit',
             filename: './logs/technical_log.log',
             handleExceptions: true,
+            // timestamp: true,
             json: true,
             maxsize: 5242880, //5MB
             maxFiles: 5,
@@ -50,6 +52,7 @@ var logger = new winston.Logger({
         }),
         new winston.transports.Console({
             level: 'debug',
+            // timestamp: true,
             handleExceptions: true, // we capture them as a type
             json: false,
             colorize: true,
@@ -59,15 +62,10 @@ var logger = new winston.Logger({
     exitOnError: false
 });
 
-// process.on('uncaughtException', function (err) {
-//     logger.uncaughtException({ message : err.message, stack : err.stack }); // logging with MetaData
-//     // process.exit(1); // exit with failure
-// });
-
 module.exports = logger;
 
-module.exports.stream = {
-    write: function(message, encoding){
-        logger.info(message.slice(0,-1)); // Remove additional line char
-    }
-};
+// module.exports.stream = {
+//     write: function(message, encoding){
+//         logger.info(message.slice(0,-1)); // Remove additional line char
+//     }
+// };

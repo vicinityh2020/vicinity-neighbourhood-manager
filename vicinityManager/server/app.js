@@ -27,6 +27,7 @@ var infrastructure = require('./routes/infrastructure');
 // Custom MIDDLEWARES Import === jwauth && Winston Debugger
 var jwtauth = require("./middlewares/jwtauth");
 var logger = require("./middlewares/logger");
+var logs = require("./middlewares/logBuilder");
 
 var app = express();
 
@@ -36,8 +37,7 @@ var app = express();
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(cors());
 // app.set('view engine', 'pug'); // Default view engine
-logger.debug("Overriding 'Express' logger");
-app.use(require('morgan')("combined",{ "stream": logger.stream }));
+app.use(logs.customLogs); // Custom logger
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 app.use(cookieParser());
@@ -54,9 +54,9 @@ app.use('/api', api);
 app.use('/commServer', commServer);
 // App endpoints
 app.use('/login', login);
-app.use('/useraccounts', [jwtauth, userAccounts]);       //      TODO: setup security
+app.use('/useraccounts', [jwtauth, userAccounts]);
 app.use('/nodes', [jwtauth, nodes]);
-app.use('/items', [jwtauth, items]);  // TODO add JWAUTH back !!!
+app.use('/items', [jwtauth, items]);
 app.use('/user', [jwtauth, user]);
 app.use('/notifications', [jwtauth, notifications]);
 app.use('/search', [jwtauth, search]);
