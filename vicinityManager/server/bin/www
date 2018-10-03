@@ -8,18 +8,20 @@ process.env.VCNT_MNGR_DB = process.env.VCNT_MNGR_DB ? process.env.VCNT_MNGR_DB :
 var app = require('../app');
 var debug = require('debug')('server:server');
 var config = require('../configuration/configuration');
-var https = require('https'); // Comment if no SSL
-// var http = require('http'); // Uncomment if no SSL
+var https = require('https');
+var http = require('http');
 var fs = require("fs");
 
 /**
  * Set cetificates in options // Comment if no SSL
  */
 
- var options = {
-   key: fs.readFileSync(config.key),
-   cert: fs.readFileSync(config.cert)
- };
+if (!config.env || config.env !== 'dev'){
+   var options = {
+     key: fs.readFileSync(config.key),
+     cert: fs.readFileSync(config.cert)
+   };
+ }
 
 /**
  * Get port from environment and store in Express.
@@ -32,8 +34,8 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-var server = https.createServer(options, app); // Comment if no SSL
-// var server = http.createServer(app); // Uncomment if no SSL
+if (!config.env || config.env !== 'dev') var server = https.createServer(options, app);
+if (config.env === 'dev') var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
