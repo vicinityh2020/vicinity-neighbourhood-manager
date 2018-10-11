@@ -1,7 +1,7 @@
 //Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 
 var sGet = require("../../services/registrations/get.js");
 var sRegister = require("../../services/registrations/register.js");
@@ -14,7 +14,12 @@ Get one registration
 function getOne(req, res){
   var id = mongoose.Types.ObjectId(req.params.id);
   sGet.getOne(id, function(err, response){
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req,res,response);
+      res.json({error: err, message: response.data});
+    } else {
+      res.json({error: err, message: response.data});
+    }
   });
 }
 
@@ -23,7 +28,12 @@ Get all organisation registrations
 */
 function getAll(req, res, next) {
   sGet.getAll("newCompany", function(err, response){
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req,res,response);
+      res.json({error: err, message: response.data});
+    } else {
+      res.json({error: err, message: response.data});
+    }
   });
 }
 
@@ -33,7 +43,13 @@ Request a user or organisation registration
 function requestRegistration(req, res, next) {
   var data = req.body;
   sRegister.requestReg(data, function(err, response){
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req,res,response);
+      res.json({error: err, message: response.data});
+    } else {
+      logger.log(req,res,response);
+      res.json({error: err, message: response.data});
+    }
   });
 }
 
@@ -44,7 +60,13 @@ function createRegistration(req, res, next) {
   var id = req.params.id;
   var data = req.body;
   sRegister.createReg(id, data, function(err, response){
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req,res,response);
+      res.json({error: err, message: response.data});
+    } else {
+      logger.log(req,res,response);
+      res.json({error: err, message: response.data});
+    }
   });
 }
 
@@ -58,6 +80,7 @@ function findDuplicatesUser(req, res, next) {
     res.json({error: false, message: response});
   })
   .catch(function(err){
+    logger.log(req, res, {data: err, type: 'error'});
     res.json({error: true, message: err});
   });
 }
@@ -72,6 +95,7 @@ function findDuplicatesCompany(req, res, next) {
       res.json({error: false, message: response});
     })
     .catch(function(err){
+      logger.log(req, res, {data: err, type: 'error'});
       res.json({error: true, message: err});
     });
   }
@@ -86,6 +110,7 @@ function findDuplicatesCompany(req, res, next) {
       res.json({error: false, message: response});
     })
     .catch(function(err){
+      logger.log(req, res, {data: err, type: 'error'});
       res.json({error: true, message: err});
     });
   }

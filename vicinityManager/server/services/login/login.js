@@ -4,14 +4,14 @@ var rememberOp = require('../../models/vicinityManager').remember;
 var userAccountsOp = require('../../models/vicinityManager').userAccount;
 var config = require('../../configuration/configuration');
 var jwt = require('../../services/jwtHelper');
-var logger = require("../../middlewares/logger");
 var mailing = require('../../services/mail/mailing');
+var logger = require("../../middlewares/logBuilder");
 var bcrypt = require('bcrypt');
 
 /*
 Check user and password
 */
-function authenticate(userName, userRegex, pwd, callback) {
+function authenticate(userName, userRegex, pwd, req, res, callback) {
   var myUser = {};
   var hash = "";
   var o_id = "";
@@ -20,11 +20,10 @@ function authenticate(userName, userRegex, pwd, callback) {
     userOp.find({ email: { $regex: userRegex } }, {_id:1, email:1, authentication:1})
     .then(function(response){
       if(!response || response.length === 0){
-        logger.debug("User not found: " + userRegex);
-        callback(true, "User not found");
+        logger.log(req, res, {type: 'warn', data: "User not found: " + userRegex});
+        callback(false, "User not found: " + userRegex);
       } else if(response.length > 1){
-        logger.debug("Duplicated mail: " + userRegex);
-        callback(true, "Duplicated mail");
+        callback(true, "Duplicated mail: " + userRegex);
       } else {
         myUser = response[0];
         hash = myUser.authentication.hash;
@@ -34,27 +33,25 @@ function authenticate(userName, userRegex, pwd, callback) {
             o_id = mongoose.Types.ObjectId(myUser._id);
             userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1, cid:1}, function(err, response){
               var credentials = jwt.jwtEncode(myUser._id, userName, myUser.authentication.principalRoles, response[0]._id, response[0].cid);
-              callback(false, credentials, {uid: myUser._id, cid: response[0]._id });
-              logger.audit({user: userName, action: 'login'});
+              logger.log(req, res, {type: 'audit', data: {user: userName, action: 'login'}});
+              callback(false, credentials);
             });
           } else {
-            logger.warn({user: userName, action: 'login', message: 'Wrong password'});
-            callback(true, "Wrong password");
+            logger.log(req, res, {type: 'warn', data: {user: userName, action: 'login', message: 'Wrong password'}});
+            callback(false, {user: userName, action: 'login', message: 'Wrong password'});
           }
         })
         .catch(function(err){
-          logger.debug(err);
           callback(true, err);
         });
       }
     })
     .catch(function(err){
-      logger.debug(err);
       callback(true, err);
     });
    } else {
-    logger.warn({user: userName, action: 'login', message: 'Missing fields'});
-    callback(true, "Missing email or password");
+     logger.log(req, res, {type: 'warn', data: {user: userName, action: 'login', message: 'Missing fields'}});
+     callback(false, {user: userName, action: 'login', message: 'Missing fields'});
   }
 }
 
@@ -92,12 +89,11 @@ function findMail(userName, callback){
     return mailing.sendMail(mailInfo);
   })
   .then(function(response){
-    if(!response) callback(true, "Username not found");
+    if(!response) callback(true, {data: "Username not found", type: "warn"});
     callback(false, response);
   })
   .catch(function(err){
-    logger.debug("Error recovering password: " + err);
-    callback(true, "Error recovering password...");
+    callback(true, err);
   });
 }
 
@@ -125,7 +121,6 @@ function updatePwd(id, pwd, callback) {
     callback(false, response);
   })
   .catch(function(err){
-    logger.debug(err);
     callback(true, err);
   });
 }

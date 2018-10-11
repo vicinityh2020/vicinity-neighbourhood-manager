@@ -1,6 +1,5 @@
 // Global objects and variables
 
-var logger = require("../../middlewares/logger");
 var sharingRules = require('../../services/sharingRules');
 var itemOp = require('../../models/vicinityManager').item;
 var userOp = require('../../models/vicinityManager').user;
@@ -70,8 +69,7 @@ function moveItem(oid, uidNew, uidOld){
       resolve("Success");
     })
     .catch(function(err){
-      logger.debug(err);
-      reject(err);
+      reject({data: err, type: "error"});
     });
   });
 }
@@ -91,10 +89,9 @@ function moveContract(ctid, uidNew, uidOld){
   return new Promise(function(resolve, reject) {
     // Find if user that was contract admin still has devices in it
     itemOp.find({"uid.id": uidOld.id, "hasContracts.ctid": ctid.ctid}, {oid: 1},
-      function(error, response){
-        if(error){
-          logger.debug(error);
-          reject(error);
+      function(err, response){
+        if(err){
+          reject({data: err, type: "error"});
         }
         else if(response.length > 0){ // Has devices, then keep old user in contract without admin role
            userOp.findOneAndUpdate(
@@ -120,8 +117,7 @@ function moveContract(ctid, uidNew, uidOld){
             resolve('Success');
           })
           .catch(function(err){
-            logger.debug(err);
-            reject(err);
+            reject({data: err, type: "error"});
           });
         } else { // Does not have devices, then completely remove old user from contract
           userOp.findOneAndUpdate(
@@ -153,8 +149,7 @@ function moveContract(ctid, uidNew, uidOld){
             resolve('Success');
           })
           .catch(function(err){
-            logger.debug(err);
-            reject(err);
+            reject({data: err, type: "error"});
           });
         }
     });
@@ -191,8 +186,7 @@ function changeGateway(oid, adid){
       resolve("Success");
     })
     .catch(function(err){
-      logger.debug(err);
-      reject(err);
+      reject({data: err, type: "error"});
     });
   });
 }
@@ -213,8 +207,7 @@ function getAvailableUsers(cid, type){
       resolve(response);
     })
     .catch(function(err){
-      logger.debug(err);
-      reject(err);
+      reject({data: err, type: "error"});
     });
   });
 }
@@ -235,8 +228,7 @@ function getAvailableGateways(cid, type){
       resolve(response);
     })
     .catch(function(err){
-      logger.debug(err);
-      reject(err);
+      reject({data: err, type: "error"});
     });
   });
 }
@@ -262,8 +254,7 @@ function sendNotification(uidNew, uidOld, obj, type){
     resolve("Success");
   })
   .catch(function(err){
-    logger.debug(err);
-    reject(err);
+    reject({data: err, type: "error"});
   });
 }
 
@@ -312,8 +303,7 @@ function addContracts(array, uid){
       }
     })
     .catch(function(err){
-      logger.debug(err);
-      reject(err);
+      reject({data: err, type: "error"});
     });
 }
 
@@ -327,7 +317,7 @@ function addNewUser(ct, uidNew){
       return contractOp.update({"_id": ct.id}, { $push: query });
     })
     .then(function(response){ resolve(response); })
-    .catch(function(error){ reject(error); });
+    .catch(function(err){ reject({data: err, type: "error"}); });
   });
 }
 

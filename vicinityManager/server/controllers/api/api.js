@@ -1,7 +1,7 @@
 // Global variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var userOp = require("../../models/vicinityManager").user;
 var userAccountOp = require("../../models/vicinityManager").userAccount;
 var nodeOp = require("../../models/vicinityManager").node;
@@ -355,7 +355,14 @@ function updateUser(req, res, next) {
       if(type === 'undefined' || type === ""){
         res.json({error: false, message: 'Type of update not defined...', success: false});
       } else {
-        sPutUser.putOne(o_id, updates, userMail, userId, type, function(err, response, success){
+        sPutUser.putOne({ uid: o_id,
+          updates: updates,
+          userMail: userMail,
+          userId: userId,
+          type: type,
+          req: req,
+          res: res
+        }, function(err, response, success){
           if(err){
             res.json({error: err, message: response, success: success});
           } else if(!success){
@@ -878,6 +885,7 @@ Public --------------------------------------------------
  */
 function getStatistics(req, res, next) {
   sPublic.getStatistics(function(err, response){
+    if(err) logger.log(req, res, response);
     res.json({error: err, message: response});
   });
 }

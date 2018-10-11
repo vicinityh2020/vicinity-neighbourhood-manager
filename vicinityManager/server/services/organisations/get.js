@@ -49,8 +49,7 @@ function getOne(cid, mycid, callback) {
   userAccountOp.findById(cid).populate('knows.id').populate('accountOf.id', 'avatar name email occupation location status accessLevel').exec(function (err, data) {
 
     if (!data ) {
-      logger.debug('There is no data!!!');
-      callback(false, "Not found");
+      callback(true, "Company ID not found");
     } else {
       if (err) {
           callback(true, err);

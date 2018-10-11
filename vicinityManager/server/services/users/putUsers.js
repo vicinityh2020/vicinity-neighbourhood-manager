@@ -2,33 +2,37 @@ var mongoose = require('mongoose');
 var audits = require('../../services/audit/audit');
 var userOp = require('../../models/vicinityManager').user;
 var userAccountsOp = require('../../models/vicinityManager').userAccounts;
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var authHelper = require('../../services/login/login');
 var sharingRules = require('../../services/sharingRules');
-var sUpdItems = require('../../services/items/update');
 var bcrypt = require('bcrypt');
 
 //Public function
 
-/*
-Select type of update
-*/
-function putOne(uid, updates, userMail, userId, type, callback) {
-  if(updates.hasOwnProperty('accessLevel') && type === "visibility"){
-    putVisibility(uid, updates, userMail, userId, function(err, response, success){
-      if(err){ callback(true, err, success); } else { callback(false, response, success); }
+/**
+ * Select type of update
+ *
+ * @param {Object} obj
+ * uid, updates, userMail, userId, type, req, res
+ * @return {Object} callback
+ */
+function putOne(obj, callback) {
+
+  if(obj.updates.hasOwnProperty('accessLevel') && obj.type === "visibility"){
+    putVisibility(obj, function(err, response, success){
+      if(err){ callback(true, response, success); } else { callback(false, response, success); }
     });
-  } else if(updates.hasOwnProperty('roles') && type === "roles"){
-      putRoles(uid, updates, userMail, userId, function(err, response, success){
-        if(err){ callback(true, err, success); } else { callback(false, response, success); }
+  } else if(obj.updates.hasOwnProperty('roles') && obj.type === "roles"){
+      putRoles(obj, function(err, response, success){
+        if(err){ callback(true, response, success); } else { callback(false, response, success); }
       });
-  } else if(updates.hasOwnProperty('newPwd') && type === "password"){
-    putPassword(uid, updates, userMail, userId, function(err, response, success){
-      if(err){ callback(true, err, success); } else { callback(false, response, success); }
+  } else if(obj.updates.hasOwnProperty('newPwd') && obj.type === "password"){
+    putPassword(obj, function(err, response, success){
+      if(err){ callback(true, response, success); } else { callback(false, response, success); }
     });
-  } else if(type === "metadata"){
-    putMetadata(uid, updates, userMail, userId, function(err, response, success){
-      if(err){ callback(true, err, success); } else { callback(false, response, success); }
+  } else if(obj.type === "metadata"){
+    putMetadata(obj, function(err, response, success){
+      if(err){ callback(true, response, success); } else { callback(false, response, success); }
     });
   } else {
     callback(false, "Missing or wrong information, not possible to update...", false);
@@ -41,15 +45,18 @@ function putOne(uid, updates, userMail, userId, type, callback) {
 /*
 Change the user visibility
 */
-function putVisibility(uid, updates, userMail, userId, callback) {
-  var data = {"accessLevel": updates.accessLevel}; //Ensure only right fields sent to update
-  if(Number(updates.accessLevel) < 0 || Number(updates.accessLevel) > 2){
+function putVisibility(obj, callback) {
+  var data = {"accessLevel": obj.updates.accessLevel}; //Ensure only right fields sent to update
+  if(Number(obj.updates.accessLevel) < 0 || Number(obj.updates.accessLevel) > 2){
+    logger.log(obj.req, obj.res, {type: 'warn', data: 'Insuficient accessLevel'});
     callback(false, "Wrong accessLevel. Valid are [0, 1, 2]", false);
   } else {
-    sharingRules.changeUserAccessLevel(uid, updates.accessLevel, userMail)
+    sharingRules.changeUserAccessLevel(obj)
     .then(function(response){
-      doUpdate(uid, data, userMail, userId, function(err, response, success){
-        if(err){ callback(true, err, success); } else { callback(false, response, success); }
+      // Update updates object with the right path and data after whole verification
+      obj.updates = data;
+      doUpdate(obj, function(err, response, success){
+        if(err){ callback(true, response, success); } else { callback(false, response, success); }
       });
     })
     .catch(function(err){
@@ -61,13 +68,12 @@ function putVisibility(uid, updates, userMail, userId, callback) {
 /*
 Change the user Roles
 */
-function putRoles(uid, updates, userMail, userId, callback) {
+function putRoles(obj, callback) {
   var data = {}; // Initialize variable to hold actual updates
-  userOp.findOne({_id: uid}, {hasItems:1, hasContracts:1, 'authentication.principalRoles':1, cid:1, email:1})
+  userOp.findOne({_id: obj.uid}, {hasItems:1, hasContracts:1, 'authentication.principalRoles':1, cid:1, email:1})
   .populate('hasItems.id', 'typeOfItem')
   .exec(function(err, response){
     if(err){
-      logger.debug('err: ' + err);
       callback(true, err, false);
     } else {
       responseParsed = response.toObject();
@@ -78,42 +84,45 @@ function putRoles(uid, updates, userMail, userId, callback) {
       things.devices = findType(responseParsed.hasItems, 'device');
       things.services = findType(responseParsed.hasItems, 'service');
       // Forbidden user roles (only web admin)
-      var indexDevOps = updates.roles.indexOf('devOps');
-      if(indexDevOps !== -1) updates.roles.splice(indexDevOps, 1);
-      var indexSU = updates.roles.indexOf('superUser');
-      if(indexSU !== -1) updates.roles.splice(indexSU, 1);
+      var indexDevOps = obj.updates.roles.indexOf('devOps');
+      if(indexDevOps !== -1) obj.updates.roles.splice(indexDevOps, 1);
+      var indexSU = obj.updates.roles.indexOf('superUser');
+      if(indexSU !== -1) obj.updates.roles.splice(indexSU, 1);
       // Complete update payload -- Check if something is missing
       if(responseParsed.authentication.principalRoles.indexOf('devOps') !== -1){
-        updates.roles.push('devOps'); // If it is devOps keep status
+        obj.updates.roles.push('devOps'); // If it is devOps keep status
       }
       if(responseParsed.authentication.principalRoles.indexOf('superUser') !== -1){
-        updates.roles.push('superUser'); // If it is superUser keep status
+        obj.updates.roles.push('superUser'); // If it is superUser keep status
       }
-      if(updates.roles.indexOf('user') === -1){
-        updates.roles.push('user'); // User has to be always a role
+      if(obj.updates.roles.indexOf('user') === -1){
+        obj.updates.roles.push('user'); // User has to be always a role
       }
-      var data = {"authentication.principalRoles": updates.roles}; //Ensure only right fields sent to update
+      var data = {"authentication.principalRoles": obj.updates.roles}; //Ensure only right fields sent to update
 
-      var canServices = updates.roles.indexOf('service provider') !== -1;
-      var canDevs = updates.roles.indexOf('device owner') !== -1;
-      var canContracts = updates.roles.indexOf('infrastructure operator') !== -1;
+      // Check update suitability, stop process if necessary with right warning
+      var canServices = obj.updates.roles.indexOf('service provider') !== -1;
+      var canDevs = obj.updates.roles.indexOf('device owner') !== -1;
+      var canContracts = obj.updates.roles.indexOf('infrastructure operator') !== -1;
       var couldServices = responseParsed.authentication.principalRoles.indexOf('service provider') !== -1;
       var couldDevs = responseParsed.authentication.principalRoles.indexOf('device owner') !== -1;
       var couldContracts = responseParsed.authentication.principalRoles.indexOf('infrastructure operator') !== -1;
       var stopServices = (couldServices && !canServices && things.services); // Losing service provider role and still having services
       var stopDevices = (couldDevs && !canDevs && things.devices); // Losing device owner role and still having devices
       var stopContracts = (couldContracts && !canContracts && things.contracts); // Losing infrastructure operator role and still having contracts
-      var willAdmin = updates.roles.indexOf('administrator') !== -1;
+      var willAdmin = obj.updates.roles.indexOf('administrator') !== -1;
       var isAdmin = responseParsed.authentication.principalRoles.indexOf('administrator') !== -1;
       var canChange = true;
 
-      if(willAdmin !== isAdmin){ canChange = ownerMail !== userMail; } // Only a different admin can modify my admin role
+      if(willAdmin !== isAdmin){ canChange = ownerMail !== obj.userMail; } // Only a different admin can modify my admin role
 
-      var invalidRoles = checkRoles(updates.roles);
+      var invalidRoles = checkRoles(obj.updates.roles);
 
       if(!canChange){
+        logger.log(obj.req, obj.res, {type: 'warn', data: 'Only a different administrator can modify your administrator role' });
         callback(false, 'Only a different administrator can modify your administrator role', false);
       } else if(invalidRoles.invalid){
+        logger.log(obj.req, obj.res, {type: 'warn', data: invalidRoles.message + ' is an invalid role' });
         callback(false, invalidRoles.message + ' is an invalid role...', false);
       } else if( stopServices || stopDevices || stopContracts ){
         var msg = "User cannot change roles, please remove its:";
@@ -122,8 +131,11 @@ function putRoles(uid, updates, userMail, userId, callback) {
         if(stopContracts) msg = msg + " contracts";
         callback(false, msg, false);
       } else {
-        doUpdate(uid, data, userMail, userId, function(err, response, success){
-          if(err){ callback(true, err, success); } else { callback(false, response, success); }
+        // Update updates object with the right path and data after whole verification
+        obj.updates = data;
+        doUpdate(obj, function(err, response, success){
+          if(err){ callback(true, response, success); } else {
+            callback(false, response, success); }
         });
       }
     }
@@ -133,30 +145,33 @@ function putRoles(uid, updates, userMail, userId, callback) {
 /*
 Change the user Metadata
 */
-function putMetadata(uid, updates, userMail, userId, callback) {
+function putMetadata(obj, callback) {
   var data = {};
   var updCount = 0;
-  if(updates.hasOwnProperty('occupation')) {
-    data.occupation = updates.occupation;
+  if(obj.updates.hasOwnProperty('occupation')) {
+    data.occupation = obj.updates.occupation;
     updCount += 1;
   }
-  if(updates.hasOwnProperty('name')) {
-    data.name = updates.name;
+  if(obj.updates.hasOwnProperty('name')) {
+    data.name = obj.updates.name;
     updCount += 1;
   }
-  if(updates.hasOwnProperty('avatar')) {
-    data.avatar = updates.avatar;
+  if(obj.updates.hasOwnProperty('avatar')) {
+    data.avatar = obj.updates.avatar;
     updCount += 1;
   }
-  if(updates.hasOwnProperty('contactMail')) {
-    data.contactMail = updates.contactMail;
+  if(obj.updates.hasOwnProperty('contactMail')) {
+    data.contactMail = obj.updates.contactMail;
     updCount += 1;
   }
   if(updCount > 0){
-    doUpdate(uid, data, userMail, userId, function(err, response, success){
+    // Update updates object with the right path and data after whole verification
+    obj.updates = data;
+    doUpdate(obj, function(err, response, success){
       if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
   } else {
+    logger.log(obj.req, obj.res, {type: 'warn', data: "Missing or wrong information, not possible to update"});
     callback(false, "Missing or wrong information, not possible to update...", false);
   }
 }
@@ -164,22 +179,24 @@ function putMetadata(uid, updates, userMail, userId, callback) {
 /*
 Change the user password
 */
-function putPassword(uid, updates, userMail, userId, callback){
+function putPassword(obj, callback){
   var hash = "";
-  var oldPwd = updates.oldPwd;
-  var newPwd = updates.newPwd;
-  userOp.findOne({_id:uid},{authentication:1})
+  var oldPwd = obj.updates.oldPwd;
+  var newPwd = obj.updates.newPwd;
+  userOp.findOne({_id: obj.uid},{authentication:1})
   .then(function(response){
     hash = response.authentication.hash;
     return bcrypt.compare(oldPwd, hash); // True if valid pwd
   })
   .then(function(response){
     if(response){
-      authHelper.updatePwd(uid, newPwd, function(err, response){
-        logger.audit({user: userMail, action: 'updatePassword', item: uid });
+      authHelper.updatePwd(obj.uid, newPwd, function(err, response){
+        if(err) callback(true, response, false);
+        logger.log(obj.req, obj.res, {type: 'audit', data: {user: obj.userMail, action: 'updatePassword', item: obj.uid }});
         callback(false, response, true);
       });
     } else {
+      logger.log(obj.req, obj.res, {type: 'warn', data: 'Wrong password'});
       callback(false, "Wrong password", false);
     }
   })
@@ -191,22 +208,23 @@ function putPassword(uid, updates, userMail, userId, callback){
 /*
 Actual NM storage update
 */
-function doUpdate(uid, updates, userMail, userId, callback){
+function doUpdate(obj, callback){
   var updItem;
-  userOp.findOneAndUpdate( { "_id": uid}, {$set: updates}, {new: true})
+  // logger.log(obj.req, obj.res, {type: 'debug', data: obj.updates });
+  userOp.findOneAndUpdate( { "_id": obj.uid}, {$set: obj.updates}, {new: true})
   .then(function(response){
     updItem = response;
     return audits.create(
-      { kind: 'user', item: userId , extid: userMail },
+      { kind: 'user', item: obj.userId , extid: obj.userMail },
       { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
       { kind: 'user', item: response._id, extid: response.email },
       13, null);
   })
   .then(function(response){
-    logger.audit({user: userMail, action: 'updateUser', item: uid });
-    callback(false, updItem, true); })
+    logger.log(obj.req, obj.res, {type: 'audit', data: {user: obj.userMail, action: 'updateUser', uid: obj.uid }});
+    callback(false, updItem, true);
+  })
   .catch(function(err){
-    logger.error({user: userMail, action: 'updateUser', item: uid, message: err });
     callback(true, err, false);
   });
 }

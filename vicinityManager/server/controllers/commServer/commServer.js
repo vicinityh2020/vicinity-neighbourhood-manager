@@ -1,4 +1,4 @@
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var sRegistration = require("../../services/items/registration");
 var sSearch = require("../../services/items/search");
 var sDelItems = require("../../services/items/deleteItems");
@@ -21,9 +21,14 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
  * array of {oid, infra-id, password, id}
  */
 function registration(req, res){
-  logger.debug('You are REGISTERING...');
+  logger.log(req, res, {type: 'debug', data: 'You are REGISTERING...'});
   var data = req.body;
-  sRegistration.create(data, function(err, response){
+  sRegistration.create(data, function(err, response, log){
+    if(err){
+      logger.log(req, res, {type: 'error', data: log});
+    }else{
+      logger.log(req, res, {type: 'audit', data: log});
+    }
     res.json({error: err, message: response});
   });
 }
@@ -53,7 +58,7 @@ function searchItems(req, res){
  *
  */
 function deleteItems(req, res){
-  logger.debug('You are DELETING...');
+  logger.log(req, res, {type: 'debug', data: 'You are DELETING...'});
   var adid = req.body.agid || req.body.adid;
   var data = req.body.oids;
   nodeOp.findOne({adid:adid},{hasItems:1, type:1}) // Check if oids belong under agent
@@ -101,7 +106,7 @@ function disableItems(req, res){
  * array of {oid, infra-id, password, id}
  */
 function updateItem(req, res){
-  logger.debug('You are UPDATING...');
+  logger.log(req, res, {type: 'debug', data: 'You are UPDATING...'});
   var rawData = req.body;
   var adid = req.body.agid || req.body.adid;
   var data = {
@@ -120,7 +125,12 @@ function updateItem(req, res){
     if(data.thingDescriptions.length === 0){
       res.json({error: false, message: "Nothing to register or none of the items belong to the agent that is updating..."});
     } else {
-      return sRegistration.update(data, function(err, response){
+      return sRegistration.update(data, function(err, response, log){
+        if(err){
+          logger.log(req, res, {type: 'error', data: log});
+        }else{
+          logger.log(req, res, {type: 'audit', data: log});
+        }
         res.json({error: err, message: response});
       });
     }
@@ -141,7 +151,7 @@ function updateItem(req, res){
  * array of {oid, infra-id, success, error}
  */
 function updateItemContent(req,res){
-  logger.debug('You are UPDATING content...');
+  logger.log(req, res, {type: 'debug', data: 'You are UPDATING content...'});
   var rawData = req.body;
   var adid = typeof req.body.adid !== 'undefined' ? req.body.adid : req.body.agid;
   var toUpdate = [];
@@ -160,9 +170,13 @@ function updateItemContent(req,res){
       return sUpdItems.updateContents(toUpdate);
     })
     .then(function(response){
+      logger.log(req, res, {type: 'audit', data: response});
       res.json({error: false, message: response});
     })
-    .catch(function(err){res.json({error: true, message: err});});
+    .catch(function(err){
+      logger.log(req, res, {type: 'error', data: err});
+      res.json({error: true, message: err});
+    });
   }
 }
 
@@ -176,7 +190,7 @@ function updateItemContent(req,res){
 * array of {TDs
 */
 function getAgentItems(req, res){
-  logger.debug('You are getting the CONFIG...');
+  logger.log(req, res, {type: 'debug', data: 'You are getting the CONFIG...'});
   var id = req.params.agid;
   sGetNodeItems.getNodeItems(id, function(err, response){
     res.json({error: err, message: response});

@@ -1,7 +1,7 @@
 // Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var sInfrastructure = require("../../services/infrastructure/move");
 
 /*
@@ -14,7 +14,8 @@ function moveItem(req, res){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    res.json({error: true, message: err});
+    logger.log(req, res, err);
+    res.json({error: true, message: err.data});
   });
 }
 
@@ -28,7 +29,8 @@ function moveContract(req, res){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    res.json({error: true, message: err});
+    logger.log(req, res, err);
+    res.json({error: true, message: err.data});
   });
 }
 
@@ -42,7 +44,8 @@ function changeGateway(req, res){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    res.json({error: true, message: err});
+    logger.log(req, res, err);
+    res.json({error: true, message: err.data});
   });
 }
 
@@ -57,7 +60,8 @@ function getAvailableUsers(req, res){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    res.json({error: true, message: err});
+    logger.log(req, res, err);
+    res.json({error: true, message: err.data});
   });
 }
 
@@ -72,7 +76,8 @@ function getAvailableGateways(req, res){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    res.json({error: true, message: err});
+    logger.log(req, res, err);
+    res.json({error: true, message: err.data});
   });
 }
 
@@ -88,7 +93,8 @@ function sendNotification(req, res){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    res.json({error: true, message: err});
+    logger.log(req, res, err);
+    res.json({error: true, message: err.data});
   });
 }
 

@@ -48,8 +48,8 @@ $scope.$on('$destroy', function(){
     notificationsAPIService.getNotifications(null, null)
     .then(getNotifs)
     .catch(function(err){
-      console.log(err);
-      Notification.error("Server error");
+      // console.log(err);
+      // Notification.error("Server error");
     });
   }
 

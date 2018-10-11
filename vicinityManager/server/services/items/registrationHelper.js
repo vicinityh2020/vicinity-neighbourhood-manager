@@ -162,7 +162,6 @@ function updateDocuments(thing, otherParams, callback){
               'Success');
   })
   .catch(function(err){
-    logger.debug(err);
     callback({"infrastructure-id": infra_id,
               "oid": thing.oid,
               "error": err},
@@ -363,7 +362,6 @@ function addInteractions(objData){
     }
     return objData;
   }catch(err){
-    // logger.debug('error: ' + err);
     return objData;
   }
 }

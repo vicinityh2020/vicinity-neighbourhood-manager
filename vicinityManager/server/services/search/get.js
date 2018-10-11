@@ -1,7 +1,6 @@
 // Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
 var userOp = require('../../models/vicinityManager').user;
 var itemOp = require('../../models/vicinityManager').item;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -29,18 +28,21 @@ var map = require("../../configuration/map");
 
     userAccountOp.findById(cid, {knows:1})
     .then(function(response){
-      getOnlyId(friends, response.knows.toObject());
-      return userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, projection);
+      try{
+        getOnlyId(friends, response.knows.toObject());
+        return userAccountOp.find({$query: {name: sT}, $hint: { name : 1 }}, projection);
+      } catch(err){
+        return Promise.reject(err);
+      }
     })
     .then(function(data){
       for(var i = 0, l = data.length; i < l; i++){
         data[i]._doc.friend = friends.indexOf(data[i]._id.toString()) !== -1;
       }
-      callback(false, data);
+      callback(false, {data: data, type: "info"});
     })
     .catch(function(err){
-      logger.debug(err);
-      callback(true, err);
+      callback(true, {data: err, type: "error"});
     });
   }
 
@@ -63,23 +65,26 @@ var map = require("../../configuration/map");
     .then(function(response){
       var things = response.toObject();
       if(!things){ things.knows = []; }
-      getOnlyId(friends, things.knows);
-      query = {
-        $or :[
-        {$and: [ { 'cid.id': cid }, { accessLevel: { $gte:0 } } ] },
-        {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: { $gte:1 } } ] },
-        { accessLevel: { $gte:2 } }
-      ],
-      name: {$regex: sT}
-      };
-      return userOp.find(query, projection);
+      try{
+        getOnlyId(friends, things.knows);
+        query = {
+          $or :[
+          {$and: [ { 'cid.id': cid }, { accessLevel: { $gte:0 } } ] },
+          {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: { $gte:1 } } ] },
+          { accessLevel: { $gte:2 } }
+        ],
+        name: {$regex: sT}
+        };
+        return userOp.find(query, projection);
+      } catch(err){
+        return Promise.reject(err);
+      }
     })
     .then(function(response){
-      callback(false, response);
+      callback(false, {data: response, type: "info"});
     })
     .catch(function(err){
-      logger.debug(err);
-      callback(true, err);
+      callback(true, {data: err, type: "error"});
     });
   }
 
@@ -96,35 +101,37 @@ var map = require("../../configuration/map");
     .then(function(response){
       var things = response.toObject();
       if(!things){ things.knows = []; }
-      getOnlyId(friends, things.knows);
-      query = {
-        $or :[
-        {$and: [ { 'cid.id': cid }, { accessLevel: { $gte:0 } } ] },
-        {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: { $gte:1 } } ] },
-        { accessLevel: { $gte:2 } }
-      ],
-      name: {$regex: sT}
-      };
+      try{
+        getOnlyId(friends, things.knows);
+        query = {
+          $or :[
+          {$and: [ { 'cid.id': cid }, { accessLevel: { $gte:0 } } ] },
+          {$and: [ { 'cid.id': {$in: friends}}, { accessLevel: { $gte:1 } } ] },
+          { accessLevel: { $gte:2 } }
+        ],
+        name: {$regex: sT}
+        };
 
-      if(api){
-        projection = { avatar: 0, hasContracts: 0, hasAudits: 0 };
-      } else {
-        projection = { hasAudits: 0 };
+        if(api){
+          projection = { avatar: 0, hasContracts: 0, hasAudits: 0 };
+        } else {
+          projection = { hasAudits: 0 };
+        }
+        return itemOp.find(query).select(projection).populate('cid.id','name');
+      } catch(err){
+        return Promise.reject(err);
       }
-
-      return itemOp.find(query).select(projection).populate('cid.id','name');
     })
     .then(function(data){
       if(api){
-        callback(false, data);
+        callback(false, {data: data, type: "info"});
       } else {
         var dataWithAdditional = itemProperties.getAdditional(data,cid,friends);
-        callback(false, dataWithAdditional);
+        callback(false, {data: dataWithAdditional, type: "info"});
       }
     })
     .catch(function(err){
-      logger.debug(err);
-      callback(true, err);
+      callback(true, {data: err, type: "error"});
     });
   }
 

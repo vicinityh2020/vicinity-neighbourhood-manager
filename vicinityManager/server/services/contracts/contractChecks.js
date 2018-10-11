@@ -161,7 +161,6 @@ function contractValidity(ctids, uid, mail){
       resolve(true);
     })
     .catch(function(err){
-      logger.debug(err);
       reject(err);
     });
   });

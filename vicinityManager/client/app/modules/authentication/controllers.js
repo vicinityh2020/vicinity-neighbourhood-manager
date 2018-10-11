@@ -50,49 +50,48 @@ $(window).on('resize',function(){
 $scope.login = function() {
   $scope.dataLoading = true;
   AuthenticationService.Login($scope.username, $scope.password)
-  .then(
-    function successCallback(response){
-      var $user = $("#user");
-      var $pass = $("#pass");
+  .then(function(response){
+    var $user = $("#user");
+    var $pass = $("#pass");
 
-       if(!response.data.error){
-        //  Notification.success("Welcome to Vicinity!");
-         AuthenticationService.SetCredentials(response.data.message);
-         if($scope.rememberMe){AuthenticationService.SetRememberMeCookie(response.data.message);}
-         $location.path("/home");
-         $scope.isError = false;
-       } else {
-         $scope.error = "Incorrect email or password";
-         $user.addClass("invalid");
-         $pass.addClass("invalid");
+     if(!response.data.error){
+      //  Notification.success("Welcome to Vicinity!");
+       AuthenticationService.SetCredentials(response.data.message);
+       if($scope.rememberMe){AuthenticationService.SetRememberMeCookie(response.data.message);}
+       $location.path("/home");
+       $scope.isError = false;
+     } else {
+       $scope.error = "Incorrect email or password";
+       $user.addClass("invalid");
+       $pass.addClass("invalid");
 
-        //  Notification.error("Incorrect email or password");
-         $scope.isError = true;
+      //  Notification.error("Incorrect email or password");
+       $scope.isError = true;
+       $scope.dataLoading = false;
+       $scope.password = "";
+
+       setTimeout(function() {
+         $user.removeClass("invalid");
+         $pass.removeClass("invalid");
          $scope.dataLoading = false;
-         $scope.password = "";
+      }, 2000);
+     }
+  })
+  .catch(function(err){
+    console.log(err);
+    $scope.error = "Server error";
 
-         setTimeout(function() {
-           $user.removeClass("invalid");
-           $pass.removeClass("invalid");
-           $scope.dataLoading = false;
-        }, 2000);
-       }
-    },
-    function errorCallback(err){
-      $scope.error = "Server error";
+   //  Notification.error("Incorrect email or password");
+    $scope.isError = true;
+    $scope.dataLoading = false;
+    $scope.password = "";
 
-     //  Notification.error("Incorrect email or password");
-      $scope.isError = true;
+    setTimeout(function() {
+      $user.removeClass("invalid");
+      $pass.removeClass("invalid");
       $scope.dataLoading = false;
-      $scope.password = "";
-
-      setTimeout(function() {
-        $user.removeClass("invalid");
-        $pass.removeClass("invalid");
-        $scope.dataLoading = false;
-     }, 2000);
-    }
-  );
+   }, 2000);
+  });
 };
 
 /*
@@ -119,7 +118,8 @@ $scope.registerCompany = function () {
       .then(endRegistration)
       .catch(function(err){
         if(err !== "DUPLICATES"){
-          Notification.error("There was an issue in the registration process: " + err);
+          console.log(err);
+          Notification.error("There was an issue in the registration process");
         } else {
           if($scope.emailReg === "" && $scope.companynameReg === ""){
             Notification.warning('The mail and company name are duplicated!!!');
@@ -146,20 +146,22 @@ $scope.registerCompany = function () {
 */
 $scope.recoverPwd = function(){
   AuthenticationService.recover({username : $scope.emailRecover})
-    .then(
-      function successCallback(response){
-      if(response.data.error){
-        Notification.warning("The username does not exist...");
-        $scope.emailRecover = "";
-      }else{
-        $('div#allTemplates').fadeOut('slow');
-        setTimeout(function() {
-         $('div#forgot2').fadeIn();
-         }, 1000);
-       }
-      },
-      function errorCallback(response){}
-    );
+  .then(
+    function(response){
+    if(response.data.error){
+      Notification.warning("The username does not exist...");
+      $scope.emailRecover = "";
+    }else{
+      $('div#allTemplates').fadeOut('slow');
+      setTimeout(function() {
+       $('div#forgot2').fadeIn();
+       }, 1000);
+     }
+   })
+   .catch(function(err){
+     console.log(err);
+     Notification.error("Server error");
+   });
   };
 
 
@@ -320,15 +322,15 @@ TODO Check company BID
      if($scope.password1 === $scope.password2){
        var data = {password : $scope.password1};
        AuthenticationService.resetPwd($stateParams.userId, data)
-          .then(
-            function successCallback(response){
+          .then(function(response){
               $('div#recoverTmp').hide();
               setTimeout(function() {
                 $('div#emailSentTmp').fadeIn('slow');
               }, 1000);
-            },
-            function errorCallback(response){
-              Notification.error(response.data.message);
+            })
+            .catch(function(err){
+              console.log(err);
+              Notification.error("Server error");
             }
           );
         }else{

@@ -2,24 +2,23 @@
 var mongoose = require('mongoose');
 var delUser = require('../../services/users/deleteUsers');
 var userOp = require('../../models/vicinityManager').user;
-var logger = require('../../middlewares/logger');
+var logger = require('../../middlewares/logBuilder');
 
 // Public functions
 function deleteUser(req, res, next) {
   var uid = [];
-  var userMail = req.body.decoded_token.sub;
-  var userId = req.body.decoded_token.uid;
   uid.push(mongoose.Types.ObjectId(req.params.id));
-  delUser.deleteAllUsers(uid, userMail, userId)
+  delUser.deleteAllUsers(uid, req, res)
   .then(
     function(response){
-      logger.debug("Users deleted...");
+      logger.log(req, res, {data: response, type: "audit"});
       res.json(response);
     }
   )
   .catch(
     function(err){
-      res.json({'status': 'error', 'message': 'error...' + err});
+      logger.log(req, res, {type: "error", data: err});
+      res.json({'status': 'error', 'message': err});
     }
   );
 }

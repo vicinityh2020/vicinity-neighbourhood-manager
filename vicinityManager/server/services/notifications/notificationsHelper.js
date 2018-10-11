@@ -93,8 +93,8 @@ function createNotification(actor, target, object, status, type, message){
 
 // Functions to manipulate notifications
 function changeToResponded(o_id, stat, callback){
-  notificationOp.findByIdAndUpdate(o_id, { $set: { status: stat, isUnread: false }}, { new: true }, function (err, data) {
-    if(err){ callback(true, err); } else { callback(false, data); }
+  notificationOp.findByIdAndUpdate(o_id, { $set: { status: stat, isUnread: false }}, { new: true }, function (err, response) {
+    if(err){ callback(true, response); } else { callback(false, response); }
   });
 }
 
@@ -106,14 +106,14 @@ function changeIsUnreadToFalse(id, ids, callback){
   if(id && id !== '0'){
     o_id.push(mongoose.Types.ObjectId(id));
     setAsRead(o_id)
-    .then(function(response){callback(false, "Notifications processed succesfully!");})
-    .catch(function(error){callback(true, "Error fetching data");});
+    .then(function(response){callback(false, response);})
+    .catch(function(error){callback(true, error);});
   } else if(ids){
     setAsRead(ids)
-    .then(function(response){callback(false, "Notifications processed succesfully!");})
-    .catch(function(error){callback(true, "Error fetching data");});
+    .then(function(response){callback(false, response);})
+    .catch(function(error){callback(true, error);});
   } else {
-    callback(true, "Error fetching data");
+    callback(true, "Missing id");
   }
 }
 
@@ -134,17 +134,18 @@ function changeNotificationStatus(targetId, objectId, type, other){
       function(err, notif){
         if(err){
           logger.debug("Error changing status of notification!!");
-
         } else if(!(notif)){
           logger.debug("Notif not found in changing status of notification!!");
         } else {
+          var toChange = [];
           for(var n = 0; n < notif.length; n++){
             notif[n].status = 'responded';
             notif[n].isUnread = false;
-            notif[n].save(function(err,response){
-              if(err) logger.debug('Could not change status: ' + err);
-            });
+            toChange.push(notif[n].save());
           }
+          Promise.all(toChange)
+          .then(function(response){ resolve('Success'); })
+          .catch(function(err){ reject('Error'); });
         }
       }
     );
@@ -167,25 +168,22 @@ function objectIdWithTimestamp(timestamp) {
 function setAsRead(ids, res){
   return new Promise(function(resolve, reject) {
   if(ids.length > 0){ // Check if there is any item to delete
-    logger.debug('Start async handler...');
     asyncHandler.forEachAll(ids,
       function(value, allresult, next) {
         readOne(value, function(value, result) {
-            // logger.debug('END execution with value =', value, 'and result =', result);
             allresult.push({value: value, result: result});
             next();
         });
       },
       function(allresult) {
         if(allresult.length === ids.length){
-          logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-          resolve({"error": false, "message": allresult });
+          resolve(JSON.stringify(allresult));
         }
       },
       false
     );
   } else {
-    resolve({"error": false, "message": "Nothing to be read..."});
+    resolve("Nothing to be read");
   }
 });
 }
@@ -194,8 +192,11 @@ function setAsRead(ids, res){
 // Supporting setAsRead
 function readOne(idToRead, callback){
     notificationOp.update({_id: idToRead}, { $set: { isUnread: false }}, function (err, notif) {
-    if (err) { callback(idToRead, "Error: " + err); }
-    else { callback(idToRead, "Success"); }
+    if (err) {
+      logger.error(err);
+      callback(idToRead, 'Error');
+    }
+    else { callback(idToRead, 'Success'); }
   });
 }
 

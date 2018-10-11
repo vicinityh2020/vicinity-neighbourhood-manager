@@ -50,12 +50,10 @@ function processFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
         // friend.hasNotifications.push(notification._id); // TODO CHECK IF NECESSARY
         friend.save();
         me.save();
-        logger.audit({user: my_mail, action: 'processFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
         callback(false, "Friend request sent");
       }
     ).catch(
       function(err){
-        logger.error({user: my_mail, action: 'processFriendRequest', message: err});
         callback(true, err);
       }
     );
@@ -97,12 +95,10 @@ function acceptFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 
         friend.save();
         me.save();
-        logger.audit({user: my_mail, action: 'acceptFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
         callback(false, "Friendship accepted");
       }
     ).catch(
       function(err){
-        logger.error({user: my_mail, action: 'acceptFriendRequest', message: err});
         callback(true, err);
       }
     );
@@ -142,12 +138,10 @@ function rejectFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 
         friend.save();
         me.save();
-        logger.audit({user: my_mail, action: 'rejectFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
         callback(false, "Friendship rejected");
       }
     ).catch(
       function(err){
-        logger.error({user: my_mail, action: 'rejectFriendRequest', message: err});
         callback(true, err);
       }
     );
@@ -190,12 +184,10 @@ function cancelFriendRequest(friend_id, my_id, my_mail, my_uid, callback){
 
       friend.save();
       me.save();
-      logger.audit({user: my_mail, action: 'cancelFriendRequest', orgOrigin: {'id': my_id, 'extid': me.cid }, orgDest: {'id': friend_id, 'extid': friend.cid }});
       callback(false, "Friendship request cancelled");
     }
   ).catch(
     function(err){
-      logger.error({user: my_mail, action: 'cancelFriendRequest', message: err});
       callback(true, err);
     }
   );
@@ -243,12 +235,10 @@ function cancelFriendship(friend_id, my_id, my_mail, my_uid, callback){
             { kind: 'userAccount', item: friend._id, extid: friend.cid },
             35, null);
 
-        logger.audit({user: my_mail, action: 'cancelFriendship', orgOrigin: my_id, orgDest: friend_id});
         callback(false, "Friendship cancelled");
       }
     ).catch(
       function(err){
-        logger.error({user: my_mail, action: 'cancelFriendship', message: err});
         callback(true, err);
       }
     );

@@ -1,6 +1,5 @@
 // Global objects and variables
 var mongoose = require('mongoose');
-var logger = require('../../middlewares/logger');
 var auditOp = require('../../models/vicinityManager').auditLog;
 var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -45,9 +44,9 @@ var dbOp;
   .then(function(audits){
     // Check if the data belong to my company and I can see it
     if(audits._id.toString() === c_id.toString() || audits.cid.id.toString() === c_id.toString()){
-      callback(false, audits, true);
+      callback(false, { data: audits, type: info}, true);
     } else {
-      callback(false, 'Unauthorized', false);
+      callback(false, { data: 'Unauthorized', type: "debug"}, false);
     }
   })
   .catch(function(error){

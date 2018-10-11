@@ -48,8 +48,13 @@ $scope.deleteNode = function(adid){
     nodeAPIService.updateOne(adid, {status : "deleted"}) // upd status to removed of node in MONGO
     .then(
       function successCallback(response){
-        Notification.success("Access Point successfully removed!!");
-        myInit();
+        if(response.error){
+          Notification.error("Error deleting node");
+          myInit();
+        } else {
+          Notification.success("Access Point successfully removed!!");
+          myInit();
+        }
       })
       .catch(function(err){
         console.log(err);

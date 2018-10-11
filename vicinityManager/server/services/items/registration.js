@@ -23,9 +23,9 @@ function create(data, callback){
   nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1, type:1},
     function(err,data){
         if(err){
-          callback(true, "Error in Mongo: " + err);
+          callback(true, "Error in Mongo", err);
         }else if(!data){
-          callback(true, "Invalid adid/agid identificator");
+          callback(true, "Invalid adid/agid identificator", "Invalid adid/agid identificator");
         } else {
           var nodeId = data._id;
           var nodeName = data.name;
@@ -52,7 +52,6 @@ function create(data, callback){
               function(allresult) {
                 // Final part: Return results, update node and notify
                 if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
-                  logger.debug('Completed async handler: ' + JSON.stringify(allresult));
                   regisHelper.updateItemsList(data.hasItems, allresult)
                   .then(function(response){
                     data.hasItems = response;
@@ -66,10 +65,10 @@ function create(data, callback){
                       finalRes.push(allresult[item].data);
                       if(allresult[item].result === 'Success'){someSuccess = true;}
                     }
-                    callback(false, finalRes);
+                    callback(false, finalRes, allresult);
                     // console.timeEnd("ALL REGISTRATION EXECUTION");
                   })
-                  .catch(function(err){ callback(true, "Error in final steps: " + err); });
+                  .catch(function(err){ callback(true, "Error handling the data in the server", err); });
                   }
                 },
                 false,
@@ -84,7 +83,7 @@ function create(data, callback){
               );
             }
           )
-          .catch(function(err){callback(true, err); });
+          .catch(function(err){callback(true, 'Error in comm server or sematic repository', err); });
         }
       }
     );
@@ -100,9 +99,9 @@ function create(data, callback){
     nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1, type:1},
       function(err,node){
           if(err){
-            callback(true, "Error in Mongo: " + err);
+            callback(true, "Error in Mongo",  err);
           }else if(!node){
-            callback(true, "Invalid adid/agid identificator");
+            callback(true, "Invalid adid/agid identificator", "Invalid adid/agid identificator");
           } else {
             var cid = node.cid;
             var doSemanticValidation = config.enabledAdapters.indexOf(node.type[0]) !== -1;
@@ -127,7 +126,6 @@ function create(data, callback){
                 function(allresult) {
                   // Final part: Return results, update node and notify
                   if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
-                    logger.debug('Completed async handler: ' + JSON.stringify(allresult));
                     regisHelper.createAuditLogs(cid, allresult, adid, 46)
                     .then(function(response){
                       var finalRes = [];
@@ -136,10 +134,10 @@ function create(data, callback){
                         finalRes.push(allresult[item].data);
                         if(allresult[item].result === 'Success'){someSuccess = true;}
                       }
-                      callback(false, finalRes);
+                      callback(false, finalRes, allresult);
                       // console.timeEnd("ALL REGISTRATION EXECUTION");
                     })
-                    .catch(function(err){ callback(true, "Error in final steps: " + err); });
+                    .catch(function(err){ callback(true, "Error handling the data in the server", err); });
                     }
                   },
                   false,
@@ -153,7 +151,7 @@ function create(data, callback){
                 );
               }
             )
-            .catch(function(err){callback(true, err); });
+            .catch(function(err){callback(true, 'Error in comm server or sematic repository', err); });
           }
         }
       );

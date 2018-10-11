@@ -4,7 +4,7 @@
 var mongoose = require('mongoose');
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 
 // Public functions
 
@@ -14,6 +14,7 @@ function getOne(req, res, next) {
   var adid = req.params.id;
   nodeOp.findOne({adid: adid}, function(err, data){
     if (err) {
+      logger.log(req, res, {data: err, type: "error"});
       response = {"error": true, "message": "Error fetching data"};
     } else {
       response = {"error": false, "message": data};
@@ -38,7 +39,8 @@ function getAll(req, res, next) {
       }
       nodeOp.find({_id: { $in: myNodes }, status: {$ne: "deleted"} }, {adid:1, name:1, eventUri:1, type:1, hasItems:1}, function(err,data){
         if (err) {
-          response =  {"error": true, "message": "Error fetching data: " + err};
+          logger.log(req, res, {data: err, type: "error"});
+          response =  {"error": true, "message": "Error fetching data"};
         } else {
           response = {"error": false, "message": data};
         }

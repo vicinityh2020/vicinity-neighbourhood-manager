@@ -52,14 +52,17 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
 
     itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
       if (err) {
-        logger.debug('error','Find Items Error: ' + err.message);
         callback(true, err);
       } else {
         if(api){
           callback(false, data);
         } else {
-          var dataWithAdditional = itemProperties.getAdditional(data,cid,friends); // Not necessary to know friends because I am always owner
-          callback(false, dataWithAdditional);
+          var dataWithAdditional = itemProperties.getAdditional(data, cid, friends); // Not necessary to know friends because I process only devices underRequest!
+          if(dataWithAdditional.error){
+            callback(true, dataWithAdditional.message);
+          } else {
+            callback(false, dataWithAdditional.items);
+          }
         }
       }
     });
@@ -105,7 +108,6 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
 
     itemOp.find(query).select(projection).populate('cid.id', 'name').exec(function(err, data){
       if (err) {
-        logger.debug('error','Find Items Error: ' + err.message);
         callback(true, err);
       } else {
         callback(false, data);
@@ -132,7 +134,6 @@ function getItemsContracted(oid, mycid, api, callback) {
       var n = aux.indexOf("@");
       oids.push(aux.substring(0, n));
     }
-    logger.debug(oids);
     return itemOp.find({oid: {$in: oids}, 'cid.id': {$ne: mycid} }, {info: 1});
   })
   .then(function(response){
@@ -158,7 +159,6 @@ function getArrayOfItems(items, token_cid, token_uid, api, callback) {
     callback(false, response);
   })
   .catch(function(err){
-    logger.debug(err);
     callback(true, err);
   });
 }
@@ -170,18 +170,18 @@ Receives following parameters:
 - Type of item of interest: device or service
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
-function getAllItems(oid, type, offset, filterNumber, filterOntology, callback) {
+function getAllItems(cid, type, offset, filterNumber, filterOntology, callback) {
 
-  userAccountOp.findOne(oid, {knows: 1}, function(err, data){
+  userAccountOp.findOne(cid, {knows: 1}, function(err, data){
     if (err){
-      logger.debug('error','UserAccount Items Error: ' + err.message);
+      callback(true, err);
     }
     var parsedData = data.toObject();
 
     var friends = [];
     var query = {
       typeOfItem: type,
-      $or :[ { accessLevel: 2 }, { 'cid.id': oid }]
+      $or :[ { accessLevel: 2 }, { 'cid.id': cid }]
     };
     if(parsedData.knows != null){
         getIds(parsedData.knows, friends);
@@ -190,22 +190,25 @@ function getAllItems(oid, type, offset, filterNumber, filterOntology, callback) 
           $or :[
           { $and: [ { 'cid.id': {$in: friends}}, { accessLevel: 1 } ] },
           { accessLevel: 2 },
-          { 'cid.id': oid }
+          { 'cid.id': cid }
           ]
         };
       }
 
     // Filters oids based on ontology matches to the user selection
     if(filterOntology.length > 1){ query["info.type"] = {$in: filterOntology}; }
-    query = updateQueryWithFilterNumber(query, filterNumber, oid);
+    query = updateQueryWithFilterNumber(query, filterNumber, cid);
 
     itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
       if (err) {
-        logger.debug('error', 'Find Items Error: ' + err.message);
         callback(true, err);
       } else {
-        var dataWithAdditional = itemProperties.getAdditional(data,oid,friends);
-        callback(false, dataWithAdditional);
+        var dataWithAdditional = itemProperties.getAdditional(data, cid, friends); // Not necessary to know friends because I process only devices underRequest!
+        if(dataWithAdditional.error){
+          callback(true, dataWithAdditional.message);
+        } else {
+          callback(false, dataWithAdditional.items);
+        }
       }
     });
   });
@@ -232,11 +235,14 @@ function getItemWithAdd(oid, cid, callback) {
             .exec(
               function(err, data){
                 if (err || data === null) {
-                  logger.debug(err);
                   callback(true, err);
                 } else {
                   var dataWithAdditional = itemProperties.getAdditional(data, cid, friends); // Not necessary to know friends because I process only devices underRequest!
-                  callback(false, dataWithAdditional);
+                  if(dataWithAdditional.error){
+                    callback(true, dataWithAdditional.message);
+                  } else {
+                    callback(false, dataWithAdditional.items);
+                  }
                 }
               }
             );
@@ -289,7 +295,6 @@ function getItemWithAdd(oid, cid, callback) {
       callback(false, data);
     })
     .catch(function(error){
-      logger.debug(error);
       callback(true, error);
     });
   }

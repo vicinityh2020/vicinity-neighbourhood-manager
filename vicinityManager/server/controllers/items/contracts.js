@@ -1,7 +1,7 @@
 // Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var ctHelper = require("../../services/contracts/contracts.js");
 var contractOp = require('../../models/vicinityManager').contract;
 var userOp = require('../../models/vicinityManager').user;
@@ -10,10 +10,8 @@ var userOp = require('../../models/vicinityManager').user;
 Create contracts
 */
 function createContract(req, res){
-  var data = req.body;
-  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
-  var mail = req.body.decoded_token.sub;
-  ctHelper.creating(data, uid, mail, function(err, response){
+  ctHelper.creating(req, res, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -22,10 +20,8 @@ function createContract(req, res){
 Accept contracts
 */
 function acceptContract(req, res){
-  var id = req.params.id;
-  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
-  var mail = req.body.decoded_token.sub;
-  ctHelper.accepting(id, uid, mail, function(err, response){
+  ctHelper.accepting(req, res, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -34,15 +30,13 @@ function acceptContract(req, res){
 Modify contracts
 */
 function modifyContract(req, res){
-  var id = req.params.id;
-  var data = req.body;
-  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
-  var mail = req.body.decoded_token.sub;
-  ctHelper.removing(id, uid, mail, function(err, response){
+  ctHelper.removing(req, res, function(err, response){
     if(err){
+      logger.log(req, res, {type: 'error', data: response});
       res.json({error: err, message: response});
     } else {
-      ctHelper.creating(data, uid, mail, function(err, response){
+      ctHelper.creating(req, res, function(err, response){
+        if(err) logger.log(req, res, {type: 'error', data: response});
         res.json({error: err, message: response});
       });
     }
@@ -53,10 +47,8 @@ function modifyContract(req, res){
 Delete contracts
 */
 function removeContract(req, res){
-  var id = req.params.id;
-  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
-  var mail = req.body.decoded_token.sub;
   ctHelper.removing(id, uid, mail, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -65,17 +57,12 @@ function removeContract(req, res){
 Disable one item
 */
 function disableOneItem(req, res){
-  var oid = req.body.oid;
-  var ct = req.body.ct;
-  var uid = req.body.uid;
-  var cts = [];
-  cts.push(ct);
-  ctHelper.pauseContracts(oid, cts, uid)
+  ctHelper.pauseContracts(req, res)
   .then(function(response){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    logger.debug(err);
+    logger.log(req, res, {type: 'error', data: err});
     res.json({error: true, message: err});
   });
 }
@@ -84,15 +71,12 @@ function disableOneItem(req, res){
 Enable one item
 */
 function enableOneItem(req, res){
-  var oid = req.body.oid;
-  var ct = req.body.ct;
-  var uid = req.body.uid;
-  ctHelper.enableOneItem(oid, ct, uid)
+  ctHelper.enableOneItem(req, res)
   .then(function(response){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    logger.debug(err);
+    logger.log(req, res, {type: 'error', data: err});
     res.json({error: true, message: err});
   });
 }
@@ -101,15 +85,12 @@ function enableOneItem(req, res){
 Enable one item
 */
 function removeOneItem(req, res){
-  var oid = req.body.oid;
-  var ct = req.body.ct;
-  var uid = req.body.uid;
-  ctHelper.removeOneItem(oid, ct, uid)
+  ctHelper.removeOneItem(req, res)
   .then(function(response){
     res.json({error: false, message: response});
   })
   .catch(function(err){
-    logger.debug(err);
+    logger.log(req, res, {type: 'error', data: err});
     res.json({error: true, message: err});
   });
 }
@@ -118,14 +99,14 @@ function removeOneItem(req, res){
 Get contract
 */
 function fetchContract(req, res){
-  var id = req.params.id; // User id
   var parsedData = {};
-  ctHelper.fetchContract(id)
+  ctHelper.fetchContract(req, res)
   .then(function(response){
     res.json({error: false, message: response});
   })
-  .catch(function(error){
-    res.json({error: true, message: error});
+  .catch(function(err){
+    logger.log(req, res, {type: 'error', data: err});
+    res.json({error: true, message: err});
   });
 }
 

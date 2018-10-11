@@ -1,7 +1,7 @@
 // Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var audits = require('../../services/audit/audit');
 var contractOp = require('../../models/vicinityManager').contract;
 var userOp = require('../../models/vicinityManager').user;
@@ -18,7 +18,11 @@ var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 Create a contract request
 * @return {Callback}
 */
-function creating(data, token_uid, token_mail, callback){
+function creating(req, res, callback){
+  var data = req.body;
+  var token_uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var token_mail = req.body.decoded_token.sub;
+
   var ct_id, ctid; // Contract id internal/external
   var ct = new contractOp();
   var idsService = []; // store internal ids services
@@ -41,83 +45,85 @@ function creating(data, token_uid, token_mail, callback){
   ct.save(
   function(error, response){
       if(error){
-        logger.debug(error);
         callback(true, error);
       } else {
-        ct_id = response._id;
-        ctid = response.ctid;
-        ct_type = response.type;
+        try{
+          ct_id = response._id;
+          ctid = response.ctid;
+          ct_type = response.type;
 
-        var cidService = data.cidService.extid;
-        var cidDevice = data.cidDevice.extid;
-        var ctidServiceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: token_uid, approved: false, readWrite: response.readWrite, imForeign: true };
-        var ctidServiceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: token_uid, approved: false, readWrite: response.readWrite, imForeign: true };
-        // If only one requester we asume that it is provinding all items itself, therefore the contract and its items are approved by default
-        var ctidDeviceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: data.uidsDevice.length === 1, readWrite: response.readWrite };
-        var ctidDeviceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: false, readWrite: response.readWrite };
+          var cidService = data.cidService.extid;
+          var cidDevice = data.cidDevice.extid;
+          var ctidServiceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: token_uid, approved: false, readWrite: response.readWrite, imForeign: true };
+          var ctidServiceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidDevice.id, contractingUser: token_uid, approved: false, readWrite: response.readWrite, imForeign: true };
+          // If only one requester we asume that it is provinding all items itself, therefore the contract and its items are approved by default
+          var ctidDeviceItem = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: data.uidsDevice.length === 1, readWrite: response.readWrite };
+          var ctidDeviceUser = {id: ct_id, extid: response.ctid, contractingParty: data.cidService.id, contractingUser: contractingUser.id, approved: false, readWrite: response.readWrite };
 
-        // Get internal ids
-        getOnlyProp(uidService, data.uidsService, ['id']);
-        getOnlyProp(idsService, data.oidsService, ['id']);
-        getOnlyProp(uidDevice, data.uidsDevice, ['id']);
-        getOnlyProp(idsDevice, data.oidsDevice, ['id']);
+          // Get internal ids
+          getOnlyProp(uidService, data.uidsService, ['id']);
+          getOnlyProp(idsService, data.oidsService, ['id']);
+          getOnlyProp(uidDevice, data.uidsDevice, ['id']);
+          getOnlyProp(idsDevice, data.oidsDevice, ['id']);
 
-        // Update items and users involved in the contract
-        userOp.update({_id: {$in: uidDevice }}, { $push: {hasContracts: ctidDeviceUser} }, { multi: true })
-        .then(function(response){ // Update main requester
-          return userOp.update({_id: token_uid, "hasContracts.id" :ct_id},
-                                  {$set: { "hasContracts.$.imAdmin" : true, "hasContracts.$.approved" : true }});
-        })
-        .then(function(response){
-          return itemOp.update({_id: {$in: idsDevice }}, { $push: {hasContracts: ctidDeviceItem} }, { multi: true });
-        })
-        .then(function(response){
-          return userOp.update({_id: {$in: uidService }}, { $push: {hasContracts: ctidServiceUser} }, { multi: true });
-        })
-        .then(function(response){ // Update main provider
-          return userOp.update({_id: contractingUser.id, "hasContracts.id" :ct_id},
-                                  {$set: { "hasContracts.$.imAdmin" : true }});
-        })
-        .then(function(response){
-          return itemOp.update({_id: {$in: idsService }}, { $push: {hasContracts: ctidServiceItem} }, { multi: true });
-        })
-        .then(function(response){
-          // Create contract group in comm server
-          return createContract(ctid, 'Contract: ' + ct_type);
-        })
-        .then(function(response){
-          // Get contract creator devices -- To add in contract because we assume that contract requester agrees terms
-          return itemOp.find({"_id": { $in: idsDevice }, 'uid.id': token_uid}, {oid:1});
-        })
-        .then(function(response){
-          var items = [];
-          // Get OID of devices to be enabled in contract
-          getOnlyProp(items, response, ['oid']);
-          // Add items in contract group of comm server
-          return moveItemsInContract(ctid, token_mail, items, true); // add = true
-        })
-        .then(function(response){
-          return notifHelper.createNotification(
-            { kind: 'user', item: token_uid, extid: token_mail },
-            { kind: 'user', item: contractingUser.id, extid: contractingUser.extid },
-            { kind: 'contract', item: ct_id, extid: ctid },
-            'info', 21, null);
-        })
-        .then(function(response){
-          return audits.create(
-            { kind: 'user', item: token_uid, extid: token_mail },
-            { kind: 'user', item: contractingUser.id, extid: contractingUser.extid },
-            { kind: 'contract', item: ct_id, extid: ctid },
-            51, null);
-        })
-        .then(function(response){
-          logger.debug('Contract posted, waiting for approval');
-          callback(false, 'Contract posted, waiting for approval');
-        })
-        .catch(function(error){
-          logger.debug(error);
-          callback(true, error);
-        });
+          // Update items and users involved in the contract
+          userOp.update({_id: {$in: uidDevice }}, { $push: {hasContracts: ctidDeviceUser} }, { multi: true })
+          .then(function(response){ // Update main requester
+            return userOp.update({_id: token_uid, "hasContracts.id" :ct_id},
+                                    {$set: { "hasContracts.$.imAdmin" : true, "hasContracts.$.approved" : true }});
+          })
+          .then(function(response){
+            return itemOp.update({_id: {$in: idsDevice }}, { $push: {hasContracts: ctidDeviceItem} }, { multi: true });
+          })
+          .then(function(response){
+            return userOp.update({_id: {$in: uidService }}, { $push: {hasContracts: ctidServiceUser} }, { multi: true });
+          })
+          .then(function(response){ // Update main provider
+            return userOp.update({_id: contractingUser.id, "hasContracts.id" :ct_id},
+                                    {$set: { "hasContracts.$.imAdmin" : true }});
+          })
+          .then(function(response){
+            return itemOp.update({_id: {$in: idsService }}, { $push: {hasContracts: ctidServiceItem} }, { multi: true });
+          })
+          .then(function(response){
+            // Create contract group in comm server
+            return createContract(ctid, 'Contract: ' + ct_type);
+          })
+          .then(function(response){
+            // Get contract creator devices -- To add in contract because we assume that contract requester agrees terms
+            return itemOp.find({"_id": { $in: idsDevice }, 'uid.id': token_uid}, {oid:1});
+          })
+          .then(function(response){
+            var items = [];
+            // Get OID of devices to be enabled in contract
+            getOnlyProp(items, response, ['oid']);
+            // Add items in contract group of comm server
+            return moveItemsInContract(ctid, token_mail, items, true, req, res); // add = true
+          })
+          .then(function(response){
+            return notifHelper.createNotification(
+              { kind: 'user', item: token_uid, extid: token_mail },
+              { kind: 'user', item: contractingUser.id, extid: contractingUser.extid },
+              { kind: 'contract', item: ct_id, extid: ctid },
+              'info', 21, null);
+          })
+          .then(function(response){
+            return audits.create(
+              { kind: 'user', item: token_uid, extid: token_mail },
+              { kind: 'user', item: contractingUser.id, extid: contractingUser.extid },
+              { kind: 'contract', item: ct_id, extid: ctid },
+              51, null);
+          })
+          .then(function(response){
+            logger.log(req, res, {type: 'debug', data: 'Contract posted, waiting for approval'});
+            callback(false, 'Contract posted, waiting for approval');
+          })
+          .catch(function(error){
+            callback(true, error);
+          });
+        } catch(err){
+          callback(true, err);
+        }
       }
     }
   );
@@ -127,7 +133,11 @@ function creating(data, token_uid, token_mail, callback){
 Accept a contract request
 * @return {Callback}
 */
-function accepting(id, token_uid, token_mail, callback){
+function accepting(req, res, callback){
+  var id = req.params.id;
+  var token_uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var token_mail = req.body.decoded_token.sub;
+
   var imAdmin = null;
   var imForeign = null;
   var updItem = {};
@@ -164,16 +174,16 @@ function accepting(id, token_uid, token_mail, callback){
   .then(function(response){
     items = [];
     getOnlyProp(items, response, ['oid']);
-    return moveItemsInContract(updItem.ctid, token_mail, items, true); // add = true
+    return moveItemsInContract(updItem.ctid, token_mail, items, true, req, res); // add = true
   })
   .then(function(response){
     return createNotifAndAudit(updItem._id, updItem.ctid, token_uid, token_mail, updItem.iotOwner.uid, updItem.foreignIot.uid, imAdmin, 'ACCEPT'); // Accepted = true
   })
   .then(function(response){
+    logger.log(req, res, {type: 'debug', data: 'Contract accepted'});
     callback(false, updItem);
   })
   .catch(function(error){
-    logger.debug(error);
     callback(true, error);
   });
 }
@@ -182,7 +192,11 @@ function accepting(id, token_uid, token_mail, callback){
 Remove a contract
 * @return {Callback}
 */
-function removing(id, token_uid, token_mail, callback){
+function removing(req, res, callback){
+  var id = req.params.id;
+  var token_uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var token_mail = req.body.decoded_token.sub;
+
   var data = {}; var ctid = {};
   var imForeign; var imAdmin;
 
@@ -197,14 +211,14 @@ function removing(id, token_uid, token_mail, callback){
     if(imAdmin){
       removeAllContract(id, token_uid, token_mail);
     } else {
-      removeOneUser(id, token_uid, token_mail, imForeign);
+      removeOneUser(req, res, imForeign);
     }
   })
   .then(function(response){
+    logger.log(req, res, {type: 'debug', data: 'Contract removed'});
     callback(false, response);
   })
   .catch(function(error){
-    logger.debug('Delete contract error: ' + error);
     callback(true, error);
   });
 }
@@ -227,7 +241,6 @@ function contractFeeds(uid, callback){
     callback(false, openContracts);
   })
   .catch(function(err){
-    logger.debug(err);
     callback(true, err);
   });
 }
@@ -253,7 +266,6 @@ function contractInfo(ctid, uid, callback){
     }
   })
   .catch(function(err){
-    logger.debug(err);
     callback(true, err);
   });
 }
@@ -265,8 +277,12 @@ When an item is updated we need to put them in "hold" the contracts
 3 - Add flag in user contract instance with the "inactive" items
 4 - Create notifications and logs
 */
-function pauseContracts(oid, cts, uid){
-  logger.debug('Pausing contracts for: ' + oid.extid);
+function pauseContracts(req, res){
+  var oid = req.body.oid;
+  var ct = req.body.ct;
+  var uid = req.body.uid;
+  var cts = [];
+  cts.push(ct);
   return new Promise(function(resolve, reject) {
     if(cts.length > 0){ // Check if there is any item to delete
       sync.forEachAll(cts,
@@ -275,7 +291,7 @@ function pauseContracts(oid, cts, uid){
           userOp.update({"_id": uid.id, "hasContracts.extid": value.extid},
                         {$push: {"hasContracts.$.inactive": oid.extid } })
           .then(function (response) {
-            deletingOne(otherParams.oid, {mail: otherParams.mail, ctid: value.extid}, function(value, result) {
+            deletingOne(otherParams.oid, {mail: otherParams.mail, ctid: value.extid}, req, res, function(value, result) {
                 allresult.push({value: oid.extid, result: result});
                 next();
             });
@@ -327,10 +343,10 @@ function pauseContracts(oid, cts, uid){
               return true;
             })
             .then(function (response) {
+              logger.log(req, res, {type: 'debug', data: 'Disabling item in contract(s): ' + oid.extid});
               resolve({toPause: allresult});
             })
             .catch(function (err) {
-              logger.debug(err);
               reject(err);
             });
           }
@@ -339,7 +355,7 @@ function pauseContracts(oid, cts, uid){
         {oid: oid.extid, mail: uid.extid}
       );
     } else {
-      logger.warn({user:uid.extid, action: 'removeItemFromContract', message: "No items to be removed"});
+      logger.log(req, res, {type: 'warn', data: {user:uid.extid, action: 'removeItemFromContract', message: "No items to be removed"}});
       resolve({toPause: "Nothing to be removed..."});
     }
   });
@@ -352,10 +368,13 @@ Reactivate ONE item in ONE contract after update
 3 - Remove item from flags in user contract "inactive" items
 4 - Create notifications and logs
 */
-function enableOneItem(oid, ct, uid){
+function enableOneItem(req, res){
+  var oid = req.body.oid;
+  var ct = req.body.ct;
+  var uid = req.body.uid;
   return new Promise(function(resolve, reject) {
     var otherData = {ctid: ct.extid, mail: uid.extid};
-    addingOne(oid, otherData, function(err, response){
+    addingOne(oid, otherData, req, res, function(err, response){
       itemOp.update({"oid": oid, "hasContracts.extid" : ct.extid},
                      {$set: { "hasContracts.$.approved" : true }})
      .then(function(response){
@@ -370,6 +389,7 @@ function enableOneItem(oid, ct, uid){
          56, "Item " + oid + " enabled");
      })
      .then(function (response) {
+       logger.log(req, res, {type: 'debug', data: 'Enabling item from contract(s): ' + oid.extid});
        resolve('Success');
      })
      .catch(function(err){
@@ -388,10 +408,13 @@ Remove ONE item from contract
 4 - Pull item from contract
 5 - Create notifications and logs (Deleting one function)
 */
-function removeOneItem(oid, ct, uid){
+function removeOneItem(req, res){
+  var oid = req.body.oid;
+  var ct = req.body.ct;
+  var uid = req.body.uid;
   return new Promise(function(resolve, reject) {
     var otherData = {ctid: ct.extid, mail: uid.extid};
-    deletingOne(oid, otherData, function(err, response){
+    deletingOne(oid, otherData, req, res, function(err, response){
       itemOp.update({"oid": oid}, {$pull: { hasContracts: {extid : ct.extid }}})
      .then(function(response){
        return userOp.update({"_id": uid.id, "hasContracts.extid" : ct.extid},
@@ -414,6 +437,7 @@ function removeOneItem(oid, ct, uid){
          56, "Item " + oid + " removed");
      })
      .then(function (response) {
+       logger.log(req, res, {type: 'debug', data: 'Delete item from contract(s): ' + oid.extid});
        resolve('Success');
      })
      .catch(function(err){
@@ -431,7 +455,6 @@ Restart contract, when a service gets updated
 3 - Create notifications and logs
 */
 function resetContract(cts, uid){
-  logger.debug('Reset contracts...');
   return new Promise(function(resolve, reject) {
     if(cts.length > 0){ // Check if there is any item to delete
       sync.forEachAll(cts,
@@ -462,7 +485,6 @@ function resetContract(cts, uid){
               users = uidService.concat(uidDevice);
               items = idsService.concat(idsDevice);
             } catch(err){
-              logger.debug('error: ' + err);
               allresult.push({value: value.extid, result: err});
               next();
             }
@@ -512,7 +534,7 @@ function resetContract(cts, uid){
         {uid: uid}
       );
     } else {
-      logger.warn({user:uid.extid, action: 'updateContract', message: "No contracts to be updated"});
+      // logger.warn({user:uid.extid, action: 'updateContract', message: "No contracts to be updated"});
       resolve({toReset: "Nothing to be removed..."});
     }
   });
@@ -521,14 +543,16 @@ function resetContract(cts, uid){
 /*
 Get user contracts
 */
-function fetchContract(id){
+function fetchContract(req, res){
+  var id = req.params.id; // User id
   var result = [];
   var parsedRes = {};
   return userOp.findOne({ _id: id}, {hasContracts:1}).populate('hasContracts.id')
   .then(function(response){
     parsedRes = response.toObject().hasContracts;
     if(parsedRes.length === 0){
-       return  Promise.resolve(result);
+      logger.log(req, res, {type: 'warn', data: 'No contracts for: ' + id});
+       return Promise.resolve(result);
     } else {
         for( var i = 0, l = parsedRes.length; i < l; i++ ){
         if(parsedRes[i].id.status && parsedRes[i].id.status !== 'deleted'){
@@ -595,7 +619,10 @@ function removeAllContract(id, token_uid, token_mail){
 Remove a user in a contract
 * @return {Promise}
 */
-function removeOneUser(id, uid, mail, imForeign){
+function removeOneUser(req, res, imForeign){
+  var id = req.params.id;
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var mail = req.body.decoded_token.sub;
   var items = []; var items_id = []; var items_oid = [];
   var query = {}; var ctid; var data = {};
   return new Promise(function(resolve, reject) {
@@ -623,7 +650,7 @@ function removeOneUser(id, uid, mail, imForeign){
       return itemOp.update({_id: {$in: items_id }}, { $pull: {hasContracts: {id: id} } }, { multi: true });
     })
     .then(function(response){
-      return moveItemsInContract(ctid, mail, items_oid, false); // add = false
+      return moveItemsInContract(ctid, mail, items_oid, false, req, res); // add = false
     })
     .then(function(response){
       return createNotifAndAudit(data._id, data.ctid, uid, mail, data.iotOwner.uid, data.foreignIot.uid, false, "DELETE"); // Accepted = true
@@ -640,7 +667,7 @@ function removeOneUser(id, uid, mail, imForeign){
 /*
 Add or remove items to the contract
 */
-function moveItemsInContract(ctid, token_mail, items, add){
+function moveItemsInContract(ctid, token_mail, items, add, req, res){
   return new Promise(function(resolve, reject) {
     if(items.length > 0){ // Check if there is any item to delete
       sync.forEachAll(items,
@@ -651,7 +678,7 @@ function moveItemsInContract(ctid, token_mail, items, add){
                 next();
             });
           } else {
-            deletingOne(value, otherParams, function(value, result) {
+            deletingOne(value, otherParams, req, res, function(value, result) {
                 allresult.push({value: value, result: result});
                 next();
             });
@@ -659,7 +686,6 @@ function moveItemsInContract(ctid, token_mail, items, add){
         },
         function(allresult) {
           if(allresult.length === items.length){
-            // logger.debug('Completed async handler: ' + JSON.stringify(allresult));
             resolve({"error": false, "message": allresult });
           }
         },
@@ -668,10 +694,10 @@ function moveItemsInContract(ctid, token_mail, items, add){
       );
     } else {
       if(add){
-        logger.warn({user:token_mail, action: 'addItemToContract', message: "No items to be added"});
+        logger.log(req, res, {type: 'warn', data:{user:token_mail, action: 'addItemToContract', message: "No items to be added"}});
         resolve({"error": false, "message": "Nothing to be added..."});
       } else {
-        logger.warn({user:token_mail, action: 'removeItemFromContract', message: "No items to be removed"});
+        logger.log(req, res, {type: 'warn', data:{user:token_mail, action: 'removeItemFromContract', message: "No items to be removed"}});
         resolve({"error": false, "message": "Nothing to be removed..."});
       }
     }
@@ -682,7 +708,7 @@ function moveItemsInContract(ctid, token_mail, items, add){
 Add items to contract group in commServer
 Extends to moveItemsInContract
 */
-function addingOne(oid, otherParams, callback){
+function addingOne(oid, otherParams, req, res, callback){
   itemOp.updateOne({"oid": oid, "hasContracts.extid" : otherParams.ctid}, {$set: { "hasContracts.$.approved" : true }})
   .then(function(response){
     return contractOp.update({"iotOwner.items.extid": oid, ctid : otherParams.ctid}, {$set: { "iotOwner.items.$.inactive" : false }});
@@ -694,14 +720,13 @@ function addingOne(oid, otherParams, callback){
     return commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'POST');
   })
   .then(function(response){
-    logger.audit({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid });
+    logger.log(req, res, {type: "audit", data: {user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid }});
     callback(oid, "Success");})
   .catch(function(err){
     if(err.statusCode !== 404){
-      logger.error({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid, message: err });
       callback(oid, 'Error: ' + err);
     } else {
-      logger.audit({user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid });
+      logger.log(req, res, {type: "audit", data: {user: otherParams.mail, action: 'addItemToContract', item: oid, contract: otherParams.ctid }});
       callback(oid, "Success");
     }
   });
@@ -712,17 +737,16 @@ function addingOne(oid, otherParams, callback){
 Remove items from contract group in commServer
 Extends to moveItemsInContract
 */
-function deletingOne(oid, otherParams, callback){
+function deletingOne(oid, otherParams, req, res, callback){
   commServer.callCommServer({}, 'users/' + oid + '/groups/' + otherParams.ctid , 'DELETE')
   .then(function(response){
-    logger.audit({user: otherParams.mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid });
+    logger.log(req, res, {type: "audit", data: {user: otherParams.mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid }});
     callback(oid, "Success");})
   .catch(function(err){
     if(err.statusCode !== 404){
-      logger.error({user: otherParams.mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid, message: err });
-      callback(oid, 'Error: ' + err);
+      callback(oid, err);
     } else {
-      logger.audit({user: otherParams.mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid });
+      logger.log(req, res, {type: "audit", data: {user: otherParams.mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid }});
       callback(oid, "Success");
     }
   });
@@ -736,7 +760,7 @@ function cancelContract(id){
   .catch(function(err){
     return new Promise(function(resolve, reject) {
       if(err.statusCode !== 404){
-        reject('Error in commServer: ' + err);
+        reject(err);
       } else {
         resolve(true);
       }
@@ -786,20 +810,23 @@ function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imA
 
       // Asynchronously notify all allUsers
       // Ignore response
-      // TODO Do error handling for the response
+      var toNotify = [];
       for(var i = 0; i < notifTarget.length; i++){
-        notifHelper.createNotification(
+        toNotify.push(notifHelper.createNotification(
           { kind: 'user', item: uid, extid: mail },
           notifTarget[i],
           { kind: 'contract', item: ct_id, extid: ctid },
           'info', notifNumber, message
-        );
+        ));
       }
-      audits.create(
+      Promise.all(toNotify)
+      .then(function(response){
+        return audits.create(
         { kind: 'user', item: uid, extid: mail },
         {},
         { kind: 'contract', item: ct_id, extid: ctid },
-        auditNumber, message)
+        auditNumber, message);
+      })
       .then(function(response){
         resolve(true);
       })
@@ -807,7 +834,6 @@ function createNotifAndAudit(ct_id, ctid, uid, mail, ownUsers, foreignUsers, imA
         reject(err);
       });
     } catch(err){
-      logger.debug(err);
       resolve(true);
     }
   });

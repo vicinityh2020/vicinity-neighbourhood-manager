@@ -29,7 +29,7 @@ function updateContents(data, callback){
         false,
         {} // additional parameters
       );
-    } catch(err){ // Catch error in main module
+    } catch(err) { // Catch error in main module
       reject(err);
     }
   });

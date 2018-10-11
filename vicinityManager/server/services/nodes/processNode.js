@@ -1,7 +1,6 @@
 // Global Objects
 
 var mongoose = require('mongoose');
-var logger = require('../../middlewares/logger');
 var commServer = require('../../services/commServer/request');
 var myItems = require('../../services/items/deleteItems');
 var nodeOp = require('../../models/vicinityManager').node;
@@ -20,27 +19,23 @@ function deleteNode(adids, email, userId){
 
   return new Promise(function(resolve, reject) {
     if(adids.length > 0){ // Check if there is any item to delete
-      logger.debug('Start async handler...' + adids);
       sync.forEachAll(adids,
         function(value, allresult, next, otherParams) {
           deletingNodes(value, otherParams, function(value, result) {
-              // logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result});
               next();
           });
         },
         function(allresult) {
           if(allresult.length === adids.length){
-            // logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-            resolve({"error": false, "message": allresult });
+            resolve(JSON.stringify(allresult));
           }
         },
         false,
         {userMail:email, userId: userId}
       );
     } else {
-      logger.warn({user: email, action: 'deleteNodes', message: "No nodes found to be removed"});
-      resolve({"error": false, "message": "Nothing to be removed..."});
+      reject({data: "Nothing to be removed...", type: "debug"});
     }
   });
 }
@@ -74,11 +69,9 @@ the update process continues in the commServer
               23, null);
           })
         .then(function(response){
-          logger.audit({user: email, action: 'updateNode', item: response._id });
-          resolve('Success');
+          resolve(response);
         })
         .catch(function(err){
-          logger.error({user: email, action: 'updateNode', item: response._id, message: err});
           reject(err);
         });
       });
@@ -125,16 +118,13 @@ function deletingNodes(adid, otherParams, callback){
   .then(function(response){
     return commServer.callCommServer({}, 'groups/' + adid, 'DELETE'); })
   .then(function(response){
-    logger.audit({user: otherParams.userMail, action: 'deleteNodes', item: adid });
     callback(adid, {'status':'success', 'items': itemsRes}) ;
   })
   .catch(function(error){
     if (error.statusCode !== 404){
-      logger.error({user: otherParams.userMail, action: 'deleteNodes', item: adid, message: error});
-      callback(adid, 'error');
+      callback(adid, {'status':'error'});
     } else {
       commServer.callCommServer({}, 'groups/' + adid, 'DELETE');
-      logger.warn({user: otherParams.userMail, action: 'deleteNodes', item: adid, message: 'Node not found in comm server' });
       callback(adid, {'status':'success', 'items': itemsRes}) ;
     }
   });

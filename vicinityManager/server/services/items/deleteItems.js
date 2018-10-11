@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var nodeOp = require('../../models/vicinityManager').node;
 var userOp = require('../../models/vicinityManager').user;
-var logger = require('../../middlewares/logger');
+var logger = require('../../middlewares/logBuilder');
 var commServer = require('../../services/commServer/request');
 var semanticRepo = require('../../services/semanticRepo/request');
 var sync = require('../../services/asyncHandler/sync');
@@ -17,29 +17,31 @@ var audits = require('../../services/audit/audit');
 /*
 Deletes either a selection of oids or all oids under a node
 */
-function deleteItems(oids, email, typeAgent){
+function deleteItems(oids, req, res, typeAgent){
+  var email = req.body.decoded_token.sub;
+
   return new Promise(function(resolve, reject) {
     if(oids.length > 0){ // Check if there is any item to delete
-      logger.debug('Start async handler...');
       sync.forEachAll(oids,
         function(value, allresult, next, otherParams) {
           deleting(value, otherParams, function(value, result, error) {
-              logger.debug('END execution with value =', value, 'and result =', result);
               allresult.push({value: value, result: result, error: error});
               next();
           });
         },
         function(allresult) {
           if(allresult.length === oids.length){
-            logger.debug('Completed async handler: ' + JSON.stringify(allresult));
             resolve({"error": false, "message": allresult });
           }
         },
         false,
-        {userMail:email, typeAgent: typeAgent}
+        { req: req,
+          res: res,
+          typeAgent: typeAgent
+        }
       );
     } else {
-      logger.warn({user:email, action: 'deleteItem', message: "No items to be removed"});
+      logger.log(req, res, {type: "warn", data: {user:email, action: 'deleteItem', message: "No items to be removed"}});
       resolve({"error": false, "message": "Nothing to be removed..."});
     }
   });
@@ -52,7 +54,8 @@ Delete == Remove relevant fields and change status to removed
 Make sure that agent is deleted or break connection with removed object
 */
 function deleting(oid, otherParams, callback){
-  logger.debug('START execution with value =', oid);
+  var req =  otherParams.req;
+  var res = otherParams.res;
   var obj = {
     info: {},
     avatar: "",
@@ -65,10 +68,10 @@ function deleting(oid, otherParams, callback){
   itemOp.findOne({oid:oid}, {avatar:0},
     function(err,data){
       if(err){
-        logger.debug("Something went wrong: " + err);
+        logger.log(req, res, {type: 'error', data: err});
         callback(oid, "error mongo" + err, true);
       }else if(!data){
-        logger.debug("Object does not exist");
+        logger.log(req, res, {type: 'warn', data: "Object does not exist"});
         callback(oid, "Object does not exist", false);
       }else{
         var cid = data.cid;
@@ -81,7 +84,7 @@ function deleting(oid, otherParams, callback){
         itemOp.update({oid:oid}, {$set: obj})
         .then(function(response){
           if(hasUser && contracts.length > 0){ // If the item does not have owner, cannot have contracts either
-             return sharingRules.removeOneItem(oid, data.uid.id, contracts, otherParams.userMail);
+             return sharingRules.removeOneItem(oid, data.uid.id, contracts, otherParams);
            } else {
              return false;
            }
@@ -112,14 +115,14 @@ function deleting(oid, otherParams, callback){
             42, null);
         })
         .then(function(ans){
-          logger.audit({user: otherParams.userMail, action: 'deleteItem', item: oid });
+          logger.log(req, res, {type: 'audit', data: {user: otherParams.userMail, action: 'deleteItem', item: oid }});
           callback(oid, "Success", false);})
         .catch(function(err){
           if(err.statusCode !== 404){
-            logger.error({user: otherParams.userMail, action: 'deleteItem', item: oid, message: err});
+            logger.log(req, res, {type: 'error', data: {user: otherParams.userMail, action: 'deleteItem', item: oid, message: err}});
             callback(oid, 'Error: ' + err, true);
           } else {
-            logger.warn({user: otherParams.userMail, action: 'deleteItem', item: oid, message: 'Object did not exist in comm server' });
+            logger.log(req, res, {type: 'warn', data: {user: otherParams.userMail, action: 'deleteItem', item: oid, message: 'Object did not exist in comm server' }});
             callback(oid, "Success", false);
           }
         });

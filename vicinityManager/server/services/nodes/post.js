@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
-var logger = require("../../middlewares/logger");
 var commServer = require('../../services/commServer/request');
 var audits = require('../../services/audit/audit');
 
@@ -47,19 +46,21 @@ function postOne(raw, company_id, cid, userMail, userId, callback){
           21, null);
         })
       .then(function(response){
-        logger.audit({user: userMail, action: 'createNode', item: data._id });
-        callback(false, {adid: db.adid, id: db._id, type: db.type}); })
+        logger.audit();
+        callback(false,
+                { log: {user: userMail, action: 'createNode', item: data._id },
+                  data: {adid: db.adid, id: db._id, type: db.type},
+                  type: "audit"});
+        })
+        .catch(function(err){
+          callback(true, {data: err, type: "error"});
+        });
+      })
       .catch(function(err){
-        logger.warn({user: userMail, action: 'createNode', message: err});
-        callback(true, err);
+        callback(true, {data: err, type: "error"});
       });
-    })
-    .catch(function(err){
-      logger.error({user: userMail, action: 'createNode', message: err});
-      callback(true, err);
-    });
+    }
   }
-}
 
 // Export Functions
 

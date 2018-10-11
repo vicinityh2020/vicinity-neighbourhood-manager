@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var itemOp = require('../models/vicinityManager').item;
 var userAccountOp = require('../models/vicinityManager').userAccount;
 var contractOp = require('../models/vicinityManager').contract;
-var logger = require('../middlewares/logger');
+var logger = require('../middlewares/logBuilder');
 var sync = require('../services/asyncHandler/sync');
 var commServer = require('../services/commServer/request');
 var ctChecks = require('../services/contracts/contractChecks.js');
@@ -16,13 +16,13 @@ var audits = require('../services/audit/audit');
 A device changes its accessLevel
 I need to remove/add from/to the commServer groups accordingly
 */
-function changePrivacy(ids, userId, userMail, c_id){
+function changePrivacy(ids, userId, userMail, c_id, req, res){
   var cont = 0;
   var knows = [];
   return new Promise(function(resolve, reject) {
     userAccountOp.findOne({_id:c_id}, {knows:1}, function(err, response){
       if(err){reject(err);}
-      if(!response){resolve('Nothing to be done...');}
+      if(!response){reject('nothing');}
       if(response.knows != 'undefined' || response.knows.length > 0){
         getOnlyId(knows, response.knows);
       }
@@ -45,13 +45,12 @@ function changePrivacy(ids, userId, userMail, c_id){
             resolve('Success');
             })
             .catch(function(error){
-              logger.debug(error);
               reject(error);
             });
           }
         },
         false,
-        {knows:knows, mail: userMail, uid: userId}
+        {knows:knows, mail: userMail, uid: userId, req: req, res: res}
       );
     });
   });
@@ -64,7 +63,6 @@ To do so, I remove the group which shares with my friend and the group which
 my friend is using to share with me.
 */
 function removeFriend(my_id, friend_id, email, uid){
-  logger.debug('removing friend');
   var items1, items2;
   var items = [];
   return new Promise(function(resolve, reject) {
@@ -95,8 +93,11 @@ function removeFriend(my_id, friend_id, email, uid){
       resolve({error: false, message: 'Success'});
     })
     .catch(function(error){
-      logger.debug('Error remove friend: ' + error);
-      reject({error: true, message: error});
+      if(error === "nothing"){
+        resolve({error: false, message: 'success', success: false});
+      } else {
+        reject({error: true, message: error});
+      }
     });
   });
 }
@@ -106,40 +107,34 @@ A user changes its access level
 I need check that all devices have an AL below users AL
 If not, I need to update all items and contracts accordingly
 */
-function changeUserAccessLevel(uid, newAccessLevel, email){
+function changeUserAccessLevel(obj){
   var ids = [];
   var c_id;
   return new Promise(function(resolve, reject) {
-    itemOp.find({'uid.id':uid, accessLevel: {$gt: newAccessLevel}}, {cid:1})
+    itemOp.find({'uid.id': obj.uid, accessLevel: {$gt: obj.updates.accessLevel}}, {cid:1})
     .then(function(items){
       if(items.length > 0){
         c_id = items[0].cid.id;
         for(var i = 0, l = items.length; i < l; i++){
           ids.push(items[i]._id);
         }
-        logger.debug(ids);
-        return itemOp.update({_id: {$in: ids}}, {$set: {accessLevel: newAccessLevel}}, {multi:true});
+        return itemOp.update({_id: {$in: ids}}, {$set: {accessLevel: obj.updates.accessLevel}}, {multi:true});
       } else {
-        return false;
+        return Promise.reject('nothing'); // Nothing to update
       }
     })
     .then(function(response){
-      if(!response){
-        return false;
-      } else {
-        return changePrivacy(ids, uid, email, c_id);
-      }
+      return changePrivacy(ids, obj.uid, obj.email, c_id, obj.req, obj.res);
     })
     .then(function(response){
-      if(!response){
-        resolve({error: false, message: 'Nothing to update'});
-      } else {
-        resolve({error: false, message: 'success'});
-      }
+      resolve({error: false, message: 'success', success: true});
     })
     .catch(function(error){
-      logger.debug('Error remove friend: ' + error);
-      reject({error: true, message: error});
+      if(error === "nothing"){
+        resolve({error: false, message: 'success', success: true});
+      } else {
+        reject(error);
+      }
     });
   });
 }
@@ -149,7 +144,10 @@ Remove only one item from all contracts
 Case of reduce visibility or remove device
 
 */
-function removeOneItem(oid, uid, cts_ctid, token_mail){
+function removeOneItem(oid, uid, cts_ctid, otherParams){
+  var token_mail = otherParams.userMail;
+  var req = otherParams.req;
+  var res = otherParams.res;
   return new Promise(function(resolve, reject) {
     return contractOp.updateOne({ctid: {$in: cts_ctid }},
                     {$pull: {"iotOwner.items": {extid:oid}}},
@@ -162,7 +160,7 @@ function removeOneItem(oid, uid, cts_ctid, token_mail){
       );
     })
     .then(function(response){
-      return updateCommServer(cts_ctid, oid, token_mail);
+      return updateCommServer(cts_ctid, oid, {mail: token_mail});
     })
     .then(function(response){
       return ctChecks.checkContracts(uid, token_mail);
@@ -172,14 +170,14 @@ function removeOneItem(oid, uid, cts_ctid, token_mail){
     })
     .then(function(response){
       for(var i = 0, l = cts_ctid.length; i < l; i++){
-        logger.audit({user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i] });
+        logger.log(req, res, {type: 'audit', data: {user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i] }});
       }
       resolve(oid);
     })
     .catch(function(err){
-      for(var i = 0, l = cts_ctid.length; i < l; i++){
-        logger.error({user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i], message: err });
-      }
+      // for(var i = 0, l = cts_ctid.length; i < l; i++){
+      //   logger.error({user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i], message: err });
+      // }
       reject(err);
     });
   });
@@ -191,7 +189,6 @@ function removeOneItem(oid, uid, cts_ctid, token_mail){
 Checking each item privacy change
 */
 function processingPrivacy(id, otherParams, callback){
-  logger.debug('processing...');
   var knows = otherParams.knows || [];
   var cts_id = [];
   var cts_ctid = [];
@@ -246,34 +243,34 @@ function processingPrivacy(id, otherParams, callback){
     return ctChecks.contractValidity(cts_ctid, otherParams.uid, otherParams.mail);
   })
   .then(function(response){
-    return updateCommServer(cts_ctid, oid, otherParams.mail);
+    return updateCommServer(cts_ctid, oid, otherParams);
   })
   .then(function(response){
     callback(true, cts_ctid);
   })
   .catch(function(error){
-    logger.debug(error);
-    callback(false, {}); // Do error control
+    logger.log(otherParams.req, otherParams.res, {type: 'error', data: error});
+    callback(false, error); // Do error control
   });
 }
 
 /*
 Async update commserver groups to adapt to privacy changes
 */
-function updateCommServer(cts, oid, mail){
+function updateCommServer(cts, oid, obj){
   var cont = 0;
   return new Promise(function(resolve, reject) {
     sync.forEachAll(cts,
       function(ctid, allresult, next, otherParams) {
         commServer.callCommServer({}, 'users/' + otherParams.oid + '/groups/' + ctid, 'DELETE')
         .then(function(response){
-          logger.audit({user: mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid });
+          logger.log(obj.req, obj.res, {type: 'audit', data: {user: obj.mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid }});
           allresult.push({error: false, ctid: ctid});
           cont++;
           next();
         })
         .catch(function(err){
-          logger.error({user: mail, action: 'removeItemFromContract', item: oid, contract: otherParams.ctid, message: err });
+          logger.log(obj.req, obj.res, {type: 'error', data: " user: " + obj.mail + " , action: removeItemFromContract, item: " + oid + ", contract: " + otherParams.ctid});
           allresult.push({error: true, ctid: ctid});
           cont++;
           next();

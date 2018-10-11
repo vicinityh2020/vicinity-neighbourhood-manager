@@ -7,7 +7,6 @@ remove: remove organisation
 
 // Global objects
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
 var companyAccountOp = require('../../models/vicinityManager').userAccount;
 var userOp = require('../../models/vicinityManager').user;
 var delUser = require('../../services/users/deleteUsers');
@@ -35,8 +34,7 @@ Users, nodes, items
 */
 function remove(cid, uid, mail, callback) {
   var deletingResults = {};
-
-  logger.debug('Removing organisation... ' + cid);
+  deletingResults.info = { action: "Organisation deleted", actor: mail};
 
   companyAccountOp.findOne({ _id: cid },
     function(err, companyData){
@@ -81,14 +79,9 @@ function remove(cid, uid, mail, callback) {
         })
         .then(function(response){
           deletingResults.organisation = {cid: cid, result: 'Success'};
-          logger.audit({user: mail, action: 'deleteOrganisation', item: cid });
-          logger.debug('Success deleting organisation!!!');
-          logger.debug({result: deletingResults});
           callback(false, deletingResults);
         })
         .catch(function(err){
-          logger.debug(err);
-          logger.error({user: mail, action: 'deleteOrganisation', item: cid, message: err});
           callback(true, err);
         });
       }

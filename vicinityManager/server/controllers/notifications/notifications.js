@@ -1,6 +1,6 @@
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var notificationOp = require('../../models/vicinityManager').notification;
 var moment = require('moment');
 var notifHelper = require('../../services/notifications/notificationsHelper');
@@ -19,7 +19,7 @@ function getNotifications(req,res){
                   notifHelper.objectIdWithTimestamp(req.query.searchDate):
                   notifHelper.objectIdWithTimestamp(moment().subtract(7, 'days').valueOf());
   notifHelper.getNotifications(u_id, c_id, cid, mail, isDevOps, all, searchDate, function(err,response){
-    // logger.debug({error: err, message: response.length});
+    if(err) logger.log(req,res, {data: response, type: "error"});
     res.json({error: err, message: response});
   });
 }
@@ -29,6 +29,7 @@ function changeToResponded(req,res){
   var o_id = mongoose.Types.ObjectId(req.params.id);
   var stat = req.query.status;
   notifHelper.changeToResponded(o_id, stat, function(err,response){
+    if(err) logger.log(req,res, {data: response, type: "error"});
     res.json({error: err, message: response});
   });
 }
@@ -40,6 +41,7 @@ function changeIsUnreadToFalse(req, res){
   var id = req.params.id;
   var ids = req.body.ids;
   notifHelper.changeIsUnreadToFalse(id, ids, function(err,response){
+    if(err) logger.log(req,res, {data: response, type: "error"});
     res.json({error: err, message: response});
   });
 }

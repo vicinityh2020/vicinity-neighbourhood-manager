@@ -1,7 +1,7 @@
 
 // Global objects and variables
 var mongoose = require('mongoose');
-var logger = require('../../middlewares/logger');
+var logger = require('../../middlewares/logBuilder');
 var auditHelper = require('../../services/audit/audit');
 var moment = require('moment');
 
@@ -14,12 +14,13 @@ function getAudit(req, res){
                   auditHelper.objectIdWithTimestamp(moment().subtract(7, 'days').valueOf());
 
   if(type === false){
-    logger.debug("Model type missing, not possible to retrieve audits...");
+    logger.log(req, res, {message: "Model type missing, not possible to retrieve audits...", type: debug});
     res.json({error: false , message: 'Model type needed!', success: false});
   } else {
     auditHelper.get(id, c_id, type, searchDate, function(err, response, success){
-      //logger.debug(err);
-      res.json({error: err, message: response, success: success});
+      if(err) logger.log(req, res, {type: 'error', data: response});
+      if(response.type === "debug") logger.log(req, res, response);
+      res.json({error: err, message: response.data, success: success});
     });
   }
 }
@@ -33,7 +34,8 @@ function postAudit(req, res){
     res.json({error: false, message: 'Audit created', success: response});
   })
   .catch(function(err){
-    res.json({error: true, message: err, success: false});
+    logger.log(req, res, {type: 'error', data: err});
+    res.json({error: true, message: err.data, success: false});
   });
 }
 

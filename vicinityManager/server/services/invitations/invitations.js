@@ -1,14 +1,13 @@
 var mongoose = require('mongoose');
 var invitationOp = require('../../models/vicinityManager').invitation;
 var mailing = require('../../services/mail/mailing');
-var logger = require("../../middlewares/logger");
 var config = require('../../configuration/configuration');
 
 function getOne(o_id, callback) {
   // Not set the flag {new: true} --> returns old doc!
   invitationOp.findByIdAndUpdate(o_id, {$set: {used: true}}, {new: false}, function(err, data){
     if (err) {
-      callback(true, err);
+      callback(true, {data: err, type: err});
     } else {
       callback(false, data);
     }
@@ -53,15 +52,13 @@ function postOne(userName, companyId, cid, organisation, emailTo, nameTo, type, 
       sentByName : thisName,
       sentByOrg : thisOrg
     };
-    logger.audit({user: userName, action: 'invitationSent'});
     return mailing.sendMail(mailInfo);
   })
   .then(function(response){
-    callback(false, "Invitation processed!");
+    callback(false, {data: {user: userName, action: 'invitationSent'}, type: "audit"});
   })
   .catch(function(err){
-    logger.error({user: userName, action: 'invitationSent', message: err});
-    callback(true, err);
+    callback(true, {data: err, type: "error"});
   });
 }
 

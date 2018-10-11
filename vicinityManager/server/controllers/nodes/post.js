@@ -2,7 +2,7 @@
 // Global objects
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 
 var sNodePost = require('../../services/nodes/post');
 
@@ -24,7 +24,13 @@ function postOne(req, res, next) {
   delete data.token;
 
   sNodePost.postOne(data, company_id, cid, userMail, userId, function(err, response){
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req, res, response);
+      res.json({error: err, message: response.data});
+    } else {
+      logger.log(req, res, {data: response.log, type: response.type});
+      res.json({error: err, message: response.data});
+    }
   });
 }
 

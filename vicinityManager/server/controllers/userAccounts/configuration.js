@@ -7,7 +7,7 @@ remove: remove organisation
 
 // Global objects
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 
 var sOrgConfiguration = require('../../services/organisations/configuration');
 
@@ -36,7 +36,13 @@ function remove(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.params.id);
   var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
+  logger.log(req, res, {type: 'debug', data: "Removing organisation... " + cid});
   sOrgConfiguration.remove(cid, uid, mail, function(err, data){
+    if(err){
+      logger.log(req, res, {type: 'error', data: data});
+    } else {
+      logger.log(req, res, {type: 'audit', data: data});
+    }
     res.json({"error": err, "message": data});
   });
 }

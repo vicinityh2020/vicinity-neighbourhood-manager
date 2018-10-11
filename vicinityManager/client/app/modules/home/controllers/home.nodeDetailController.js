@@ -57,8 +57,13 @@ angular.module('VicinityManagerApp.controllers').
         if($scope.nodeId === '0'){
         nodeAPIService.postOne(query)
         .then(function(response){
+          if(response.error) {
+            Notification.success("Error creating Access Point");
+            $scope.backToList();
+          } else {
             Notification.success("Access Point successfully created!!");
             $scope.backToList();
+          }
         })
         .catch(function(err){
           console.log(err);
@@ -70,8 +75,13 @@ angular.module('VicinityManagerApp.controllers').
         nodeAPIService.updateOne($state.params.nodeId, query)
           .then(
             function successCallback(response){
-              Notification.success("Access Point successfully modified!!");
-              $scope.backToList();
+              if(response.error) {
+                Notification.success("Error updating Access Point");
+                $scope.backToList();
+              } else {
+                Notification.success("Access Point successfully modified!!");
+                $scope.backToList();
+              }
             },
             function errorCallback(err){
               console.log(err);

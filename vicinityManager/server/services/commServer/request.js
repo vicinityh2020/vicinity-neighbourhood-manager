@@ -32,10 +32,15 @@ function callCommServer(data, endPoint, myMethod){
   options.uri = config.commServerUrl + '/' + endPoint;
   if(myMethod !== 'GET'){ options.body = payload; }
 
-  return request(options, function(err, response, body) {
-        logger.debug('REQUEST RESULTS:', err, response.statusCode, body);
-    }
-  );
+  return request(options);
+  // return request(options, function(err, response, body) {
+      // try{
+      //   logger.debug('REQUEST RESULTS:', err, response.statusCode, body);
+      // } catch(error){
+      //   logger.error(error.stack);
+      // }
+  //   }
+  // );
 
 }
 

@@ -2,7 +2,7 @@
 // Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 
 var sGet = require('../../services/items/get');
 
@@ -25,6 +25,7 @@ function getMyItems(req, res) {
   var limit = 12; // Default valur for the webApp
   var api = false; // Call origin api or webApp
   sGet.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -40,6 +41,7 @@ function getMyContractItems(req, res) {
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = false; // Call origin api or webApp
   sGet.getMyContractItems(cid, oid, mycid, api, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -54,6 +56,7 @@ function getArrayOfItems(req, res) {
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = false; // Call origin api or webApp
   sGet.getArrayOfItems(items, mycid, myuid, api, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -72,6 +75,7 @@ function getAllItems(req, res) {
   var filterNumber = req.body.filterNumber;
   var filterOntology = typeof req.body.filterOntology !== 'undefined' ? req.body.filterOntology : [];
   sGet.getAllItems(oid, type, offset, filterNumber, filterOntology, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -86,6 +90,7 @@ function getItemWithAdd(req, res, next) {
   var oid = mongoose.Types.ObjectId(req.params.id);
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   sGet.getItemWithAdd(oid, cid, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -102,6 +107,7 @@ function getItemWithAdd(req, res, next) {
     var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var type = (req.body.type === 'undefined' || (req.body.type !== "device" && req.body.type !== "service")) ? "all" : req.body.type;
     sGet.getUserItems(reqId, reqCid, myCid, type, function(err, response){
+      if(err) logger.log(req, res, {type: 'error', data: response});
       res.json({error: err, message: response});
     });
   }
@@ -118,6 +124,7 @@ function getItemWithAdd(req, res, next) {
     var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var onlyUser = req.params.type === 'user' ? true : false;
     sGet.getCount(myId, myCid, onlyUser, function(err, response){
+      if(err) logger.log(req, res, {type: 'error', data: response});
       res.json({error: err, message: response});
     });
   }

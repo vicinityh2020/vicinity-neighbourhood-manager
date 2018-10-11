@@ -1,7 +1,7 @@
 // Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var sGet = require("../../services/search/get");
 
 // Public functions
@@ -17,7 +17,12 @@ var sGet = require("../../services/search/get");
     var cid =  mongoose.Types.ObjectId(req.body.decoded_token.orgid);
     var api = false; // Call origin api or webApp
     sGet.searchOrganisation(sT, cid,  api, function(err, response){
-      res.json({error: err, message: response});
+      if(err){
+        logger.log(req,res,response);
+        res.json({error: err, message: response.data});
+      } else {
+        res.json({error: err, message: response.data});
+      }
     });
   }
 
@@ -32,7 +37,12 @@ var sGet = require("../../services/search/get");
     var sT = new RegExp(searchTerm, 'i');
     var api = false; // Call origin api or webApp
     sGet.searchUser(sT, cid, api, function(err, response){
-      res.json({error: err, message: response});
+      if(err){
+        logger.log(req,res,response);
+        res.json({error: err, message: response.data});
+      } else {
+        res.json({error: err, message: response.data});
+      }
     });
   }
 
@@ -49,7 +59,12 @@ var sGet = require("../../services/search/get");
     var sT = new RegExp(searchTerm, 'i');
     var api = false; // Call origin api or webApp
     sGet.searchItem(sT, cid, api, function(err, response){
-      res.json({error: err, message: response});
+      if(err){
+        logger.log(req,res,response);
+        res.json({error: err, message: response.data});
+      } else {
+        res.json({error: err, message: response.data});
+      }
     });
   }
 

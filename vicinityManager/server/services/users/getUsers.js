@@ -2,7 +2,6 @@
 var mongoose = require('mongoose');
 var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
-var logger = require("../../middlewares/logger");
 
 // Public functions
 
@@ -52,11 +51,10 @@ function getOne(o_id, api, callback) {
   else { projection = "-authentication.hash"; }
   userOp.findById(o_id).select(projection)
   .then(function(data){
-    callback(false, data);
+    callback(false, {data: data, type: "info"});
   })
   .catch(function(err){
-    logger.debug(err);
-    callback(true, err);
+    callback(true, {data: err, type: "error"});
   });
 }
 
@@ -77,11 +75,10 @@ function getAll(othercid, mycid, api, callback) {
     } else if(relation === 2){
       users = users.filter(function(i){return i.id.accessLevel === 2;});
     } else {}
-    callback(false, users);
+    callback(false, {data: users, type: "info"});
   })
   .catch(function(error){
-    logger.debug(error);
-    callback(true, error);
+    callback(true, {data: error, type: "error"});
   });
 }
 

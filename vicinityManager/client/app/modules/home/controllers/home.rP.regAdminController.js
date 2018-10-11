@@ -17,7 +17,6 @@ function ($scope, $window, $stateParams, commonHelpers, $location, registrations
           console.log(err);
           Notification.error("Server error");
         });
-      );
 
     function updateScopeAttributes(response){
         $scope.userName = response.data.message.userName;

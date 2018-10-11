@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 
 var sGet = require("../../services/organisations/get");
 
@@ -14,6 +14,7 @@ function getAll(req, res, next) {
   var offset = req.query.offset; // 0 all, 1 friends, else not friends
   var limit = 12;
   sGet.getAll(cid, Number(type), offset, limit, api, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -25,6 +26,7 @@ function getOne(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.params.id);
   var mycid = req.body.decoded_token.orgid;
   sGet.getOne(cid, mycid, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }
@@ -36,6 +38,7 @@ Get CID
 function getCid(req, res, next){
   var cid = mongoose.Types.ObjectId(req.params.id);
   sGet.getCid(cid, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }

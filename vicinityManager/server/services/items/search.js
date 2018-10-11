@@ -10,7 +10,6 @@ Return the thingDescriptions
 */
 function searchItems(data, callback){
   var oidArray = data.oids;
-  //logger.debug("Request info:  " + JSON.stringify(req.body) + "    " + JSON.stringify(req.headers));
   itemOp.find({oid: {$in: oidArray } }, {info:1, _id:0} )
     .exec(
       function(err,data){

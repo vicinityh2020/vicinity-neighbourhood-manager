@@ -99,10 +99,10 @@ function requestReg(data, callback) {
       return mailing.sendMail(mailInfo);
     })
     .then(function(response){
-      callback(false, "Registration request created");
+      callback(false, {data: "Registration request created", type: 'audit'});
     })
     .catch(function(err){
-      callback(true, err);
+      callback(true, {data: err, type: 'error'});
     });
     // Saving a registration ready to send mail to requester (Invited by other org)
   } else {
@@ -112,10 +112,10 @@ function requestReg(data, callback) {
       return registrationAndVerificationMail(db);
     })
     .then(function(response){
-      callback(false, "Registration mail sent!");
+      callback(false, {data: "Registration mail sent!", type: 'audit'});
     })
     .catch(function(err){
-      callback(true, err);
+      callback(true, {data: err, type: 'error'});
     });
   }
 }
@@ -141,22 +141,22 @@ function createReg(id, data, callback) {
       saveOrganisation(dbUser, raw)
       .then(function(response){
         logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
-        callback(false, "New userAccount was successfuly saved!");
+        callback(false, {data: "New userAccount was successfuly saved!", type: 'audit'});
       })
       .catch(function(err){
         logger.error({user: raw.email, action: 'createOrganisation', message: err});
-        callback(true, err);
+        callback(true, {data: err, type: 'error'});
       });
       // Case new user registration
     }else if ((raw.type == "newUser") && (raw.status == "verified")){
       saveUser(dbUser, raw)
       .then(function(response){
         logger.debug('New user was successfuly saved!');
-        callback(false, "User was saved to the accountOf!");
+        callback(false, {data: "User was saved to the accountOf!", type: 'audit'});
       })
       .catch(function(err){
         logger.error({user: raw.email, action: 'createUser', message: err});
-        callback(true, err);
+        callback(true, {data: err, type: 'error'});
       });
       // Case we just want to send verification mail
       }else if ((raw.type == "newCompany") && (raw.status == "pending")){
@@ -170,10 +170,10 @@ function createReg(id, data, callback) {
           return notificationAPI.changeNotificationStatus("", "", 1, {sentByReg: raw._id});
         })
         .then(function(response){
-          callback(false, "Verification mail sent");
+          callback(false, {data: "Verification mail sent", type: 'audit'});
         })
         .catch(function(err){
-          callback(true, err);
+          callback(true, {data: err, type: 'error'});
         });
         // Case we do not want that company to be registered
       }else if ((raw.type == "newCompany") && (raw.status == "declined")){
@@ -186,15 +186,14 @@ function createReg(id, data, callback) {
           return notificationAPI.changeNotificationStatus("", "", 1, {sentByReg: raw._id});
         })
         .then(function(response){
-          callback(false, "Rejection mail sent");
+          callback(false, {data: "Rejection mail sent", type: 'audit'});
         })
         .catch(function(err){
-          callback(true, err);
+          callback(true, {data: err, type: 'error'});
         });
         // Otherwise ...
       }else{
-        logger.debug('Wrong status, doing nothing...');
-        callback(false, "Type is neither newUser nor newCompany!");
+        callback(false, {data: "Type is neither newUser nor newCompany!", type: 'warn'});
       }
    });
 }

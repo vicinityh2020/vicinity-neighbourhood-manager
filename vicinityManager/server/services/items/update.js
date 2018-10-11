@@ -1,12 +1,7 @@
-/*
-TODO Enable bulk update when needed
-Make use on asyncHandler/sync module
-*/
-
 // Global objects and variables
 
 var mongoose = require('mongoose');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var commServer = require('../../services/commServer/request');
 var sharingRules = require('../../services/sharingRules');
 var audits = require('../../services/audit/audit');
@@ -23,8 +18,8 @@ Update several items
 Can choose to execute any of the actions below for each item.
 OPTIONS: Enable, disable, update metadata/accessLevel/avatar ...
 */
-function updateManyItems(items, roles, email, cid, c_id, uid, callback){
-
+function updateManyItems(req, res, callback){
+  var items = req.body.items;
   if(items.length !== 0){ // Check if there is any item to update
     sync.forEachAll(items,
     function(value, allresult, next, otherParams) {
@@ -47,37 +42,44 @@ function updateManyItems(items, roles, email, cid, c_id, uid, callback){
       },
       function(allresult) {
         if(allresult.length === items.length){
-          logger.debug('Completed async handler: ' + JSON.stringify(allresult));
-          callback(false, allresult, true);
+          logger.log(req, res, {type: 'audit', data:'Multiple update completed: ' + JSON.stringify(allresult)});
+          callback('multi', false, true, allresult);
         }
       },
       false,
-      {roles: roles, email: email, cid:cid, c_id:c_id, uid:uid}
+      {req: req, res: res}
     );
   } else {
-    callback(false, 'No items to modify', false);
+    callback('multi', false, false, 'No items to modify');
   }
 }
 
 /*
 Enable items
 */
-function enableItem(data, otherParams, callback){
-  data.accessLevel = 0;
-  var cid = otherParams.cid;
-  var c_id = otherParams.c_id;
-  var userMail = otherParams.email;
-  var userId = otherParams.uid;
-  var roles = otherParams.roles;
+function enableItem(req, res, callback){
+  var data = req.body;
+  var cid = otherParams.req.body.decoded_token.cid;
+  var c_id = otherParams.req.body.decoded_token.orgid;
+  var userMail = otherParams.req.body.decoded_token.sub;
+  var userId = mongoose.Types.ObjectId(otherParams.req.body.decoded_token.uid);
+  var roles = otherParams.req.body.decoded_token.roles;
   var oid;
   var o_id = data.o_id;
   var query = {};
+
+  // Previous accessLevel always 0 -- Private (Disabled)
+  data.accessLevel = 0;
 
   itemOp.findOne({_id:o_id}, {cid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
     data.cid = response.cid.extid;
     oid = response.oid;
     var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, userMail, data.cid, false); // There is no uid when enabling
-    if(canChange){
+    if(canChange.error){
+      logger.log(req, res, {type: 'error', data: canChange.continue});
+      callback(o_id, true, false, canChange.continue);
+    }
+    if(canChange.continue){
       commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'POST')
       .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'enabled'); })
       .then(function(response){
@@ -99,15 +101,15 @@ function enableItem(data, otherParams, callback){
           43, null);
       })
       .then(function(response){
-        logger.debug("Item update process ended successfully...");
-        logger.audit({user: userMail, action: 'EnableItem', item: o_id });
+        logger.log(req, res, {type: 'audit', data:{user: userMail, action: 'EnableItem', item: o_id }});
         callback(o_id, false, true, 'enabled');
       })
       .catch(function(err){
-        logger.error({user: userMail, action: 'EnableItem', item: o_id, message: err});
+        logger.log(req, res, {type: 'error', data: err});
         callback(o_id, true, false, err);
       });
     } else {
+      logger.log(req, res, {type: 'warn', data: 'User not authorized'});
       callback(o_id, false, false, 'User not authorized');
     }
   });
@@ -116,16 +118,20 @@ function enableItem(data, otherParams, callback){
 /*
 Disable items
 */
-function disableItem(data, otherParams, callback){
-  data.accessLevel = 0;
-  var cid = otherParams.cid;
-  var c_id = otherParams.c_id;
-  var userMail = otherParams.email;
-  var roles = otherParams.roles;
+function disableItem(req, res, callback){
+  var data = req.body;
+  var cid = otherParams.req.body.decoded_token.cid;
+  var c_id = otherParams.req.body.decoded_token.orgid;
+  var userMail = otherParams.req.body.decoded_token.sub;
+  // var userId = mongoose.Types.ObjectId(otherParams.req.body.decoded_token.uid);
+  var userId;
+  var roles = otherParams.req.body.decoded_token.roles;
   var oid;
   var o_id = data.o_id;
-  var userId;
   var query = {};
+
+  // Previous accessLevel always 0 -- Private (Disabled)
+  data.accessLevel = 0;
 
   itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
     data.uid = response.uid.extid;
@@ -133,8 +139,11 @@ function disableItem(data, otherParams, callback){
     oid = response.oid;
     data.cid = response.cid.extid;
     var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, data.uid, data.cid, true);
-
-    if(canChange){
+    if(canChange.error){
+      logger.log(req, res, {type: 'error', data: canChange.continue});
+      callback(o_id, true, false, canChange.continue);
+    }
+    if(canChange.continue){
       commServer.callCommServer({}, 'users/' + oid + '/groups/' + cid + '_ownDevices', 'DELETE')
       .then(function(response){ return manageUserItems(oid, o_id, userMail, userId, 'disabled'); })
       .then(function(response){
@@ -161,15 +170,15 @@ function disableItem(data, otherParams, callback){
           44, null);
         })
         .then(function(response){
-          logger.debug("Item update process ended successfully...");
-          logger.audit({user: userMail, action: 'DisableItem', item: o_id });
+          logger.log(req, res, {type: 'audit', data:{user: userMail, action: 'DisableItem', item: o_id }});
           callback(o_id, false, true, 'disabled');
         })
       .catch(function(err){
-        logger.error({user: userMail, action: 'DisableItem', item: o_id, message: err});
+        logger.log(req, res, {type: 'error', data: err});
         callback(o_id, true, false, err);
       });
     } else {
+      logger.log(req, res, {type: 'warn', data: 'User not authorized'});
       callback(o_id, false, false, 'User not authorized');
     }
   });
@@ -178,12 +187,13 @@ function disableItem(data, otherParams, callback){
 /*
 Update items
 */
-function updateItem(data, otherParams, callback){
-  var cid = otherParams.cid;
-  var c_id = otherParams.c_id;
-  var userMail = otherParams.email;
-  var userId = otherParams.uid;
-  var roles = otherParams.roles;
+function updateItem(req, res, callback){
+  var data = req.body;
+  var cid = otherParams.req.body.decoded_token.cid;
+  var c_id = otherParams.req.body.decoded_token.orgid;
+  var userMail = otherParams.req.body.decoded_token.sub;
+  var userId = mongoose.Types.ObjectId(otherParams.req.body.decoded_token.uid);
+  var roles = otherParams.req.body.decoded_token.roles;
   var oid;
   var o_id = data.o_id;
   var query = {};
@@ -195,16 +205,22 @@ function updateItem(data, otherParams, callback){
     data.cid = response.cid.extid;
     oid = response.oid;
     var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, data.uid, data.cid, false);
+    if(canChange.error){
+      logger.log(req, res, {type: 'error', data: canChange.continue});
+      callback(o_id, true, false, canChange.continue);
+    }
 
     if(status !== 'enabled'){
+      logger.log(req, res, {type: 'warn', data: 'Item needs to be enabled to change accessLevel'});
       callback(o_id, false, false, 'Item needs to be enabled to change accessLevel');
-    } else if(canChange){
+    } else if(canChange.continue){
       if(data.hasOwnProperty('accessLevel')){
         userOp.findOne({_id:userId}, {accessLevel:1}, function(err, response){
           if(err){
+            logger.log(req, res, {type: 'error', data: err});
             callback(o_id, true, false, err);
           } else if(Number(response.accessLevel) < Number(data.accessLevel)){
-            logger.debug("User privacy is too low...");
+            logger.log(req, res, {type: 'warn', data:"User privacy is too low..."});
             callback(o_id, false, false, "User privacy is too low...");
           } else {
             query = {accessLevel: data.accessLevel};
@@ -229,12 +245,11 @@ function updateItem(data, otherParams, callback){
               );
             })
             .then(function(response){
-              logger.debug("Item update process ended successfully...");
-              logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
+              logger.log(req, res, {type: 'audit', data:{user: userMail, action: 'itemUpdate', item: o_id }});
               callback(o_id, false, true, 'accessLevel updated');
             })
             .catch(function(err){
-              logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err.message});
+              logger.log(req, res, {type: 'error', data: err});
               callback(o_id, true, false, err);
             });
           }
@@ -245,16 +260,17 @@ function updateItem(data, otherParams, callback){
         if(data.hasOwnProperty('avatar')){ query = {avatar: data.avatar}; }
         itemOp.findOneAndUpdate({ _id : o_id}, { $set: query })
         .then(function(response){
-          logger.debug("Item update process ended successfully...");
-          logger.audit({user: userMail, action: 'itemUpdate', item: o_id });
+          logger.log(req, res, {type: 'audit', data:{user: userMail, action: 'itemUpdate', item: o_id }});
           callback(o_id, false, true, 'avatar updated');
         })
         .catch(function(err){
-          logger.error({user: userMail, action: 'itemUpdate', item: o_id, message: err});
+          logger.log(req, res, {user: userMail, action: 'itemUpdate', item: o_id, message: err});
+          logger.log(req, res, {type: 'error', data: err});
           callback(o_id, true, false, err);
         });
       }
     } else {
+      logger.log(req, res, {type: 'warn', data: 'User not authorized'});
       callback(o_id, false, false, 'User not authorized');
     }
   });
@@ -315,15 +331,19 @@ function clasify(lvl){
 Check if user can update a device based on its roles and cid
 */
 function checkUserAuth(roles, tokenUser, tokenCid, typeOfItem, itemUser, itemCid, imDisabling){
-  var imAdmin = (roles.indexOf('administrator')) !== -1 && (tokenCid === itemCid) && (imDisabling); // myOwn company admin
-  var canChangeSer, canChangeDev;
-  if((tokenUser === itemUser) && (tokenCid === itemCid)){
-    canChangeDev = (roles.indexOf('device owner') !== -1 && typeOfItem === 'device');
-    canChangeSer = (roles.indexOf('service provider') !== -1 && typeOfItem === 'service');
-  } else {
-    canChangeDev = canChangeSer = false;
+  try{
+    var imAdmin = (roles.indexOf('administrator')) !== -1 && (tokenCid === itemCid) && (imDisabling); // myOwn company admin
+    var canChangeSer, canChangeDev;
+    if((tokenUser === itemUser) && (tokenCid === itemCid)){
+      canChangeDev = (roles.indexOf('device owner') !== -1 && typeOfItem === 'device');
+      canChangeSer = (roles.indexOf('service provider') !== -1 && typeOfItem === 'service');
+    } else {
+      canChangeDev = canChangeSer = false;
+    }
+    return {error: false, continue: imAdmin || canChangeSer || canChangeDev};
+  }catch(err){
+    return {error: true, continue: err};
   }
-  return imAdmin || canChangeSer || canChangeDev;
 }
 
 // Module exports
