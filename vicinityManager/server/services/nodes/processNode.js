@@ -35,7 +35,7 @@ function deleteNode(adids, email, userId){
         {userMail:email, userId: userId}
       );
     } else {
-      reject({data: "Nothing to be removed...", type: "debug"});
+      reject("Nothing to be removed...");
     }
   });
 }

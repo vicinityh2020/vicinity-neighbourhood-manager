@@ -50,6 +50,7 @@ function updateManyItems(req, res, callback){
       {req: req, res: res}
     );
   } else {
+    logger.log(req, res, {type: 'debug', data:'No items to modify'});
     callback('multi', false, false, 'No items to modify');
   }
 }
@@ -59,11 +60,11 @@ Enable items
 */
 function enableItem(req, res, callback){
   var data = req.body;
-  var cid = otherParams.req.body.decoded_token.cid;
-  var c_id = otherParams.req.body.decoded_token.orgid;
-  var userMail = otherParams.req.body.decoded_token.sub;
-  var userId = mongoose.Types.ObjectId(otherParams.req.body.decoded_token.uid);
-  var roles = otherParams.req.body.decoded_token.roles;
+  var cid = req.body.decoded_token.cid;
+  var c_id = req.body.decoded_token.orgid;
+  var userMail = req.body.decoded_token.sub;
+  var userId = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var roles = req.body.decoded_token.roles;
   var oid;
   var o_id = data.o_id;
   var query = {};
@@ -120,12 +121,12 @@ Disable items
 */
 function disableItem(req, res, callback){
   var data = req.body;
-  var cid = otherParams.req.body.decoded_token.cid;
-  var c_id = otherParams.req.body.decoded_token.orgid;
-  var userMail = otherParams.req.body.decoded_token.sub;
-  // var userId = mongoose.Types.ObjectId(otherParams.req.body.decoded_token.uid);
+  var cid = req.body.decoded_token.cid;
+  var c_id = req.body.decoded_token.orgid;
+  var userMail = req.body.decoded_token.sub;
+  // var userId = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var userId;
-  var roles = otherParams.req.body.decoded_token.roles;
+  var roles = req.body.decoded_token.roles;
   var oid;
   var o_id = data.o_id;
   var query = {};
@@ -189,11 +190,11 @@ Update items
 */
 function updateItem(req, res, callback){
   var data = req.body;
-  var cid = otherParams.req.body.decoded_token.cid;
-  var c_id = otherParams.req.body.decoded_token.orgid;
-  var userMail = otherParams.req.body.decoded_token.sub;
-  var userId = mongoose.Types.ObjectId(otherParams.req.body.decoded_token.uid);
-  var roles = otherParams.req.body.decoded_token.roles;
+  var cid = req.body.decoded_token.cid;
+  var c_id = req.body.decoded_token.orgid;
+  var userMail = req.body.decoded_token.sub;
+  var userId = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var roles = req.body.decoded_token.roles;
   var oid;
   var o_id = data.o_id;
   var query = {};

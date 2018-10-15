@@ -115,7 +115,7 @@ function creating(req, res, callback){
               51, null);
           })
           .then(function(response){
-            logger.log(req, res, {type: 'debug', data: 'Contract posted, waiting for approval'});
+            logger.log(req, res, {type: 'audit', data: 'Contract posted, waiting for approval'});
             callback(false, 'Contract posted, waiting for approval');
           })
           .catch(function(error){
@@ -180,7 +180,7 @@ function accepting(req, res, callback){
     return createNotifAndAudit(updItem._id, updItem.ctid, token_uid, token_mail, updItem.iotOwner.uid, updItem.foreignIot.uid, imAdmin, 'ACCEPT'); // Accepted = true
   })
   .then(function(response){
-    logger.log(req, res, {type: 'debug', data: 'Contract accepted'});
+    logger.log(req, res, {type: 'audit', data: 'Contract accepted'});
     callback(false, updItem);
   })
   .catch(function(error){
@@ -215,7 +215,7 @@ function removing(req, res, callback){
     }
   })
   .then(function(response){
-    logger.log(req, res, {type: 'debug', data: 'Contract removed'});
+    logger.log(req, res, {type: 'audit', data: 'Contract removed'});
     callback(false, response);
   })
   .catch(function(error){
@@ -252,14 +252,18 @@ function contractFeeds(uid, callback){
 *
 * @return {Object} Contract instance
 */
-function contractInfo(ctid, uid, callback){
+function contractInfo(req, res, callback){
+  var ctid = req.params.ctid;
+  var uid = req.body.decoded_token.uid;
   var query = checkInput(ctid);
   contractOp.findOne(query)
   .then(function(response){
     var data = response.toObject();
     if(!response){
+      logger.log(req, res, {type: 'warn', data: "The contract with: " + JSON.stringify(query) + " could not be found"});
       callback(false, "The contract with: " + JSON.stringify(query) + " could not be found...");
     } else if(!uidInContract(uid, data)) {
+      logger.log(req, res, {type: 'warn', data: "You are not part of the contract with ctid: " + data.ctid});
       callback(false, "You are not part of the contract with ctid: " + data.ctid);
     } else {
       callback(false, response);

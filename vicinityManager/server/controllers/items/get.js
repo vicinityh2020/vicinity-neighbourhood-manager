@@ -18,13 +18,9 @@ Receives following parameters:
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
 function getMyItems(req, res) {
-  var cid = mongoose.Types.ObjectId(req.params.cid);
-  var type = req.query.type;
-  var offset = req.query.offset;
-  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  var limit = 12; // Default valur for the webApp
+  req.query.limit = 12; // Default valur for the webApp
   var api = false; // Call origin api or webApp
-  sGet.getOrgItems(cid, mycid, type, offset, limit, api, function(err, response){
+  sGet.getOrgItems(req, res, api, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
@@ -36,11 +32,8 @@ Gets all items that I can share with other organisation:
 - Item Id of the item I am requesting
 */
 function getMyContractItems(req, res) {
-  var cid = mongoose.Types.ObjectId(req.params.cid);
-  var oid = mongoose.Types.ObjectId(req.params.oid);
-  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = false; // Call origin api or webApp
-  sGet.getMyContractItems(cid, oid, mycid, api, function(err, response){
+  sGet.getMyContractItems(req, res, api, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });

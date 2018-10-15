@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose');
 var mailing = require('../../services/mail/mailing');
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var uuid = require('uuid'); // Unique ID RFC4122 generator
 var audits = require('../../services/audit/audit');
 var commServer = require('../../services/commServer/request');
@@ -76,7 +76,8 @@ Receives a request to create registration,
 Can be an already verified by the devOps request or
 some external request that needs to be validated
 */
-function requestReg(data, callback) {
+function requestReg(req, res, callback) {
+  var data = req.body;
   var pwd = data.password;
   var saltRounds = 10;
   var db = buildRegistrationObj(data);
@@ -99,10 +100,10 @@ function requestReg(data, callback) {
       return mailing.sendMail(mailInfo);
     })
     .then(function(response){
-      callback(false, {data: "Registration request created", type: 'audit'});
+      callback(false, "Registration request created. A mail will be sent upon approval.");
     })
     .catch(function(err){
-      callback(true, {data: err, type: 'error'});
+      callback(true, err);
     });
     // Saving a registration ready to send mail to requester (Invited by other org)
   } else {
@@ -112,10 +113,10 @@ function requestReg(data, callback) {
       return registrationAndVerificationMail(db);
     })
     .then(function(response){
-      callback(false, {data: "Registration mail sent!", type: 'audit'});
+      callback(false, "Registration mail sent!");
     })
     .catch(function(err){
-      callback(true, {data: err, type: 'error'});
+      callback(true, err);
     });
   }
 }
@@ -127,7 +128,8 @@ Add new organisation - Creates userAccount and User Admin in MONGO
 Add new user - Create user in MONGO
 Send verification or rejection mail to new Organisation
 */
-function createReg(id, data, callback) {
+function createReg(id, req, res, callback) {
+  var data = req.body;
   var mailInfo = {};
   var regId = mongoose.Types.ObjectId(id);
 
@@ -140,23 +142,21 @@ function createReg(id, data, callback) {
     if ((raw.type == "newCompany") && (raw.status == "verified")){
       saveOrganisation(dbUser, raw)
       .then(function(response){
-        logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
-        callback(false, {data: "New userAccount was successfuly saved!", type: 'audit'});
+        logger.log(req, res, {type: 'audit', data: "New userAccount was successfuly saved!"});
+        callback(false, "New userAccount was successfuly saved!");
       })
       .catch(function(err){
-        logger.error({user: raw.email, action: 'createOrganisation', message: err});
-        callback(true, {data: err, type: 'error'});
+        callback(true, err);
       });
       // Case new user registration
     }else if ((raw.type == "newUser") && (raw.status == "verified")){
       saveUser(dbUser, raw)
       .then(function(response){
-        logger.debug('New user was successfuly saved!');
-        callback(false, {data: "User was saved to the accountOf!", type: 'audit'});
+        logger.log(req, res, {type: 'audit', data: "New userAccount was successfuly saved!"});
+        callback(false, "New userAccount was successfuly saved!");
       })
       .catch(function(err){
-        logger.error({user: raw.email, action: 'createUser', message: err});
-        callback(true, {data: err, type: 'error'});
+        callback(true, err);
       });
       // Case we just want to send verification mail
       }else if ((raw.type == "newCompany") && (raw.status == "pending")){
@@ -170,10 +170,11 @@ function createReg(id, data, callback) {
           return notificationAPI.changeNotificationStatus("", "", 1, {sentByReg: raw._id});
         })
         .then(function(response){
-          callback(false, {data: "Verification mail sent", type: 'audit'});
+          logger.log(req, res, {type: 'audit', data: "Verification mail sent"});
+          callback(false, "Verification mail sent");
         })
         .catch(function(err){
-          callback(true, {data: err, type: 'error'});
+          callback(true, err);
         });
         // Case we do not want that company to be registered
       }else if ((raw.type == "newCompany") && (raw.status == "declined")){
@@ -186,14 +187,16 @@ function createReg(id, data, callback) {
           return notificationAPI.changeNotificationStatus("", "", 1, {sentByReg: raw._id});
         })
         .then(function(response){
-          callback(false, {data: "Rejection mail sent", type: 'audit'});
+          logger.log(req, res, {type: 'audit', data: "Rejection mail sent"});
+          callback(false, "Rejection mail sent");
         })
         .catch(function(err){
-          callback(true, {data: err, type: 'error'});
+          callback(true, err);
         });
         // Otherwise ...
       }else{
-        callback(false, {data: "Type is neither newUser nor newCompany!", type: 'warn'});
+        logger.log(req, res, {type: 'warn', data: "Type is neither newUser nor newCompany!"});
+        callback(false, "Type is neither newUser nor newCompany!");
       }
    });
 }
@@ -206,12 +209,15 @@ function createReg(id, data, callback) {
 *
 * @return {Object} New user and org ids
 */
-function fastRegistration(data, token_mail, callback){
+function fastRegistration(req, res, callback){
+  var token_mail = req.body.decoded_token.sub;
+  var data = req.body;
   var saltRounds = 10;
   var dbUser = {};
   var pwd = data.user.password;
   if(!pwd || pwd.length < 5){
-    callback(true, "Missing or short password...");
+    logger.log(req, res, {type: 'warn', data: "Missing or short password..."});
+    callback(false, "Missing or short password...");
   } else {
     findDuplicatesCompany({ companyName: data.organisation.companyName, businessId: uuid()})
     .then(function(response){
@@ -229,15 +235,14 @@ function fastRegistration(data, token_mail, callback){
       return saveOrganisation(dbUser, data.organisation);
     })
     .then(function(response){
-      logger.audit({user: response.email, action: 'createOrganisation', item: response._id });
+      logger.log(req, res, {type: 'audit', data: {message: "Registration successful", login: response.email, uid: response.uid, cid: response._id}});
       callback(false, {result: "Success", login: response.email, uid: response.uid, cid: response._id});
     })
     .catch(function(err){
       if(err === 'duplicated'){
-        logger.error({user: token_mail, action: 'createOrganisation', message: err});
-        callback(true, "Company name already exists...");
+        logger.log(req, res, {type: 'warn', data: "Company name already exists..."});
+        callback(false, "Company name already exists...");
       } else {
-        logger.error({user: token_mail, action: 'createOrganisation', message: err});
         callback(true, err);
       }
     });
@@ -334,7 +339,7 @@ function saveOrganisation(dbUser, raw){
   return dbUser.save()
   .then(function(response){
     userData = response;
-    logger.debug('New user was successfuly saved!');
+    // logger.debug('New user was successfuly saved!');
     var dbOrg = buildUserAccountObj(raw, userData);
     return dbOrg.save();
     })

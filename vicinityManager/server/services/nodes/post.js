@@ -2,6 +2,7 @@
 // Global objects
 
 var mongoose = require('mongoose');
+var logger = require("../../middlewares/logBuilder");
 var uuid = require('uuid/v4'); // Unique ID RFC4122 generator
 var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
@@ -13,7 +14,13 @@ Creates a node for an organisation
 Creates relevant users and groups in commServer
 Receives request from client
 */
-function postOne(raw, company_id, cid, userMail, userId, callback){
+function postOne(req, res, callback){
+  var company_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var cid = req.body.decoded_token.cid;
+  var userMail = req.body.decoded_token.sub !== 'undefined' ? req.body.decoded_token.sub : "unknown";
+  var userId = req.body.decoded_token.uid !== 'undefined' ? req.body.decoded_token.uid : "unknown";
+  var raw = req.body;
+
   var password = raw.pass || raw.password;
   var db = new nodeOp();
   db.name = raw.name;
@@ -26,6 +33,7 @@ function postOne(raw, company_id, cid, userMail, userId, callback){
   db.adid = uuid();
 
   if(typeof password === 'undefined' || typeof raw.name === 'undefined'){
+    logger.log(req, res, {type: 'warn', data: 'Agent not created, fields missing'});
     callback(false, 'Agent not created, fields missing...');
   } else {
     db.save()
@@ -46,18 +54,15 @@ function postOne(raw, company_id, cid, userMail, userId, callback){
           21, null);
         })
       .then(function(response){
-        logger.audit();
-        callback(false,
-                { log: {user: userMail, action: 'createNode', item: data._id },
-                  data: {adid: db.adid, id: db._id, type: db.type},
-                  type: "audit"});
+        logger.log(req, res, {type: 'audit', data: {user: userMail, action: 'createNode', item: data._id }});
+        callback(false, {adid: db.adid, id: db._id, type: db.type});
         })
         .catch(function(err){
-          callback(true, {data: err, type: "error"});
+          callback(true, err);
         });
       })
       .catch(function(err){
-        callback(true, {data: err, type: "error"});
+        callback(true, err);
       });
     }
   }

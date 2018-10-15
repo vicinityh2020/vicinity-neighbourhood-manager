@@ -20,7 +20,7 @@ function processFriendRequest(req, res, next) {
     if(err){
       logger.log(req, res, {type: 'error', data: response});
     } else {
-      logger.log(req, res, {action: 'audit', data: {info: "Friend request sent", actor: my_mail}});
+      logger.log(req, res, {type: 'audit', data: {info: "Friend request sent", actor: my_mail}});
     }
     res.json({"error": err, "message": response});
   });
@@ -35,7 +35,7 @@ function acceptFriendRequest(req, res, next) {
     if(err){
       logger.log(req, res, {type: 'error', data: response});
     } else {
-      logger.log(req, res, {action: 'audit', data: {info: "Friend request accepted", actor: my_mail}});
+      logger.log(req, res, {type: 'audit', data: {info: "Friend request accepted", actor: my_mail}});
     }
     res.json({"error": err, "message": response});
   });
@@ -50,7 +50,7 @@ function rejectFriendRequest(req, res, next) {
     if(err){
       logger.log(req, res, {type: 'error', data: response});
     } else {
-      logger.log(req, res, {action: 'audit', data: {info: "Friend request rejected", actor: my_mail}});
+      logger.log(req, res, {type: 'audit', data: {info: "Friend request rejected", actor: my_mail}});
     }
     res.json({"error": err, "message": response});
   });
@@ -65,7 +65,7 @@ function cancelFriendRequest(req, res, next){
     if(err){
       logger.log(req, res, {type: 'error', data: response});
     } else {
-      logger.log(req, res, {action: 'audit', data: {info: "Friend request cancelled", actor: my_mail}});
+      logger.log(req, res, {type: 'audit', data: {info: "Friend request cancelled", actor: my_mail}});
     }
     res.json({"error": err, "message": response});
   });
@@ -81,7 +81,7 @@ function cancelFriendship(req, res, next){
     if(err){
       logger.log(req, res, {type: 'error', data: response});
     } else {
-      logger.log(req, res, {action: 'audit', data: {info: "Cancel friend request", actor: my_mail}});
+      logger.log(req, res, {type: 'audit', data: {info: "Cancel friend request", actor: my_mail}});
     }
     res.json({"error": err, "message": response});
   });

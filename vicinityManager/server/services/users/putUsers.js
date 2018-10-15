@@ -3,6 +3,8 @@ var audits = require('../../services/audit/audit');
 var userOp = require('../../models/vicinityManager').user;
 var userAccountsOp = require('../../models/vicinityManager').userAccounts;
 var logger = require("../../middlewares/logBuilder");
+var lo = require("../../middlewares/logger");
+
 var authHelper = require('../../services/login/login');
 var sharingRules = require('../../services/sharingRules');
 var bcrypt = require('bcrypt');
@@ -134,8 +136,10 @@ function putRoles(obj, callback) {
         // Update updates object with the right path and data after whole verification
         obj.updates = data;
         doUpdate(obj, function(err, response, success){
-          if(err){ callback(true, response, success); } else {
-            callback(false, response, success); }
+          if(err){ callback(true, response, success);
+          } else {
+            callback(false, response, success);
+          }
         });
       }
     }
@@ -234,7 +238,7 @@ Check if there are devices and/or services
 */
 function findType(items, type){
   for(var i = 0, l = items.length; i < l; i++){
-    if(items[i].id.typeOfItem === type){
+    if(items[i].id && items[i].id.typeOfItem === type){
       return true;
     }
   }

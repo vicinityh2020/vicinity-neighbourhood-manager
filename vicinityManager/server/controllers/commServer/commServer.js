@@ -193,6 +193,7 @@ function getAgentItems(req, res){
   logger.log(req, res, {type: 'debug', data: 'You are getting the CONFIG...'});
   var id = req.params.agid;
   sGetNodeItems.getNodeItems(id, function(err, response){
+    if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
 }

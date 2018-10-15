@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var itemOp = require('../../models/vicinityManager').item;
 var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
-var logger = require("../../middlewares/logger");
+var logger = require("../../middlewares/logBuilder");
 var itemProperties = require("../../services/items/additionalItemProperties");
 var commServer = require('../../services/commServer/request');
 
@@ -20,7 +20,12 @@ Receives following parameters:
 - Type of item of interest: device or service
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
-function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
+function getOrgItems(req, res, api, callback) {
+  var cid = mongoose.Types.ObjectId(req.params.cid);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var limit = req.query.limit === 'undefined' ? 0 : req.query.limit;
+  var offset = req.query.offset === 'undefined' ? 0 : req.query.offset;
+  var type = (req.query.type !== "device" && req.query.type !== "service") ? "all" : req.query.type;
   var query;
   var projection;
 
@@ -52,7 +57,7 @@ function getOrgItems(cid, mycid, type, offset, limit, api, callback) {
 
     itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
       if (err) {
-        callback(true, err);
+        callback(true, data);
       } else {
         if(api){
           callback(false, data);
@@ -75,7 +80,10 @@ Gets all items that I can share with other organisation:
 - Organisation cid (foreign org)
 - Item Id of the item I am requesting
 */
-function getMyContractItems(cid, oid, mycid, api, callback) {
+function getMyContractItems(req, res, api, callback) {
+  var cid = mongoose.Types.ObjectId(req.params.cid);
+  var oid = mongoose.Types.ObjectId(req.params.oid);
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var query;
   var projection;
 
@@ -88,6 +96,7 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
 
     if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
       if(api){
+        logger.log(req, res, {type: 'warn', data: 'You cannot request a contract with your own devices, choose a service from a different organisation'});
         callback(false, 'You cannot request a contract with your own devices, choose a service from a different organisation');
       } else {
         query = {'cid.id': mycid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
@@ -120,11 +129,16 @@ function getMyContractItems(cid, oid, mycid, api, callback) {
 /**
 * Get the items that are sharing data with a certain service
 */
-function getItemsContracted(oid, mycid, api, callback) {
+function getItemsContracted(req, res, api, callback) {
+  var oid = req.params.oid;
+  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var oids = [];
   itemOp.count({oid: oid, 'cid.id': mycid})
   .then(function(response){
-    if(response === 0 ) callback(true, 'The service is not yours');
+    if(response === 0 ){
+      logger.log(req, res, {type: 'warn', data: 'The service is not yours'});
+      callback(true, 'The service is not yours');
+    }
     return commServer.callCommServer({}, 'users/' + oid + '/roster', 'GET');
   })
   .then(function(response){
@@ -137,7 +151,10 @@ function getItemsContracted(oid, mycid, api, callback) {
     return itemOp.find({oid: {$in: oids}, 'cid.id': {$ne: mycid} }, {info: 1});
   })
   .then(function(response){
-    if(!response) response = "No items found";
+    if(!response){
+      logger.log(req, res, {type: 'warn', data: 'No items found'});
+      response = "No items found";
+    }
     callback(false, response);
   })
   .catch(function(err){

@@ -30,7 +30,11 @@ function putOne(req, res) {
             req: req,
             res: res
           }, function(err, response, success){
-            if(err) logger.log(req, res, {type: 'error', data: response});
+            if(err){
+              logger.log(req, res, {type: 'error', data: response});
+            } else {
+              logger.log(req, res, {type: 'audit', data: "User updated: " + response.email});
+            }
             res.json({error: err, message: response, success: success});
         });
       }

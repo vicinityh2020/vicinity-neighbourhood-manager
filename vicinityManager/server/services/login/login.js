@@ -11,7 +11,10 @@ var bcrypt = require('bcrypt');
 /*
 Check user and password
 */
-function authenticate(userName, userRegex, pwd, req, res, callback) {
+function authenticate(req, res, callback) {
+  var userName = req.body.username;
+  var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
+  var pwd = req.body.password;
   var myUser = {};
   var hash = "";
   var o_id = "";
@@ -23,7 +26,7 @@ function authenticate(userName, userRegex, pwd, req, res, callback) {
         logger.log(req, res, {type: 'warn', data: "User not found: " + userRegex});
         callback(false, "User not found: " + userRegex);
       } else if(response.length > 1){
-        callback(true, "Duplicated mail: " + userRegex);
+        callback(false, "Duplicated mail: " + userRegex);
       } else {
         myUser = response[0];
         hash = myUser.authentication.hash;

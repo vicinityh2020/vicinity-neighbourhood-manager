@@ -33,11 +33,8 @@ Removes organisation and everything under:
 Users, nodes, items
 */
 function remove(req, res, next) {
-  var cid = mongoose.Types.ObjectId(req.params.id);
-  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
-  var mail = req.body.decoded_token.sub;
   logger.log(req, res, {type: 'debug', data: "Removing organisation... " + cid});
-  sOrgConfiguration.remove(cid, uid, mail, function(err, data){
+  sOrgConfiguration.remove(req, res, function(err, data){
     if(err){
       logger.log(req, res, {type: 'error', data: data});
     } else {

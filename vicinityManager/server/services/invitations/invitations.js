@@ -14,7 +14,15 @@ function getOne(o_id, callback) {
   });
 }
 
-function postOne(userName, companyId, cid, organisation, emailTo, nameTo, type, callback) {
+function postOne(req, res, callback) {
+  var userName = req.body.decoded_token.sub;
+  var cid = req.body.decoded_token.cid;
+  var companyId = req.body.decoded_token.orgid;
+  var organisation = req.body.organisation;
+  var emailTo = req.body.emailTo;
+  var nameTo = req.body.nameTo;
+  var type = req.body.type;
+
   var db = new invitationOp();
   var mailInfo;
   var thisLink, thisTmp, thisName, thisOrg;
@@ -55,10 +63,10 @@ function postOne(userName, companyId, cid, organisation, emailTo, nameTo, type, 
     return mailing.sendMail(mailInfo);
   })
   .then(function(response){
-    callback(false, {data: {user: userName, action: 'invitationSent'}, type: "audit"});
+    callback(false, {user: userName, action: 'invitationSent'});
   })
   .catch(function(err){
-    callback(true, {data: err, type: "error"});
+    callback(true, err);
   });
 }
 

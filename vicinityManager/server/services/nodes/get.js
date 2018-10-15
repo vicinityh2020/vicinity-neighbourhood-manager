@@ -23,7 +23,6 @@ function getNodeItems(adid, callback){
     callback(false, data);
   })
   .catch(function(err){
-    logger.debug(err);
     callback(true, err);
   });
 }

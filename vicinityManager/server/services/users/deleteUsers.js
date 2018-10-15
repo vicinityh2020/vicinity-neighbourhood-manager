@@ -28,14 +28,15 @@ function deleteAllUsers(users, req, res){
         },
         function(allresult) {
           if(allresult.length === users.length){
-              resolve(JSON.stringify(allresult));
+            resolve(JSON.stringify(allresult));
           }
         },
         false,
         { req : req, res: res }
       );
     } else {
-      reject({data: "Nothing to be removed", type: "debug"});
+      logger.log(req, res, {type: 'debug', data: "Nothing to be removed"});
+      reject("Nothing to be removed");
     }
   });
 }

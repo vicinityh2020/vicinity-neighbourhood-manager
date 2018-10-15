@@ -144,8 +144,8 @@ function changeNotificationStatus(targetId, objectId, type, other){
             toChange.push(notif[n].save());
           }
           Promise.all(toChange)
-          .then(function(response){ resolve('Success'); })
-          .catch(function(err){ reject('Error'); });
+          .then(function(response){ Promise.resolve('Success'); })
+          .catch(function(err){ Promise.reject('Error'); });
         }
       }
     );

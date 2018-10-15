@@ -39,7 +39,7 @@ var myNode = require('../../services/nodes/processNode');
             logger.log(req, res, {data: response, type: "audit"});
             res.json({'error': false, 'message': response});})
           .catch(function(err){
-            logger.log(req, res, {data: err, type: "error"});
+            logger.log(req, res, {data: err, type: "debug"});
             res.json({'error': true, 'message': err});});
         }else{
           data.pass = req.body.pass;

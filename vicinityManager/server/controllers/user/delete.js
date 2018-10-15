@@ -17,7 +17,7 @@ function deleteUser(req, res, next) {
   )
   .catch(
     function(err){
-      logger.log(req, res, {type: "error", data: err});
+      // logger.log(req, res, {type: "error", data: err});
       res.json({'status': 'error', 'message': err});
     }
   );

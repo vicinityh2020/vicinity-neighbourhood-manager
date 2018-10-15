@@ -32,7 +32,10 @@ function put(cid, update, callback) {
 Removes organisation and everything under:
 Users, nodes, items
 */
-function remove(cid, uid, mail, callback) {
+function remove(req, res, callback) {
+  var cid = mongoose.Types.ObjectId(req.params.id);
+  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  var mail = req.body.decoded_token.sub;
   var deletingResults = {};
   deletingResults.info = { action: "Organisation deleted", actor: mail};
 

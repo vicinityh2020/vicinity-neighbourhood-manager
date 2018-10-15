@@ -41,14 +41,13 @@ function getAll(req, res, next) {
 Request a user or organisation registration
 */
 function requestRegistration(req, res, next) {
-  var data = req.body;
-  sRegister.requestReg(data, function(err, response){
+  sRegister.requestReg(req, res, function(err, response){
     if(err){
-      logger.log(req,res,response);
-      res.json({error: err, message: response.data});
+      logger.log(req, res, {type: 'error', data: response});
+      res.json({error: err, message: response});
     } else {
-      logger.log(req,res,response);
-      res.json({error: err, message: response.data});
+      logger.log(req, res, {type: 'audit', data: response});
+      res.json({error: err, message: response});
     }
   });
 }
@@ -58,14 +57,13 @@ Create a new user or organisation
 */
 function createRegistration(req, res, next) {
   var id = req.params.id;
-  var data = req.body;
-  sRegister.createReg(id, data, function(err, response){
+  sRegister.createReg(id, req, res, function(err, response){
     if(err){
-      logger.log(req,res,response);
-      res.json({error: err, message: response.data});
+      logger.log(id, req, res, {type: 'error', data: response});
+      res.json({error: err, message: response});
     } else {
-      logger.log(req,res,response);
-      res.json({error: err, message: response.data});
+      logger.log(id, req, res, {type: 'audit', data: response});
+      res.json({error: err, message: response});
     }
   });
 }

@@ -8,10 +8,7 @@ var sLogin = require('../../services/login/login');
 
 /* Check user and password. */
 function authenticate(req, res, next) {
-  var userName = req.body.username;
-  var userRegex = new RegExp("^" + userName.toLowerCase(), "i");
-  var pwd = req.body.password;
-  sLogin.authenticate(userName, userRegex, pwd, req, res, function(err, response){
+  sLogin.authenticate(req, res, function(err, response){
     if(err){
       logger.log(req, res, {type: 'error', data: response});
       res.json({error: err, message: response});
