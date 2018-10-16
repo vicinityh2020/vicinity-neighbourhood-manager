@@ -5,6 +5,7 @@ The level of verbosity can be customized based on needs
 */
 
 var winston = require('winston');
+var config = require("./configuration/configuration");
 
 winston.emitErrs = true;
 
@@ -41,7 +42,7 @@ var logger = new winston.Logger({
         // }),
         new winston.transports.File({
             level: 'audit',
-            filename: './logs/technical_log.log',
+            filename: config.technicalLog,
             handleExceptions: true,
             // timestamp: true,
             json: true,

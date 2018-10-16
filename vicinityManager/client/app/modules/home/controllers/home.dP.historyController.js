@@ -35,11 +35,15 @@ function ($scope, $stateParams, commonHelpers, auditAPIService, Notification) {
           });
         }catch(err){
           console.log(err);
+          $scope.noLogs = true;
+          $scope.loadedPage = true;
           Notification.error("Error processing the logs");
         }
       })
       .catch(function(error){
         console.log(error);
+        $scope.noLogs = true;
+        $scope.loadedPage = true;
         Notification.error("Server error");
       });
     }

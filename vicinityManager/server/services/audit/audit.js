@@ -4,6 +4,7 @@ var auditOp = require('../../models/vicinityManager').auditLog;
 var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var itemOp = require('../../models/vicinityManager').item;
+var logger = require('../../middlewares/logBuilder');
 var uuid = require('uuid'); // Unique ID RFC4122 generator
 
 // Public functions
@@ -18,7 +19,13 @@ var uuid = require('uuid'); // Unique ID RFC4122 generator
 * @return {Array} Audits
 */
 
-function get(id, c_id, type, searchDate, callback){
+function get(req, res, callback){
+  var c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var id = mongoose.Types.ObjectId(req.params.id);
+  var type = req.query.hasOwnProperty('type') && req.query.type !== 'undefined' ? req.query.type : false; // user, userAccount, item
+  var searchDate = req.query.hasOwnProperty('searchDate') && req.query.searchDate !== 'undefined' ?
+                  auditHelper.objectIdWithTimestamp(req.query.searchDate):
+                  auditHelper.objectIdWithTimestamp(moment().subtract(7, 'days').valueOf());
 var dbOp;
   if(type === 'user'){
     dbOp = userOp;
@@ -44,9 +51,10 @@ var dbOp;
   .then(function(audits){
     // Check if the data belong to my company and I can see it
     if(audits._id.toString() === c_id.toString() || audits.cid.id.toString() === c_id.toString()){
-      callback(false, { data: audits, type: info}, true);
+      callback(false, audits, true);
     } else {
-      callback(false, { data: 'Unauthorized', type: "debug"}, false);
+      logger.log(req, res,  { data: 'Unauthorized', type: "warn"});
+      callback(false, 'Unauthorized', false);
     }
   })
   .catch(function(error){
@@ -64,29 +72,30 @@ var dbOp;
 * @return {Promise}
 */
 
-function create(actor, target, object, type, description){
+function create(req, res){
+  var payload = req.body.payload;
   return new Promise(function(resolve, reject) {
     var audit = new auditOp();
-    audit.actor = actor;
-    audit.target = target;
-    audit.object = object;
-    audit.type = type;
-    audit.description = description;
+    audit.actor = payload.actor;
+    audit.target = payload.target;
+    audit.object = payload.object;
+    audit.type = payload.type;
+    audit.description = payload.description;
     audit.audid = uuid();
     audit.save(function(err, response){
       var aux = response;
       if(err){
         reject(err);
       } else {
-        addToEntity(actor, aux._id, aux.audid)
+        addToEntity(payload.actor, aux._id, aux.audid)
         .then(function(response){
-          if(target.item !== 'undefined'){
-            return addToEntity(target, aux._id, aux.audid);
+          if(payload.target.item !== 'undefined'){
+            return addToEntity(payload.target, aux._id, aux.audid);
           } else { return true; }
         })
         .then(function(response){
-          if(object.item !== 'undefined' && object.extid !== actor.extid){
-            return addToEntity(object, aux._id, aux.audid);
+          if(payload.object.item !== 'undefined' && payload.object.extid !== payload.actor.extid){
+            return addToEntity(payload.object, aux._id, aux.audid);
           } else { return true; }
         })
         .then(function(response){ resolve(true); })

@@ -24,22 +24,29 @@ function ($scope, $stateParams, commonHelpers, auditAPIService, Notification) {
       auditAPIService.getAll($stateParams.companyAccountId, 'userAccount', $scope.dateFrom)
       .then(
         function(response){
-          var myAudits = getAudits(response.data.message.hasAudits);
-          commonHelpers.addTimestamp(myAudits, function(array, dates){
-            $scope.dates = dates;
-            $scope.logs = array;
-            $scope.noLogs = array.length !== 0 ? false : true;
+          try{
+            var myAudits = getAudits(response.data.message.hasAudits);
+            commonHelpers.addTimestamp(myAudits, function(array, dates){
+              $scope.dates = dates;
+              $scope.logs = array;
+              $scope.logs.reverse();
+              $scope.noLogs = array.length !== 0 ? false : true;
+              $scope.loadedPage = true;
+            });
+          }catch(err){
+            console.log(err);
+            $scope.noLogs = true;
             $scope.loadedPage = true;
-          });
-          $scope.logs.reverse();
-        })
-        .catch(
-          function(error){
-            console.log(error);
-            Notification.error("Server error");
+            Notification.error("Error processing the logs");
           }
-        );
-    }
+        })
+        .catch(function(err){
+          console.log(err);
+          $scope.noLogs = true;
+          $scope.loadedPage = true;
+          Notification.error("Server error");
+        });
+      }
 
     function getAudits(array){
       var newArray = [];
