@@ -1,7 +1,7 @@
 "use strict";
 angular.module('VicinityManagerApp.controllers')
 .controller('companyProfileController',
-function ($rootScope, $scope, $window, commonHelpers, $stateParams, $location, $cookies, userAccountAPIService, itemsAPIService, tokenDecoder, AuthenticationService, Notification) {
+function ($rootScope, $scope, $window, commonHelpers, $state, $stateParams, $location, $cookies, userAccountAPIService, itemsAPIService, tokenDecoder, AuthenticationService, Notification) {
 
   // ====== Triggers window resize to avoid bug =======
   commonHelpers.triggerResize();
@@ -304,8 +304,14 @@ $scope.updateCompany = function(data){
   };
 
   function errorCallback(err){
-    console.log(err);
-    Notification.error("Server error");
+    if(err.status === 404){
+      console.log(err);
+      Notification.error("Company not found");
+      $state.go("root.main.allEntities");
+    } else {
+      console.log(err);
+      Notification.error("Server error");
+    }
   }
 
 });

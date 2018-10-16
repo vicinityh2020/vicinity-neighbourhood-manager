@@ -54,8 +54,14 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
       }
     })
     .catch(function(err){
-      console.log(err);
-      Notification.error('Server error');
+      if(err.status === 404){
+        console.log(err);
+        Notification.error("Service not found");
+        $state.go("root.main.allServices");
+      } else {
+        console.log(err);
+        Notification.error('Server error');
+      }
     });
   }
 

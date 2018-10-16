@@ -52,8 +52,14 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
         }
       })
       .catch(function(err){
-        console.log(err);
-        Notification.error("Server error");
+        if(err.status === 404){
+          console.log(err);
+          Notification.error("Device not found");
+          $state.go("root.main.allDevices");
+        } else {
+          console.log(err);
+          Notification.error("Server error");
+        }
       });
     }
 

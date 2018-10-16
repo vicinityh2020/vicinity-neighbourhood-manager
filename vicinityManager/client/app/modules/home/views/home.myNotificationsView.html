@@ -91,8 +91,8 @@
 
                   <!-- Description -->
                   <span class="padded" ng-show="notif.type === 1"><b>{{notif.actor.item.companyName}}</b> wants to register in Vicinity</span>
-                  <span class="padded" ng-show="notif.type === 13">A new device has been discovered: <b>{{notif.object.item.name}}</b></span>
-                  <span class="padded" ng-show="notif.type === 14">A device has been updated: <b>{{notif.object.item.name}}</b></span>
+                  <span class="padded" ng-show="notif.type === 13">New device(s) have been discovered</b></span>
+                  <span class="padded" ng-show="notif.type === 14">Device(s) have been updated</b></span>
                   <span class="padded" ng-show="notif.type === 11"><b>{{notif.object.item.name}}</b> has been enabled.</span>
                   <span class="padded" ng-show="notif.type === 12"><b>{{notif.object.item.name}}</b> has been disabled.</span>
 
@@ -133,7 +133,7 @@
                     </span>
                   </div>
 
-                  <div class="centered" ng-show="[11, 12, 13, 14].indexOf(notif.type) !== -1">
+                  <div class="centered" ng-show="[11, 12].indexOf(notif.type) !== -1">
                     <span>
                       <a ui-sref="root.main.deviceProfile.whoSee({deviceId: notif.object.item._id})"><i class="fa fa-search fa-lg "></i></a>
                     </span>

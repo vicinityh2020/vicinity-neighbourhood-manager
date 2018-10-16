@@ -71,8 +71,14 @@ $scope.myInit = function(){
       $scope.loaded = true;
     })
     .catch(function(error){
-      console.log(error)
-      Notification.error("Server error");
+      if(error.status === 404){
+        console.log(error);
+        Notification.error("User not found");
+        $state.go("root.main.allDevices");
+      } else {
+        console.log(error);
+        Notification.error("Server error");
+      }
     });
 };
 
