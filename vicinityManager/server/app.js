@@ -44,7 +44,7 @@ app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-if (!config.env || config.env !== 'dev') app.use(helmet()); // Comment if no SSL
+app.use(helmet()); // Comment if no SSL
 
 // Only development -- Express performance monitor
 if (config.env === 'dev') {

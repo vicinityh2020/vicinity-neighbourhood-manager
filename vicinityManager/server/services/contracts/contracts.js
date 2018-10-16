@@ -611,7 +611,7 @@ function removeAllContract(id, token_uid, token_mail){
       }
     })
     .then(function(response){
-      resolve(data);
+      resolve(response);
     })
     .catch(function(err){
       reject(err);
@@ -660,7 +660,7 @@ function removeOneUser(req, res, imForeign){
       return createNotifAndAudit(data._id, data.ctid, uid, mail, data.iotOwner.uid, data.foreignIot.uid, false, "DELETE"); // Accepted = true
     })
     .then(function(response){
-      resolve(data);
+      resolve(response);
     })
     .catch(function(err){
       reject(err);

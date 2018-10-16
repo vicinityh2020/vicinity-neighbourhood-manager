@@ -47,7 +47,7 @@ function modifyContract(req, res){
 Delete contracts
 */
 function removeContract(req, res){
-  ctHelper.removing(id, uid, mail, function(err, response){
+  ctHelper.removing(req, res, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
     res.json({error: err, message: response});
   });
