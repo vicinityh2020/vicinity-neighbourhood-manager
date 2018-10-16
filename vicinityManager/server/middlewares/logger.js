@@ -5,7 +5,7 @@ The level of verbosity can be customized based on needs
 */
 
 var winston = require('winston');
-var config = require("./configuration/configuration");
+var config = require("../configuration/configuration");
 
 winston.emitErrs = true;
 

@@ -5,6 +5,7 @@ var userOp = require('../../models/vicinityManager').user;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var itemOp = require('../../models/vicinityManager').item;
 var logger = require('../../middlewares/logBuilder');
+var auditHelper = require('../../services/audit/audit');
 var uuid = require('uuid'); // Unique ID RFC4122 generator
 
 // Public functions
@@ -72,30 +73,29 @@ var dbOp;
 * @return {Promise}
 */
 
-function create(req, res){
-  var payload = req.body.payload;
+function create(actor, target, object, type, description){
   return new Promise(function(resolve, reject) {
     var audit = new auditOp();
-    audit.actor = payload.actor;
-    audit.target = payload.target;
-    audit.object = payload.object;
-    audit.type = payload.type;
-    audit.description = payload.description;
+    audit.actor = actor;
+    audit.target = target;
+    audit.object = object;
+    audit.type = type;
+    audit.description = description;
     audit.audid = uuid();
     audit.save(function(err, response){
       var aux = response;
       if(err){
         reject(err);
       } else {
-        addToEntity(payload.actor, aux._id, aux.audid)
+        addToEntity(actor, aux._id, aux.audid)
         .then(function(response){
-          if(payload.target.item !== 'undefined'){
-            return addToEntity(payload.target, aux._id, aux.audid);
+          if(target.item !== 'undefined'){
+            return addToEntity(target, aux._id, aux.audid);
           } else { return true; }
         })
         .then(function(response){
-          if(payload.object.item !== 'undefined' && payload.object.extid !== payload.actor.extid){
-            return addToEntity(payload.object, aux._id, aux.audid);
+          if(object.item !== 'undefined' && object.extid !== actor.extid){
+            return addToEntity(object, aux._id, aux.audid);
           } else { return true; }
         })
         .then(function(response){ resolve(true); })

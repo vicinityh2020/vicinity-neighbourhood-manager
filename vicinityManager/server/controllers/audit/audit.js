@@ -22,8 +22,8 @@ function getAudit(req, res){
 // External call
 
 function postAudit(req, res){
-
-  auditHelper.create(req, res)
+  var payload = req.body.payload;
+  auditHelper.create(payload.actor, payload.target, payload.object, payload.type, payload.description)
   .then(function(response){
     res.json({error: false, message: 'Audit created', success: response});
   })
