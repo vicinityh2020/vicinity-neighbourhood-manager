@@ -29,6 +29,7 @@ function create(data, callback){
         } else {
           var nodeId = data._id;
           var nodeName = data.name;
+          var myNode = {adid: adid, name: nodeName, id: nodeId};
           var cid = data.cid;
           var doSemanticValidation = config.enabledAdapters.indexOf(data.type[0]) !== -1;
           var adapterType = data.type[0] === "generic.adapter.sharq.eu" ? "shq" : "vcnt"; // TODO cover more types when needed
@@ -58,6 +59,7 @@ function create(data, callback){
                     return data.save();
                   })
                   .then(function(response){ return regisHelper.createAuditLogs(cid, allresult, adid, 41); })
+                  .then(function(response){ return regisHelper.deviceActivityNotif(allresult, cid, myNode, 13); })
                   .then(function(response){
                     var finalRes = [];
                     var someSuccess = false; // true if some registration was successful
@@ -103,6 +105,9 @@ function create(data, callback){
           }else if(!node){
             callback(true, "Invalid adid/agid identificator", "Invalid adid/agid identificator");
           } else {
+            var nodeId = node._id;
+            var nodeName = node.name;
+            var myNode = {adid: adid, name: nodeName, id: nodeId};
             var cid = node.cid;
             var doSemanticValidation = config.enabledAdapters.indexOf(node.type[0]) !== -1;
             var adapterType = node.type[0] === "generic.adapter.sharq.eu" ? "shq" : "vcnt"; // TODO cover more types when needed
@@ -127,6 +132,7 @@ function create(data, callback){
                   // Final part: Return results, update node and notify
                   if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
                     regisHelper.createAuditLogs(cid, allresult, adid, 46)
+                    .then(function(response){ return regisHelper.deviceActivityNotif(allresult, cid, myNode, 14); })
                     .then(function(response){
                       var finalRes = [];
                       var someSuccess = false; // true if some registration was successful

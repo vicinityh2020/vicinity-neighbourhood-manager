@@ -151,7 +151,7 @@ function updateDocuments(thing, otherParams, callback){
     } else {
       notifObj.uid = updThing.uid;
     }
-    deviceActivityNotif(notifObj, 14);
+    // deviceActivityNotif(notifObj, 14);
     callback({"infrastructure-id": infra_id,
               "oid":updThing.oid,
               "name":updThing.name,
@@ -191,7 +191,7 @@ function createInstance(objData, pwd, infra_id, callback){
     return commServerProcess(obj.oid, obj.name, pwd);
   })
   .then(function(response){
-    deviceActivityNotif({cid: cid, oid: oid, adid: adid}, 13);
+    // deviceActivityNotif({cid: cid, oid: oid, adid: adid}, 13);
     callback({oid: obj.oid, password: pwd, "infrastructure-id": infra_id, "nm-id": obj._id, "name": obj.name, error: false}, "Success");
   })
   .catch(function(err){
@@ -415,26 +415,35 @@ function findType(objType, types){
   }
 }
 
-
 /*
 Sends a notification to the organisation after successful discovery
 */
-function deviceActivityNotif(data, type){
-  var target = {};
-  if(data.hasOwnProperty("cid")){
+function deviceActivityNotif(data, cid, node, type){
+  var target = {}, details = {};
+  var oids = getValidOids(data);
+  if(oids.length > 0){
+    details.node = node.name;
+    details.oids = oids;
     target.kind = "userAccount";
-    target.item = data.cid.id;
-    target.extid = data.cid.extid;
-  } else {
-    target.kind = "user";
-    target.item = data.uid.id;
-    target.extid = data.uid.extid;
+    target.item = cid.id;
+    target.extid = cid.extid;
+    return notifHelper.createNotification(
+      { kind: 'node', item: node.id, extid: node.adid },
+      target,
+      {},
+      'info', type, JSON.stringify(details));
+    }
   }
-  return notifHelper.createNotification(
-    { kind: 'node', item: data.adid.id, extid: data.adid.extid },
-    target,
-    { kind: 'item', item: data.oid.id, extid: data.oid.extid },
-    'info', type, null);
+
+/*
+Stores items that were registered successfuly
+*/
+function getValidOids(x){
+  var y = [];
+  for(var i = 0, l = x.length; i < l; i++){
+    if( x[i].result === 'Success' ) y.push({id: x[i]["nm-id"], extid: x[i].oid});
+  }
+  return y;
 }
 
 /*
@@ -536,7 +545,7 @@ function commServerProcess(docOid, docName, docPassword){
     // module.exports.commServerProcess = commServerProcess;
     // module.exports.creatingAudit = creatingAudit;
     module.exports.createAuditLogs = createAuditLogs;
-    // module.exports.deviceActivityNotif = deviceActivityNotif;
+    module.exports.deviceActivityNotif = deviceActivityNotif;
     // module.exports.findType = findType;
     // module.exports.parseGetTypes = parseGetTypes;
     // module.exports.addInteractions = addInteractions;
