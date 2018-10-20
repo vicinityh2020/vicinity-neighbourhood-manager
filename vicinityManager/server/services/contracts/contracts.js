@@ -677,7 +677,7 @@ function moveItemsInContract(ctid, token_mail, items, add, req, res){
       sync.forEachAll(items,
         function(value, allresult, next, otherParams) {
           if(add){
-            addingOne(value, otherParams, function(value, result) {
+            addingOne(value, otherParams, req, res, function(value, result) {
                 allresult.push({value: value, result: result});
                 next();
             });
