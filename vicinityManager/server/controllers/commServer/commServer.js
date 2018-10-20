@@ -71,9 +71,21 @@ function deleteItems(req, res){
         }
       }
     }
-    return sDelItems.deleteItems(toRemove, "Agent:" + adid, response.type[0]); // TODO send toRemove
+    req.body = {};
+    req.body.decoded_token = {sub: "Agent:" + adid};
+    return sDelItems.deleteItems(toRemove, req, res, response.type[0]);
   })
-  .then(function(response){ res.json({"error": false, "message": response});})
+  .then(function(response){
+    var errors = false;
+    for(var i = 0, l = response.message.length; i < l; i++){
+      if(response.message[i].error) errors = true;
+    }
+    if(errors){
+      res.json({"error": true, "message": response});
+    } else {
+      res.json({"error": false, "message": response});
+    }
+  })
   .catch(function(err){ res.json({"error": true, "message": err});});
 }
 
@@ -204,6 +216,8 @@ Delete agent
 function deleteAgent(req, res){
   var adid = req.params.agid;
   var adids = [];
+  req.body = {};
+  req.body.decoded_token = {sub: null, uid: null};
   nodeOp.findOneAndUpdate({adid: adid}, {$set: {'status': 'deleted'}}, { new: true })
   .then(function(data){
       var cid = data.cid.id;
@@ -211,7 +225,7 @@ function deleteAgent(req, res){
     })
   .then(function(response){
       adids.push(adid);
-      return sDelNode.deleteNode(adids);
+      return sDelNode.deleteNode(adids, req, res);
     })
   .then(function(response){res.json({"error": false, "message": response});})
   .catch(function(err){res.json({"error": true, "message": err});});

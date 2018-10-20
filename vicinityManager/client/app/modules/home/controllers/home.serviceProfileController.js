@@ -149,12 +149,18 @@ function ($scope, $window, $state, $stateParams, $location, tokenDecoder, common
     if(confirm('Are you sure?')){
       itemsAPIService.deleteItem($scope.item.oid)
       .then(function(response){
-          Notification.success('service deleted');
+        if(response.data.error){
+          console.log(response.data.message);
+          Notification.warning('Problem deleting service');
           $state.go("root.main.allServices");
+        } else {
+          Notification.success('Service deleted');
+          $state.go("root.main.allServices");
+        }
         })
         .catch(function(err){
           console.log(err);
-          Notification.error('Problem deleting item');
+          Notification.error('Problem deleting service');
         });
       }
     };

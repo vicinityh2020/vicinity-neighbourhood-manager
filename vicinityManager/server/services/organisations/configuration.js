@@ -33,9 +33,18 @@ Removes organisation and everything under:
 Users, nodes, items
 */
 function remove(req, res, callback) {
+  if(req.body.decoded_token){
+    req.body.decoded_token.sub = req.body.decoded_token.sub || null;
+    req.body.decoded_token.uid = req.body.decoded_token.uid || null;
+  } else {
+    req.body = {};
+    req.body.decoded_token = {sub : null, uid: null};
+  }
   var cid = mongoose.Types.ObjectId(req.params.id);
   var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
+
+  // Start final result info object
   var deletingResults = {};
   deletingResults.info = { action: "Organisation deleted", actor: mail};
 
@@ -54,18 +63,18 @@ function remove(req, res, callback) {
 
         removeContracts(users, uid, mail)
         .then(function(response){
-          // Remove cid from friends knows array
+          // Remove cid from friends knows arrays
           return companyAccountOp.update({"_id": {$in: friends}}, {$pull: {knows: {id: cid} }}, {multi: true});
         })
         .then(function(response){
             // When deleting a node all items under
-          return myNode.deleteNode(nodes, mail);
+          return myNode.deleteNode(agid, req, res);
         })
         .then(function(response){
           deletingResults.nodes = response;
           // Users are the last thing to be removeFriend
           // To remove a user it cannot have any item or contract under
-          return delUser.deleteAllUsers(users, mail);
+          return delUser.deleteAllUsers(users, req, res);
         })
         .then(function(response){
           deletingResults.users = response;
@@ -106,9 +115,13 @@ function removeContracts(users, uid, mail){
       }
       var uniqueContracts = [];
       getUnique(uniqueContracts, contracts);
+      var contractsToDel = [];
       for(var ii = 0, ll = uniqueContracts.length; ii < ll; ii ++){
-        sContracts.removeAllContract(uniqueContracts[ii], uid, mail);
+        contractsToDel.push(sContracts.removeAllContract(uniqueContracts[ii], uid, mail));
       }
+      return Promise.all(contractsToDel);
+    })
+    .then(function(response){
       resolve(true);
     })
     .catch(function(err){

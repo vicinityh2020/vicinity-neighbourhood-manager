@@ -169,10 +169,14 @@ function removeOneItem(oid, uid, cts_ctid, otherParams){
       return ctChecks.contractValidity(cts_ctid, uid, token_mail);
     })
     .then(function(response){
+      var logs = [];
       for(var i = 0, l = cts_ctid.length; i < l; i++){
-        logger.log(req, res, {type: 'audit', data: {user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i] }});
+        logs.push(logger.log(req, res, {type: 'audit', data: {user: token_mail, action: 'removeItemFromContract', item: oid, contract: cts_ctid[i] }}));
       }
-      resolve(oid);
+      return Promise.all(logs);
+    })
+    .then(function(response){
+       resolve(oid);
     })
     .catch(function(err){
       // for(var i = 0, l = cts_ctid.length; i < l; i++){

@@ -11,7 +11,6 @@ function deleteUser(req, res, next) {
   delUser.deleteAllUsers(uid, req, res)
   .then(
     function(response){
-      logger.log(req, res, {data: response, type: "audit"});
       res.json(response);
     }
   )

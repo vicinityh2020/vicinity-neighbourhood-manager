@@ -7,6 +7,7 @@ var nodeOp = require('../../models/vicinityManager').node;
 var userAccountOp = require('../../models/vicinityManager').userAccount;
 var sync = require('../../services/asyncHandler/sync');
 var audits = require('../../services/audit/audit');
+var logger = require("../../middlewares/logBuilder");
 
 // Public functions
 
@@ -15,15 +16,15 @@ Change node status to deleted in MONGO
 Remove node from commServer
 Remove all oids under node from commServer AND MONGO
 */
-function deleteNode(adids, email, userId){
+function deleteNode(adids, req, res){
 
   return new Promise(function(resolve, reject) {
     if(adids.length > 0){ // Check if there is any item to delete
       sync.forEachAll(adids,
         function(value, allresult, next, otherParams) {
-          deletingNodes(value, otherParams, function(value, result) {
-              allresult.push({value: value, result: result});
-              next();
+            deletingNodes(value, otherParams, function(value, result, error) {
+                allresult.push({value: value, result: result, error: error});
+            next();
           });
         },
         function(allresult) {
@@ -32,7 +33,7 @@ function deleteNode(adids, email, userId){
           }
         },
         false,
-        {userMail:email, userId: userId}
+        {req: req, res: res}
       );
     } else {
       reject("Nothing to be removed...");
@@ -44,7 +45,9 @@ function deleteNode(adids, email, userId){
 On node saved successfully in MONGO,
 the update process continues in the commServer
 */
-  function updateNode(data, email, userId){
+  function updateNode(data, req, res){
+    var email = req.body.decoded_token.sub;
+    var userId = req.body.decoded_token.uid;
     return new Promise(function(resolve, reject) {
       var payload = {
         name: data.name,
@@ -62,11 +65,19 @@ the update process continues in the commServer
         .then(function(response){ return nodeOp.findOne({adid: data.adid}); })
         .then(
           function(response){
-            return audits.create(
-              { kind: 'user', item: userId, extid: email },
-              { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
-              { kind: 'node', item: response._id, extid: response.adid },
-              23, null);
+            if(email === null){
+              return audits.create(
+                { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
+                { kind: 'node', item: response._id, extid: response.adid },
+                {},
+                23, null);
+            } else {
+              return audits.create(
+                { kind: 'user', item: userId, extid: email },
+                { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
+                { kind: 'node', item: response._id, extid: response.adid },
+                23, null);
+            }
           })
         .then(function(response){
           resolve(response);
@@ -83,6 +94,10 @@ the update process continues in the commServer
 Deletes all node asynchronously
 */
 function deletingNodes(adid, otherParams, callback){
+  var req = otherParams.req;
+  var res = otherParams.res;
+  var userMail = req.body.decoded_token.sub;
+  var userId = req.body.decoded_token.uid;
   var aux = {};
   var itemsRes;
   var query = {
@@ -101,16 +116,24 @@ function deletingNodes(adid, otherParams, callback){
   })
   .then(
   function(response){
-    return audits.create(
-      { kind: 'user', item: otherParams.userId, extid: otherParams.userMail },
-      { kind: 'userAccount', item: aux.cid.id, extid: aux.cid.extid },
-      { kind: 'node', item: aux._id, extid: aux.adid },
-      22, null);
+    if(userMail === null){
+      return audits.create(
+        { kind: 'userAccount', item: aux.cid.id, extid: aux.cid.extid },
+        { kind: 'node', item: aux._id, extid: aux.adid },
+        {},
+        22, null);
+    } else {
+      return audits.create(
+        { kind: 'user', item: otherParams.userId, extid: otherParams.userMail },
+        { kind: 'userAccount', item: aux.cid.id, extid: aux.cid.extid },
+        { kind: 'node', item: aux._id, extid: aux.adid },
+        22, null);
+    }
   })
   .then(function(response){
     var things = [];
     getOids(aux.hasItems, things);
-    return myItems.deleteItems(things, otherParams.userMail, aux.type[0]); })
+    return myItems.deleteItems(things, req, res, aux.type[0]); })
   .then(function(response){
     itemsRes = response;
   return commServer.callCommServer({}, 'users/' + adid, 'DELETE'); // Update node in commServer
@@ -118,14 +141,21 @@ function deletingNodes(adid, otherParams, callback){
   .then(function(response){
     return commServer.callCommServer({}, 'groups/' + adid, 'DELETE'); })
   .then(function(response){
-    callback(adid, {'status':'success', 'items': itemsRes}) ;
+    callback(adid, {'status':'success', 'items': itemsRes}, false) ;
   })
-  .catch(function(error){
-    if (error.statusCode !== 404){
-      callback(adid, {'status':'error'});
+  .catch(function(err){
+    if(err.statusCode === 404){
+      logger.log(req, res, {type: 'warn', data: {user: userMail, action: 'deleteAgent', item: adid, message: 'Object did not exist in comm server' }});
+      callback(adid, {'status':'success', 'items': itemsRes}, false);
+    } else if(err.name === "RequestError"){
+      logger.log(req, res, {type: 'error', data: {user: userMail, action: 'deleteAgent', item: adid, message: err.name + " " + err.cause.code }});
+      callback(adid, {'status':'Request timeout', 'items': itemsRes}, true);
+    } else if(err.name === "MongoError"){
+      logger.log(req, res, {type: 'error', data: {user: userMail, action: 'deleteAgent', item: adid, message: err}});
+      callback(adid, {'status':'Mongo Error', 'items': itemsRes}, true);
     } else {
-      commServer.callCommServer({}, 'groups/' + adid, 'DELETE');
-      callback(adid, {'status':'success', 'items': itemsRes}) ;
+      logger.log(req, res, {type: 'error', data: {user: userMail, action: 'deleteAgent', item: adid, message: err}});
+      callback(adid, {'status':'Server error', 'items': itemsRes}, true);
     }
   });
 }

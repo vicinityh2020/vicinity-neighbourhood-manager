@@ -6,6 +6,7 @@ var itemOp = require('../../models/vicinityManager').item;
 var nodeOp = require('../../models/vicinityManager').node;
 var userOp = require('../../models/vicinityManager').user;
 var logger = require('../../middlewares/logBuilder');
+var logger2 = require('../../middlewares/logger');
 var commServer = require('../../services/commServer/request');
 var semanticRepo = require('../../services/semanticRepo/request');
 var sync = require('../../services/asyncHandler/sync');
@@ -37,7 +38,8 @@ function deleteItems(oids, req, res, typeAgent){
         false,
         { req: req,
           res: res,
-          typeAgent: typeAgent
+          typeAgent: typeAgent,
+          userMail: email
         }
       );
     } else {
@@ -56,6 +58,7 @@ Make sure that agent is deleted or break connection with removed object
 function deleting(oid, otherParams, callback){
   var req =  otherParams.req;
   var res = otherParams.res;
+  var userMail = otherParams.userMail;
   var obj = {
     info: {},
     avatar: "",
@@ -115,15 +118,21 @@ function deleting(oid, otherParams, callback){
             42, null);
         })
         .then(function(ans){
-          logger.log(req, res, {type: 'audit', data: {user: otherParams.userMail, action: 'deleteItem', item: oid }});
+          logger.log(req, res, {type: 'audit', data: {user: userMail, action: 'deleteItem', item: oid }});
           callback(oid, "Success", false);})
         .catch(function(err){
-          if(err.statusCode !== 404){
-            logger.log(req, res, {type: 'error', data: {user: otherParams.userMail, action: 'deleteItem', item: oid, message: err}});
-            callback(oid, 'Error: ' + err, true);
-          } else {
-            logger.log(req, res, {type: 'warn', data: {user: otherParams.userMail, action: 'deleteItem', item: oid, message: 'Object did not exist in comm server' }});
+          if(err.statusCode === 404){
+            logger.log(req, res, {type: 'warn', data: {user: userMail, action: 'deleteItem', item: oid, message: 'Object did not exist in comm server' }});
             callback(oid, "Success", false);
+          } else if(err.name === "RequestError"){
+            logger.log(req, res, {type: 'error', data: {user: userMail, action: 'deleteItem', item: oid, message: err.name + " " + err.cause.code }});
+            callback(oid, 'Request timeout', true);
+          } else if(err.name === "MongoError"){
+            logger.log(req, res, {type: 'error', data: {user: userMail, action: 'deleteItem', item: oid, message: err}});
+            callback(oid, 'Mongo Error', true);
+          } else {
+            logger.log(req, res, {type: 'error', data: {user: userMail, action: 'deleteItem', item: oid, message: err}});
+            callback(oid, 'Server error', true);
           }
         });
       }

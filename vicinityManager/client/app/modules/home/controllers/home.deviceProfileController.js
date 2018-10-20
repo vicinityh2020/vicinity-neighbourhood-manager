@@ -135,12 +135,18 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
     if(confirm('Are you sure?')){
       itemsAPIService.deleteItem($scope.item.oid)
       .then(function(response){
-        Notification.success('Device deleted');
-        $state.go("root.main.home");
+        if(response.data.error){
+          console.log(response.data.message);
+          Notification.warning('Problem deleting device');
+          $state.go("root.main.home");
+        } else {
+          Notification.success('Device deleted');
+          $state.go("root.main.home");
+        }
       })
       .catch(function(err){
         console.log(err);
-        Notification.error("Error deleting item");
+        Notification.error("Error deleting device");
       });
     }
   };

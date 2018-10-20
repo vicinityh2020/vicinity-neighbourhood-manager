@@ -30,17 +30,19 @@ function callCommServer(data, endPoint, myMethod){
   options.method = myMethod;
   options.headers = head;
   options.uri = config.commServerUrl + '/' + endPoint;
+  options.timeout = 10000;
   if(myMethod !== 'GET'){ options.body = payload; }
 
   return request(options);
   // return request(options, function(err, response, body) {
-      // try{
-      //   logger.debug('REQUEST RESULTS:', err, response.statusCode, body);
-      // } catch(error){
-      //   logger.error(error.stack);
-      // }
+  //   if(err){
+  //     // console.log(err.code === 'ETIMEDOUT');
+  //     // logger.error(err);
+  //     Promise.reject(err);
+  //   } else{
+  //     Promise.resolve(response);
   //   }
-  // );
+  // });
 
 }
 

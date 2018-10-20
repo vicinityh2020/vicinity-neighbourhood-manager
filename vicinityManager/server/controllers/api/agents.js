@@ -69,19 +69,22 @@ exports.removeAgent = function(req, res, next) {
   agid.push(req.params.id);
   var company_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var cid = req.body.decoded_token.cid;
-  var userMail = req.body.decoded_token.sub !== 'undefined' ? req.body.decoded_token.sub : "unknown";
-  var userId = req.body.decoded_token.uid !== 'undefined' ? req.body.decoded_token.uid : "unknown";
+  if(req.body.decoded_token){
+    req.body.decoded_token.sub = req.body.decoded_token.sub || null;
+    req.body.decoded_token.uid = req.body.decoded_token.uid || null;
+  } else {
+    req.body = {};
+    req.body.decoded_token = {sub : null, uid: null};
+  }
   nodeOp.findOne({adid:agid[0]}, {cid:1}, function(err, response){
     if(err){
       res.json({error: true, message: err});
     } else {
       if(response.cid.extid === req.body.decoded_token.cid){
-        sRemoveNode.deleteNode(agid, userMail, userId)
+        sRemoveNode.deleteNode(agid, req, res)
         .then(function(response){
-          logger.log(req, res, {data: response, type: "audit"});
           res.json({'error': false, 'message': response});})
         .catch(function(err){
-          logger.log(req, res, {data: err, type: "debug"});
           res.json({'error': true, 'message': err});});
       } else {
         res.json({error: true, message: "You are not the owner of the adapter/agent"});

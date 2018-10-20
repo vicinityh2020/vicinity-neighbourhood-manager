@@ -17,9 +17,14 @@ var myNode = require('../../services/nodes/processNode');
   function putOne(req, res) {
     var adid = req.params.id;
     var updates = req.body;
-    var userMail = req.body.decoded_token !== 'undefined' ? req.body.decoded_token.sub : "unknown";
-    var userId = req.body.decoded_token !== 'undefined' ? req.body.decoded_token.uid : "unknown";
-
+    if(req.body.decoded_token){
+      req.body.decoded_token.sub = req.body.decoded_token.sub || null;
+      req.body.decoded_token.uid = req.body.decoded_token.uid || null;
+    } else {
+      req.body = {};
+      req.body.decoded_token = {sub : null, uid: null};
+    }
+    var userMail = req.body.decoded_token.sub;
     delete updates.userMail;
 
     nodeOp.findOneAndUpdate({adid: adid}, {$set: updates}, { new: true }, function(err, data){
@@ -33,18 +38,16 @@ var myNode = require('../../services/nodes/processNode');
           userAccountOp.update({_id: cid}, { $pull: {hasNodes: {extid: adid}} })
           .then(function(response){
             // Accepts bulk remove of several nodes
-            return myNode.deleteNode(adids, userMail, userId);
+            return myNode.deleteNode(adids, req, res);
           })
           .then(function(response){
-            logger.log(req, res, {data: response, type: "audit"});
             res.json({'error': false, 'message': response});})
           .catch(function(err){
-            logger.log(req, res, {data: err, type: "debug"});
             res.json({'error': true, 'message': err});});
         }else{
           data.pass = req.body.pass;
           // Can only update one node per call
-          myNode.updateNode(data, userMail, userId)
+          myNode.updateNode(data, req, res)
           .then(function(response){
             logger.log(req, res, {type: "audit", data: {user: userMail, action: 'updateNode', item: data.adid }});
             res.json({'error': false, 'message': response.data});

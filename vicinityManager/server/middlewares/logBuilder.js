@@ -105,18 +105,23 @@ function sendLog(type, message){
    case "info":
       break;
     default:
-      logger.error("Logger error: " + err);
+      logger.error("Logger error: unknown log type");
     }
   }
 
   // If the body is an object, return with right format as a string
   function parseBody(body){
-    var result = "";
-    for (var key in body) {
-      if(body.hasOwnProperty(key)) {
-        result = result + key + " - " + body[key] + " : ";
+    try{
+      var result = "";
+      for (var key in body) {
+        if(body.hasOwnProperty(key)) {
+          result = result + key + " - " + body[key] + " : ";
+        }
       }
+      result = result.slice(0, -3);
+      return result;
+    }catch(err){
+      logger.error(err);
+      return("Logger error: Problem parsing payload");
     }
-    result = result.slice(0, -3);
-    return result;
   }
