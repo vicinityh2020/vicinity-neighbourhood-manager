@@ -136,11 +136,12 @@ function deletingNodes(adid, otherParams, callback){
     return myItems.deleteItems(things, req, res, aux.type[0]); })
   .then(function(response){
     itemsRes = response;
-  return commServer.callCommServer({}, 'users/' + adid, 'DELETE'); // Update node in commServer
+    return commServer.callCommServer({}, 'users/' + adid, 'DELETE'); // Update node in commServer
   })
   .then(function(response){
     return commServer.callCommServer({}, 'groups/' + adid, 'DELETE'); })
   .then(function(response){
+    logger.log(req, res, {type: 'audit', data: {user: userMail, action: 'deleteAgent', item: adid, message: 'Agent removed' }});
     callback(adid, {'status':'success', 'items': itemsRes}, false) ;
   })
   .catch(function(err){

@@ -12,6 +12,12 @@ module.exports.customLogs = function(req, res, next){
   var message;
   var date = new Date().toISOString();
   if(req.url !== "/notifications/"){
+    if(!req.headers){
+      req.headers = {};
+      req.headers.host = "N/A";
+      req.headers.origin = "N/A";
+      req.headers["user-agent"] = "N/A";
+    }
     if(!res.statusCode || res.statusCode > 400){
       message = req.headers.origin + " : " + date + " : " + req.method + " : " + req.headers.host + req.url + " : " + res.statusCode + " : " + req.headers["user-agent"];
       logger.error(message);
@@ -34,41 +40,45 @@ module.exports.customLogs = function(req, res, next){
 * @return {Boolean}
 */
 module.exports.log = function(req, res, body){
-  try{
-    if(body.type === undefined){
-      body.type = "error";
-      body.data = "No log type defined";
-    }
-    if (config.env !== "dev" && body.type === "debug") return false;
-    if (body.type === "info") return false;
-    var parsedBody;
-    if (body.type === "error") {
-      // Custom errors are strings
-      if(typeof body.data !== 'object'){
-        parsedBody = body.data;
-      } else if(body.data.stack === undefined){
-      // For unknown errors return whole object
-        logger.error(body.data);
+  if(req && res){
+    try{
+      if(body.type === undefined){
+        body.type = "error";
+        body.data = "No log type defined";
+      }
+      if (config.env !== "dev" && body.type === "debug") return false;
+      if (body.type === "info") return false;
+      var parsedBody;
+      if (body.type === "error") {
+        // Custom errors are strings
+        if(typeof body.data !== 'object'){
+          parsedBody = body.data;
+        } else if(body.data.stack === undefined){
+        // For unknown errors return whole object
+          logger.error(body.data);
+          return false;
+        } else {
+        // Control case "unexpected error" type, return only stack
+          parsedBody = body.data.stack;
+        }
+      } else if(body.type === "debug" && typeof body.data === 'object'){
+      // For test debug messages that return objects, see whole item
+        logger.debug(body.data);
         return false;
       } else {
-      // Control case "unexpected error" type, return only stack
-        parsedBody = body.data.stack;
+        // Control case payload is an object, stringify with right format
+        // Only audit and warn types
+        parsedBody = typeof body.data === 'object' ? parseBody(body.data) : body.data;
       }
-    } else if(body.type === "debug" && typeof body.data === 'object'){
-    // For test debug messages that return objects, see whole item
-      logger.debug(body.data);
+      var message = createMessage(req, res, parsedBody);
+      sendLog(body.type, message);
+      return true;
+    } catch(err) {
+      logger.error("Logger error: " + err);
       return false;
-    } else {
-      // Control case payload is an object, stringify with right format
-      // Only audit and warn types
-      parsedBody = typeof body.data === 'object' ? parseBody(body.data) : body.data;
     }
-    var message = createMessage(req, res, parsedBody);
-    sendLog(body.type, message);
-    return true;
-  } catch(err) {
-    logger.error("Logger error: " + err);
-    return false;
+  } else {
+    logger.warn("Missing req and res objects");
   }
 };
 

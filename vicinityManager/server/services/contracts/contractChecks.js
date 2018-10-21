@@ -118,7 +118,7 @@ function contractValidity(ctids, uid, mail){
             {"iotOwner.items": { $exists: true, $size: 0 } } ]
       }, {ctid: 1, 'foreignIot': 1, 'iotOwner': 1})
     .then(function(data){
-      logger.debug("DEBUG: Contracts to remove... " + data);
+      logger.debug("DEBUG: Contracts to remove... " + data.ctid);
       getOnlyProp(toRemoveCtid, data, ['ctid']);
       getOnlyProp(toRemoveId, data, ['_id']);
       getOnlyProp(foreignUsers, data, ['foreignIot', 'uid']);

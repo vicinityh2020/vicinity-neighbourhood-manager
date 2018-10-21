@@ -423,7 +423,7 @@ function deviceActivityNotif(data, cid, node, type){
   var oids = getValidOids(data);
   if(oids.length > 0){
     details.node = node.name;
-    details.oids = oids;
+    details.oids = JSON.stringify(oids);
     target.kind = "userAccount";
     target.item = cid.id;
     target.extid = cid.extid;
