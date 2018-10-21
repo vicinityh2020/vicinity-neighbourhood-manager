@@ -12,7 +12,6 @@ var userOp = require('../../models/vicinityManager').user;
 var delUser = require('../../services/users/deleteUsers');
 var myNode = require('../../services/nodes/processNode');
 var sContracts = require('../../services/contracts/contracts');
-// var audits = require('../../services/audit/audit');
 
 // Public functions
 
@@ -33,20 +32,21 @@ Removes organisation and everything under:
 Users, nodes, items
 */
 function remove(req, res, callback) {
-  if(req.body.decoded_token){
-    req.body.decoded_token.sub = req.body.decoded_token.sub || null;
-    req.body.decoded_token.uid = req.body.decoded_token.uid || null;
-  } else {
-    req.body = {};
-    req.body.decoded_token = {sub : null, uid: null};
-  }
-  var cid = mongoose.Types.ObjectId(req.params.id);
-  var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
-  var mail = req.body.decoded_token.sub;
+  try{
+    if(req.body.decoded_token){
+      req.body.decoded_token.sub = req.body.decoded_token.sub || null;
+      req.body.decoded_token.uid = req.body.decoded_token.uid || null;
+    } else {
+      req.body = {};
+      req.body.decoded_token = {sub : null, uid: null};
+    }
+    var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+    var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+    var mail = req.body.decoded_token.sub;
 
-  // Start final result info object
-  var deletingResults = {};
-  deletingResults.info = { action: "Organisation deleted", actor: mail};
+    // Start final result info object
+    var deletingResults = {};
+    deletingResults.info = { action: "Organisation deleted", actor: mail};
 
   companyAccountOp.findOne({ _id: cid },
     function(err, companyData){
@@ -68,7 +68,7 @@ function remove(req, res, callback) {
         })
         .then(function(response){
             // When deleting a node all items under
-          return myNode.deleteNode(agid, req, res);
+          return myNode.deleteNode(nodes, req, res);
         })
         .then(function(response){
           deletingResults.nodes = response;
@@ -97,8 +97,10 @@ function remove(req, res, callback) {
           callback(true, err);
         });
       }
-    }
-  );
+    });
+  } catch(err) {
+    logger.log(req, res, {type: 'error', data: err});
+  }
 }
 
 // Private functions
