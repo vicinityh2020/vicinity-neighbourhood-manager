@@ -54,7 +54,7 @@ $scope.login = function() {
     var $user = $("#user");
     var $pass = $("#pass");
 
-     if(response.headers.status < 400){
+     if(response.status < 400){
       //  Notification.success("Welcome to Vicinity!");
        AuthenticationService.SetCredentials(response.data.message);
        if($scope.rememberMe){AuthenticationService.SetRememberMeCookie(response.data.message);}
@@ -78,9 +78,16 @@ $scope.login = function() {
      }
   })
   .catch(function(err){
-    console.log(err);
-    $scope.error = "Server error";
-
+    var $user = $("#user");
+    var $pass = $("#pass");
+    if(err.status < 500){
+      $scope.error = "Incorrect email or password";
+      $user.addClass("invalid");
+      $pass.addClass("invalid");
+    } else {
+      console.log(err);
+      $scope.error = "Server error";
+    }
    //  Notification.error("Incorrect email or password");
     $scope.isError = true;
     $scope.dataLoading = false;
