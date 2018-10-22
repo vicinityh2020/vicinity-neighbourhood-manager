@@ -9,12 +9,7 @@ var sLogin = require('../../services/login/login');
 /* Check user and password. */
 function authenticate(req, res, next) {
   sLogin.authenticate(req, res, function(err, response){
-    if(err){
-      logger.log(req, res, {type: 'error', data: response});
       res.json({error: err, message: response});
-    } else {
-      res.json({error: err, message: response});
-    }
   });
 }
 

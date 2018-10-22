@@ -11,13 +11,12 @@ var sLogin = require("../../services/login/login");
  * @return {String} token
  */
 exports.authenticate = function(req, res, next) {
-  sLogin.authenticate(req, res, function(err, response){
+  sLogin.authenticate(req, res, function(err, response, data){
     if(err){
-      logger.log(req, res, {type: 'error', data: response});
       res.json({error: err, message: response});
     } else {
-      response.uid = req.decoded_token.sub;
-      response.cid = req.decoded_token.cid;
+      response.uid = data.uid;
+      response.cid = data.cid;
       res.json({error: err, message: response});
     }
   });

@@ -559,13 +559,16 @@ function fetchContract(req, res){
        return Promise.resolve(result);
     } else {
         for( var i = 0, l = parsedRes.length; i < l; i++ ){
-        if(parsedRes[i].id.status && parsedRes[i].id.status !== 'deleted'){
-            result.push(parsedRes[i]);
+          if(parsedRes[i].id){
+            if(parsedRes[i].id.status !== 'deleted'){
+              result.push(parsedRes[i]);
+            }
+          }
         }
+        return Promise.resolve(result);
       }
-      return Promise.resolve(result);
     }
-  })
+  )
   .catch(function(error){
     return Promise.reject(error);
   });

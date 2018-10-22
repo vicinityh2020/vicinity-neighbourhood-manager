@@ -23,9 +23,11 @@ function authenticate(req, res, callback) {
     userOp.find({ email: { $regex: userRegex } }, {_id:1, email:1, authentication:1})
     .then(function(response){
       if(!response || response.length === 0){
+        res.status(404);
         logger.log(req, res, {type: 'warn', data: "User not found: " + userRegex});
         callback(false, "User not found: " + userRegex);
       } else if(response.length > 1){
+        res.status(403);
         callback(false, "Duplicated mail: " + userRegex);
       } else {
         myUser = response[0];
@@ -37,22 +39,28 @@ function authenticate(req, res, callback) {
             userAccountsOp.find({ accountOf: {$elemMatch: { id: o_id }}}, {_id:1, cid:1}, function(err, response){
               var credentials = jwt.jwtEncode(myUser._id, userName, myUser.authentication.principalRoles, response[0]._id, response[0].cid);
               logger.log(req, res, {type: 'audit', data: {user: userName, action: 'login'}});
-              callback(false, credentials);
+              callback(false, credentials, {uid: myUser._id, cid: response[0]._id});
             });
           } else {
+            res.status(401);
             logger.log(req, res, {type: 'warn', data: {user: userName, action: 'login', message: 'Wrong password'}});
             callback(false, {user: userName, action: 'login', message: 'Wrong password'});
           }
         })
         .catch(function(err){
+          res.status(500);
+          logger.log(req, res, {type: 'error', data: err});
           callback(true, err);
         });
       }
     })
     .catch(function(err){
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: err});
       callback(true, err);
     });
    } else {
+     res.status(400);
      logger.log(req, res, {type: 'warn', data: {user: userName, action: 'login', message: 'Missing fields'}});
      callback(false, {user: userName, action: 'login', message: 'Missing fields'});
   }
