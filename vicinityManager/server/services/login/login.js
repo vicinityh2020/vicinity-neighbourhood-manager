@@ -29,6 +29,9 @@ function authenticate(req, res, callback) {
       } else if(response.length > 1){
         res.status(403);
         callback(false, "Duplicated mail: " + userRegex);
+      } else if(!response[0].authentication.hash){
+        res.status(400);
+        callback(false, "User deleted: " + userRegex);
       } else {
         myUser = response[0];
         hash = myUser.authentication.hash;

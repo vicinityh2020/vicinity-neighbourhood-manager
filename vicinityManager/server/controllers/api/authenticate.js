@@ -15,8 +15,10 @@ exports.authenticate = function(req, res, next) {
     if(err){
       res.json({error: err, message: response});
     } else {
-      response.uid = data.uid;
-      response.cid = data.cid;
+      if(res.statusCode < 400){
+        response.uid = data.uid;
+        response.cid = data.cid;
+      }
       res.json({error: err, message: response});
     }
   });
