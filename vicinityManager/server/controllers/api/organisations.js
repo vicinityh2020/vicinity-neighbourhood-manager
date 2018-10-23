@@ -195,8 +195,12 @@ exports.createOrganisation = function(req, res, next) {
           res.json({error: err, message: response});
         } else {
           sRegister.requestReg(req, res, function(err, response){
-            if(err){ logger.log(req, res, {type: 'error', data: response}); }
-            else { logger.log(req, res, {type: 'audit', data: response}); }
+            if(err){
+              logger.log(req, res, {type: 'error', data: response});
+            } else {
+              res.status(202);
+              logger.log(req, res, {type: 'audit', data: response});
+            }
             res.json({error: err, message: response});
           });
         }

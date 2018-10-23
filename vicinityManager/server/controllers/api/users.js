@@ -17,6 +17,7 @@ Users --------------------------------------------------
 exports.getUser = function(req, res, next) {
   sGetUser.getUserInfo(req, res, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
+    if(!response) res.status(404);
     res.json({error: err, message: response});
   });
 };
@@ -49,14 +50,20 @@ exports.getUserItems = function(req, res, next) {
  */
 exports.createUser = function(req, res, next) {
   req.body.type = "newUser";
-  sInviteUser.postOne(req, res, function(err, response){
-    if(err){
-      logger.log(req, res, {type:'error', data: response});
-    } else {
-      logger.log(req, res, {type:'audit', data: response});
-    }
-    res.json({"error": err, "message": response});
-  });
+  if(!req.body.organisation || !req.body.emailTo || !req.body.nameTo){
+    res.status(400);
+    res.json({"error": false, "message": "Missing fields to create invitation"});
+  } else {
+    sInviteUser.postOne(req, res, function(err, response){
+      if(err){
+        logger.log(req, res, {type:'error', data: response});
+      } else {
+        res.status(202);
+        logger.log(req, res, {type:'audit', data: response});
+      }
+      res.json({"error": err, "message": response});
+    });
+  }
 };
 
 /**
@@ -81,6 +88,7 @@ exports.updateUser = function(req, res, next) {
       res.json({error: true, message: err, success: false});
     } else if((response.email === userMail) || (response.cid.extid === cid && roles.indexOf('administrator') !== -1)) {
       if(type === 'undefined' || type === ""){
+        res.status(400);
         logger.log(req, res, {type: 'warn', data: 'Type of update not defined'});
         res.json({error: false, message: 'Type of update not defined...', success: false});
       } else {
@@ -96,15 +104,18 @@ exports.updateUser = function(req, res, next) {
             logger.log(req, res, {type: 'error', data: response});
             res.json({error: err, message: response, success: success});
           } else if(!success){
+            res.status(400);
             logger.log(req, res, {type: 'warn', data: response});
             res.json({error: err, message: response, success: success});
           } else {
+            res.status(201);
             logger.log(req, res, {type: 'audit', data: "User updated: " + response.email});
             res.json({error: err, message: "User updated: " + response.email, success: success});
           }
         });
       }
     } else {
+      res.status(401);
       logger.log(req, res, {type: 'warn', data: 'Not authorized to update this user'});
       res.json({error: false, message: 'Not authorized to update this user...', success: false});
     }
@@ -124,9 +135,11 @@ exports.removeUser = function(req, res, next) {
   var finalResp;
   uid.push(mongoose.Types.ObjectId(req.params.uid));
   if(req.body.decoded_token.roles.indexOf('administrator') === -1){
+    res.status(404);
     logger.log(req, res, {type: 'warn', data: "Need admin privileges to remove a user"});
     res.json({'error': false, 'message': "Need admin privileges to remove a user..."});
   } else if(req.params.uid.toString() === req.body.decoded_token.uid.toString()){
+    res.status(401);
     logger.log(req, res, {type: 'warn', data: "You cannot remove yourself"});
     res.json({'error': false, 'message': "You cannot remove yourself..."});
   } else {
@@ -137,6 +150,7 @@ exports.removeUser = function(req, res, next) {
         finalRes = "User removed";
         return delUser.deleteAllUsers(uid, req, res);
       } else {
+        res.status(401);
         logger.log(req, res, {type: 'warn', data: "User does not belong to you"});
         finalRes = "User does not belong to you";
         return false; // User does not belong to you
