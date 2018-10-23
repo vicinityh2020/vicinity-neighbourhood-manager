@@ -31,6 +31,7 @@ exports.contractFeeds = function(req, res, next) {
 exports.contractInfo = function(req, res, next) {
   ctHelper.contractInfo(req, res, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
+    if(!response) res.status(404);
     res.json({error: err, message: response});
   });
 };
@@ -46,6 +47,7 @@ exports.contractValidItems = function(req, res, next) {
   var api = true; // Call origin api or webApp
   sGetItems.getMyContractItems(req, res, api, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
+    if(!response) res.status(404);
     res.json({error: err, message: response});
   });
 };
@@ -60,6 +62,7 @@ exports.contractContractedItems = function(req, res, next) {
   var api = true; // Call origin api or webApp
   sGetItems.getItemsContracted(req, res, api, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
+    if(!response) res.status(404);
     res.json({error: err, message: response});
   });
 };
@@ -87,6 +90,7 @@ exports.requestContract = function(req, res, next) {
       logger.log(req, res, {type: 'error', data: response});
       res.json({error: error, message: response});
     } else if(!success){
+      res.status(400);
       logger.log(req, res, {type: 'warn', data: response});
       res.json({error: error, message: response});
     } else {
@@ -117,6 +121,7 @@ exports.manageContract = function(req, res, next) {
         logger.log(req, res, {type: 'error', data: response});
         res.json({error: error, message: response});
       } else if(!success){
+        res.status(400);
         logger.log(req, res, {type: 'warn', data: response});
         res.json({error: error, message: response});
       } else {
@@ -133,6 +138,7 @@ exports.manageContract = function(req, res, next) {
         logger.log(req, res, {type: 'error', data: response});
         res.json({error: error, message: response});
       } else if(!success){
+        res.status(400);
         logger.log(req, res, {type: 'warn', data: response});
         res.json({error: error, message: response});
       } else {
@@ -143,6 +149,7 @@ exports.manageContract = function(req, res, next) {
       }
     });
   } else {
+    res.status(400);
     logger.log(req, res, {type: 'warn', data: "Wrong type. Please choose among accept or delete"});
     res.json({error: false, message: "Wrong type. Please choose among accept or delete"});
   }
