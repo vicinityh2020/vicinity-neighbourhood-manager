@@ -27,11 +27,13 @@ Organisations --------------------------------------------------
 exports.getMyOrganisation = function(req, res, next){
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   userAccountOp.findOne({_id: cid}, {name:1, cid:1, accountOf:1, knows:1, hasNodes:1}, function(err, response){
-    if(!err){
-      res.json({error: false, message: response});
-    } else {
-      logger.log(req, res, {type: 'error', data: response});
+    if(err){
+      logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
+    } else if(!response){
+      res.status(404).json({error: false, message: "Organisation not found"});
+    } else {
+      res.json({error: false, message: response});
     }
   });
 };
@@ -50,8 +52,14 @@ exports.getOrganisations = function(req, res, next) {
   var offset = 0;
   var limit = 0;
   sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req, res, {type: 'error', data: err});
+      res.json({error: true, message: 'Server error'});
+    } else if(!response){
+      res.status(404).json({error: false, message: "Organisations not found"});
+    } else {
+      res.json({error: false, message: response});
+    }
   });
 };
 
@@ -69,8 +77,14 @@ exports.getFriends = function(req, res, next) {
   var offset = 0;
   var limit = 0;
   sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req, res, {type: 'error', data: err});
+      res.json({error: true, message: 'Server error'});
+    } else if(!response){
+      res.status(404).json({error: false, message: "Organisations not found"});
+    } else {
+      res.json({error: false, message: response});
+    }
   });
 };
 
@@ -84,12 +98,19 @@ exports.getFriends = function(req, res, next) {
 exports.getUsers = function(req, res, next) {
   var api = true;
   if(othercid == null){
+    res.status(400);
     logger.log(req, res, {type: 'warn', data: "Missing organisation ID"});
     res.json({error: false, message: "Missing organisation ID"});
   } else {
     sGetUser.getAll(req, res, api, function(err,response){
-      if(err) logger.log(req, res, {type: 'error', data: response});
-      res.json({error: err, message: response});
+      if(err){
+        logger.log(req, res, {type: 'error', data: err});
+        res.json({error: true, message: 'Server error'});
+      } else if(!response){
+        res.status(404).json({error: false, message: "Users not found"});
+      } else {
+        res.json({error: false, message: response});
+      }
     });
   }
 };
@@ -107,18 +128,25 @@ exports.getUsers = function(req, res, next) {
 exports.getItems = function(req, res, next) {
   var api = true; // Call origin api or webApp
   if(req.params.cid == null){
+    res.status(400);
     logger.log(req, res, {type: 'warn', data: "Missing organisation ID"});
     res.json({error: true, message: "Missing organisation ID"});
   } else {
     sGetItems.getOrgItems(req, res, api, function(err, response){
-      if(err) logger.log(req, res, {type: 'error', data: response});
-      res.json({error: err, message: response});
+      if(err){
+        logger.log(req, res, {type: 'error', data: err});
+        res.json({error: true, message: 'Server error'});
+      } else if(!response){
+        res.status(404).json({error: false, message: "Items not found"});
+      } else {
+        res.json({error: false, message: response});
+      }
     });
   }
 };
 
 /**
- * Get organisation users
+ * Get organisation agents
  *
  * @param null
  *
@@ -128,8 +156,14 @@ exports.getAgents = function(req, res, next) {
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var api = true; // Call origin api or webApp
   sGetAgents.getOrgAgents(mycid, api, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
-    res.json({error: err, message: response});
+    if(err){
+      logger.log(req, res, {type: 'error', data: err});
+      res.json({error: true, message: 'Server error'});
+    } else if(!response){
+      res.status(404).json({error: false, message: "Organisation not found"});
+    } else {
+      res.json({error: false, message: response});
+    }
   });
 };
 
@@ -157,6 +191,7 @@ exports.createOrganisation = function(req, res, next) {
     if(!dup){
       sRegister.validateBody(data, false, function(err, response){
         if(err){
+          res.status(400);
           res.json({error: err, message: response});
         } else {
           sRegister.requestReg(req, res, function(err, response){
@@ -168,6 +203,7 @@ exports.createOrganisation = function(req, res, next) {
       });
     }else{
       if(typeof finalRes !== "object"){ finalRes = {error: false, message: "Company name or business ID already exist"}; } // Dups found at org stage
+      res.status(400);
       logger.log(req, res, {type: 'warn', data: finalRes.message});
       res.json(finalRes);
     }
@@ -200,11 +236,13 @@ exports.createOrganisationAuto = function(req, res, next){
                 res.json({error: err, message: response});
             });
           } else {
-            if(err) logger.log(req, res, {type: 'error', data: response});
+            res.status(400);
+            logger.log(req, res, {type: 'error', data: response});
             res.json({error: err, message: response});
           }
         });
       } else {
+        res.status(400);
         logger.log(req, res, {type: 'warn', data: 'Organisation name duplicated'});
         res.json({error: true, message: 'Organisation name duplicated'});
       }
@@ -214,8 +252,9 @@ exports.createOrganisationAuto = function(req, res, next){
       res.json({error: true, message: 'Server error'});
     });
   } else {
+    res.status(403);
     logger.log(req, res, {type: 'warn', data: "Unauthorized"});
-    res.json({error: true, message: 'Unauthorized'});
+    res.json({error: true, message: 'Need special role'});
   }
 };
 
@@ -228,6 +267,7 @@ exports.createOrganisationAuto = function(req, res, next){
  */
 exports.removeOrganisation = function(req, res, next) {
   if(req.body.decoded_token.roles.indexOf('administrator') === -1){
+    res.status(403);
     logger.log(req, res, {type: 'warn', data: "Need admin privileges to remove an organisation"});
     res.json({'error': false, 'message': "Need admin privileges to remove an organisation..."});
   } else {
