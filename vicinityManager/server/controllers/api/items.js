@@ -18,6 +18,10 @@ exports.createItem = function(req, res, next) {
     res.json({error: false, message: "Use agent..."});
 };
 
+exports.removeItem = function(req, res, next) {
+    res.json({error: false, message: "Use agent..."});
+};
+
 // Validate TD service - Just relay body to semantic repo
 exports.validateItemDescription = function(req, res, next){
   semanticRepo.callSemanticRepo(req.body, "td/validate", "POST")
@@ -60,23 +64,23 @@ exports.getAnnotations = function(req, res, next){
 exports.updateItem = function(req, res, next) {
     if(req.body.multi){
      sItemUpdate.updateManyItems(req, res, function(value, err, success, response){
+      if(!err) res.status(201);
       res.json({error: err, message: response, success: success, id: value});
      });
     }else if(req.body.status === 'enabled'){
       sItemUpdate.enableItem(req, res, function(value, err, success, response){
+        if(!success) res.status(400);
         res.json({error: err, message: response, success: success, id: value});
       });
     }else if(req.body.status === 'disabled'){
       sItemUpdate.disableItem(req, res, function(value, err, success, response){
+        if(!success) res.status(400);
         res.json({error: err, message: response, success: success, id: value});
       });
     }else{
       sItemUpdate.updateItem(req, res, function(value, err, success, response){
+        if(!success) res.status(400);
         res.json({error: err, message: response, success: success, id: value});
       });
     }
   };
-
-exports.removeItem = function(req, res, next) {
-    res.json({error: false, message: "Use agent..."});
-};
