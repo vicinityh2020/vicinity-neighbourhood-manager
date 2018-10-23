@@ -25,12 +25,18 @@ exports.getAgentItems = function(req, res, next) {
     if(err){
       logger.log(req, res, {type: 'error', data: response});
       res.json({error: true, message: response});
+    } else if(!response) {
+      res.status(404);
+      logger.log(req, res, {type: 'warn', data: 'Agent not found'});
+      res.json({error: false, message: response});
     } else {
       if(response.cid.extid === req.body.decoded_token.cid){
         sGetNodeItems.getNodeItems(adid, function(err, response){
+          if(!response) res.status(204);
           res.json({error: err, message: response});
         });
       } else {
+        res.status(401);
         logger.log(req, res, {type: 'warn', data: "You are not the owner of the adapter/agent"});
         res.json({error: false, message: "You are not the owner of the adapter/agent"});
       }
@@ -79,6 +85,9 @@ exports.removeAgent = function(req, res, next) {
   nodeOp.findOne({adid:agid[0]}, {cid:1}, function(err, response){
     if(err){
       res.json({error: true, message: err});
+    } else if(!response) {
+      res.status(404);
+      res.json({error: false, message: "Agent not found"});
     } else {
       if(response.cid.extid === req.body.decoded_token.cid){
         sRemoveNode.deleteNode(agid, req, res)
@@ -87,6 +96,7 @@ exports.removeAgent = function(req, res, next) {
         .catch(function(err){
           res.json({'error': true, 'message': err});});
       } else {
+        res.status(401);
         res.json({error: true, message: "You are not the owner of the adapter/agent"});
       }
     }

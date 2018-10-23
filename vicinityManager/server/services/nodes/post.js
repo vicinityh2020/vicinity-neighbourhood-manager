@@ -32,7 +32,8 @@ function postOne(req, res, callback){
   db.cid = {"id": company_id, "extid": cid};
   db.adid = uuid();
 
-  if(typeof password === 'undefined' || typeof raw.name === 'undefined'){
+  if(typeof password == null || typeof raw.name == null){
+    res.status(400);
     logger.log(req, res, {type: 'warn', data: 'Agent not created, fields missing'});
     callback(false, 'Agent not created, fields missing...');
   } else {
