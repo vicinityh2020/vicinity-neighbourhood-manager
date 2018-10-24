@@ -20,6 +20,7 @@ exports.partnershipFeeds = function(req, res, next) {
   var my_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   sFriending.friendshipFeeds(my_id, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
+    if(!response) res.status(404);
     res.json({"error": err, "message": response});
   });
 };
@@ -41,11 +42,11 @@ exports.requestPartnership = function(req, res, next) {
       logger.log(req, res, {type: 'error', data: response});
       res.json({"error": true, "message": err });
     } else if(response.imFriend){
-      res.status(403);
+      res.status(400);
       logger.log(req, res, {type: 'warn', data: "You are already friend with " + friend_id});
       res.json({"error": false, "message": "You are already friend with " + friend_id });
     } else if(response.sentReq || response.haveReq){
-      res.status(403);
+      res.status(400);
       logger.log(req, res, {type: 'warn', data: "You already have an open friending process with " + friend_id});
       res.json({"error": false, "message": "You already have an open friending process with " + friend_id });
     } else {
@@ -91,7 +92,7 @@ exports.managePartnership = function(req, res, next) {
                 res.json({"error": err, "message": response});
               });
             } else {
-              res.status(403);
+              res.status(400);
               logger.log(req, res, {type: 'warn', data: "You do not have friend requests from " + friend_id});
               res.json({"error": false, "message": "You do not have friend requests from " + friend_id});
             }
@@ -107,7 +108,7 @@ exports.managePartnership = function(req, res, next) {
                 res.json({"error": err, "message": response});
               });
             } else {
-              res.status(403);
+              res.status(400);
               logger.log(req, res, {type: 'warn', data: "You do not have friend requests from " + friend_id});
               res.json({"error": false, "message": "You do not have friend requests from " + friend_id});
             }
@@ -139,7 +140,7 @@ exports.managePartnership = function(req, res, next) {
                 res.json({"error": err, "message": response});
               });
             } else {
-              res.status(403);
+              res.status(400);
               logger.log(req, res, {type: 'warn', data: "You do not have a friendship with " + friend_id});
               res.json({"error": false, "message": "You do not have a friendship with " + friend_id});
             }
