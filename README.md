@@ -14,7 +14,7 @@ In order to register device and service user needs to create so called gateway a
 
 * [VICINITY Agent](https://github.com/vicinityh2020/vicinity-agent);
 * [VICINITY Gateway API](TBD);
-* [VICINITY Neighbourhood Manager API](https://documenter.getpostman.com/view/2413103/vcnt-api-documentation/RVg29U8c).
+* [VICINITY Neighbourhood Manager API](https://vicinityh2020.github.io/vicinity-neighbourhood-manager-api/).
 
 VICINITY Neighbourhood Manager is publicly accessible over the [internet](https://vicinity.bavenir.eu).
 
