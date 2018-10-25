@@ -26,43 +26,61 @@ var myCustomLevels = {
   }
 };
 
-var logger = new winston.Logger({
-    levels: myCustomLevels.levels,
-    colors: myCustomLevels.colors,
-    transports: [
-        // new winston.transports.File({
-        //     level:'info',
-        //     filename: './logs/all-logs.log',
-        //     handleExceptions: false,
-        //     json: true,
-        //     maxsize: 5242880, //5MB
-        //     maxFiles: 5,
-        //     colorize: false,
-        //     prettyPrint: true,
-        // }),
-        new winston.transports.File({
-            level: 'audit',
-            filename: config.technicalLog,
-            handleExceptions: true,
-            // timestamp: true,
-            json: true,
-            maxsize: 5242880, //5MB
-            maxFiles: 5,
-            colorize: false,
-            prettyPrint: true
-        }),
-        new winston.transports.Console({
-            level: 'debug',
-            // timestamp: true,
-            handleExceptions: true, // we capture them as a type
-            json: false,
-            colorize: true,
-            prettyPrint: true
-        })
-    ],
-    exitOnError: false
-});
+if(process.env.env === 'test'){
+  var logger = new winston.Logger({
+      levels: myCustomLevels.levels,
+      colors: myCustomLevels.colors,
+      transports: [
+          new winston.transports.Console({
+              level: 'debug',
+              // timestamp: true,
+              handleExceptions: false, // we capture them as a type
+              json: false,
+              colorize: true,
+              prettyPrint: true
+          })
+      ],
+      exitOnError: false
+  });
 
+} else {
+  var logger = new winston.Logger({
+      levels: myCustomLevels.levels,
+      colors: myCustomLevels.colors,
+      transports: [
+          // new winston.transports.File({
+          //     level:'info',
+          //     filename: './logs/all-logs.log',
+          //     handleExceptions: false,
+          //     json: true,
+          //     maxsize: 5242880, //5MB
+          //     maxFiles: 5,
+          //     colorize: false,
+          //     prettyPrint: true,
+          // }),
+          new winston.transports.File({
+              level: 'audit',
+              filename: config.technicalLog,
+              handleExceptions: true,
+              // timestamp: true,
+              json: true,
+              maxsize: 5242880, //5MB
+              maxFiles: 5,
+              colorize: false,
+              prettyPrint: true
+          }),
+          new winston.transports.Console({
+              level: 'debug',
+              // timestamp: true,
+              handleExceptions: true, // we capture them as a type
+              json: false,
+              colorize: true,
+              prettyPrint: true
+          })
+      ],
+      exitOnError: false
+  });
+}
 module.exports = logger;
 
 // module.exports.stream = {

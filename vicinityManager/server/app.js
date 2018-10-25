@@ -7,7 +7,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var helmet = require("helmet"); // Forcing SSL
-var config = require("./configuration/configuration");
 //var winston = require('winston');
 
 // ROUTES Import
@@ -39,7 +38,7 @@ var app = express();
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(cors());
 // app.set('view engine', 'pug'); // Default view engine
-app.use(logs.customLogs); // Custom logger
+if (process.env.env !== 'test') app.use(logs.customLogs); // Custom logger, if NO test
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 app.use(cookieParser());
@@ -47,9 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet()); // Comment if no SSL
 
 // Only development -- Express performance monitor
-if (config.env === 'dev') {
-  app.use(monitor.responsePerformance);
-}
+if (process.env.env === 'dev') app.use(monitor.responsePerformance);
 
 /*
 Endpoints

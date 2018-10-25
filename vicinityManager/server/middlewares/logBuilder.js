@@ -40,6 +40,7 @@ module.exports.customLogs = function(req, res, next){
 * @return {Boolean}
 */
 module.exports.log = function(req, res, body){
+  if(process.env.env === 'test') return true;
   if(req && res){
     try{
       if(body.type === undefined){
@@ -79,6 +80,7 @@ module.exports.log = function(req, res, body){
     }
   } else {
     logger.warn("Missing req and res objects");
+    return true;
   }
 };
 

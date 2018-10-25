@@ -8,17 +8,21 @@ Avatars
 var config = module.exports = {};
 
 //Token Secret for Server side
-config.jwtTokenSecret = process.env.jwtTokenSecret;
+config.jwtTokenSecret = process.env.jwtTokenSecret || "myfancytokensecretfortestingpurposes";
 
 //Token Secret for Communication Server
-config.commServerToken = "Basic " + new Buffer(process.env.commServerToken).toString('base64');
+if(process.env.commServerToken){
+  config.commServerToken = "Basic " + new Buffer(process.env.commServerToken).toString('base64');
+}
 
 //URL comm server
 config.commServerUrl = process.env.commServerUrl;
 
 //URL Semantic Repository
 config.semanticRepoUrl = process.env.semanticRepoUrl;
-config.enabledAdapters = process.env.enabledAdapters.split(' ');
+if(process.env.enabledAdapters){
+  config.enabledAdapters = process.env.enabledAdapters.split(' ');
+}
 
 //SMTP Configuration
 config.smtpHost = process.env.smtpHost;
@@ -34,11 +38,11 @@ config.baseHref = process.env.baseHref;
 config.vicinityServicesDir = process.env.vicinityServicesDir;
 
 // SSL certificates
-config.cert = process.env.cert;
-config.key = process.env.key;
+config.cert = process.env.cert || "/etc/letsencrypt/live/development.bavenir.eu/fullchain.pem";
+config.key = process.env.key || "/etc/letsencrypt/live/development.bavenir.eu/privkey.pem";
 
 // Environment
-config.env = process.env.env;
+config.env = process.env.env || "test";
 
 // Logs files
 config.technicalLog = process.env.technicalLog;
