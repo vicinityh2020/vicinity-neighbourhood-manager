@@ -17,6 +17,8 @@ The headers are preconfigured and the token is stored under /configuration
 */
 function callCommServer(data, endPoint, myMethod){
 
+if(process.env.env === 'test') return Promise.resolve(true);
+
   var head = {
     'authorization' : config.commServerToken,
     'Content-Type' : 'application/json; charset=utf-8',

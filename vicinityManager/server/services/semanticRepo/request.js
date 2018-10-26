@@ -22,6 +22,7 @@ myMethod - String - POST, GET, PUT, DELETE
 The headers are preconfigured
 */
 function callSemanticRepo(data, endPoint, myMethod){
+  if(process.env.env === 'test') return Promise.resolve(true);
   payload = JSON.stringify(data);
   return request({
     method : myMethod,
