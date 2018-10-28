@@ -22,7 +22,7 @@ describe('Test login scenarios', function(){
 function loginSuccess(done){
   var data = {
      username: "admin@admin.com",
-     password: "test"
+     password: "password"
    };
   chai.request(server)
       .post('/api/authenticate')

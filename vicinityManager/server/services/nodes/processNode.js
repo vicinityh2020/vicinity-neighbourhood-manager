@@ -36,7 +36,7 @@ function deleteNode(adids, req, res){
         {req: req, res: res}
       );
     } else {
-      reject("Nothing to be removed...");
+      resolve("Nothing to be removed...");
     }
   });
 }

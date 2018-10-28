@@ -18,23 +18,26 @@ chai.use(chaiHttp);
 
 // Global variables
 var token;
+var login;
 
 // tests
-before(function() {
-  it('Generate token...', loginSuccess);
-});
+// before(function() {
+// });
 
 describe('Organisation test scenarios', function(){
+  it('Generate token...', loginSuccess);
   it('it should create a organisation', createOrganisation);
+  it('Generate new token...', loginSuccess);
+  it('it should get a organisation', getOrganisation);
+  it('it should remove a organisation', removeOrganisation);
 });
 
 // Functions
 
 function loginSuccess(done){
-  var data = {
-     username: "admin@admin.com",
-     password: "test"
-   };
+  var data = {};
+  data.username = login || "admin@admin.com";
+  data.password = "password";
   chai.request(server)
       .post('/api/authenticate')
       .send(data)
@@ -71,6 +74,34 @@ function createOrganisation(done){
       res.body.should.be.a('object');
       res.body.message.should.have.property('login');
       res.body.message.login.should.be.a('string');
+      login = res.body.message.login;
       done();
     });
   }
+
+  function getOrganisation(done){
+    chai.request(server)
+      .get('/api/organisation')
+      .set('x-access-token', token)
+      .end(function(err, res){
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.message.should.have.property('cid');
+        res.body.message.cid.should.be.a('string');
+        done();
+      });
+    }
+
+    function removeOrganisation(done){
+      //TODO ensure removal was a success
+      chai.request(server)
+        .delete('/api/organisation')
+        .set('x-access-token', token)
+        .end(function(err, res){
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.message.should.have.property('info');
+          res.body.message.info.should.be.a('object');
+          done();
+        });
+      }
