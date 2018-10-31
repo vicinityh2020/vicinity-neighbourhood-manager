@@ -3,7 +3,7 @@
 var itemOp = require('../../models/vicinityManager').item;
 var nodeOp = require('../../models/vicinityManager').node;
 var regisHelper = require('../../services/items/registrationHelper');
-var logger = require('../../middlewares/logger');
+var logger = require('../../middlewares/logBuilder');
 var config = require('../../configuration/configuration');
 var sync = require('../../services/asyncHandler/sync');
 
@@ -13,7 +13,8 @@ var sync = require('../../services/asyncHandler/sync');
 Save in Mongo dB all objects contained in the req.
 Message producing the req is sent by the agent with thingDescriptions
 */
-function create(data, callback){
+function create(req, res, callback){
+  var data = req.body;
   var objectsArray = data.thingDescriptions;
   var adid = typeof data.adid !== 'undefined' ? data.adid : data.agid;
 
@@ -23,9 +24,13 @@ function create(data, callback){
   nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1, type:1},
     function(err,data){
         if(err){
-          callback(true, "Error in Mongo", err);
+          res.status(500);
+          logger.log(req, res, {type: 'error', data: err});
+          callback(true, "Error in Mongo", false);
         }else if(!data){
-          callback(true, "Invalid adid/agid identificator", "Invalid adid/agid identificator");
+          res.status(400);
+          logger.log(req, res, {type: 'warn', data: "Invalid adid/agid identificator"});
+          callback(true, "Invalid adid/agid identificator", false);
         } else {
           var nodeId = data._id;
           var nodeName = data.name;
@@ -67,10 +72,16 @@ function create(data, callback){
                       finalRes.push(allresult[item].data);
                       if(allresult[item].result === 'Success'){someSuccess = true;}
                     }
-                    callback(false, finalRes, allresult);
+                    res.status(201);
+                    logger.log(req, res, {type: 'audit', data: allresult});
+                    callback(false, finalRes, true);
                     // console.timeEnd("ALL REGISTRATION EXECUTION");
                   })
-                  .catch(function(err){ callback(true, "Error handling the data in the server", err); });
+                  .catch(function(err){
+                    res.status(500);
+                    logger.log(req, res, {type: 'error', data: err});
+                    callback(true, "Error handling the data in the server", false);
+                  });
                   }
                 },
                 false,
@@ -85,7 +96,11 @@ function create(data, callback){
               );
             }
           )
-          .catch(function(err){callback(true, 'Error in comm server or sematic repository', err); });
+          .catch(function(err){
+            res.status(500);
+            logger.log(req, res, {type: 'error', data: err});
+            callback(true, 'Error in comm server or sematic repository', false);
+          });
         }
       }
     );
@@ -95,15 +110,19 @@ function create(data, callback){
   Update in Mongo dB all objects contained in the req.
   Message producing the req is sent by the agent with thingDescriptions
   */
-  function update(data, callback){
+  function update(data, req, res, callback){
     var objectsArray = data.thingDescriptions;
     var adid = typeof data.adid !== 'undefined' ? data.adid : data.agid;
     nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1, type:1},
       function(err,node){
           if(err){
-            callback(true, "Error in Mongo",  err);
+            res.status(500);
+            logger.log(req, res, {type: 'error', data: err});
+            callback(true, "Error in Mongo",  false);
           }else if(!node){
-            callback(true, "Invalid adid/agid identificator", "Invalid adid/agid identificator");
+            res.status(400);
+            logger.log(req, res, {type: 'warn', data: "Invalid adid/agid identificator"});
+            callback(true, "Invalid adid/agid identificator", false);
           } else {
             var nodeId = node._id;
             var nodeName = node.name;
@@ -140,10 +159,16 @@ function create(data, callback){
                         finalRes.push(allresult[item].data);
                         if(allresult[item].result === 'Success'){someSuccess = true;}
                       }
-                      callback(false, finalRes, allresult);
+                      res.status(201);
+                      logger.log(req, res, {type: 'audit', data: allresult});
+                      callback(false, finalRes, true);
                       // console.timeEnd("ALL REGISTRATION EXECUTION");
                     })
-                    .catch(function(err){ callback(true, "Error handling the data in the server", err); });
+                    .catch(function(err){
+                      res.status(500);
+                      logger.log(req, res, {type: 'error', data: err});
+                      callback(true, "Error handling the data in the server", false);
+                     });
                     }
                   },
                   false,
@@ -157,7 +182,11 @@ function create(data, callback){
                 );
               }
             )
-            .catch(function(err){callback(true, 'Error in comm server or sematic repository', err); });
+            .catch(function(err){
+              res.status(500);
+              logger.log(req, res, {type: 'error', data: err});
+              callback(true, 'Error in comm server or sematic repository', false);
+            });
           }
         }
       );

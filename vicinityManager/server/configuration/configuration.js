@@ -22,6 +22,8 @@ config.commServerUrl = process.env.commServerUrl;
 config.semanticRepoUrl = process.env.semanticRepoUrl;
 if(process.env.enabledAdapters){
   config.enabledAdapters = process.env.enabledAdapters.split(' ');
+} else {
+  config.enabledAdapters = ["generic.adapter.vicinity.eu"];
 }
 
 //SMTP Configuration

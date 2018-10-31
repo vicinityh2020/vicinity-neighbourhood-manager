@@ -22,15 +22,15 @@ var userAccountOp = require('../../models/vicinityManager').userAccount;
  */
 function registration(req, res){
   logger.log(req, res, {type: 'debug', data: 'You are REGISTERING...'});
-  var data = req.body;
-  sRegistration.create(data, function(err, response, log){
-    if(err){
-      logger.log(req, res, {type: 'error', data: log});
-    }else{
-      logger.log(req, res, {type: 'audit', data: log});
-    }
-    res.json({error: err, message: response});
-  });
+  if(!req.body.thingDescriptions){
+    res.status(400);
+    logger.log(req, res, {type: 'warn', data: "Missing data"});
+    res.json({error: false, message: "Data is missing..."});
+  } else {
+    sRegistration.create(req, res, function(err, response, success){
+      res.json({error: err, message: response});
+    });
+  }
 }
 
 
@@ -60,33 +60,38 @@ function searchItems(req, res){
 function deleteItems(req, res){
   logger.log(req, res, {type: 'debug', data: 'You are DELETING...'});
   var adid = req.body.agid || req.body.adid;
-  var data = req.body.oids;
-  nodeOp.findOne({adid:adid},{hasItems:1, type:1}) // Check if oids belong under agent
-  .then(function(response){
-    var toRemove = [];
-    for(var i = 0; i < data.length; i++){
-      for(var j = 0; j < response.hasItems.length; j++){
-        if(data[i] === response.hasItems[j].extid){
-          toRemove.push(data[i]);
+  if(!adid){
+    res.status(400);
+    res.json({error: false, message: "Agent id missing..."});
+  } else {
+    var data = req.body.oids;
+    nodeOp.findOne({adid:adid},{hasItems:1, type:1}) // Check if oids belong under agent
+    .then(function(response){
+      var toRemove = [];
+      for(var i = 0; i < data.length; i++){
+        for(var j = 0; j < response.hasItems.length; j++){
+          if(data[i] === response.hasItems[j].extid){
+            toRemove.push(data[i]);
+          }
         }
       }
-    }
-    req.body = {};
-    req.body.decoded_token = {sub: "Agent:" + adid};
-    return sDelItems.deleteItems(toRemove, req, res, response.type[0]);
-  })
-  .then(function(response){
-    var errors = false;
-    for(var i = 0, l = response.message.length; i < l; i++){
-      if(response.message[i].error) errors = true;
-    }
-    if(errors){
-      res.json({"error": true, "message": response});
-    } else {
-      res.json({"error": false, "message": response});
-    }
-  })
-  .catch(function(err){ res.json({"error": true, "message": err});});
+      req.body = {};
+      req.body.decoded_token = {sub: "Agent:" + adid};
+      return sDelItems.deleteItems(toRemove, req, res, response.type[0]);
+    })
+    .then(function(response){
+      var errors = false;
+      for(var i = 0, l = response.message.length; i < l; i++){
+        if(response.message[i].error) errors = true;
+      }
+      if(errors){
+        res.json({"error": true, "message": response});
+      } else {
+        res.json({"error": false, "message": response});
+      }
+    })
+    .catch(function(err){ res.json({"error": true, "message": err});});
+  }
 }
 
 /*
@@ -121,35 +126,41 @@ function updateItem(req, res){
   logger.log(req, res, {type: 'debug', data: 'You are UPDATING...'});
   var rawData = req.body;
   var adid = req.body.agid || req.body.adid;
-  var data = {
-              thingDescriptions: [],
-              adid: adid
-            };
-  nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
-  .then(function(response){
-    for(var i = 0; i < rawData.thingDescriptions.length; i++){
-      for(var j = 0; j < response.hasItems.length; j++){
-        if(rawData.thingDescriptions[i].oid === response.hasItems[j].extid){
-          data.thingDescriptions.push(rawData.thingDescriptions[i]);
+  if(!adid){
+    res.status(400);
+    logger.log(req, res, {type: 'warn', data: "Missing agid"});
+    res.json({error: false, message: "Agent id missing..."});
+  } else if(!rawData.thingDescriptions){
+    res.status(400);
+    logger.log(req, res, {type: 'warn', data: "Missing data"});
+    res.json({error: false, message: "Data is missing..."});
+  } else {
+    var data = {
+                thingDescriptions: [],
+                adid: adid
+              };
+    nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
+    .then(function(response){
+      for(var i = 0; i < rawData.thingDescriptions.length; i++){
+        for(var j = 0; j < response.hasItems.length; j++){
+          if(rawData.thingDescriptions[i].oid === response.hasItems[j].extid){
+            data.thingDescriptions.push(rawData.thingDescriptions[i]);
+          }
         }
       }
-    }
-    if(data.thingDescriptions.length === 0){
-      res.json({error: false, message: "Nothing to register or none of the items belong to the agent that is updating..."});
-    } else {
-      return sRegistration.update(data, function(err, response, log){
-        if(err){
-          logger.log(req, res, {type: 'error', data: log});
-        }else{
-          logger.log(req, res, {type: 'audit', data: log});
-        }
-        res.json({error: err, message: response});
-      });
-    }
-  })
-  .catch(function(err){
-    res.json({"error": true, "message": err});
-  });
+      if(data.thingDescriptions.length === 0){
+        res.status(400);
+        res.json({error: false, message: "Nothing to register or none of the items belong to the agent that is updating..."});
+      } else {
+        return sRegistration.update(data, req, res, function(err, response, log){
+          res.json({error: err, message: response});
+        });
+      }
+    })
+    .catch(function(err){
+      res.json({"error": true, "message": err});
+    });
+  }
 }
 
  /**
@@ -168,7 +179,13 @@ function updateItemContent(req,res){
   var adid = typeof req.body.adid !== 'undefined' ? req.body.adid : req.body.agid;
   var toUpdate = [];
   if(!adid){
+    res.status(400);
+    logger.log(req, res, {type: 'warn', data: "Missing agid"});
     res.json({error: false, message: "Missing adapter identificator (adid/agid)"});
+  } else if(!rawData.thingDescriptions){
+      res.status(400);
+      logger.log(req, res, {type: 'warn', data: "Missing data"});
+      res.json({error: false, message: "Data is missing..."});
   } else {
     nodeOp.findOne({adid:adid},{hasItems:1}) // Check if oids belong under agent
     .then(function(response){
@@ -179,7 +196,12 @@ function updateItemContent(req,res){
           }
         }
       }
-      return sUpdItems.updateContents(toUpdate);
+      if(toUpdate.length === 0){
+        res.status(400);
+        res.json({error: false, message: "Nothing to register or none of the items belong to the agent that is updating..."});
+      } else {
+        return sUpdItems.updateContents(toUpdate);
+      }
     })
     .then(function(response){
       logger.log(req, res, {type: 'audit', data: response});

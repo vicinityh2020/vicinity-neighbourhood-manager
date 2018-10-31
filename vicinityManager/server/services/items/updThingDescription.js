@@ -1,7 +1,6 @@
 // Global Objects
 
 var itemOp = require('../../models/vicinityManager').item;
-var notifHelper = require('../../services/notifications/notificationsHelper');
 var logger = require('../../middlewares/logger');
 var semanticRepo = require('../../services/semanticRepo/request');
 var sync = require('../../services/asyncHandler/sync');

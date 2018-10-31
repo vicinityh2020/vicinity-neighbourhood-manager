@@ -21,6 +21,7 @@ var token;
 var login;
 var uid;
 var adid;
+var oidDev;
 
 // tests
 // before(function() {
@@ -43,9 +44,10 @@ describe('Full test scenario', function(){
   it('it should update user-1 visibility', updateUserVisibility);
   it('it should throw a nodeNoPassword error', createNodeNoPassword);
   it('it should create node-1', createNode);
-  // it('it should get a deviceErrorNoRoles', );
-  // it('it should get a deviceErrorWrongAgid', );
-  // it('it should register a device', );
+  it('it should get a deviceErrorWrongAgid when registering', registerDeviceNoAgid);
+  it('it should get a deviceErrorNoData when registering', registerDeviceNoData);
+  it('it should register a device', registerDevice);
+  it('it should enable a device', enableDevice);
   // it('it should create a organisation-2', createOrganisation);
   // it('Generate company-2 token...', loginSuccess);
   // it('it should not find partnership req', createOrganisation);
@@ -243,7 +245,7 @@ chai.request(server)
 function createNode(done){
   var data = {
     "name": "testAgent",
-    "type": "vicinity",
+    "type": "sharq",
     "password": "password"
   };
   chai.request(server)
@@ -251,7 +253,7 @@ function createNode(done){
     .set('x-access-token', token)
     .send(data)
     .end(function(err, res){
-      res.should.have.status(200);
+      res.should.have.status(202);
       res.body.should.be.a('object');
       res.body.should.have.property('error');
       res.body.error.should.equal(false);
@@ -259,43 +261,127 @@ function createNode(done){
       res.body.message.should.be.a('object');
       res.body.message.should.have.property('adid');
       res.body.message.should.have.property('id');
+      adid = res.body.message.adid;
       done();
     });
   }
 
-  function createNodeNoRoles(done){
+function createNodeNoRoles(done){
+  var data = {
+    "name": "testAgent",
+    "type": "sharq",
+    "password": "password"
+  };
+  chai.request(server)
+    .post('/api/agents')
+    .set('x-access-token', token)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(403);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error');
+      res.body.error.should.equal(false);
+      done();
+    });
+  }
+
+function createNodeNoPassword(done){
+  var data = {
+    "name": "testAgent",
+    "type": "sharq"
+  };
+  chai.request(server)
+    .post('/api/agents')
+    .set('x-access-token', token)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(400);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error');
+      res.body.error.should.equal(false);
+      done();
+    });
+  }
+
+  function registerDevice(done){
     var data = {
-      "name": "testAgent",
-      "type": "vicinity",
-      "password": "password"
-    };
+      "adid":adid,
+      "thingDescriptions":[
+        {
+        "name" : "testDev",
+        "type" : "core:Device",
+        "infrastructure-id": "testDev",
+        "adapter-id": "testDev",
+        "actions" : [],
+        "properties" : [],
+        "events": []
+        }
+      ]};
     chai.request(server)
-      .post('/api/agents')
-      .set('x-access-token', token)
+      .post('/commServer/items/register')
       .send(data)
       .end(function(err, res){
-        res.should.have.status(403);
+        res.should.have.status(201);
         res.body.should.be.a('object');
         res.body.should.have.property('error');
         res.body.error.should.equal(false);
+        res.body.should.have.property('message');
+        res.body.message.should.be.a('array');
+        oidDev = res.body.message[0]["nm-id"];
         done();
       });
     }
 
-    function createNodeNoPassword(done){
-      var data = {
-        "name": "testAgent",
-        "type": "vicinity"
-      };
-      chai.request(server)
-        .post('/api/agents')
-        .set('x-access-token', token)
-        .send(data)
-        .end(function(err, res){
-          res.should.have.status(400);
-          res.body.should.be.a('object');
-          res.body.should.have.property('error');
-          res.body.error.should.equal(false);
-          done();
-        });
+function registerDeviceNoAgid(done){
+  var data = {
+    "thingDescriptions":[
+      {
+      "name" : "testDev",
+      "type" : "core:Device",
+      "infrastructure-id": "testDev",
+      "adapter-id": "testDev",
+      "actions" : [],
+      "properties" : [],
+      "events": []
       }
+    ]};
+  chai.request(server)
+    .post('/commServer/items/register')
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(400);
+      res.body.should.be.a('object');
+      done();
+    });
+  }
+
+  function registerDeviceNoData(done){
+    var data = {
+      "adid": adid
+      };
+    chai.request(server)
+      .post('/commServer/items/register')
+      .send(data)
+      .end(function(err, res){
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        done();
+      });
+    }
+
+function enableDevice(done){
+var data = {
+              "o_id": oidDev,
+              "typeOfItem": "device",
+              "status": "enabled"
+            };
+chai.request(server)
+  .put('/api/items')
+  .set('x-access-token', token)
+  .send(data)
+  .end(function(err, res){
+    res.should.have.status(200);
+    res.body.should.be.a('object');
+    done();
+  });
+}

@@ -240,7 +240,7 @@ function getTypes(fromSemantiRepo){
   return new Promise(function(resolve, reject) {
     var data = {};
     // Gets annotations directly from semantic repository
-    if(fromSemantiRepo){
+    if(fromSemantiRepo && process.env.env !== 'test'){
       semanticRepo.getTypes()
       .then(function(response){
         data = parseGetTypes(JSON.parse(response).data);
