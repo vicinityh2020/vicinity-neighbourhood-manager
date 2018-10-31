@@ -16,6 +16,7 @@ Receives request from client
 */
 function postOne(req, res, callback){
   var company_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  var noSystemIntegrator = req.body.decoded_token.roles.indexOf("system integrator") === -1;
   var cid = req.body.decoded_token.cid;
   var userMail = req.body.decoded_token.sub !== 'undefined' ? req.body.decoded_token.sub : "unknown";
   var userId = req.body.decoded_token.uid !== 'undefined' ? req.body.decoded_token.uid : "unknown";
@@ -32,10 +33,14 @@ function postOne(req, res, callback){
   db.cid = {"id": company_id, "extid": cid};
   db.adid = uuid();
 
-  if(typeof password == null || typeof raw.name == null){
+  if(!password || !raw.name){
     res.status(400);
     logger.log(req, res, {type: 'warn', data: 'Agent not created, fields missing'});
-    callback(false, 'Agent not created, fields missing...');
+    callback(false, 'Agent not created, fields missing...', false);
+  } else if(noSystemIntegrator){
+    res.status(403);
+    logger.log(req, res, {type: 'warn', data: 'System integrator role missing'});
+    callback(false, 'Agent not created, roles missing...', false);
   } else {
     db.save()
     .then(function(data){
@@ -56,14 +61,14 @@ function postOne(req, res, callback){
         })
       .then(function(response){
         logger.log(req, res, {type: 'audit', data: {user: userMail, action: 'createNode', item: data._id }});
-        callback(false, {adid: db.adid, id: db._id, type: db.type});
+        callback(false, {adid: db.adid, id: db._id, type: db.type}, true);
         })
         .catch(function(err){
-          callback(true, err);
+          callback(true, err, false);
         });
       })
       .catch(function(err){
-        callback(true, err);
+        callback(true, err, false);
       });
     }
   }

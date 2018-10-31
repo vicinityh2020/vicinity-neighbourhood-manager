@@ -14,9 +14,9 @@ Creates relevant users and groups in commServer
 Receives request from client
 */
 function postOne(req, res, next) {
-  sNodePost.postOne(req, res, function(err, response){
+  sNodePost.postOne(req, res, function(err, response, success){
     if(err) logger.log(req, res, {type: 'error', data: response});
-      res.json({error: err, message: response});
+      res.json({error: err, message: response, success: success});
   });
 }
 

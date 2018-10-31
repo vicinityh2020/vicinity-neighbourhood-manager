@@ -57,10 +57,10 @@ exports.getAgentItems = function(req, res, next) {
  * @return {Object} AGID and status
  */
 exports.createAgent = function(req, res, next) {
-  sCreateNode.postOne(req, res, function(err, response){
+  sCreateNode.postOne(req, res, function(err, response, success){
     if(err) logger.log(req, res, {type: 'error', data: response});
-    if(!err) res.status(202);
-      res.json({error: err, message: response});
+    if(success) res.status(202);
+      res.json({error: err, message: response, success: success});
   });
 };
 
