@@ -20,6 +20,7 @@ chai.use(chaiHttp);
 var token, token1, token2;
 var login1, login2;
 var uid1, uid2;
+var cid1, cid2;
 var adid1, adid2;
 var oidDev, oidSer;
 
@@ -34,13 +35,13 @@ describe('Full test scenario', function(){
   it('Generate admin token...', loginSuccess);
   // it('it should get body validation error', createOrganisation);
   it('Create a organisation-1', createOrganisation);
-  it('Generate organisation-1 token...', loginSuccess);
+  it('Generate organisation-1 token...', loginSuccess1);
   it('Get organisation-1 data', getOrganisation);
   it('Get user-1 info', getUser);
   it('Throw nodeNoRoles error', createNodeNoRoles);
   it('Update user name', updateUserMetadata);
   it('Update user-1 roles', updateUserRole1);
-  it('Update organisation-1 token, new roles...', loginSuccess);
+  it('Update organisation-1 token, new roles...', loginSuccess1);
   it('Update user-1 visibility', updateUserVisibility1);
   it('Throw a nodeNoPassword error', createNodeNoPassword);
   it('Create node-1', createNode1);
@@ -48,56 +49,78 @@ describe('Full test scenario', function(){
   it('Get a deviceErrorNoData when registering', registerDeviceNoData);
   it('Register a device', registerDevice);
   it('Enable a device', enableDevice);
-  it('it should create a organisation-2', createOrganisation);
-  it('Generate company-2 token...', loginSuccess);
+  it('Create a organisation-2', createOrganisation);
+  it('Generate company-2 token...', loginSuccess2);
   it('Get user-2 info', getUser);
   it('Update user-2 roles', updateUserRole2);
   it('Update user-2 visibility', updateUserVisibility2);
+  it('Update organisation-2 token, new roles...', loginSuccess2);
   it('Create node-2', createNode2);
-  it('Rregister a service', registerService);
+  it('Register a service', registerService);
   it('Enable a device', enableService);
-  // it('it should not find partnership req', createOrganisation);
-  // it('it should request a partnership', createOrganisation);
-  // it('it should check partnership requests', createOrganisation);
-  // it('it should accept a partnership', createOrganisation);
+  it('Not find partnership req', notFoundFriendship);
+  it('Request a partnership', postFriendship);
+  it('Find partnership requests', getFriendship);
+  it('Accept a partnership', acceptFriendship);
   // TODO check comm server calls
   // TODO Contracts tests -- change conditions to see reactions (i.e. remove cts)
   it('Remove organisation-1', removeOrganisation1);
   it('Remove organisation-2', removeOrganisation2);
 });
 
-// Functions
+// *************** Functions ***************
+
+/*
+ LOGIN scenarios
+*/
 
 function loginSuccess(done){
   var data = {};
-  var login; // Decides which company should be logging in
-  if(!login2){
-    if(!login1){ login = "admin@admin.com"; }
-    else { login = login1; }
-  } else {
-    login = login2;
-  }
-  data.username = login;
+  data.username = "admin@admin.com";
   data.password = "password";
-  chai.request(server)
-      .post('/api/authenticate')
-      .send(data)
-      .end(function(err, res){
-        res.should.have.status(200);
-        res.body.should.be.a('object');
-        res.body.should.have.property('message');
-        res.body.message.should.have.property('token');
-        res.body.message.token.should.be.a('string');
-        if(login === "admin@admin.com"){
-          token = res.body.message.token;
-        } else if(login === login1){
-          token1 = res.body.message.token;
-        } else {
-          token2 = res.body.message.token;
-        }
-        done();
-      });
+  login(data, 0, done);
 }
+
+function loginSuccess1(done){
+  var data = {};
+  data.username = login1;
+  data.password = "password";
+  login(data, 1, done);
+}
+
+function loginSuccess2(done){
+  var data = {};
+  data.username = login2;
+  data.password = "password";
+  login(data, 2, done);
+}
+
+function login(data, org, done){
+  chai.request(server)
+    .post('/api/authenticate')
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      res.body.should.have.property('message');
+      res.body.message.should.have.property('token');
+      res.body.message.token.should.be.a('string');
+      res.body.message.should.have.property('cid');
+      res.body.message.cid.should.be.a('string');
+      res.body.message.should.have.property('uid');
+      res.body.message.uid.should.be.a('string');
+      if(org === 0){token = res.body.message.token;}
+      else if(org === 1){
+        token1 = res.body.message.token;
+        cid1 = res.body.message.cid;
+      }
+      else{
+        token2 = res.body.message.token;
+        cid2 = res.body.message.cid;
+      }
+      done();
+    });
+  }
 
 function loginWrongPassword(done){
    var data = {
@@ -129,6 +152,10 @@ function loginWrongName(done){
       });
 }
 
+/*
+ ORGANISATION scenarios
+*/
+
 function createOrganisation(done){
   var data = {
       "user": {
@@ -151,7 +178,7 @@ function createOrganisation(done){
       res.body.should.be.a('object');
       res.body.message.should.have.property('login');
       res.body.message.login.should.be.a('string');
-      if(!login1){
+      if(!login1){ // If the first org has been created, store the second login
         login1 = res.body.message.login;
       } else {
         login2 = res.body.message.login;
@@ -175,9 +202,18 @@ function createOrganisation(done){
 
 function removeOrganisation1(done){
   //TODO ensure removal was a success
+  removeOrg(token1, done);
+}
+
+function removeOrganisation2(done){
+  //TODO ensure removal was a success
+  removeOrg(token2, done);
+}
+
+function removeOrg(token, done){
   chai.request(server)
     .delete('/api/organisation')
-    .set('x-access-token', token1)
+    .set('x-access-token', token)
     .end(function(err, res){
       res.should.have.status(200);
       res.body.should.be.a('object');
@@ -185,21 +221,13 @@ function removeOrganisation1(done){
       res.body.message.info.should.be.a('object');
       done();
     });
-  }
-  function removeOrganisation2(done){
-    //TODO ensure removal was a success
-    chai.request(server)
-      .delete('/api/organisation')
-      .set('x-access-token', token2)
-      .end(function(err, res){
-        res.should.have.status(200);
-        res.body.should.be.a('object');
-        res.body.message.should.have.property('info');
-        res.body.message.info.should.be.a('object');
-        done();
-      });
-    }
+}
 
+/*
+ USER scenarios
+*/
+
+// Gets and stores uid of user 1 and then user 2
 function getUser(done){
   var token = token2 || token1;
   chai.request(server)
@@ -231,7 +259,7 @@ function updateUserMetadata(done){
               },
               "type": "metadata"};
   chai.request(server)
-    .put('/api/users/' + uid)
+    .put('/api/users/' + uid1)
     .set('x-access-token', token1)
     .send(data)
     .end(function(err, res){
@@ -244,13 +272,27 @@ function updateUserMetadata(done){
   }
 
 function updateUserVisibility1(done){
-  var data = {"data":{
-              "accessLevel": 2
-            },
-            "type": "visibility"};
+  var data =
+  {"data":{
+    "accessLevel": 2
+  },
+  "type": "visibility"};
+  updVisibility(data, uid1, token1, done);
+}
+
+function updateUserVisibility2(done){
+  var data =
+  {"data":{
+    "accessLevel": 2
+  },
+  "type": "visibility"};
+  updVisibility(data, uid2, token2, done);
+}
+
+function updVisibility(data, uid, token, done){
   chai.request(server)
-  .put('/api/users/' + uid1)
-  .set('x-access-token', token1)
+  .put('/api/users/' + uid)
+  .set('x-access-token', token)
   .send(data)
   .end(function(err, res){
     res.should.have.status(201);
@@ -262,22 +304,40 @@ function updateUserVisibility1(done){
 }
 
 function updateUserRole1(done){
-var data = {"data":{
-              "roles": ['user', 'administrator', 'service provider', 'infrastructure operator', 'system integrator', 'device owner']
-            },
-            "type": "roles"};
-chai.request(server)
-  .put('/api/users/' + uid1)
-  .set('x-access-token', token1)
-  .send(data)
-  .end(function(err, res){
-    res.should.have.status(201);
-    res.body.should.be.a('object');
-    res.body.should.have.property('success');
-    res.body.success.should.equal(true);
-    done();
-  });
+  var data =
+  {"data":{
+    "roles": ['user', 'administrator', 'service provider', 'infrastructure operator', 'system integrator', 'device owner']
+  },
+  "type": "roles"};
+  updRole(data, uid1, token1, done);
 }
+
+function updateUserRole2(done){
+  var data =
+  {"data":{
+    "roles": ['user', 'administrator', 'service provider', 'infrastructure operator', 'system integrator', 'device owner']
+  },
+  "type": "roles"};
+  updRole(data, uid2, token2, done);
+}
+
+function updRole(data, uid, token, done){
+  chai.request(server)
+    .put('/api/users/' + uid)
+    .set('x-access-token', token)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(201);
+      res.body.should.be.a('object');
+      res.body.should.have.property('success');
+      res.body.success.should.equal(true);
+      done();
+    });
+}
+
+/*
+ AGENT scenarios
+*/
 
 function createNode1(done){
   var data = {
@@ -285,58 +345,7 @@ function createNode1(done){
     "type": "sharq",
     "password": "password"
   };
-  chai.request(server)
-    .post('/api/agents')
-    .set('x-access-token', token1)
-    .send(data)
-    .end(function(err, res){
-      res.should.have.status(202);
-      res.body.should.be.a('object');
-      res.body.should.have.property('error');
-      res.body.error.should.equal(false);
-      res.body.should.have.property('message');
-      res.body.message.should.be.a('object');
-      res.body.message.should.have.property('adid');
-      res.body.message.should.have.property('id');
-      adid1 = res.body.message.adid;
-      done();
-    });
-  }
-
-  function updateUserVisibility2(done){
-    var data = {"data":{
-                "accessLevel": 2
-              },
-              "type": "visibility"};
-    chai.request(server)
-    .put('/api/users/' + uid2)
-    .set('x-access-token', token2)
-    .send(data)
-    .end(function(err, res){
-      res.should.have.status(201);
-      res.body.should.be.a('object');
-      res.body.should.have.property('success');
-      res.body.success.should.equal(true);
-      done();
-    });
-  }
-
-  function updateUserRole2(done){
-  var data = {"data":{
-                "roles": ['user', 'administrator', 'service provider', 'infrastructure operator', 'system integrator', 'device owner']
-              },
-              "type": "roles"};
-  chai.request(server)
-    .put('/api/users/' + uid2)
-    .set('x-access-token', token2)
-    .send(data)
-    .end(function(err, res){
-      res.should.have.status(201);
-      res.body.should.be.a('object');
-      res.body.should.have.property('success');
-      res.body.success.should.equal(true);
-      done();
-    });
+  createNode(data, 1, done);
   }
 
   function createNode2(done){
@@ -345,9 +354,16 @@ function createNode1(done){
       "type": "sharq",
       "password": "password"
     };
+    createNode(data, 2, done);
+    }
+
+  function createNode(data, org, done){
+    var token;
+    if(org === 1){ token = token1;}
+    else{token = token2;}
     chai.request(server)
       .post('/api/agents')
-      .set('x-access-token', token2)
+      .set('x-access-token', token)
       .send(data)
       .end(function(err, res){
         res.should.have.status(202);
@@ -358,10 +374,11 @@ function createNode1(done){
         res.body.message.should.be.a('object');
         res.body.message.should.have.property('adid');
         res.body.message.should.have.property('id');
-        adid2 = res.body.message.adid;
+        if(org === 1){ adid1 = res.body.message.adid; }
+        else{ adid2 = res.body.message.adid; }
         done();
       });
-    }
+  }
 
 function createNodeNoRoles(done){
   var data = {
@@ -400,66 +417,13 @@ function createNodeNoPassword(done){
     });
   }
 
-  function registerDevice(done){
-    var data = {
-      "adid":adid1,
-      "thingDescriptions":[
-        {
-        "name" : "testDev",
-        "type" : "core:Device",
-        "infrastructure-id": "testDev",
-        "adapter-id": "testDev",
-        "actions" : [],
-        "properties" : [],
-        "events": []
-        }
-      ]};
-    chai.request(server)
-      .post('/commServer/items/register')
-      .send(data)
-      .end(function(err, res){
-        res.should.have.status(201);
-        res.body.should.be.a('object');
-        res.body.should.have.property('error');
-        res.body.error.should.equal(false);
-        res.body.should.have.property('message');
-        res.body.message.should.be.a('array');
-        oidDev = res.body.message[0]["nm-id"];
-        done();
-      });
-    }
+/*
+ ITEM scenarios
+*/
 
-    function registerService(done){
-      var data = {
-        "adid": adid2,
-        "thingDescriptions":[
-          {
-          "name" : "testServ",
-          "type" : "core:Service",
-          "infrastructure-id": "testServ",
-          "adapter-id": "testServ",
-          "actions" : [],
-          "properties" : [],
-          "events": []
-          }
-        ]};
-      chai.request(server)
-        .post('/commServer/items/register')
-        .send(data)
-        .end(function(err, res){
-          res.should.have.status(201);
-          res.body.should.be.a('object');
-          res.body.should.have.property('error');
-          res.body.error.should.equal(false);
-          res.body.should.have.property('message');
-          res.body.message.should.be.a('array');
-          oidSer = res.body.message[0]["nm-id"];
-          done();
-        });
-      }
-
-function registerDeviceNoAgid(done){
+function registerDevice(done){
   var data = {
+    "adid":adid1,
     "thingDescriptions":[
       {
       "name" : "testDev",
@@ -471,6 +435,70 @@ function registerDeviceNoAgid(done){
       "events": []
       }
     ]};
+    registerItem(data, "dev", done);
+  }
+
+function registerService(done){
+  var data = {
+    "adid": adid2,
+    "thingDescriptions":[
+      {
+      "name" : "testServ",
+      "type" : "core:Service",
+      "infrastructure-id": "testServ",
+      "adapter-id": "testServ",
+      "actions" : [],
+      "properties" : [],
+      "events": []
+      }
+    ]};
+    registerItem(data, "ser", done);
+  }
+
+  function registerItem(data, type, done){
+    chai.request(server)
+      .post('/commServer/items/register')
+      .send(data)
+      .end(function(err, res){
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error');
+        res.body.error.should.equal(false);
+        res.body.should.have.property('message');
+        res.body.message.should.be.a('array');
+        if(type === "dev"){ oidDev = res.body.message[0]["nm-id"]; }
+        else{ oidSer = res.body.message[0]["nm-id"]; }
+        done();
+      });
+    }
+
+function registerDeviceNoAgid(done){
+var data = {
+  "thingDescriptions":[
+    {
+    "name" : "testDev",
+    "type" : "core:Device",
+    "infrastructure-id": "testDev",
+    "adapter-id": "testDev",
+    "actions" : [],
+    "properties" : [],
+    "events": []
+    }
+  ]};
+chai.request(server)
+  .post('/commServer/items/register')
+  .send(data)
+  .end(function(err, res){
+    res.should.have.status(400);
+    res.body.should.be.a('object');
+    done();
+  });
+}
+
+function registerDeviceNoData(done){
+  var data = {
+    "adid": adid1
+    };
   chai.request(server)
     .post('/commServer/items/register')
     .send(data)
@@ -481,50 +509,98 @@ function registerDeviceNoAgid(done){
     });
   }
 
-  function registerDeviceNoData(done){
+function enableDevice(done){
+  enabling(token1, "device", done);
+}
+
+function enableService(done){
+  enabling(token2, "service", done);
+}
+
+function enabling(token, type, done){
+  var oid = type === "device" ? oidDev : oidSer;
+  var data = {
+                "o_id": oid,
+                "typeOfItem": type,
+                "status": "enabled"
+              };
+  chai.request(server)
+    .put('/api/items')
+    .set('x-access-token', token)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      done();
+    });
+  }
+
+  /*
+   ITEM scenarios
+  */
+
+function postFriendship(done){
+  var data = {
+    "id": cid2
+  };
+  chai.request(server)
+    .post('/api/partnership')
+    .set('x-access-token', token1)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      res.body.message.should.be.a('string');
+      res.body.message.should.equal("Friend request sent");
+      done();
+    });
+  }
+
+function getFriendship(done){
+  chai.request(server)
+    .get('/api/partnership')
+    .set('x-access-token', token2)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      res.body.message.should.have.property('requestsReceived');
+      res.body.message.requestsReceived.should.be.a('array');
+      res.body.message.should.have.property('sentRequests');
+      res.body.message.sentRequests.should.be.a('array');
+      res.body.message.requestsReceived[0].should.be.a('object');
+      res.body.message.requestsReceived[0].should.have.property('id');
+      res.body.message.requestsReceived[0].id._id.should.equal(cid1);
+      done();
+    });
+  }
+
+  function acceptFriendship(done){
     var data = {
-      "adid": adid
-      };
+      "id": cid1,
+      "type": "accept"
+    };
     chai.request(server)
-      .post('/commServer/items/register')
+      .put('/api/partnership')
+      .set('x-access-token', token2)
       .send(data)
       .end(function(err, res){
-        res.should.have.status(400);
+        res.should.have.status(200);
         res.body.should.be.a('object');
+        res.body.message.should.be.a('string');
+        res.body.message.should.equal("Friendship accepted");
         done();
       });
     }
 
-function enableDevice(done){
-var data = {
-              "o_id": oidDev,
-              "typeOfItem": "device",
-              "status": "enabled"
-            };
-chai.request(server)
-  .put('/api/items')
-  .set('x-access-token', token1)
-  .send(data)
-  .end(function(err, res){
-    res.should.have.status(200);
-    res.body.should.be.a('object');
-    done();
-  });
-}
-
-function enableService(done){
-var data = {
-              "o_id": oidSer,
-              "typeOfItem": "device",
-              "status": "enabled"
-            };
-chai.request(server)
-  .put('/api/items')
-  .set('x-access-token', token2)
-  .send(data)
-  .end(function(err, res){
-    res.should.have.status(200);
-    res.body.should.be.a('object');
-    done();
-  });
-}
+    function notFoundFriendship(done){
+      chai.request(server)
+        .get('/api/partnership')
+        .set('x-access-token', token2)
+        .end(function(err, res){
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('error');
+          res.body.error.should.equal(false);
+          done();
+        });
+      }

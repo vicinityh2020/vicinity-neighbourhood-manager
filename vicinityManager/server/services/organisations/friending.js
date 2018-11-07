@@ -240,7 +240,12 @@ function friendshipFeeds(my_id, callback){
     var feeds = {};
     feeds.requestsReceived = myFeeds.knowsRequestsFrom;
     feeds.sentRequests = myFeeds.knowsRequestsTo;
-    callback(false, feeds);
+    if(feeds.requestsReceived.length + feeds.sentRequests.length > 0){
+      callback(false, feeds);
+    } else {
+      // No friendship requests found
+      callback(false, false);
+    }
   })
   .catch(function(err){
     callback(true, err);
