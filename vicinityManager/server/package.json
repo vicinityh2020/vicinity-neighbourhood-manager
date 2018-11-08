@@ -5,7 +5,9 @@
   "description": "Information service for VICITNITY neighbourhood manager",
   "scripts": {
     "start": "nodemon ./bin/www",
-    "test": "nyc mocha './test/**/*.spec.js'"
+    "test": "nyc mocha './test/**/*.spec.js'",
+    "complexity": "grunt complexity:modules",
+    "complexity_detail": "grunt complexity:functions"
   },
   "repository": {
     "type": "git",
@@ -45,6 +47,8 @@
     "chai-http": "^4.2.0",
     "eslint": "^2.10.2",
     "eslint-config-google": "^0.5.0",
+    "grunt": "^1.0.3",
+    "grunt-complexity": "^1.1.0",
     "mocha": "^5.2.0"
   }
 }
