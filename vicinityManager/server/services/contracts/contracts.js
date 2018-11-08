@@ -238,6 +238,7 @@ function contractFeeds(uid, callback){
         openContracts.push(response.hasContracts[i]);
       }
     }
+    openContracts = openContracts.length > 0 ? openContracts : false;
     callback(false, openContracts);
   })
   .catch(function(err){
@@ -261,9 +262,10 @@ function contractInfo(req, res, callback){
     var data = response.toObject();
     if(!response){
       logger.log(req, res, {type: 'warn', data: "The contract with: " + JSON.stringify(query) + " could not be found"});
-      callback(false, "The contract with: " + JSON.stringify(query) + " could not be found...");
+      callback(false, false);
     } else if(!uidInContract(uid, data)) {
       logger.log(req, res, {type: 'warn', data: "You are not part of the contract with ctid: " + data.ctid});
+      res.status(401);
       callback(false, "You are not part of the contract with ctid: " + data.ctid);
     } else {
       callback(false, response);

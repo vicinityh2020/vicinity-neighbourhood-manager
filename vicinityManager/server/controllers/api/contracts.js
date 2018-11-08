@@ -18,6 +18,7 @@ Contracts --------------------------------------------------
 exports.contractFeeds = function(req, res, next) {
   ctHelper.contractFeeds(req.body.decoded_token.uid, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
+    if(!response) res.status(404);
     res.json({error: err, message: response});
   });
 };
@@ -47,7 +48,7 @@ exports.contractValidItems = function(req, res, next) {
   var api = true; // Call origin api or webApp
   sGetItems.getMyContractItems(req, res, api, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
-    if(!response) res.status(404);
+    if(response.length === 0) res.status(404);
     res.json({error: err, message: response});
   });
 };
@@ -144,7 +145,7 @@ exports.manageContract = function(req, res, next) {
       } else {
           ctHelper.accepting(req, res, function(err, response){
           if(err) logger.log(req, res, {type: 'error', data: response});
-          res.json({error: err, message: response});
+          res.json({error: err, message: 'Contract accepted'});
         });
       }
     });

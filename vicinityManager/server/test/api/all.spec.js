@@ -17,18 +17,28 @@ var uuid = require('uuid');
 chai.use(chaiHttp);
 
 // Global variables
-var token, token1, token2;
-var login1, login2;
-var uid1, uid2;
-var cid1, cid2;
-var adid1, adid2;
-var oidDev, oidSer;
+var token, token1, token2; // Auth token for 3 orgs involved (Admin, org1, org2)
+var login1, login2; // Login ids of org1 and org2
+var uid1, uid2; // user ids of org1 and org2
+var cid1, cid2; // company id of org1 and org2
+var adid1, adid2; // agent id of org1 and org2
+var oidDev, oidSer; // device and service id
+var ctObj = {}; // contract post request object
+var ctid; // contract id
 
 // tests
 // before(function() {
 // });
 
-// TODO test all error codes and special cases
+/*
+  This test scenario represents the normal basic behaviour of a new organsation.
+  -  Register ORGANISATION
+  -  Register AGENT
+  -  Register ITEMS
+  -  Make FRIENDSHIPS
+  -  Create CONTRACTS
+  -  Remove ALL
+*/
 describe('Full test scenario', function(){
   it('Get wrong password error', loginWrongPassword);
   it('Get wrong username error', loginWrongName);
@@ -57,13 +67,19 @@ describe('Full test scenario', function(){
   it('Update organisation-2 token, new roles...', loginSuccess2);
   it('Create node-2', createNode2);
   it('Register a service', registerService);
-  it('Enable a device', enableService);
+  it('Enable a service', enableService);
+  it('Update device visibility', updateDeviceVisibility);
+  it('Update service visibility', updateServiceVisibility);
   it('Not find partnership req', notFoundFriendship);
   it('Request a partnership', postFriendship);
   it('Find partnership requests', getFriendship);
   it('Accept a partnership', acceptFriendship);
-  // TODO check comm server calls
-  // TODO Contracts tests -- change conditions to see reactions (i.e. remove cts)
+  it('Not found contract req', notFoundContract);
+  it('Find devices I can share with the service', getContractValidItems);
+  it('Get my friend info I need to create the contract', getFriendContractingInfo);
+  it('Request a contract', postContract);
+  it('Find contract requests', getContractReq);
+  it('Accept a contract', acceptContract);
   it('Remove organisation-1', removeOrganisation1);
   it('Remove organisation-2', removeOrganisation2);
 });
@@ -535,9 +551,35 @@ function enabling(token, type, done){
     });
   }
 
-  /*
-   ITEM scenarios
-  */
+function updateDeviceVisibility(done){
+  visibilityUpdate(token1, "device", done);
+}
+
+function updateServiceVisibility(done){
+  visibilityUpdate(token2, "service", done);
+}
+
+function visibilityUpdate(token, type, done){
+  var oid = type === "device" ? oidDev : oidSer;
+  var data = {
+                "o_id": oid,
+                "typeOfItem": type,
+                "accessLevel": 2
+              };
+  chai.request(server)
+    .put('/api/items')
+    .set('x-access-token', token)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      done();
+    });
+  }
+
+/*
+ FRIENDSHIP scenarios
+*/
 
 function postFriendship(done){
   var data = {
@@ -574,33 +616,131 @@ function getFriendship(done){
     });
   }
 
-  function acceptFriendship(done){
+function acceptFriendship(done){
+  var data = {
+    "id": cid1,
+    "type": "accept"
+  };
+  chai.request(server)
+    .put('/api/partnership')
+    .set('x-access-token', token2)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      res.body.message.should.be.a('string');
+      res.body.message.should.equal("Friendship accepted");
+      done();
+    });
+  }
+
+  function notFoundFriendship(done){
+    chai.request(server)
+      .get('/api/partnership')
+      .set('x-access-token', token2)
+      .end(function(err, res){
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error');
+        res.body.error.should.equal(false);
+        done();
+      });
+    }
+
+/*
+ CONTRACT scenarios
+*/
+
+  function notFoundContract(done){
+    chai.request(server)
+      .get('/api/contract')
+      .set('x-access-token', token2)
+      .end(function(err, res){
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error');
+        res.body.error.should.equal(false);
+        done();
+      });
+  }
+
+  function getContractValidItems(done){
+    var data = {};
+    chai.request(server)
+      .get('/api/contract/validItems/' + cid2 + "/" + oidSer)
+      .set('x-access-token', token1)
+      .end(function(err, res){
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        // Start Building contract req obj
+        data = res.body.message[0];
+        ctObj.readWrite = false;
+        ctObj.cidDevice = {id: data.cid.id._id, extid: data.cid.extid, name: data.cid.id.name};
+        ctObj.uidsDevice = [{ id: data.uid.id ,extid: data.uid.extid}];
+        ctObj.oidsDevice = [{ id: data._id, extid: data.oid, name: data.name}];
+        done();
+      });
+  }
+
+  function getFriendContractingInfo(done){
+    var data = {};
+    chai.request(server)
+      .get('/api/organisation/' + cid2 + "/items")
+      .set('x-access-token', token1)
+      .end(function(err, res){
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        // Finish Building contract req obj
+        data = res.body.message[0];
+        ctObj.cidService = {id: data.cid.id._id, extid: data.cid.extid, name: data.cid.id.name};
+        ctObj.uidsService = [{ id: data.uid.id ,extid: data.uid.extid}];
+        ctObj.oidsService = [{ id: data._id, extid: data.oid, name: data.name}];
+        ctObj.contractingUser = {id: data.uid.id ,extid: data.uid.extid};
+        done();
+      });
+  }
+
+  function postContract(done){
+    chai.request(server)
+      .post('/api/contract')
+      .set('x-access-token', token1)
+      .send(ctObj)
+      .end(function(err, res){
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.message.should.be.a('string');
+        res.body.message.should.equal('Contract posted, waiting for approval');
+        done();
+      });
+  }
+
+  function getContractReq(done){
+    chai.request(server)
+      .get('/api/contract')
+      .set('x-access-token', token2)
+      .end(function(err, res){
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message');
+        res.body.message.should.be.a('array');
+        ctid = res.body.message[0].id;
+        done();
+      });
+  }
+
+  function acceptContract(done){
     var data = {
-      "id": cid1,
       "type": "accept"
     };
     chai.request(server)
-      .put('/api/partnership')
+      .put('/api/contract/' + ctid)
       .set('x-access-token', token2)
       .send(data)
       .end(function(err, res){
         res.should.have.status(200);
         res.body.should.be.a('object');
         res.body.message.should.be.a('string');
-        res.body.message.should.equal("Friendship accepted");
+        res.body.message.should.equal('Contract accepted');
         done();
       });
     }
-
-    function notFoundFriendship(done){
-      chai.request(server)
-        .get('/api/partnership')
-        .set('x-access-token', token2)
-        .end(function(err, res){
-          res.should.have.status(404);
-          res.body.should.be.a('object');
-          res.body.should.have.property('error');
-          res.body.error.should.equal(false);
-          done();
-        });
-      }
