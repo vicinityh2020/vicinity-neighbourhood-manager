@@ -5,7 +5,7 @@
   "description": "Information service for VICITNITY neighbourhood manager",
   "scripts": {
     "start": "nodemon ./bin/www",
-    "test": "mocha './test/**/*.spec.js'"
+    "test": "nyc mocha './test/**/*.spec.js'"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
     "nan": "2.0.9",
     "nodemailer": "^2.5.0",
     "nodemon": "^1.18.3",
+    "nyc": "^13.1.0",
     "request": "^2.87.0",
     "request-debug": "^0.2.0",
     "request-promise": "^4.2.2",
