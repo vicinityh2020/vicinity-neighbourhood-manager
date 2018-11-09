@@ -8,7 +8,7 @@ var sLogin = require("../../services/login/login");
  *
  * @param {Object} data
  * password, userName
- * @return {String} token
+ * @return {String} token, cid, uid
  */
 exports.authenticate = function(req, res, next) {
   sLogin.authenticate(req, res, function(err, response, data){

@@ -1,7 +1,3 @@
-//During the test the env variable is set to test
-process.env.env = 'test';
-process.env.VCNT_MNGR_DB = "mongodb://test:test@138.201.156.73:27017/vicinity_neighbourhood_manager_test";
-
 //Require the dev-dependencies
 var chai = require('chai');
 var chaiHttp = require('chai-http');
@@ -40,8 +36,6 @@ var ctid; // contract id
   -  Remove ALL
 */
 describe('Full test scenario', function(){
-  it('Get wrong password error', loginWrongPassword);
-  it('Get wrong username error', loginWrongName);
   it('Generate admin token...', loginSuccess);
   // it('it should get body validation error', createOrganisation);
   it('Create a organisation-1', createOrganisation);
@@ -137,36 +131,6 @@ function login(data, org, done){
       done();
     });
   }
-
-function loginWrongPassword(done){
-   var data = {
-      username: "admin@admin.com",
-      password: "wrongPwd"
-    };
-   chai.request(server)
-      .post('/api/authenticate')
-      .send(data)
-      .end(function(err, res){
-        res.should.have.status(401);
-        res.body.should.be.a('object');
-        done();
-      });
-}
-
-function loginWrongName(done){
-   var data = {
-      username: "wrong@wrong.com",
-      password: "password"
-    };
-   chai.request(server)
-      .post('/api/authenticate')
-      .send(data)
-      .end(function(err, res){
-        res.should.have.status(404);
-        res.body.should.be.a('object');
-        done();
-      });
-}
 
 /*
  ORGANISATION scenarios
