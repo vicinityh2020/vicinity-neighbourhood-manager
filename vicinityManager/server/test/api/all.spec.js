@@ -296,7 +296,7 @@ function updateUserMetadata(done){
     .set('x-access-token', token1)
     .send(data)
     .end(function(err, res){
-      res.should.have.status(201);
+      res.should.have.status(200);
       res.body.should.be.a('object');
       res.body.should.have.property('success');
       res.body.success.should.equal(true);
@@ -328,7 +328,7 @@ function updVisibility(data, uid, token, done){
   .set('x-access-token', token)
   .send(data)
   .end(function(err, res){
-    res.should.have.status(201);
+    res.should.have.status(200);
     res.body.should.be.a('object');
     res.body.should.have.property('success');
     res.body.success.should.equal(true);
@@ -360,7 +360,7 @@ function updRole(data, uid, token, done){
     .set('x-access-token', token)
     .send(data)
     .end(function(err, res){
-      res.should.have.status(201);
+      res.should.have.status(200);
       res.body.should.be.a('object');
       res.body.should.have.property('success');
       res.body.success.should.equal(true);

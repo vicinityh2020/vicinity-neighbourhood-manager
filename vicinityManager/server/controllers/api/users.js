@@ -17,7 +17,7 @@ Users --------------------------------------------------
 exports.getUser = function(req, res, next) {
   sGetUser.getUserInfo(req, res, function(err, response){
     if(err) logger.log(req, res, {type: 'error', data: response});
-    if(!response) res.status(404);
+    if(!Object.keys(response).length) res.status(404);
     res.json({error: err, message: response});
   });
 };
@@ -58,7 +58,7 @@ exports.createUser = function(req, res, next) {
       if(err){
         logger.log(req, res, {type:'error', data: response});
       } else {
-        res.status(202);
+        res.status(200);
         logger.log(req, res, {type:'audit', data: response});
       }
       res.json({"error": err, "message": response});
@@ -108,7 +108,7 @@ exports.updateUser = function(req, res, next) {
             logger.log(req, res, {type: 'warn', data: response});
             res.json({error: err, message: response, success: success});
           } else {
-            res.status(201);
+            res.status(200);
             logger.log(req, res, {type: 'audit', data: "User updated: " + response.email});
             res.json({error: err, message: "User updated: " + response.email, success: success});
           }

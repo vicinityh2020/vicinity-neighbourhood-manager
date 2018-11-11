@@ -22,6 +22,7 @@ function getUserInfo(req, res, callback) {
   userAccountOp.findOne({_id: myCid}, {knows:1})
   .then(function(response){
     if(!response){
+      res.status(401);
       callback(false, 'Wrong cid provided...');
     } else {
       getIds(response.knows, friends);
@@ -39,7 +40,8 @@ function getUserInfo(req, res, callback) {
             data.authentication.principalRoles = null;
             callback(false, data);
           } else {
-            if(err) logger.log(req, res, {type: 'warn', data: 'Not authorized to see the user'});
+            logger.log(req, res, {type: 'warn', data: 'Not authorized to see the user'});
+            res.status(401);
             callback(false, {});
           }
         }
