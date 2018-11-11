@@ -72,7 +72,7 @@ function create(req, res, callback){
                       finalRes.push(allresult[item].data);
                       if(allresult[item].result === 'Success'){someSuccess = true;}
                     }
-                    res.status(201);
+                    res.status(200);
                     logger.log(req, res, {type: 'audit', data: allresult});
                     callback(false, finalRes, true);
                     // console.timeEnd("ALL REGISTRATION EXECUTION");
@@ -159,7 +159,7 @@ function create(req, res, callback){
                         finalRes.push(allresult[item].data);
                         if(allresult[item].result === 'Success'){someSuccess = true;}
                       }
-                      res.status(201);
+                      res.status(200);
                       logger.log(req, res, {type: 'audit', data: allresult});
                       callback(false, finalRes, true);
                       // console.timeEnd("ALL REGISTRATION EXECUTION");

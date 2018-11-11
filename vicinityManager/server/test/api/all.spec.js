@@ -58,6 +58,7 @@ describe('Full test scenario', function(){
     it('Get a deviceErrorWrongAgid when registering', registerDeviceNoAgid);
     it('Get a deviceErrorNoData when registering', registerDeviceNoData);
     it('Register a device', registerDevice);
+    it('Fails to update an item', itemFailedUpdate);
     it('Enable a device', enableDevice);
   });
   describe('Creating organisation 2...', function(){
@@ -74,6 +75,7 @@ describe('Full test scenario', function(){
     it('Create node-2', createNode2);
     it('Register a service', registerService);
     it('Enable a service', enableService);
+    it('Fails to update visibility - unauthorized', itemFailedUnauthorized);
     it('Update device visibility', updateDeviceVisibility);
     it('Update service visibility', updateServiceVisibility);
   });
@@ -399,7 +401,7 @@ function createNode1(done){
       .set('x-access-token', token)
       .send(data)
       .end(function(err, res){
-        res.should.have.status(202);
+        res.should.have.status(200);
         res.body.should.be.a('object');
         res.body.should.have.property('error');
         res.body.error.should.equal(false);
@@ -493,7 +495,7 @@ function registerService(done){
       .post('/commServer/items/register')
       .send(data)
       .end(function(err, res){
-        res.should.have.status(201);
+        res.should.have.status(200);
         res.body.should.be.a('object');
         res.body.should.have.property('error');
         res.body.error.should.equal(false);
@@ -593,6 +595,38 @@ function visibilityUpdate(token, type, done){
       done();
     });
   }
+
+  function itemFailedUpdate(done){
+    var data = {
+                  "o_id": oidDev
+                };
+    chai.request(server)
+      .put('/api/items')
+      .set('x-access-token', token1)
+      .send(data)
+      .end(function(err, res){
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        done();
+      });
+    }
+
+  function itemFailedUnauthorized(done){
+    var data = {
+                  "o_id": oidSer,
+                  "typeOfItem": "service",
+                  "accessLevel": 2
+                };
+    chai.request(server)
+      .put('/api/items')
+      .set('x-access-token', token1)
+      .send(data)
+      .end(function(err, res){
+        res.should.have.status(401);
+        res.body.should.be.a('object');
+        done();
+      });
+    }
 
 /*
  FRIENDSHIP scenarios

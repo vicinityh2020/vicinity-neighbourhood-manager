@@ -59,7 +59,7 @@ exports.getAgentItems = function(req, res, next) {
 exports.createAgent = function(req, res, next) {
   sCreateNode.postOne(req, res, function(err, response, success){
     if(err) logger.log(req, res, {type: 'error', data: response});
-    if(success) res.status(202);
+    if(success) res.status(200);
       res.json({error: err, message: response, success: success});
   });
 };
