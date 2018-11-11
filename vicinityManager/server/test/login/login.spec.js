@@ -25,7 +25,7 @@ describe('Authentication test scenario', function(){
   it('Get wrong password error - 401', loginWrongPassword);
   it('Get wrong username error - 404', loginWrongName);
   it('Get missing fields - 400', loginMissingField);
-  it('Generate token successfully', loginSuccess);
+  it('Generate token successfully - 200', loginSuccess);
 });
 
 // *************** Functions ***************

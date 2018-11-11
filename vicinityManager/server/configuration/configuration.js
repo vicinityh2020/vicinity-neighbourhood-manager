@@ -20,6 +20,7 @@ config.commServerUrl = process.env.commServerUrl;
 
 //URL Semantic Repository
 config.semanticRepoUrl = process.env.semanticRepoUrl;
+
 if(process.env.enabledAdapters){
   config.enabledAdapters = process.env.enabledAdapters.split(' ');
 } else {

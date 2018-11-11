@@ -23,8 +23,9 @@ Receives following parameters:
 function getOrgItems(req, res, api, callback) {
   var cid = mongoose.Types.ObjectId(req.params.cid);
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  var limit = req.query.limit === 'undefined' ? 0 : req.query.limit;
-  var offset = req.query.offset === 'undefined' ? 0 : req.query.offset;
+  var limit = typeof req.query.limit === 'undefined' ? 25 : req.query.limit;
+  limit = limit > 25 ? 25 : limit; // Max limit
+  var offset = typeof req.query.offset === 'undefined' ? 0 : req.query.offset;
   var type = (req.query.type !== "device" && req.query.type !== "service") ? "all" : req.query.type;
   var query;
   var projection;
@@ -90,7 +91,7 @@ function getMyContractItems(req, res, api, callback) {
   userAccountOp.findOne(cid, {knows: 1})
   .then(function(response){
     var friends = [];
-    if(response.knows !== 'undefined'){
+    if(typeof response.knows !== 'undefined'){
         getIds(response.knows, friends);
     }
 

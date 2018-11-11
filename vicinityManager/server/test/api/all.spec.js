@@ -37,45 +37,66 @@ var ctid; // contract id
 */
 describe('Full test scenario', function(){
   it('Generate admin token...', loginSuccess);
-  // it('it should get body validation error', createOrganisation);
-  it('Create a organisation-1', createOrganisation);
-  it('Generate organisation-1 token...', loginSuccess1);
-  it('Get organisation-1 data', getOrganisation);
-  it('Get user-1 info', getUser);
-  it('Throw nodeNoRoles error', createNodeNoRoles);
-  it('Update user name', updateUserMetadata);
-  it('Update user-1 roles', updateUserRole1);
-  it('Update organisation-1 token, new roles...', loginSuccess1);
-  it('Update user-1 visibility', updateUserVisibility1);
-  it('Throw a nodeNoPassword error', createNodeNoPassword);
-  it('Create node-1', createNode1);
-  it('Get a deviceErrorWrongAgid when registering', registerDeviceNoAgid);
-  it('Get a deviceErrorNoData when registering', registerDeviceNoData);
-  it('Register a device', registerDevice);
-  it('Enable a device', enableDevice);
-  it('Create a organisation-2', createOrganisation);
-  it('Generate company-2 token...', loginSuccess2);
-  it('Get user-2 info', getUser);
-  it('Update user-2 roles', updateUserRole2);
-  it('Update user-2 visibility', updateUserVisibility2);
-  it('Update organisation-2 token, new roles...', loginSuccess2);
-  it('Create node-2', createNode2);
-  it('Register a service', registerService);
-  it('Enable a service', enableService);
-  it('Update device visibility', updateDeviceVisibility);
-  it('Update service visibility', updateServiceVisibility);
-  it('Not find partnership req', notFoundFriendship);
-  it('Request a partnership', postFriendship);
-  it('Find partnership requests', getFriendship);
-  it('Accept a partnership', acceptFriendship);
-  it('Not found contract req', notFoundContract);
-  it('Find devices I can share with the service', getContractValidItems);
-  it('Get my friend info I need to create the contract', getFriendContractingInfo);
-  it('Request a contract', postContract);
-  it('Find contract requests', getContractReq);
-  it('Accept a contract', acceptContract);
-  it('Remove organisation-1', removeOrganisation1);
-  it('Remove organisation-2', removeOrganisation2);
+  describe('Creating organisation 1 + test errors...', function(){
+    it('Error body validation creating organisation', createOrganisationErrorBody);
+    it('Create a organisation-1', createOrganisation);
+    it('Generate organisation-1 token...', loginSuccess1);
+    it('Get organisation-1 data', getOrganisation);
+    it('Get unauthorized', getOrganisationUnauth);
+  });
+  describe('Setting user 1 + test errors...', function(){
+    it('Get user-1 info', getUser);
+    it('Throw nodeNoRoles error', createNodeNoRoles);
+    it('Update user name', updateUserMetadata);
+    it('Update user-1 roles', updateUserRole1);
+    it('Update organisation-1 token, new roles...', loginSuccess1);
+    it('Update user-1 visibility', updateUserVisibility1);
+  });
+  describe('Setting infrastructure 1 + test errors...', function(){
+    it('Throw a nodeNoPassword error', createNodeNoPassword);
+    it('Create node-1', createNode1);
+    it('Get a deviceErrorWrongAgid when registering', registerDeviceNoAgid);
+    it('Get a deviceErrorNoData when registering', registerDeviceNoData);
+    it('Register a device', registerDevice);
+    it('Enable a device', enableDevice);
+  });
+  describe('Creating organisation 2...', function(){
+    it('Create a organisation-2', createOrganisation);
+    it('Generate company-2 token...', loginSuccess2);
+  });
+  describe('Setting user 2...', function(){
+    it('Get user-2 info', getUser);
+    it('Update user-2 roles', updateUserRole2);
+    it('Update user-2 visibility', updateUserVisibility2);
+    it('Update organisation-2 token, new roles...', loginSuccess2);
+  });
+  describe('Setting infrastructure 2...', function(){
+    it('Create node-2', createNode2);
+    it('Register a service', registerService);
+    it('Enable a service', enableService);
+    it('Update device visibility', updateDeviceVisibility);
+    it('Update service visibility', updateServiceVisibility);
+  });
+  describe('Making partnership + test errors...', function(){
+    it('Not find any friends', notFindFriends);
+    it('Not find partnership req', notFoundFriendship);
+    it('Request a partnership', postFriendship);
+    it('Find partnership requests', getFriendship);
+    it('Accept a partnership', acceptFriendship);
+    it('Find any friends', findFriends);
+  });
+  describe('Making contract + test errors...', function(){
+    it('Not found contract req', notFoundContract);
+    it('Find devices I can share with the service', getContractValidItems);
+    it('Get my friend info I need to create the contract', getFriendContractingInfo);
+    it('Request a contract', postContract);
+    it('Find contract requests', getContractReq);
+    it('Accept a contract', acceptContract);
+  });
+  describe('Remove organisations...', function(){
+    it('Remove organisation-1', removeOrganisation1);
+    it('Remove organisation-2', removeOrganisation2);
+  });
 });
 
 // *************** Functions ***************
@@ -167,6 +188,29 @@ function createOrganisation(done){
     });
   }
 
+  function createOrganisationErrorBody(done){
+    var data = {
+        "user": {
+          "userName": "test"
+        },
+        "organisation": {
+          "companyName": "test_" + uuid(),
+          "companyLocation": "test"
+        }
+      };
+    chai.request(server)
+      .post('/api/organisation/auto')
+      .set('x-access-token', token)
+      .send(data)
+      .end(function(err, res){
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error');
+        res.body.error.should.equal(true);
+        done();
+      });
+  }
+
   function getOrganisation(done){
     chai.request(server)
       .get('/api/organisation')
@@ -176,6 +220,15 @@ function createOrganisation(done){
         res.body.should.be.a('object');
         res.body.message.should.have.property('cid');
         res.body.message.cid.should.be.a('string');
+        done();
+      });
+    }
+
+  function getOrganisationUnauth(done){
+    chai.request(server)
+      .get('/api/organisation')
+      .end(function(err, res){
+        res.should.have.status(401);
         done();
       });
     }
@@ -610,6 +663,32 @@ function acceptFriendship(done){
         done();
       });
     }
+
+function findFriends(done){
+  chai.request(server)
+    .get('/api/organisation/friends')
+    .set('x-access-token', token1)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error');
+      res.body.error.should.equal(false);
+      done();
+    });
+}
+
+function notFindFriends(done){
+  chai.request(server)
+    .get('/api/organisation/friends')
+    .set('x-access-token', token1)
+    .end(function(err, res){
+      res.should.have.status(404);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error');
+      res.body.error.should.equal(false);
+      done();
+    });
+}
 
 /*
  CONTRACT scenarios

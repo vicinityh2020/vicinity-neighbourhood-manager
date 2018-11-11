@@ -1,9 +1,8 @@
 var jwt = require('jwt-simple');
 var config = require('../configuration/configuration');
-var logger = require("../middlewares/logger");
+var logger = require("../middlewares/logBuilder");
 
 module.exports = function(req, res, next) {
- // logger.info('JWTAuth middleware');
 
   var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
 
@@ -18,12 +17,12 @@ module.exports = function(req, res, next) {
         return next();
       }
     } catch (err) {
-      logger.debug("JWT Validation error: " + err.text);
+      logger.log(req, res, {type: 'error', data: "JWT Validation error: " + err.text});
       return res.sendStatus(401);
     }
   } else {
-    logger.debug("No token!!");
+    logger.log(req, res, {type: 'debug', data: "No token!!"});
     return res.sendStatus(401);
   }
-  logger.info('JWTAuth done');
+  // logger.log(req, res, {type: 'info', data: "JWTAuth done"});
 };

@@ -3,7 +3,6 @@
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logBuilder");
 var userAccountOp = require("../../models/vicinityManager").userAccount;
-
 var sRegister = require("../../services/registrations/register.js");
 var sGetUser = require("../../services/users/getUsers");
 var sGetItems = require("../../services/items/get");
@@ -49,13 +48,17 @@ exports.getOrganisations = function(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = 0; // 0 all, 1 friends, else not friends
   var api = true;
-  var offset = 0;
-  var limit = 0;
+  var offset = typeof req.query.offset === 'undefined' ? 0 : req.query.offset;
+  var limit = typeof req.query.limit === 'undefined' ? 25 : req.query.limit;
+  if (typeof offset != "number" || typeof limit != "number") {
+    res.status(400).json({error: false, message: "Query parameters must be number"});
+  }
+  limit = limit > 25 ? 25 : limit; // Max limit
   sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
     if(err){
       logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
-    } else if(!response){
+    } else if(response.length === 0){
       res.status(404).json({error: false, message: "Organisations not found"});
     } else {
       res.json({error: false, message: response});
@@ -74,13 +77,17 @@ exports.getFriends = function(req, res, next) {
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = 1; // 0 all, 1 friends, else not friends
   var api = true;
-  var offset = 0;
-  var limit = 0;
+  var offset = typeof req.query.offset === 'undefined' ? 0 : req.query.offset;
+  var limit = typeof req.query.limit === 'undefined' ? 25 : req.query.limit;
+  if (typeof offset !== "number" || typeof limit !== "number") {
+    res.status(400).json({error: false, message: "Query parameters must be number"});
+  }
+  limit = limit > 25 ? 25 : limit; // Max limit
   sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
     if(err){
       logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
-    } else if(!response){
+    } else if(response.length === 0){
       res.status(404).json({error: false, message: "Organisations not found"});
     } else {
       res.json({error: false, message: response});
@@ -97,7 +104,7 @@ exports.getFriends = function(req, res, next) {
  */
 exports.getUsers = function(req, res, next) {
   var api = true;
-  if(othercid == null){
+  if(req.params.cid == null){
     res.status(400);
     logger.log(req, res, {type: 'warn', data: "Missing organisation ID"});
     res.json({error: false, message: "Missing organisation ID"});
@@ -116,7 +123,7 @@ exports.getUsers = function(req, res, next) {
 };
 
 /**
- * Get organisation users
+ * Get organisation items
  *
  * @param {String} cid
  * @param {String} type (query)
@@ -136,7 +143,7 @@ exports.getItems = function(req, res, next) {
       if(err){
         logger.log(req, res, {type: 'error', data: err});
         res.json({error: true, message: 'Server error'});
-      } else if(!response){
+      } else if(response.length === 0){
         res.status(404).json({error: false, message: "Items not found"});
       } else {
         res.json({error: false, message: response});
@@ -198,7 +205,7 @@ exports.createOrganisation = function(req, res, next) {
             if(err){
               logger.log(req, res, {type: 'error', data: response});
             } else {
-              res.status(202);
+              res.status(200);
               logger.log(req, res, {type: 'audit', data: response});
             }
             res.json({error: err, message: response});
