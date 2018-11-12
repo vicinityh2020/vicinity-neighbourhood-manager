@@ -27,6 +27,7 @@ exports.getMyOrganisation = function(req, res, next){
   var cid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   userAccountOp.findOne({_id: cid}, {name:1, cid:1, accountOf:1, knows:1, hasNodes:1}, function(err, response){
     if(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
     } else if(!response){
@@ -56,6 +57,7 @@ exports.getOrganisations = function(req, res, next) {
   limit = limit > 25 ? 25 : limit; // Max limit
   sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
     if(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
     } else if(response.length === 0){
@@ -85,6 +87,7 @@ exports.getFriends = function(req, res, next) {
   limit = limit > 25 ? 25 : limit; // Max limit
   sGetOrganisation.getAll(cid, type, offset, limit, api, function(err, response){
     if(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
     } else if(response.length === 0){
@@ -111,6 +114,7 @@ exports.getUsers = function(req, res, next) {
   } else {
     sGetUser.getAll(req, res, api, function(err,response){
       if(err){
+        res.status(500);
         logger.log(req, res, {type: 'error', data: err});
         res.json({error: true, message: 'Server error'});
       } else if(!response){
@@ -141,6 +145,7 @@ exports.getItems = function(req, res, next) {
   } else {
     sGetItems.getOrgItems(req, res, api, function(err, response){
       if(err){
+        res.status(500);
         logger.log(req, res, {type: 'error', data: err});
         res.json({error: true, message: 'Server error'});
       } else if(response.length === 0){
@@ -164,6 +169,7 @@ exports.getAgents = function(req, res, next) {
   var api = true; // Call origin api or webApp
   sGetAgents.getOrgAgents(mycid, api, function(err, response){
     if(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
     } else if(!response){
@@ -198,11 +204,12 @@ exports.createOrganisation = function(req, res, next) {
     if(!dup){
       sRegister.validateBody(data, false, function(err, response){
         if(err){
-          res.status(400);
+          res.status(500);
           res.json({error: err, message: response});
         } else {
           sRegister.requestReg(req, res, function(err, response){
             if(err){
+              res.status(500);
               logger.log(req, res, {type: 'error', data: response});
             } else {
               res.status(200);
@@ -219,6 +226,7 @@ exports.createOrganisation = function(req, res, next) {
       res.json(finalRes);
     }
   }).catch(function(err){
+    res.status(500);
     logger.log(req, res, {type: 'error', data: err});
     res.json({error: true, message: err});
   });
@@ -243,7 +251,10 @@ exports.createOrganisationAuto = function(req, res, next){
         sRegister.validateBody(req.body, true, function(err, response){
           if(!err){
             sRegister.fastRegistration(req, res, function(err, response){
-              if(err) logger.log(req, res, {type: 'error', data: response});
+              if(err) {
+                res.status(500);
+                logger.log(req, res, {type: 'error', data: response});
+              }
                 res.json({error: err, message: response});
             });
           } else {
@@ -259,6 +270,7 @@ exports.createOrganisationAuto = function(req, res, next){
       }
     })
     .catch(function(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: err});
       res.json({error: true, message: 'Server error'});
     });
@@ -284,6 +296,7 @@ exports.removeOrganisation = function(req, res, next) {
   } else {
     sOrgConfiguration.remove(req, res, function(err, response){
       if(err){
+        res.status(500);
         logger.log(req, res, {type: 'error', data: response});
       } else {
         logger.log(req, res, {type: 'audit', data: response});

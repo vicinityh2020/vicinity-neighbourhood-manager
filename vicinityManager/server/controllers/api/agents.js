@@ -23,6 +23,7 @@ exports.getAgentItems = function(req, res, next) {
   var adid = req.params.id;
   nodeOp.findOne({adid:adid}, {cid:1}, function(err, response){
     if(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: response});
       res.json({error: true, message: response});
     } else if(!response) {
@@ -32,7 +33,7 @@ exports.getAgentItems = function(req, res, next) {
     } else {
       if(response.cid.extid === req.body.decoded_token.cid){
         sGetNodeItems.getNodeItems(adid, function(err, response){
-          if(!response) res.status(204);
+          if(response.length === 0) res.status(404);
           res.json({error: err, message: response});
         });
       } else {
@@ -58,9 +59,12 @@ exports.getAgentItems = function(req, res, next) {
  */
 exports.createAgent = function(req, res, next) {
   sCreateNode.postOne(req, res, function(err, response, success){
-    if(err) logger.log(req, res, {type: 'error', data: response});
+    if(err) {
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+    }
     if(success) res.status(200);
-      res.json({error: err, message: response, success: success});
+    res.json({error: err, message: response, success: success});
   });
 };
 
@@ -85,6 +89,7 @@ exports.removeAgent = function(req, res, next) {
   }
   nodeOp.findOne({adid:agid[0]}, {cid:1}, function(err, response){
     if(err){
+      res.status(500);
       res.json({error: true, message: err});
     } else if(!response) {
       res.status(404);
@@ -95,6 +100,7 @@ exports.removeAgent = function(req, res, next) {
         .then(function(response){
           res.json({'error': false, 'message': response});})
         .catch(function(err){
+          res.status(500);
           res.json({'error': true, 'message': err});});
       } else {
         res.status(401);

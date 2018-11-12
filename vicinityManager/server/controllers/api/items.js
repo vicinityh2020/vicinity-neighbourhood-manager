@@ -30,6 +30,7 @@ exports.validateItemDescription = function(req, res, next){
     res.json(JSON.parse(response));
   })
   .catch(function(error){
+    res.status(500);
     logger.log(req, res, {type: 'error', data: error});
     res.json({error: true, message: error});
   });
@@ -49,6 +50,7 @@ exports.getAnnotations = function(req, res, next){
     res.json(JSON.parse(response));
   })
   .catch(function(error){
+    res.status(500);
     logger.log(req, res, {type: 'error', data: error});
     res.json({error: true, message: error});
   });
@@ -68,21 +70,25 @@ exports.updateItem = function(req, res, next) {
     } else {
       if(req.body.multi){
        sItemUpdate.updateManyItems(req, res, function(value, err, success, response){
+        if(err) res.status(500);
         if(!err) res.status(200);
         res.json({error: err, message: response, success: success, id: value});
        });
       }else if(req.body.status === 'enabled'){
         sItemUpdate.enableItem(req, res, function(value, err, success, response){
+          if(err) res.status(500);
           if(!success) res.status(401);
           res.json({error: err, message: response, success: success, id: value});
         });
       }else if(req.body.status === 'disabled'){
         sItemUpdate.disableItem(req, res, function(value, err, success, response){
+          if(err) res.status(500);
           if(!success) res.status(401);
           res.json({error: err, message: response, success: success, id: value});
         });
       }else{
         sItemUpdate.updateItem(req, res, function(value, err, success, response){
+          if(err) res.status(500);
           if(!success) res.status(401);
           res.json({error: err, message: response, success: success, id: value});
         });

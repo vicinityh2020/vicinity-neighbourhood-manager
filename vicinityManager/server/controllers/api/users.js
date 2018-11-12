@@ -16,7 +16,10 @@ Users --------------------------------------------------
 
 exports.getUser = function(req, res, next) {
   sGetUser.getUserInfo(req, res, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
+    if(err) {
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+    }
     if(!Object.keys(response).length) res.status(404);
     res.json({error: err, message: response});
   });
@@ -36,7 +39,10 @@ exports.getUserItems = function(req, res, next) {
   var myCid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var type = (req.query.type === undefined || (req.query.type !== "device" && req.query.type !== "service")) ? "all" : req.query.type;
   sGetItems.getUserItems(reqId, reqCid, myCid, type, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
+    if(err) {
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+    }
     res.json({error: err, message: response});
   });
 };
@@ -56,6 +62,7 @@ exports.createUser = function(req, res, next) {
   } else {
     sInviteUser.postOne(req, res, function(err, response){
       if(err){
+        res.status(500);
         logger.log(req, res, {type:'error', data: response});
       } else {
         res.status(200);
@@ -85,6 +92,7 @@ exports.updateUser = function(req, res, next) {
 
   userOp.findOne({_id:o_id}, {email:1, cid:1}, function(err, response){
     if(err){
+      res.status(500);
       res.json({error: true, message: err, success: false});
     } else if((response.email === userMail) || (response.cid.extid === cid && roles.indexOf('administrator') !== -1)) {
       if(type === 'undefined' || type === ""){
@@ -101,6 +109,7 @@ exports.updateUser = function(req, res, next) {
           res: res
         }, function(err, response, success){
           if(err){
+            res.status(500);
             logger.log(req, res, {type: 'error', data: response});
             res.json({error: err, message: response, success: success});
           } else if(!success){
@@ -160,6 +169,7 @@ exports.removeUser = function(req, res, next) {
       res.json({'error': false, 'message': finalRes});
     })
     .catch(function(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: err});
       res.json({'error': true, 'message': err});
     });
