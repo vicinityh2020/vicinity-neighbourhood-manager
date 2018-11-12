@@ -82,19 +82,26 @@ Gets all items that I can share with other organisation:
 - Item Id of the item I am requesting
 */
 function getMyContractItems(req, res, api, callback) {
-  var cid = mongoose.Types.ObjectId(req.params.cid);
-  var oid = mongoose.Types.ObjectId(req.params.oid);
+// TODO use oid !!!  var oid = mongoose.Types.ObjectId(req.params.oid);
+  var cid, queryCid;
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var query;
   var projection;
+  try{
+    cid = mongoose.Types.ObjectId(req.params.cid);
+    queryCid = {_id: cid};
+  } catch(err) {
+    cid = req.params.cid;
+    queryCid = {cid: cid};
+  }
 
-  userAccountOp.findOne(cid, {knows: 1})
+  userAccountOp.findOne(queryCid, {knows: 1, cid: 1})
   .then(function(response){
+    cid = response._id;
     var friends = [];
     if(typeof response.knows !== 'undefined'){
         getIds(response.knows, friends);
     }
-
     if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
       if(api){
         logger.log(req, res, {type: 'warn', data: 'You cannot request a contract with your own devices, choose a service from a different organisation'});
@@ -131,15 +138,24 @@ function getMyContractItems(req, res, api, callback) {
 * Get the items that are sharing data with a certain service
 */
 function getItemsContracted(req, res, api, callback) {
-  var oid = req.params.oid;
+  var oid;
   var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var oids = [];
-  itemOp.count({oid: oid, 'cid.id': mycid})
+  try{
+    oid = mongoose.Types.ObjectId(req.params.oid);
+    queryOid = {_id: oid, 'cid.id': mycid};
+  } catch(err) {
+    oid = req.params.oid;
+    queryOid = {oid: oid, 'cid.id': mycid};
+  }
+
+  itemOp.findOne(queryOid, {oid: 1})
   .then(function(response){
-    if(response === 0 ){
+    if(!response){
       logger.log(req, res, {type: 'warn', data: 'The service is not yours'});
       callback(true, 'The service is not yours');
     }
+    oid = response.oid;
     return commServer.callCommServer({}, 'users/' + oid + '/roster', 'GET');
   })
   .then(function(response){

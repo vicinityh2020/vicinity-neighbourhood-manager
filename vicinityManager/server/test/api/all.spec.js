@@ -17,7 +17,7 @@ var token, token1, token2; // Auth token for 3 orgs involved (Admin, org1, org2)
 var login1, login2; // Login ids of org1 and org2
 var uid1, uid2; // user ids of org1 and org2
 var cid1, cid2; // company id of org1 and org2
-var adid1, adid2; // agent id of org1 and org2
+var adid1, adid2, adidtest; // agent id of org1 and org2
 var oidDev, oidSer; // device and service id
 var ctObj = {}; // contract post request object
 var ctid; // contract id
@@ -55,9 +55,14 @@ describe('Full test scenario', function(){
   describe('Setting infrastructure 1 + test errors...', function(){
     it('Throw a nodeNoPassword error', createNodeNoPassword);
     it('Create node-1', createNode1);
+    it('Create node-to-delete', createNodeTest);
+    it('Remove node-to-delete', removeNodeTest);
+    it('Remove node-to-delete not found', removeNodeTestNotFound);
     it('Get a deviceErrorWrongAgid when registering', registerDeviceNoAgid);
     it('Get a deviceErrorNoData when registering', registerDeviceNoData);
+    it('Get agent items not found error', getAgentItemsNotFound);
     it('Register a device', registerDevice);
+    it('Get agent items successfully', getAgentItemsSuccess);
     it('Fails to update an item', itemFailedUpdate);
     it('Enable a device', enableDevice);
   });
@@ -71,7 +76,8 @@ describe('Full test scenario', function(){
     it('Update user-2 visibility', updateUserVisibility2);
     it('Update organisation-2 token, new roles...', loginSuccess2);
   });
-  describe('Setting infrastructure 2...', function(){
+  describe('Setting infrastructure 2 + test error...', function(){
+    it('Get agent items unauthorized error', getAgentItemsUnauthorized);
     it('Create node-2', createNode2);
     it('Register a service', registerService);
     it('Enable a service', enableService);
@@ -380,6 +386,15 @@ function updRole(data, uid, token, done){
  AGENT scenarios
 */
 
+function createNodeTest(done){
+  var data = {
+    "name": "RemoveAgent",
+    "type": "sharq",
+    "password": "password"
+  };
+  createNode(data, 0, done);
+  }
+
 function createNode1(done){
   var data = {
     "name": "testAgent",
@@ -400,7 +415,7 @@ function createNode1(done){
 
   function createNode(data, org, done){
     var token;
-    if(org === 1){ token = token1;}
+    if(org <= 1){ token = token1;}
     else{token = token2;}
     chai.request(server)
       .post('/api/agents')
@@ -416,6 +431,7 @@ function createNode1(done){
         res.body.message.should.have.property('adid');
         res.body.message.should.have.property('id');
         if(org === 1){ adid1 = res.body.message.adid; }
+        if(org === 0){ adidtest = res.body.message.id; } // Test to remove (using mongoId)
         else{ adid2 = res.body.message.adid; }
         done();
       });
@@ -457,6 +473,52 @@ function createNodeNoPassword(done){
       done();
     });
   }
+
+function removeNodeTest(done){
+  chai.request(server)
+    .delete("/api/agents/" + adidtest)
+    .set('x-access-token', token1)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      done();
+    });
+}
+
+function removeNodeTestNotFound(done){
+  chai.request(server)
+    .delete("/api/agents/" + adidtest)
+    .set('x-access-token', token1)
+    .end(function(err, res){
+      res.should.have.status(404);
+      res.body.should.be.a('object');
+      done();
+    });
+}
+
+function getAgentItemsSuccess(done){
+  getAgentItems(token1, adid1, 200, done);
+}
+
+function getAgentItemsNotFound(done){
+  getAgentItems(token1, "1234-5678-90", 404, done);
+}
+
+function getAgentItemsUnauthorized(done){
+  getAgentItems(token2, adid1, 401, done);
+}
+
+function getAgentItems(token, adid, code, done){
+  chai.request(server)
+    .get("/api/agents/" + adid + "/items")
+    .set('x-access-token', token)
+    .end(function(err, res){
+      res.should.have.status(code);
+      res.body.should.be.a('object');
+      done();
+    });
+  }
+
 
 /*
  ITEM scenarios

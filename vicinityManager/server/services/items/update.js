@@ -66,13 +66,16 @@ function enableItem(req, res, callback){
   var userId = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var roles = req.body.decoded_token.roles;
   var oid;
-  var o_id = data.o_id;
+  var o_id;
+  var idQuery = checkId(data.o_id);
   var query = {};
 
   // Previous accessLevel always 0 -- Private (Disabled)
   data.accessLevel = 0;
 
-  itemOp.findOne({_id:o_id}, {cid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
+  itemOp.findOne(idQuery, {cid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
+    oid = response.oid;
+    o_id = response._id;
     data.cid = response.cid.extid;
     oid = response.oid;
     var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, userMail, data.cid, false); // There is no uid when enabling
@@ -128,16 +131,18 @@ function disableItem(req, res, callback){
   var userId;
   var roles = req.body.decoded_token.roles;
   var oid;
-  var o_id = data.o_id;
+  var o_id;
+  var idQuery = checkId(data.o_id);
   var query = {};
 
   // Previous accessLevel always 0 -- Private (Disabled)
   data.accessLevel = 0;
 
-  itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
+  itemOp.findOne(idQuery, {cid:1, uid:1, oid:1}, function(err, response){ // Get item creds to avoid forging
     data.uid = response.uid.extid;
     userId = response.uid.id;
     oid = response.oid;
+    o_id = response._id;
     data.cid = response.cid.extid;
     var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, data.uid, data.cid, true);
     if(canChange.error){
@@ -196,15 +201,17 @@ function updateItem(req, res, callback){
   var userId = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var roles = req.body.decoded_token.roles;
   var oid;
-  var o_id = data.o_id;
+  var o_id;
+  var idQuery = checkId(data.o_id);
   var query = {};
   var oldAccessLevel;
 
-  itemOp.findOne({_id:o_id}, {cid:1, uid:1, oid:1, status:1}, function(err, response){ // Get item creds to avoid forging
+  itemOp.findOne(idQuery, {cid:1, uid:1, oid:1, status:1}, function(err, response){ // Get item creds to avoid forging
     var status = response.status;
     if(status === 'enabled') data.uid = response.uid.extid;
     data.cid = response.cid.extid;
     oid = response.oid;
+    o_id = response._id;
     var canChange = checkUserAuth(roles, userMail, cid, data.typeOfItem, data.uid, data.cid, false);
     if(canChange.error){
       logger.log(req, res, {type: 'error', data: canChange.continue});
@@ -344,6 +351,19 @@ function checkUserAuth(roles, tokenUser, tokenCid, typeOfItem, itemUser, itemCid
     return {error: false, continue: imAdmin || canChangeSer || canChangeDev};
   }catch(err){
     return {error: true, continue: err};
+  }
+}
+
+/*
+Check if primary id or external id
+*/
+function checkId(id){
+  var adid;
+  try{
+    adid = mongoose.Types.ObjectId(id);
+    return {_id: adid};
+  } catch(err) {
+    return {oid: id};
   }
 }
 

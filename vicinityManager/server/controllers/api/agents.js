@@ -20,8 +20,9 @@ Agents --------------------------------------------------
  * @return {Object} TDs -- Array of Objects, adid -- String
  */
 exports.getAgentItems = function(req, res, next) {
-  var adid = req.params.id;
-  nodeOp.findOne({adid:adid}, {cid:1}, function(err, response){
+  var idQuery = checkId(req.params.id);
+  var adid;
+  nodeOp.findOne(idQuery, {cid:1, adid: 1}, function(err, response){
     if(err){
       res.status(500);
       logger.log(req, res, {type: 'error', data: response});
@@ -31,6 +32,7 @@ exports.getAgentItems = function(req, res, next) {
       logger.log(req, res, {type: 'warn', data: 'Agent not found'});
       res.json({error: false, message: response});
     } else {
+      adid = response.adid;
       if(response.cid.extid === req.body.decoded_token.cid){
         sGetNodeItems.getNodeItems(adid, function(err, response){
           if(response.length === 0) res.status(404);
@@ -76,8 +78,10 @@ exports.createAgent = function(req, res, next) {
  * @return {Object} AGID and status
  */
 exports.removeAgent = function(req, res, next) {
+  var idQuery = {};
+  idQuery = checkId(req.params.id);
+  idQuery.status = { $ne: "deleted" };
   var agid = [];
-  agid.push(req.params.id);
   var company_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   var cid = req.body.decoded_token.cid;
   if(req.body.decoded_token){
@@ -87,7 +91,7 @@ exports.removeAgent = function(req, res, next) {
     req.body = {};
     req.body.decoded_token = {sub : null, uid: null};
   }
-  nodeOp.findOne({adid:agid[0]}, {cid:1}, function(err, response){
+  nodeOp.findOne(idQuery, {cid:1, adid: 1}, function(err, response){
     if(err){
       res.status(500);
       res.json({error: true, message: err});
@@ -96,6 +100,7 @@ exports.removeAgent = function(req, res, next) {
       res.json({error: false, message: "Agent not found"});
     } else {
       if(response.cid.extid === req.body.decoded_token.cid){
+        agid.push(response.adid);
         sRemoveNode.deleteNode(agid, req, res)
         .then(function(response){
           res.json({'error': false, 'message': response});})
@@ -109,3 +114,12 @@ exports.removeAgent = function(req, res, next) {
     }
   });
 };
+
+function checkId(id){
+  try{
+    var new_id = mongoose.Types.ObjectId(id);
+    return {"_id": new_id };
+  } catch(err) {
+    return { "adid": id };
+  }
+}

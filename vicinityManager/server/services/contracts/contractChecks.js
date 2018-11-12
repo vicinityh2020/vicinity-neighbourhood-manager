@@ -81,7 +81,7 @@ Is the case of user is no contract admin and has no items in it
 */
 function checkContracts(userId, userMail){
   return new Promise(function(resolve, reject) {
-    var user_id =  mongoose.Types.ObjectId(userId);
+    var user_id = mongoose.Types.ObjectId(userId);
     var ctids_notAdmin = [];
     userOp.findOne({_id: user_id}, {hasContracts:1} )
     .then(function(response){
@@ -210,8 +210,15 @@ function removeUserFromContract(ctids, uid, mail){
 Check that I am part of the contract
 */
 function imContractingParty(ctid, uid){
+  var id, query;
+  try{
+    id = mongoose.Types.ObjectId(ctid);
+    query = {_id: uid, 'hasContracts.id': id};
+  } catch(err) {
+    query = {_id: uid, 'hasContracts.extid': ctid};
+  }
   return new Promise(function(resolve, reject) {
-    userOp.findOne({_id: uid, 'hasContracts.id': ctid}, {hasContracts:1})
+    userOp.findOne(query, {hasContracts:1})
     .then(function(response){
       if(response){ resolve(true); } else { resolve(false); }
     })
@@ -226,8 +233,15 @@ function imContractingParty(ctid, uid){
 Check that I am a contracting party and the contract awaits my approval
 */
 function iHaveToApproveContract(ctid, uid){
+  var id, query;
+  try{
+    id = mongoose.Types.ObjectId(ctid);
+    query = {_id: uid, 'hasContracts.id': id, 'hasContracts.approved': false};
+  } catch(err) {
+    query = {_id: uid, 'hasContracts.extid': ctid, 'hasContracts.approved': false};
+  }
   return new Promise(function(resolve, reject) {
-    userOp.findOne({_id: uid, 'hasContracts.id': ctid, 'hasContracts.approved': false}, {hasContracts:1})
+    userOp.findOne(query , {hasContracts:1})
     .then(function(response){
       if(response){ resolve(true); } else { resolve(false); }
     })
