@@ -82,9 +82,15 @@ describe('Full test scenario', function(){
   describe('Making partnership + test errors...', function(){
     it('Not find any friends', notFindFriends);
     it('Not find partnership req', notFoundFriendship);
+    it('Error no friendship to cancel', cancelFriendshipError);
     it('Request a partnership', postFriendship);
+    it('Error already requesting a partnership', postFriendshipError);
     it('Find partnership requests', getFriendship);
     it('Accept a partnership', acceptFriendship);
+    it('Error already friends', postFriendshipError);
+    it('Error already friends, cannot reject', rejectFriendshipError);
+    it('Error wrong friendship type', wrongFriendshipType);
+    it('Error already accepted friendship', acceptFriendshipError);
     it('Find any friends', findFriends);
   });
   describe('Making contract + test errors...', function(){
@@ -649,6 +655,22 @@ function postFriendship(done){
     });
   }
 
+  function postFriendshipError(done){
+    var data = {
+      "id": cid2
+    };
+    chai.request(server)
+      .post('/api/partnership')
+      .set('x-access-token', token1)
+      .send(data)
+      .end(function(err, res){
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        res.body.message.should.be.a('string');
+        done();
+      });
+    }
+
 function getFriendship(done){
   chai.request(server)
     .get('/api/partnership')
@@ -681,6 +703,75 @@ function acceptFriendship(done){
       res.body.should.be.a('object');
       res.body.message.should.be.a('string');
       res.body.message.should.equal("Friendship accepted");
+      done();
+    });
+  }
+
+  function acceptFriendshipError(done){
+    var data = {
+      "id": cid1,
+      "type": "accept"
+    };
+    chai.request(server)
+      .put('/api/partnership')
+      .set('x-access-token', token2)
+      .send(data)
+      .end(function(err, res){
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        res.body.message.should.be.a('string');
+        done();
+      });
+    }
+
+function cancelFriendshipError(done){
+  var data = {
+    "id": cid1,
+    "type": "cancel"
+  };
+  chai.request(server)
+    .put('/api/partnership')
+    .set('x-access-token', token2)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(400);
+      res.body.should.be.a('object');
+      res.body.message.should.be.a('string');
+      done();
+    });
+  }
+
+function rejectFriendshipError(done){
+  var data = {
+    "id": cid1,
+    "type": "reject"
+  };
+  chai.request(server)
+    .put('/api/partnership')
+    .set('x-access-token', token2)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(400);
+      res.body.should.be.a('object');
+      res.body.message.should.be.a('string');
+      done();
+    });
+  }
+
+function wrongFriendshipType(done){
+  var data = {
+    "id": cid1,
+    "type": "wrongType"
+  };
+  chai.request(server)
+    .put('/api/partnership')
+    .set('x-access-token', token2)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(400);
+      res.body.should.be.a('object');
+      res.body.message.should.be.a('string');
+      res.body.message.should.equal("Wrong type");
       done();
     });
   }

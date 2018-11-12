@@ -39,6 +39,7 @@ exports.requestPartnership = function(req, res, next) {
   var my_uid = req.body.decoded_token.uid;
   sFriending.friendshipStatus(my_id, friend_id.toString(), function(err, response){
     if(err){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: response});
       res.json({"error": true, "message": err });
     } else if(response.imFriend){
@@ -52,6 +53,7 @@ exports.requestPartnership = function(req, res, next) {
     } else {
       sFriending.processFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
         if(err){
+          res.status(500);
           logger.log(req, res, {type: 'error', data: response});
         } else {
           logger.log(req, res, {action: 'audit', data: {info: "Friend request sent", actor: my_mail}});
@@ -78,6 +80,7 @@ exports.managePartnership = function(req, res, next) {
   var type = req.body.type;
   sFriending.friendshipStatus(my_id, friend_id.toString(), function(err, response){
     if(err){
+      res.status(500);
       res.json({"error": true, "message": err });
     } else {
       switch(type) {
@@ -101,6 +104,7 @@ exports.managePartnership = function(req, res, next) {
           if(response.haveReq){
               sFriending.rejectFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
                 if(err){
+                  res.status(500);
                   logger.log(req, res, {type: 'error', data: response});
                 } else {
                   logger.log(req, res, {action: 'audit', data: {info: "Friend request rejected", actor: my_mail}});
@@ -117,6 +121,7 @@ exports.managePartnership = function(req, res, next) {
             if(response.sentReq){
               sFriending.cancelFriendRequest(friend_id, my_id, my_mail, my_uid, function(err, response){
                 if(err){
+                  res.status(500);
                   logger.log(req, res, {type: 'error', data: response});
                 } else {
                   logger.log(req, res, {action: 'audit', data: {info: "Friend request cancelled", actor: my_mail}});
@@ -133,6 +138,7 @@ exports.managePartnership = function(req, res, next) {
             if(response.imFriend){
               sFriending.cancelFriendship(friend_id, my_id, my_mail, my_uid, function(err, response){
                 if(err){
+                  res.status(500);
                   logger.log(req, res, {type: 'error', data: response});
                 } else {
                   logger.log(req, res, {action: 'audit', data: {info: "Cancel friend request", actor: my_mail}});
