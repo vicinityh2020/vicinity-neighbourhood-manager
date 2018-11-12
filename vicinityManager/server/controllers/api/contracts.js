@@ -17,7 +17,10 @@ Contracts --------------------------------------------------
  */
 exports.contractFeeds = function(req, res, next) {
   ctHelper.contractFeeds(req.body.decoded_token.uid, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
+    if(err){
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+    }
     if(!response) res.status(404);
     res.json({error: err, message: response});
   });
@@ -31,7 +34,10 @@ exports.contractFeeds = function(req, res, next) {
  */
 exports.contractInfo = function(req, res, next) {
   ctHelper.contractInfo(req, res, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
+    if(err) {
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+    }
     if(!response) res.status(404);
     res.json({error: err, message: response});
   });
@@ -47,7 +53,10 @@ exports.contractInfo = function(req, res, next) {
 exports.contractValidItems = function(req, res, next) {
   var api = true; // Call origin api or webApp
   sGetItems.getMyContractItems(req, res, api, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
+    if(err) {
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+    }
     if(response.length === 0) res.status(404);
     res.json({error: err, message: response});
   });
@@ -62,7 +71,10 @@ exports.contractValidItems = function(req, res, next) {
 exports.contractContractedItems = function(req, res, next) {
   var api = true; // Call origin api or webApp
   sGetItems.getItemsContracted(req, res, api, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
+    if(err) {
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+    }
     if(!response) res.status(404);
     res.json({error: err, message: response});
   });
@@ -88,15 +100,23 @@ exports.requestContract = function(req, res, next) {
   var roles = req.body.decoded_token.roles;
   ctChecks.postCheck(data, roles, cid, function(error, response, success){
     if(error){
+      res.status(500);
       logger.log(req, res, {type: 'error', data: response});
       res.json({error: error, message: response});
     } else if(!success){
-      res.status(400);
+      if(response === "Some items cannot be shared"){
+        res.status(400);
+      } else {
+        res.status(403);
+      }
       logger.log(req, res, {type: 'warn', data: response});
       res.json({error: error, message: response});
     } else {
       ctHelper.creating(req, res, function(err, response){
-        if(err) logger.log(req, res, {type: 'error', data: response});
+        if(err) {
+          res.status(500);
+          logger.log(req, res, {type: 'error', data: response});
+        }
         res.json({error: err, message: response});
       });
     }
@@ -119,15 +139,19 @@ exports.manageContract = function(req, res, next) {
     id = req.params.id;
     ctChecks.deleteCheck(id, uid, cid, function(error, response, success){
       if(error){
+        res.status(500);
         logger.log(req, res, {type: 'error', data: response});
         res.json({error: error, message: response});
       } else if(!success){
-        res.status(400);
+        res.status(401);
         logger.log(req, res, {type: 'warn', data: response});
         res.json({error: error, message: response});
       } else {
         ctHelper.removing(req, res, function(err, response){
-          if(err) logger.log(req, res, {type: 'error', data: response});
+          if(err) {
+            res.status(500);
+            logger.log(req, res, {type: 'error', data: response});
+          }
           res.json({error: err, message: "Contract successfully removed"});
         });
       }
@@ -136,15 +160,19 @@ exports.manageContract = function(req, res, next) {
     id = req.params.id;
     ctChecks.acceptCheck(id, uid, cid, function(error, response, success){
       if(error){
+        res.status(500);
         logger.log(req, res, {type: 'error', data: response});
         res.json({error: error, message: response});
       } else if(!success){
-        res.status(400);
+        res.status(401);
         logger.log(req, res, {type: 'warn', data: response});
         res.json({error: error, message: response});
       } else {
           ctHelper.accepting(req, res, function(err, response){
-          if(err) logger.log(req, res, {type: 'error', data: response});
+          if(err) {
+            res.status(500);
+            logger.log(req, res, {type: 'error', data: response});
+          }
           res.json({error: err, message: 'Contract accepted'});
         });
       }
