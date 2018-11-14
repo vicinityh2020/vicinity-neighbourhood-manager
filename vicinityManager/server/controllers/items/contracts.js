@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logBuilder");
+var ctChecks = require("../../services/contracts/contractChecks.js");
 var ctHelper = require("../../services/contracts/contracts.js");
 var contractOp = require('../../models/vicinityManager').contract;
 var userOp = require('../../models/vicinityManager').user;
@@ -20,6 +21,9 @@ function createContract(req, res){
         if(err) logger.log(req, res, {type: 'error', data: response});
         res.json({error: err, message: response});
       });
+    } else {
+      res.status(400);
+      res.json({error: false, message: 'Contract must be unique'});
     }
   });
 }
