@@ -82,8 +82,14 @@ function ($scope, $stateParams, $state, $window, $q, commonHelpers, itemsAPIServ
           $state.go("root.main.allServices");
         })
         .catch(function(error){
-          console.log(error);
-          Notification.error('Problem processing the contract');
+          if(error.status === 400){
+            Notification.warning('A contract with the same items already exists!');
+            $state.go("root.main.allServices");
+          } else {
+            console.log(error);
+            Notification.error('Problem processing the contract');
+            $state.go("root.main.allServices");
+          }
         });
       } else {
         Notification.warning('Select some device to proceed');
