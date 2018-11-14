@@ -103,9 +103,16 @@ describe('Full test scenario', function(){
     it('Not found contract req', notFoundContract);
     it('Find devices I can share with the service', getContractValidItems);
     it('Get my friend info I need to create the contract', getFriendContractingInfo);
-    it('Request a contract', postContract);
-    it('Find contract requests', getContractReq);
-    it('Accept a contract', acceptContract);
+    it('Request a contract (CTID)', postContract);
+    it('Find contract requests (CTID)', getContractReqCtid);
+    it('Accept a contract (CTID)', acceptContract);
+    it('Request a contract duplicated error 400', postContractDuplicated);
+    it('Delete a contract', deleteContract);
+    it('Not found contract req', notFoundContract);
+    // TODO debug('If next line fails consider race condition caused by test suite');
+    it('Request a contract (MONGO ID)', postContract);
+    it('Find contract requests (MONGO ID)', getContractReq);
+    it('Accept a contract (MONGO ID)', acceptContract);
   });
   describe('Remove organisations...', function(){
     it('Remove organisation-1', removeOrganisation1);
@@ -944,6 +951,34 @@ function notFindFriends(done){
       });
   }
 
+  function postContractDuplicated(done){
+    chai.request(server)
+      .post('/api/contract')
+      .set('x-access-token', token1)
+      .send(ctObj)
+      .end(function(err, res){
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        res.body.message.should.be.a('string');
+        res.body.message.should.equal('Contract duplicated');
+        done();
+      });
+  }
+
+  function getContractReqCtid(done){
+    chai.request(server)
+      .get('/api/contract')
+      .set('x-access-token', token2)
+      .end(function(err, res){
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message');
+        res.body.message.should.be.a('array');
+        ctid = res.body.message[0].extid;
+        done();
+      });
+  }
+
   function getContractReq(done){
     chai.request(server)
       .get('/api/contract')
@@ -974,3 +1009,20 @@ function notFindFriends(done){
         done();
       });
     }
+
+    function deleteContract(done){
+      var data = {
+        "type": "delete"
+      };
+      chai.request(server)
+        .put('/api/contract/' + ctid)
+        .set('x-access-token', token2)
+        .send(data)
+        .end(function(err, res){
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.message.should.be.a('string');
+          res.body.message.should.equal('Contract successfully removed');
+          done();
+        });
+      }

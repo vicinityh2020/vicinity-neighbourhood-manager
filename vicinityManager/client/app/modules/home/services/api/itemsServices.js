@@ -68,9 +68,9 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
     return $http.put(configuration.apiUrl + '/items/contract/' + id + '/accept');
   };
 
-  itemsAPI.modifyContract = function(id, payload){
-    return $http.put(configuration.apiUrl + '/items/contract/' + id + '/modify', payload);
-  };
+  // itemsAPI.modifyContract = function(id, payload){
+  //   return $http.put(configuration.apiUrl + '/items/contract/' + id + '/modify', payload);
+  // };
 
   itemsAPI.removeContract = function(id){
     return $http.delete(configuration.apiUrl + '/items/contract/' + id);

@@ -131,6 +131,7 @@ function creating(req, res, callback){
 
 /**
 Accept a contract request
+Input id (MONGO) or CTID, both supported
 * @return {Callback}
 */
 function accepting(req, res, callback){
@@ -138,28 +139,33 @@ function accepting(req, res, callback){
   var token_uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var token_mail = req.body.decoded_token.sub;
 
+  // Build queries (accept id or ctid)
+  var queryId = checkInput(id);
+  var queryLong = checkInput2(id);
+  queryLong._id = token_uid;
+
   var imAdmin = null;
   var imForeign = null;
   var updItem = {};
   var items = [];
   var query = {};
-  userOp.findOneAndUpdate({"_id": token_uid, "hasContracts.id" :id},
+  userOp.findOneAndUpdate(queryLong,
                           {$set: { "hasContracts.$.approved" : true, "hasContracts.$.inactive": [] }}, {new:true})
   .then(function(response){
     for(var i = 0; i < response.hasContracts.length; i ++){
-      if(response.hasContracts[i].id.toString() === id.toString()){
+      if(response.hasContracts[i].id.toString() === id.toString() || response.hasContracts[i].extid === id){
         imAdmin = response.hasContracts[i].imAdmin;
         imForeign = response.hasContracts[i].imForeign;
       }
     }
     if(imAdmin && imForeign){
       query = { $set: {"foreignIot.termsAndConditions": true} };
-      return contractOp.findOneAndUpdate({"_id": id}, query, {new: true});
+      return contractOp.findOneAndUpdate(queryId, query, {new: true});
     } else if(imAdmin && !imForeign){
       query = { $set: {"iotOwner.termsAndConditions": true} };
-      return contractOp.findOneAndUpdate({"_id": id}, query, {new: true});
+      return contractOp.findOneAndUpdate(queryId, query, {new: true});
     } else {
-      return contractOp.findOne({"_id": id});
+      return contractOp.findOne(queryId);
     }
   })
   .then(function(response){
@@ -197,13 +203,18 @@ function removing(req, res, callback){
   var token_uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var token_mail = req.body.decoded_token.sub;
 
+  // Build queries (accept id or ctid)
+  var queryId = checkInput(id);
+  var queryLong = checkInput2(id);
+  queryLong._id = token_uid;
+
   var data = {}; var ctid = {};
   var imForeign; var imAdmin;
 
-  userOp.findOne({"_id": token_uid, "hasContracts.id" :id}, {hasContracts:1})
+  userOp.findOne(queryLong, {hasContracts:1})
   .then(function(response){
     for(var i = 0; i < response.hasContracts.length; i ++){
-      if(response.hasContracts[i].id.toString() === id.toString()){
+      if(response.hasContracts[i].id.toString() === id.toString() || response.hasContracts[i].extid === id){
         imAdmin = response.hasContracts[i].imAdmin;
         imForeign = response.hasContracts[i].imForeign;
       }
@@ -586,15 +597,17 @@ Remove whole contract
 function removeAllContract(id, token_uid, token_mail){
   var users = []; var items = [];
   var data = {}; var ctid = {};
+  var queryId = checkInput(id);
+
   return new Promise(function(resolve, reject) {
-    contractOp.findOne({_id:id})
+    contractOp.findOne(queryId)
     .then(function(response){
       var query = {
         foreignIot:{}, iotOwner:{},
         legalDescription: "", status: "deleted"
       };
       data = response.toObject(); // Get rid of metadata
-      return contractOp.update({_id:id}, {$set: query});
+      return contractOp.update(queryId, {$set: query});
     })
     .then(function(response){
       return cancelContract(data.ctid);
@@ -630,15 +643,19 @@ Remove a user in a contract
 */
 function removeOneUser(req, res, imForeign){
   var id = req.params.id;
+  var queryId = checkInput(id);
   var uid = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   var mail = req.body.decoded_token.sub;
   var items = []; var items_id = []; var items_oid = [];
   var query = {}; var ctid; var data = {};
   return new Promise(function(resolve, reject) {
+    // Build pulling ct query based on if service owner or not
     if(imForeign){ query = { $pull: {"foreignIot.uid": {id: uid} } }; }
     else { query = { $pull: {"iotOwner.uid": {id: uid} } }; }
-    contractOp.findOneAndUpdate({"_id": id}, query, {new: true})
+    // Start process
+    contractOp.findOneAndUpdate(queryId, query, {new: true})
     .then(function(response){
+      id = response._id; // Recover _id (Case original input was ctid)
       ctid = response.ctid;
       data = response;
       if(imForeign){ getOnlyProp(items, response.foreignIot.items.toObject(), ['id']); }
@@ -650,7 +667,7 @@ function removeOneUser(req, res, imForeign){
       getOnlyProp(items_oid, response, ['oid']);
       if(imForeign){ query = { $pull: {"foreignIot.items": {id: {$in: items_id} } } }; }
       else { query = { $pull: {"iotOwner.items": {id: {$in: items_id} } } }; }
-      return contractOp.update({"_id": id}, query, {multi: true});
+      return contractOp.update(queryId, query, {multi: true});
     })
     .then(function(response){
       return userOp.update({_id: uid}, { $pull: {hasContracts: {id: id} } });
@@ -875,6 +892,16 @@ function checkInput(ctid){
   }
   catch(err){
     return {ctid: ctid};
+  }
+}
+
+function checkInput2(ctid){
+  var id;
+  try{
+    id = mongoose.Types.ObjectId(ctid);
+    return {'hasContracts.id': id};
+  } catch(err) {
+    return {'hasContracts.extid': ctid};
   }
 }
 

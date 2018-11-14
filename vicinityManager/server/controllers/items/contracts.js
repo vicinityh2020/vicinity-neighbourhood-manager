@@ -10,9 +10,17 @@ var userOp = require('../../models/vicinityManager').user;
 Create contracts
 */
 function createContract(req, res){
-  ctHelper.creating(req, res, function(err, response){
-    if(err) logger.log(req, res, {type: 'error', data: response});
-    res.json({error: err, message: response});
+  ctChecks.isUnique(req, res, function(err, response){
+    if(err) {
+      res.status(500);
+      logger.log(req, res, {type: 'error', data: response});
+      res.json({error: err, message: response});
+    } else if(response){ // Contract is unique
+      ctHelper.creating(req, res, function(err, response){
+        if(err) logger.log(req, res, {type: 'error', data: response});
+        res.json({error: err, message: response});
+      });
+    }
   });
 }
 
@@ -29,19 +37,19 @@ function acceptContract(req, res){
 /*
 Modify contracts
 */
-function modifyContract(req, res){
-  ctHelper.removing(req, res, function(err, response){
-    if(err){
-      logger.log(req, res, {type: 'error', data: response});
-      res.json({error: err, message: response});
-    } else {
-      ctHelper.creating(req, res, function(err, response){
-        if(err) logger.log(req, res, {type: 'error', data: response});
-        res.json({error: err, message: response});
-      });
-    }
-  });
-}
+// function modifyContract(req, res){
+//   ctHelper.removing(req, res, function(err, response){
+//     if(err){
+//       logger.log(req, res, {type: 'error', data: response});
+//       res.json({error: err, message: response});
+//     } else {
+//       ctHelper.creating(req, res, function(err, response){
+//         if(err) logger.log(req, res, {type: 'error', data: response});
+//         res.json({error: err, message: response});
+//       });
+//     }
+//   });
+// }
 
 /*
 Delete contracts
@@ -116,7 +124,7 @@ module.exports.fetchContract = fetchContract;
 module.exports.removeContract = removeContract;
 module.exports.createContract = createContract;
 module.exports.acceptContract = acceptContract;
-module.exports.modifyContract = modifyContract;
+// module.exports.modifyContract = modifyContract;
 module.exports.disableOneItem = disableOneItem;
 module.exports.enableOneItem = enableOneItem;
 module.exports.removeOneItem = removeOneItem;

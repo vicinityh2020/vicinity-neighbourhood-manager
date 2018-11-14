@@ -112,12 +112,23 @@ exports.requestContract = function(req, res, next) {
       logger.log(req, res, {type: 'warn', data: response});
       res.json({error: error, message: response});
     } else {
-      ctHelper.creating(req, res, function(err, response){
+      ctChecks.isUnique(req, res, function(err, response){
         if(err) {
           res.status(500);
           logger.log(req, res, {type: 'error', data: response});
+          res.json({error: err, message: response});
+        } else if(response){ // Contract is unique
+          ctHelper.creating(req, res, function(err, response){
+            if(err) {
+              res.status(500);
+              logger.log(req, res, {type: 'error', data: response});
+            }
+            res.json({error: err, message: response});
+          });
+        } else {
+          res.status(400);
+          res.json({error: false, message: 'Contract duplicated'});
         }
-        res.json({error: err, message: response});
       });
     }
   });
@@ -151,8 +162,10 @@ exports.manageContract = function(req, res, next) {
           if(err) {
             res.status(500);
             logger.log(req, res, {type: 'error', data: response});
+            res.json({error: err, message: "Error"});
+          } else {
+            res.json({error: err, message: "Contract successfully removed"});
           }
-          res.json({error: err, message: "Contract successfully removed"});
         });
       }
     });
@@ -172,8 +185,10 @@ exports.manageContract = function(req, res, next) {
           if(err) {
             res.status(500);
             logger.log(req, res, {type: 'error', data: response});
+            res.json({error: err, message: 'Error'});
+          } else {
+            res.json({error: err, message: 'Contract accepted'});
           }
-          res.json({error: err, message: 'Contract accepted'});
         });
       }
     });

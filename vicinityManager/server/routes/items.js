@@ -19,7 +19,7 @@ router
   .post('/contract/enableItem', contractHelper.enableOneItem)
   .post('/contract/removeItem', contractHelper.removeOneItem)
   .put('/contract/:id/accept', contractHelper.acceptContract)
-  .put('/contract/:id/modify', contractHelper.modifyContract)
+  // .put('/contract/:id/modify', contractHelper.modifyContract)
   .delete('/contract/:id', contractHelper.removeContract)
 
 // When userAccount requires devices/services

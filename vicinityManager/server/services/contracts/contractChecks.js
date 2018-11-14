@@ -14,6 +14,39 @@ var sync = require('../../services/asyncHandler/sync');
 
 // Public functions
 
+/**
+* Checks uniqueness of the contract to be created
+* Resolves true if contract would be unique
+* @return {Promise}
+*/
+function isUnique(req, res, callback){
+    var items = [];
+    var cts = {};
+    var unique = true;
+    getOnlyProp(items, req.body.oidsService, ['id']);
+    getOnlyProp(items, req.body.oidsDevice, ['id']);
+    itemOp.find({_id: { $in: items}}, {hasContracts: 1}, function(err, response){
+      if(err) callback(true, false);
+      for(var i = 0, l = response.length; i < l; i++){
+        for(var j = 0, ll = response[i].hasContracts.length; j < ll; j++){
+          if(i === 0){
+            cts[response[i].hasContracts[j].extid] = 1;
+          } else {
+            for(var key in cts){
+              if(key === response[i].hasContracts[j].extid){
+                cts[response[i].hasContracts[j].extid]++;
+              }
+            }
+          }
+        }
+      }
+      for(var k in cts){
+        if(cts[k] === items.length) unique = false;
+      }
+      callback(false, unique);
+    });
+  }
+
 /*
 Check post contract validity
 */
@@ -210,13 +243,8 @@ function removeUserFromContract(ctids, uid, mail){
 Check that I am part of the contract
 */
 function imContractingParty(ctid, uid){
-  var id, query;
-  try{
-    id = mongoose.Types.ObjectId(ctid);
-    query = {_id: uid, 'hasContracts.id': id};
-  } catch(err) {
-    query = {_id: uid, 'hasContracts.extid': ctid};
-  }
+  var query = checkId(ctid);
+  query._id = uid;
   return new Promise(function(resolve, reject) {
     userOp.findOne(query, {hasContracts:1})
     .then(function(response){
@@ -233,20 +261,16 @@ function imContractingParty(ctid, uid){
 Check that I am a contracting party and the contract awaits my approval
 */
 function iHaveToApproveContract(ctid, uid){
-  var id, query;
-  try{
-    id = mongoose.Types.ObjectId(ctid);
-    query = {_id: uid, 'hasContracts.id': id, 'hasContracts.approved': false};
-  } catch(err) {
-    query = {_id: uid, 'hasContracts.extid': ctid, 'hasContracts.approved': false};
-  }
+  var query = checkId(ctid);
+  query._id = uid;
+  query['hasContracts.approved'] = false;
   return new Promise(function(resolve, reject) {
     userOp.findOne(query , {hasContracts:1})
     .then(function(response){
-      if(response){ resolve(true); } else { resolve(false); }
+      if(response){ resolve(true); }
+      else { resolve(false); }
     })
     .catch(function(error){
-      logger.debug(error);
       reject(error);
     });
   });
@@ -310,6 +334,16 @@ function getOnlyIdCondition(items, toAdd){
   }
 }
 
+function checkId(ctid){
+  var id;
+  try{
+    id = mongoose.Types.ObjectId(ctid);
+    return {'hasContracts.id': id};
+  } catch(err) {
+    return {'hasContracts.extid': ctid};
+  }
+}
+
 // modules exports
 
 module.exports.postCheck = postCheck;
@@ -317,3 +351,4 @@ module.exports.deleteCheck = deleteCheck;
 module.exports.acceptCheck = acceptCheck;
 module.exports.checkContracts = checkContracts;
 module.exports.contractValidity = contractValidity;
+module.exports.isUnique = isUnique;
