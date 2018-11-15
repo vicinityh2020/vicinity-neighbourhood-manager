@@ -24,9 +24,16 @@ function getAdditional(data,activeCompany_id,friends){
       var isPrivate = (device.accessLevel === 0);
 
       var imFriend = false;
-      for (var i = 0; i < friends.length; i++){
+      for (var i = 0, ll = friends.length; i < ll; i++){
           if (friends[i].toString() === device.cid.id._id.toString()){
             imFriend = true;
+          }
+      }
+
+      var isContracted = false;
+      for (var j = 0, lll = device.hasContracts.length; j < lll; j++){
+          if (device.hasContracts[j].contractingParty.toString() === activeCompanyStr){
+            isContracted = true;
           }
       }
 
@@ -39,6 +46,7 @@ function getAdditional(data,activeCompany_id,friends){
       deviceWithAdd.imFriend = (imFriend === true && isOwner === false);
       deviceWithAdd.myFriends = friends;
       deviceWithAdd.accessLevelCaption = accessLevelCaption;
+      deviceWithAdd.isContracted = isContracted;
 
       plain_data.push(deviceWithAdd);
     }
@@ -46,7 +54,7 @@ function getAdditional(data,activeCompany_id,friends){
     obj.items = plain_data;
     return obj;
   } catch(err) {
-    obj.error = false;
+    obj.error = true;
     obj.message = err;
     return obj;  }
 }

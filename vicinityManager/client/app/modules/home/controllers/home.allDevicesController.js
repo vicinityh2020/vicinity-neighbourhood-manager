@@ -34,6 +34,8 @@ angular.module('VicinityManagerApp.controllers')
      $scope.loaded = false;
       itemsAPIService.getAllItems($scope.myId, "device", $scope.offset, $scope.filterNumber, ["all"])
       .then(function(response){
+        console.log(response); // REMOVE
+
         for(var i = 0; i < response.data.message.length; i++){
             $scope.devs.push(response.data.message[i]);
         }

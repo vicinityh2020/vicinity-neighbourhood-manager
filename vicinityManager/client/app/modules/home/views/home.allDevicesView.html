@@ -71,19 +71,24 @@
           <img ng-if="dev.adid.type === 'shq'" class="pull-right widget-logo-shq" src="img/logos/shqlogo.png"/>
         </div>
 
-        <div class="widget-user-footer-moreinfo2 bg-gray" ng-show="!dev.isOwner && !dev.imFriend">
+        <div class="widget-user-footer-moreinfo2 bg-gray" ng-show="!dev.isOwner && !dev.imFriend && !dev.isContracted">
              <i class="fa fa-circle-thin fa-lg"></i>
-              &nbsp;<b>Other device</b>
+              &nbsp;<b>Other's Device</b>
         </div>
 
-        <div class="widget-user-footer-moreinfo2 bg-maroon" ng-show="!dev.isOwner && dev.imFriend" >
+        <div class="widget-user-footer-moreinfo2 bg-purple" ng-show="!dev.isOwner && dev.imFriend && !dev.isContracted" >
           <i class="fa fa-circle fa-lg"></i>
-              &nbsp;<b>Friend Device</b>
+              &nbsp;<b>Friend's Device</b>
         </div>
 
-        <div class="widget-user-footer-moreinfo2 bg-teal" ng-show="dev.isOwner">
+        <div class="widget-user-footer-moreinfo2 bg-aqua" ng-show="dev.isOwner">
              <i class="fa fa-user fa-lg"></i>
               &nbsp;<b>My Device</b>
+        </div>
+
+        <div class="widget-user-footer-moreinfo2 bg-olive" ng-show="dev.isContracted">
+             <i class="fa fa-link fa-lg"></i>
+              &nbsp;<b>Contracted Device</b>
         </div>
 
 

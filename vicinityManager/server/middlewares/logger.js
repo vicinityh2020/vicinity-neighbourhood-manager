@@ -60,7 +60,7 @@ if(process.env.env === 'test'){
           // }),
           new winston.transports.File({
               level: 'audit',
-              filename: config.technicalLog,
+              filename: config.technicalLog || "./logs/technical_log.log",
               handleExceptions: true,
               // timestamp: true,
               json: true,
