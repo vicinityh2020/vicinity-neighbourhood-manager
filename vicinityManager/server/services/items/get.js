@@ -394,8 +394,8 @@ function updateQueryWithFilterNumber(q, fN, cid){
           q['hasContracts.contractingParty'] = cid;
           break;
       case 9:
-          q['hasContracts.contractingParty'] = cid;
-          q['cid.id'] = cid;
+          q.$or = [ {'hasContracts.contractingParty': cid},
+                    {'cid.id': cid} ];
           break;
       default:
           break;
