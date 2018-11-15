@@ -19,9 +19,9 @@ angular.module('VicinityManagerApp.controllers')
    $scope.myId = $window.sessionStorage.companyAccountId;
    $scope.offset = 0;
    $scope.allItemsLoaded = false;
-   $scope.filterNumber = 7;
+   $scope.filterNumber = 4;
    $scope.typeOfItem = "devices";
-   $scope.header = "All Devices";
+   $scope.header = "My Devices";
    $scope.isCollapsed = true;
    // Ontology search
    $scope.itemType = "all"; // Store user selection
@@ -35,7 +35,6 @@ angular.module('VicinityManagerApp.controllers')
       itemsAPIService.getAllItems($scope.myId, "device", $scope.offset, $scope.filterNumber, ["all"])
       .then(function(response){
         console.log(response); // REMOVE
-
         for(var i = 0; i < response.data.message.length; i++){
             $scope.devs.push(response.data.message[i]);
         }
@@ -116,6 +115,12 @@ angular.module('VicinityManagerApp.controllers')
             $scope.header = "All public " + $scope.typeOfItem;
             break;
         case 7:
+            $scope.header = "All " + $scope.typeOfItem;
+            break;
+        case 8:
+            $scope.header = "Contracted " + $scope.typeOfItem;
+            break;
+        default:
             $scope.header = "All " + $scope.typeOfItem;
             break;
           }

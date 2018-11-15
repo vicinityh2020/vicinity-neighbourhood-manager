@@ -228,7 +228,6 @@ function getAllItems(cid, type, offset, filterNumber, filterOntology, callback) 
           ]
         };
       }
-
     // Filters oids based on ontology matches to the user selection
     if(filterOntology.length > 1){ query["info.type"] = {$in: filterOntology}; }
     query = updateQueryWithFilterNumber(query, filterNumber, cid);
@@ -390,6 +389,11 @@ function updateQueryWithFilterNumber(q, fN, cid){
           q.accessLevel = 2;
           break;
       case 7:
+          break;
+      case 8:
+          q['hasContracts.contractingParty'] = cid;
+          break;
+      default:
           break;
         }
         return q;

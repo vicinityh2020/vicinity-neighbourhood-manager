@@ -19,9 +19,9 @@ angular.module('VicinityManagerApp.controllers')
        $scope.myUserId = $window.sessionStorage.userAccountId;
        $scope.offset = 0;
        $scope.allItemsLoaded = false;
-       $scope.filterNumber = 7;
+       $scope.filterNumber = 4;
        $scope.typeOfItem = "services";
-       $scope.header = "All Services";
+       $scope.header = "My Services";
        $scope.canRequestService = false;
        $scope.isCollapsed = true;
        // Ontology search
@@ -136,6 +136,9 @@ $scope.refresh = function(value){
             $scope.header = "All public " + $scope.typeOfItem;
             break;
         case 7:
+            $scope.header = "All " + $scope.typeOfItem;
+            break;
+        default:
             $scope.header = "All " + $scope.typeOfItem;
             break;
           }
