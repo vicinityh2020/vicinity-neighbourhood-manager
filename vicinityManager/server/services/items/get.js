@@ -393,6 +393,10 @@ function updateQueryWithFilterNumber(q, fN, cid){
       case 8:
           q['hasContracts.contractingParty'] = cid;
           break;
+      case 9:
+          q['hasContracts.contractingParty'] = cid;
+          q['cid.id'] = cid;
+          break;
       default:
           break;
         }

@@ -120,6 +120,9 @@ angular.module('VicinityManagerApp.controllers')
         case 8:
             $scope.header = "Contracted " + $scope.typeOfItem;
             break;
+        case 9:
+            $scope.header = "Mine & Contracted " + $scope.typeOfItem;
+            break;
         default:
             $scope.header = "All " + $scope.typeOfItem;
             break;
