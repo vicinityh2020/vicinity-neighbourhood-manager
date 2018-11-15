@@ -27,6 +27,7 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAPIServic
   $scope.accessLevel = 0;
   $scope.accessLevelCaption = "";
   $scope.roles = [];
+  $scope.accessLevelNew = 0;
 
   // JQuery variables
   $('a#nameButt').show();
@@ -52,11 +53,6 @@ function ($scope, $window, $stateParams, $location, commonHelpers, userAPIServic
   $('input#editPassNew2Input').hide();
   $('a#edits13').hide();
   $('a#edits23').hide();
-  $('a#accessEdit').show();
-  $('p#accessName').show();
-  $('select#editAccessName').hide();
-  $('a#accessSave').hide();
-  $('a#accessCancel').hide();
 
 // Loading resources
 
@@ -314,36 +310,18 @@ $scope.backToEdit1 = function () {
 /*
 ACCESS LEVEL
 */
-$scope.changeToInputAL = function () {
-  $('a#accessEdit').hide();
-  $('p#accessName').hide();
-  $('select#editAccessName').show();
-  $('a#accessSave').fadeIn('slow');
-  $('a#accessCancel').fadeIn('slow');
-};
-
-$scope.backToEditAL = function () {
-  $('a#accessCancel').fadeOut('slow');
-  $('a#accessSave').fadeOut('slow');
-  $('select#editAccessName').fadeOut('slow');
-  setTimeout(function() {
-    $('a#accessEdit').fadeIn('fast');
-    $('p#accessName').fadeIn('fast');
-  }, 600);
-};
-
 $scope.saveNewAccess = function () {
-  var lvl = Number($('select#editAccessName').val()) - 1;
+  var lvl = Number($scope.accessLevelNew) - 1;
   if($scope.accessLevel > lvl){
     if(confirm('Are you sure? May affect existing contracts.')){  // TODO
-      if(Number($('select#editAccessName').val()) >= 0){
+      if(Number($scope.accessLevelNew) >= 0){
         $scope.saving(lvl);
       }
     } else {
       $scope.backToEditAL();
     }
   } else {
-    if (Number($('select#editAccessName').val()) >= 0){
+    if (Number($scope.accessLevelNew) >= 0){
       $scope.saving(lvl);
     }
   }
@@ -356,7 +334,6 @@ $scope.saving = function(lvl){
     function(response){
       $scope.accessLevel = Number(response.data.message.accessLevel);
       $scope.accessLevelCaption = getCaption($scope.accessLevel);
-      $scope.backToEditAL();
     }
   )
   .catch(function(error){
@@ -369,13 +346,13 @@ function getCaption(lvl){
   var ret;
   switch(lvl) {
     case 0:
-        ret = "Only my organisation";
+        ret = "Private profile";
         break;
     case 1:
-        ret = "Only my friends";
+        ret = "Visible for friends";
         break;
     case 2:
-        ret = "Everyone can see";
+        ret = "Public profile";
         break;
     default:
         ret = "Wrong access level";

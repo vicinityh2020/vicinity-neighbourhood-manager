@@ -19,18 +19,13 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
   $scope.item = {};
   $scope.owner = "";
   $scope.gateway = {};
+  $scope.accessLevelNew = 0;
 
   // initialize DOM
   $('div#moveEdit').show();
   $('a#moveSave').hide();
   $('a#moveCancel').hide();
   $('select#editMoveName').hide();
-  $('a#accessEdit').show();
-  $('a#accessSave').hide();
-  $('a#accessCancel').hide();
-  $('select#editAccessName').hide();
-  $('p#accessName').show();
-
 
 /* INITIALIZATION */
 
@@ -155,28 +150,10 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
 
   //Access Level
 
-  $scope.changeToInput = function () {
-    $('a#accessEdit').hide();
-    $('p#accessName').hide();
-    $('select#editAccessName').show();
-    $('a#accessSave').fadeIn('slow');
-    $('a#accessCancel').fadeIn('slow');
-  };
-
-  $scope.backToEdit = function () {
-    $('a#accessCancel').fadeOut('slow');
-    $('a#accessSave').fadeOut('slow');
-    $('select#editAccessName').fadeOut('slow');
-    setTimeout(function() {
-      $('a#accessEdit').fadeIn('fast');
-      $('p#accessName').fadeIn('fast');
-    }, 600);
-  };
-
   $scope.saveNewAccess = function () {
-    if (Number($('select#editAccessName').val()) !== 0){
+    if (Number($scope.accessLevelNew) !== 0){
         itemsAPIService.putOne(
-          {accessLevel: $('select#editAccessName').val() - 1,
+          {accessLevel: Number($scope.accessLevelNew) - 1,
           typeOfItem: "device",
           o_id: $scope.item._id,
           oid: $scope.item.oid,
@@ -190,7 +167,6 @@ function ($scope, $window, $state, commonHelpers, tokenDecoder, $stateParams, $l
                 Notification.warning("User is unauthorized or access level too low...");
               }
               initData();
-              $scope.backToEdit();
             }
           )
           .catch(function(err){

@@ -45,27 +45,20 @@
               <ul class="list-group list-group-unbordered">
 
                 <!-- Access Level -->
-                <li class="list-group-item" ng-show="itemEnabled">
+                <li class="list-group-item">
                   <i class="fa fa-eye margin-r-5"></i>
                   <strong>Access level</strong>
-                  <div class="row">
-                    <div class="col-md-4">
-                      <p id="accessName" class="text-muted" style="display: block">
-                        {{ALcaption}}
-                      </p>
-                      <select id="editAccessName" name="menu">
-                        <option value="0" selected>Change status to:</option>
-                        <option value="1">Private</option>
-                        <option value="2">Partners with Data Under Request</option>
-                        <option value="3">Public with Data Under Request</option>
-                      </select>
+                  <br>
+                  <span ng-show="!isMyItem">{{ALcaption}}</span>
+                    <div class="dropdown" ng-show="isMyItem">
+                      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{ALcaption}}
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li ng-click="accessLevelNew=1; saveNewAccess()"><a href="#">Private</a></li>
+                        <li ng-click="accessLevelNew=2; saveNewAccess()"><a href="#">Partners with Data Under Request</a></li>
+                        <li ng-click="accessLevelNew=3; saveNewAccess()"><a href="#">Public with Data Under Request</a></li>
+                      </ul>
                     </div>
-                    <div class="col-md-8">
-                     <a ng-show="isMyItem" id="accessEdit" class="pull-right btn-sm btn-info edit_profile" ng-click="changeToInput()">Edit</a>
-                     <a ng-click="saveNewAccess()" id="accessSave" class="pull-right btn-sm btn-info edit_profile" style="margin-left: 5px"><i style="color: green" class="fa fa-check"></i>Save</a>
-                     <a ng-click="backToEdit()" style="margin-left: 35%" id="accessCancel" class="pull-right btn-sm btn-info edit_profile"><i style="color: red" class="fa fa-times"></i>Cancel</a>
-                   </div>
-                 </div>
                 </li>
 
                   <!-- Ownership -->
