@@ -38,7 +38,7 @@ angular.module('VicinityManagerApp.controllers').
     }
 
     function searchFinish(response){
-      $scope.resultsItems = response.data.message;
+      $scope.resultsItems = response.data.message.items;
       $scope.count.item = $scope.resultsItems.length;
       $scope.loaded3 = true;
       $scope.loaded = true;
