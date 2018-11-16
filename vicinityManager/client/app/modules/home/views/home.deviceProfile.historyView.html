@@ -2,6 +2,30 @@
     <h1>Device logs</h1>
 </section>
 
+<br>
+
+<div class="box-group" id="accordion" style="max-width:800px">
+  <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+  <div class="panel box-bg-dark-grey box-warning">
+    <div class="box-header with-border">
+      <div class="box-tools">
+        <div class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown">Select period
+            <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-right" role="menu">
+             <li><a ng-click="notificationsDays('today')">Today</a></li>
+             <li><a ng-click="notificationsDays('week')">Whole week</a></li>
+             <li><a ng-click="notificationsDays('month')">Whole month</a></li>
+             <li><a ng-click="notificationsDays('year')">Whole year</a></li>
+          </ul>
+         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="coll-md-1" ng-hide="loadedPage" style="margin: auto; max-width:700px">
   <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
 </div>
@@ -12,28 +36,6 @@
 
 <!-- /.box-header -->
 <section class="content" ng-show="loadedPage && !noLogs">
-
-  <div class="box-group" id="accordion" style="max-width:800px">
-    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
-    <div class="panel box-bg-dark-grey box-warning">
-      <div class="box-header with-border">
-        <div class="box-tools">
-          <div class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown">Select period
-              <span class="caret"></span>
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-right" role="menu">
-               <li><a ng-click="notificationsDays('today')">Today</a></li>
-               <li><a ng-click="notificationsDays('week')">Whole week</a></li>
-               <li><a ng-click="notificationsDays('month')">Whole month</a></li>
-               <li><a ng-click="notificationsDays('year')">Whole year</a></li>
-            </ul>
-           </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
 <div class="box-body">
 
