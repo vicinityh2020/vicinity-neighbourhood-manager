@@ -177,7 +177,9 @@ function create(req, res, callback){
                     types:semanticTypes,
                     semanticValidation:doSemanticValidation,
                     adapterType: adapterType,
-                    adid: adid
+                    adid: adid,
+                    req: req,
+                    res: res
                   } // additional parameters
                 );
               }

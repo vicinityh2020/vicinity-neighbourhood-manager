@@ -81,7 +81,7 @@ function createNotification(actor, target, object, status, type, message){
           userOp.update({_id: target.item}, {$push: {hasNotifications: response._id}}, function(err, response){
             if(err){ reject(err); } else { resolve(true); }
           });
-        } else {
+        } else if(target.kind === 'userAccount'){
           userAccountOp.update({_id: target.item}, {$push: {hasNotifications: response._id}}, function(err, response){
             if(err){ reject(err); } else { resolve(true); }
           });

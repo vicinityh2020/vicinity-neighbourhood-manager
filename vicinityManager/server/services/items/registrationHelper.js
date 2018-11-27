@@ -123,16 +123,18 @@ function updateDocuments(thing, otherParams, callback){
     }
   })
   .then(function (response) {
-
     if(oldThing.hasContracts.length > 0){
-      var cts = separateContracts(oldThing.hasContracts);
-      var oid = {id: oldThing._id, extid: oldThing.oid};
-      return contracts.pauseContracts(oid, cts.toPause, oldThing.uid)
-      .then(function (response) {
-        contractResult.push(response);
-        // If service provider, all contract members must agree on new service conditions
-        return contracts.resetContract(cts.toReset, oldThing.uid);
-      });
+       var todo = [];
+       var cts = separateContracts(oldThing.hasContracts);
+       var oid = {id: oldThing._id, extid: oldThing.oid};
+       var ctData = {};
+       ctData.oid = oid;
+       ctData.ct = cts.toPause;
+       ctData.uid = {id: oldThing.uid.id, extid: oldThing.uid.extid};
+       if(cts.toPause.length > 0) todo.push(contracts.pauseContracts(otherParams.req, otherParams.res, ctData));
+       // If service provider, all contract members must agree on new service conditions (so call reset)
+       if(cts.toReset.length > 0) todo.push(contracts.resetContract(cts.toReset, oldThing.uid));
+       if(todo.length > 0){ return Promise.all(todo); } else { return false; }
     } else {
       return false;
     }

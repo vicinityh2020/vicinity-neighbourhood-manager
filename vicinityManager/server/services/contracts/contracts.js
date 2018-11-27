@@ -294,12 +294,22 @@ When an item is updated we need to put them in "hold" the contracts
 3 - Add flag in user contract instance with the "inactive" items
 4 - Create notifications and logs
 */
-function pauseContracts(req, res){
-  var oid = req.body.oid;
-  var ct = req.body.ct;
-  var uid = req.body.uid;
+function pauseContracts(req, res, ctData){
+  var oid, ct, uid;
+  if(ctData.ct.length > 0){
+      oid = ctData.oid;
+      ct = ctData.ct;
+      uid = ctData.uid;
+  } else {
+      oid = req.body.oid;
+      ct = req.body.ct;
+      uid = req.body.uid;
+  }
   var cts = [];
-  cts.push(ct);
+  if(ct.constructor === Array){
+     cts = ct;
+  }
+  else { cts.push(ct); }
   return new Promise(function(resolve, reject) {
     if(cts.length > 0){ // Check if there is any item to delete
       sync.forEachAll(cts,
@@ -339,15 +349,15 @@ function pauseContracts(req, res){
                               {multi: true});
             })
             .then(function (response) {
+              var toNotif = [];
               for(var i = 0, l = cts.length; i < l; i++){
-                notifHelper.createNotification(
-                  { kind: 'user', item: uid.id, extid: uid.extid },
-                  { kind: 'item', item: oid.id, extid: oid.extid },
-                  { kind: 'contract', item: cts[i].id, extid: cts[i].extid },
-                  'info', 26, null
-                );
+                toNotif.push(notifHelper.createNotification(
+                 { kind: 'item', item: oid.id, extid: oid.extid },
+                 { kind: 'user', item: uid.id, extid: uid.extid },
+                 { kind: 'contract', item: cts[i].id, extid: cts[i].extid },
+                 'info', 26, null));
               }
-              return true;
+              return Promise.all(toNotif);
             })
             .then(function(response){
               for(var i = 0, l = cts.length; i < l; i++){
