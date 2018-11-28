@@ -265,7 +265,16 @@ function iHaveToApproveContract(ctid, uid){
   query._id = uid;
   query['hasContracts.approved'] = false;
   return new Promise(function(resolve, reject) {
-    userOp.findOne(query , {hasContracts:1})
+    userOp.findOne(query, {hasContracts:1})
+    .then(function(response){
+      if(response){
+        resolve(true);
+      } else {
+        delete query['hasContracts.approved'];
+        query['hasContracts.inactive'] = { $gt: [] };
+        return userOp.findOne(query, {hasContracts:1});
+      }
+    })
     .then(function(response){
       if(response){ resolve(true); }
       else { resolve(false); }
