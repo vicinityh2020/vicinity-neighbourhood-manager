@@ -6,7 +6,6 @@ var commServer = require('../../services/commServer/request');
 var sharingRules = require('../../services/sharingRules');
 var audits = require('../../services/audit/audit');
 var sync = require('../../services/asyncHandler/sync');
-
 var itemOp = require('../../models/vicinityManager').item;
 var userOp = require('../../models/vicinityManager').user;
 var notifHelper = require('../../services/notifications/notificationsHelper');
@@ -23,43 +22,45 @@ function updateManyItems(req, res, callback){
   if(items.length !== 0){ // Check if there is any item to update
     sync.forEachAll(items,
     function(value, allresult, next, otherParams) {
+      value.multi = true;
         if(value.status === 'enabled'){
-          enableItem(value, otherParams, function(value, error, success, message) {
+          enableItem(req, res, function(value, error, success, message) {
             allresult.push({value: value, error: error, success: success, message: message});
             next();
-          });
+          }, value);
         }else if(value.status === 'disabled'){
-          disableItem(value, otherParams, function(value, error, success, message) {
+          disableItem(req, res, function(value, error, success, message) {
             allresult.push({value: value, error: error, success: success, message: message});
             next();
-          });
+          }, value);
         } else {
-          updateItem(value, otherParams, function(value, error, success, message) {
+          updateItem(req, res, function(value, error, success, message) {
             allresult.push({value: value, error: error, success: success, message: message});
             next();
-          });
+          }, value);
         }
       },
       function(allresult) {
         if(allresult.length === items.length){
-          logger.log(req, res, {type: 'audit', data:'Multiple update completed: ' + JSON.stringify(allresult)});
-          callback('multi', false, true, allresult);
+          logger.log(req, res, {type: 'audit', data: allresult});
+          callback(false, true, allresult);
         }
       },
       false,
-      {req: req, res: res}
+      {}
     );
   } else {
     logger.log(req, res, {type: 'debug', data:'No items to modify'});
-    callback('multi', false, false, 'No items to modify');
+    callback(false, false, 'No items to modify');
   }
 }
 
 /*
 Enable items
 */
-function enableItem(req, res, callback){
+function enableItem(req, res, callback, other){
   var data = req.body;
+  if(other && other.multi) data = other;
   var cid = req.body.decoded_token.cid;
   var c_id = req.body.decoded_token.orgid;
   var userMail = req.body.decoded_token.sub;
@@ -122,8 +123,9 @@ function enableItem(req, res, callback){
 /*
 Disable items
 */
-function disableItem(req, res, callback){
+function disableItem(req, res, callback, other){
   var data = req.body;
+  if(other && other.multi) data = other;
   var cid = req.body.decoded_token.cid;
   var c_id = req.body.decoded_token.orgid;
   var userMail = req.body.decoded_token.sub;
@@ -193,8 +195,9 @@ function disableItem(req, res, callback){
 /*
 Update items
 */
-function updateItem(req, res, callback){
+function updateItem(req, res, callback, other){
   var data = req.body;
+  if(other && other.multi) data = other;
   var cid = req.body.decoded_token.cid;
   var c_id = req.body.decoded_token.orgid;
   var userMail = req.body.decoded_token.sub;

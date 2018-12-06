@@ -66,6 +66,7 @@ describe('Full test scenario', function(){
     it('Fails to update an item', itemFailedUpdate);
     it('Enable a device', enableDevice);
     it('Update metadata from agent - update call', updateDeviceTd_onlyMetadata);
+    it('Do multiple update', multipleUpdate);
   });
   describe('Creating organisation 2...', function(){
     it('Create a organisation-2', createOrganisation);
@@ -681,6 +682,34 @@ function registerDeviceNoData(done){
       done();
     });
   }
+
+function multipleUpdate(done){
+  var data = {
+    "items":[{
+      "o_id": oidDev,
+      "typeOfItem": "device",
+      "status": "enabled"
+    },
+    {
+      "o_id": oidDev,
+      "typeOfItem": "device",
+      "accessLevel": 0
+    }
+  ],
+    "multi": true
+  };
+  chai.request(server)
+    .put('/api/items')
+    .set('x-access-token', token1)
+    .send(data)
+    .end(function(err, res){
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error');
+      res.body.error.should.equal(false);
+      done();
+    });
+}
 
 function enableDevice(done){
   enabling(token1, "device", done);

@@ -69,10 +69,10 @@ exports.updateItem = function(req, res, next) {
       res.json({error: false, message: "Missing fields", success: false});
     } else {
       if(req.body.multi){
-       sItemUpdate.updateManyItems(req, res, function(value, err, success, response){
+       sItemUpdate.updateManyItems(req, res, function(err, success, response){
         if(err) res.status(500);
         if(!err) res.status(200);
-        res.json({error: err, message: response, success: success, id: value});
+        res.json({error: err, message: response, success: success});
        });
       }else if(req.body.status === 'enabled'){
         sItemUpdate.enableItem(req, res, function(value, err, success, response){
