@@ -29,7 +29,7 @@ function deleteAllUsers(users, req, res){
         },
         function(allresult) {
           if(allresult.length === users.length){
-            resolve(JSON.stringify(allresult));
+            resolve(allresult);
           }
         },
         false,
