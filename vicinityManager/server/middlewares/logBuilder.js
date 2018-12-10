@@ -69,7 +69,7 @@ module.exports.log = function(req, res, body){
       } else {
         // Control case payload is an object, stringify with right format
         // Only audit and warn types
-        parsedBody = typeof body.data === 'object' ? parseBody(body.data) : body.data;
+        parsedBody = typeof body.data === 'object' ? JSON.stringify(body.data) : body.data;
       }
       var message = createMessage(req, res, parsedBody);
       sendLog(body.type, message);

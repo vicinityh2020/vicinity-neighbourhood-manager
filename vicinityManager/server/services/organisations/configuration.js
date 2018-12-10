@@ -70,6 +70,7 @@ function remove(req, res, callback) {
 
           removeContracts(users, uid, mail)
           .then(function(response){
+            deletingResults.contracts = response;
             // Remove cid from friends knows arrays
             return companyAccountOp.update({"_id": {$in: friends}}, {$pull: {knows: {id: cid} }}, {multi: true});
           })
@@ -117,6 +118,7 @@ function remove(req, res, callback) {
 // Extract unique company contracts and remove them
 function removeContracts(users, uid, mail){
   var contracts = [];
+  var uniqueContracts = [];
   return new Promise(function(resolve, reject) {
     userOp.find({"_id": {$in: users}}, {hasContracts: 1})
     .then(function(response){
@@ -125,7 +127,6 @@ function removeContracts(users, uid, mail){
           contracts.push(response[i].hasContracts[j].extid);
         }
       }
-      var uniqueContracts = [];
       getUnique(uniqueContracts, contracts);
       var contractsToDel = [];
       for(var ii = 0, ll = uniqueContracts.length; ii < ll; ii ++){
@@ -134,7 +135,7 @@ function removeContracts(users, uid, mail){
       return Promise.all(contractsToDel);
     })
     .then(function(response){
-      resolve(true);
+      resolve(uniqueContracts);
     })
     .catch(function(err){
       reject(err);

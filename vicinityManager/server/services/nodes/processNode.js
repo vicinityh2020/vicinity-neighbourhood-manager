@@ -29,7 +29,7 @@ function deleteNode(adids, req, res){
         },
         function(allresult) {
           if(allresult.length === adids.length){
-            resolve(JSON.stringify(allresult));
+            resolve(allresult);
           }
         },
         false,
