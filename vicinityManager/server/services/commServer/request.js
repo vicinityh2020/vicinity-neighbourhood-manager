@@ -35,17 +35,17 @@ if(process.env.env === 'test' || config.env === 'test') return Promise.resolve(t
   options.timeout = 10000;
   if(myMethod !== 'GET'){ options.body = payload; }
 
-  return request(options);
-  // return request(options, function(err, response, body) {
-  //   if(err){
-  //     // console.log(err.code === 'ETIMEDOUT');
-  //     // logger.error(err);
-  //     Promise.reject(err);
-  //   } else{
-  //     Promise.resolve(response);
-  //   }
-  // });
-
+//  return request(options);
+ return request(options, function(err, response, body) {
+   if(err){
+     Promise.reject(err.stack);
+   } else {
+     if(process.env.env === 'dev' || config.env === 'dev'){
+       logger.debug(response.statusCode + " : " + response.request.method + " : " + response.request.uri.path);
+     }
+     Promise.resolve(response);
+   }
+ });
 }
 
 module.exports.callCommServer = callCommServer;

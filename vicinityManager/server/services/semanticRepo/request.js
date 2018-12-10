@@ -24,13 +24,13 @@ The headers are preconfigured
 function callSemanticRepo(data, endPoint, myMethod){
   if(process.env.env === 'test') return Promise.resolve(true);
   payload = JSON.stringify(data);
-  return request({
-    method : myMethod,
-    headers: head,
-    uri: config.semanticRepoUrl + endPoint,
-    body: payload
-    // simple: true
-  });
+  var options = {};
+  options.method = myMethod;
+  options.headers = head;
+  options.uri = config.semanticRepoUrl + endPoint;
+  options.body = payload;
+  options.timeout = 10000;
+  return request(options);
 }
 
 /*
@@ -39,13 +39,12 @@ When invoked retrieves all available types of devices or services
 The headers are preconfigured
 */
 function getTypes(){
-  return request({
-    method : "GET",
-    headers: head,
-    uri: config.semanticRepoUrl + "annotations",
-    // body: payload
-    // simple: true
-  });
+  var options = {};
+  options.method = "GET";
+  options.headers = head;
+  options.uri = config.semanticRepoUrl + "annotations";
+  options.timeout = 10000;
+  return request(options);
 }
 
 /*
