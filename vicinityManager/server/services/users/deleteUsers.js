@@ -9,6 +9,7 @@ var sync = require('../../services/asyncHandler/sync');
 var audits = require('../../services/audit/audit');
 var commServer = require('../../services/commServer/request');
 var ctService = require('../../services/contracts/contracts');
+var uuid = require('uuid');
 
 // Public functions
 
@@ -75,6 +76,7 @@ function deleting(id, otherParams, callback){
     authentication: {},
     hasItems: [],
     hasContracts: [],
+    hasAudits: [],
     cid: {}
   };
   userOp.findOne({_id: id}, {cid:1, hasItems:1, hasContracts: 1, email:1})
@@ -84,6 +86,7 @@ function deleting(id, otherParams, callback){
     if(aux.hasItems.length + aux.hasContracts.length > 0){
       return new Promise(function(resolve, reject) { reject('User has items or contracts'); });
     } else {
+      obj.name = aux.name + ":" + uuid();
       return userOp.update({_id: id}, { $set: obj });
     }
   })
