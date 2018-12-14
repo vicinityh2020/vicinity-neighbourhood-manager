@@ -28,7 +28,6 @@ var infrastructure = require('./routes/infrastructure');
 var jwtauth = require("./middlewares/jwtauth");
 var logger = require("./middlewares/logger");
 var logs = require("./middlewares/logBuilder");
-var monitor = require("./middlewares/monitor");
 
 var app = express();
 
@@ -44,9 +43,6 @@ app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet()); // Comment if no SSL
-
-// Only development -- Express performance monitor
-if (process.env.env === 'dev') app.use(monitor.responsePerformance);
 
 /*
 Endpoints
