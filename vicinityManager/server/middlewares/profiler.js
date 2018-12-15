@@ -29,7 +29,7 @@ profiler.prototype.stop = function() {
     measures.diffExternal = bytesToSize(m1.external - this.m0.external);
     measures.diffCPU = addUnit((usedCPU.user + usedCPU.system) / tCPUFriction);
     measures.diffTime = addUnit((new_time - this.old_time) / tFriction);
-    measures.timestamp = addUnit(new_time);
+    // measures.timestamp = addUnit(new_time);
     measures.log = buildLog(measures);
 
     return measures;

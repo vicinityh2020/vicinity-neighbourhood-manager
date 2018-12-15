@@ -42,8 +42,8 @@ module.exports.customLogs = function(req, res, next){
 */
 module.exports.profilerLogs = function(req, res, data){
   var message;
-  var date = data.timestamp.toISOString();
-  message = date + " : " + req.method + " : " + res.statusCode + " : " + req.headers.host + req.url + " : " + data.log;
+  // var date = data.timestamp.toISOString();
+  message = req.method + " : " + res.statusCode + " : " + req.headers.host + req.url + " : " + data.log;
   pLogger.metrics(message);
   return true;
 };
