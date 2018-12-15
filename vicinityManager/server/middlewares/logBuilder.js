@@ -1,4 +1,5 @@
 var logger = require("../middlewares/logger");
+var pLogger = require("../middlewares/performanceLogger");
 var config = require("../configuration/configuration");
 
 /**
@@ -31,6 +32,22 @@ module.exports.customLogs = function(req, res, next){
     next();
   }
 };
+
+/**
+* Create profile log
+* @param {Object} req
+* @param {Object} res
+* @param {Object} data
+* @return {Object} next
+*/
+module.exports.profilerLogs = function(req, res, data){
+  var message;
+  var date = data.timestamp.toISOString();
+  message = date + " : " + req.method + " : " + req.headers.host + req.url + " : " + res.statusCode + " : " + data.log;
+  pLogger.metrics(message);
+  return true;
+};
+
 
 /**
 * Custom logging
