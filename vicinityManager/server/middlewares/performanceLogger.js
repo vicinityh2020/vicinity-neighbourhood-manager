@@ -26,7 +26,7 @@ var profileLogger = new winston.Logger({
             level: 'metrics',
             filename: config.profilerLog || "./logs/profiler_log.log",
             handleExceptions: false,
-            json: true,
+            json: false,
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false,
@@ -36,4 +36,4 @@ var profileLogger = new winston.Logger({
     exitOnError: false
 });
 
-module.exports.profileLogger = profileLogger;
+module.exports = profileLogger;

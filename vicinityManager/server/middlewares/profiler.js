@@ -7,11 +7,11 @@
 */
 
 // Constructor
-var profiler = function() {
+function profiler() {
     this.old_time = new Date();
     this.m0 = process.memoryUsage();
     this.c0 = process.cpuUsage();
-};
+}
 
 // Public method
 profiler.prototype.stop = function() {
@@ -37,7 +37,7 @@ profiler.prototype.stop = function() {
 
 // Private FUNCTIONs
 function bytesToSize(bytes) {
-    if (bytes == 0) return '0 Byte';
+    if (bytes == 0) return 0;
     var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return Math.round(bytes / Math.pow(1024, i), 2); // + ' Kb';
 }
@@ -52,4 +52,4 @@ function addUnit(x){
 }
 
 // Export module
-module.exports.profiler = profiler;
+module.exports = profiler;
