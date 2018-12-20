@@ -29,7 +29,7 @@ function callSemanticRepo(data, endPoint, myMethod){
   options.headers = head;
   options.uri = config.semanticRepoUrl + endPoint;
   options.body = payload;
-  options.timeout = 10000;
+  if(config.semanticrepoTimeoutMs && Number(config.semanticrepoTimeoutMs) !== 0) options.timeout = config.semanticrepoTimeoutMs;
   return request(options);
 }
 
@@ -43,7 +43,7 @@ function getTypes(){
   options.method = "GET";
   options.headers = head;
   options.uri = config.semanticRepoUrl + "annotations";
-  options.timeout = 10000;
+  if(config.semanticrepoTimeoutMs && Number(config.semanticrepoTimeoutMs) !== 0) options.timeout = config.semanticrepoTimeoutMs;
   return request(options);
 }
 

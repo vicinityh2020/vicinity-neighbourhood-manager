@@ -21,6 +21,9 @@ Deletes either a selection of oids or all oids under a node
 function deleteItems(oids, req, res, typeAgent){
   var email = req.body.decoded_token.sub;
 
+  //Synchronous removal if also involved semantic repo (VCNT)
+  var syncDelete = typeAgent === "generic.adapter.vicinity.eu" || typeAgent === "vcnt";
+
   return new Promise(function(resolve, reject) {
     if(oids.length > 0){ // Check if there is any item to delete
       sync.forEachAll(oids,
@@ -35,7 +38,8 @@ function deleteItems(oids, req, res, typeAgent){
             resolve({"error": false, "message": allresult });
           }
         },
-        false,
+        // If true -> sync requests
+        syncDelete,
         { req: req,
           res: res,
           typeAgent: typeAgent,

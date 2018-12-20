@@ -32,7 +32,7 @@ if(process.env.env === 'test' || config.env === 'test') return Promise.resolve(t
   options.method = myMethod;
   options.headers = head;
   options.uri = config.commServerUrl + '/' + endPoint;
-  options.timeout = 10000;
+  if( config.commserverTimeoutMs && Number(config.commserverTimeoutMs) !== 0 ) options.timeout = config.commserverTimeoutMs || 10000;
   if(myMethod !== 'GET'){ options.body = payload; }
 
 //  return request(options);

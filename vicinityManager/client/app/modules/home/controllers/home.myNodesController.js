@@ -44,14 +44,17 @@ angular.module('VicinityManagerApp.controllers').
 // ======== Main functions =========
 
 $scope.deleteNode = function(adid){
-  if(confirm('Are you sure?')){
+  if(confirm('Are you sure? It may take some time (Approx 1min every 100 items)')){
+    $scope.loadedPage = false;
     nodeAPIService.updateOne(adid, {status : "deleted"}) // upd status to removed of node in MONGO
     .then(
       function successCallback(response){
         if(response.error){
+          $scope.loadedPage = true;
           Notification.error("Error deleting node");
           myInit();
         } else {
+          $scope.loadedPage = true;
           Notification.success("Access Point successfully removed!!");
           myInit();
         }
