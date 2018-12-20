@@ -14,12 +14,8 @@ Save in Mongo dB all objects contained in the req.
 Message producing the req is sent by the agent with thingDescriptions
 */
 function create(req, res, callback){
-  var data = req.body;
-  var objectsArray = data.thingDescriptions;
-  var adid = typeof data.adid !== 'undefined' ? data.adid : data.agid;
-
-  // console.time("ALL REGISTRATION EXECUTION");
-  // console.time("REGISTRATION FIX PART");
+  var objectsArray = req.body.thingDescriptions;
+  var adid = typeof req.body.adid !== 'undefined' ? req.body.adid : req.body.agid;
 
   nodeOp.findOne({adid: adid, status: "active"}, {cid:1, hasItems: 1, type:1},
     function(err,data){
@@ -36,7 +32,7 @@ function create(req, res, callback){
           var nodeName = data.name;
           var myNode = {adid: adid, name: nodeName, id: nodeId};
           var cid = data.cid;
-          var doSemanticValidation = config.enabledAdapters.indexOf(data.type[0]) !== -1;
+          var doSemanticValidation = config.enabledAdapters.indexOf(data.type[0]) !== -1; // Check if agent type allows semantic validation
           var adapterType = data.type[0] === "generic.adapter.sharq.eu" ? "shq" : "vcnt"; // TODO cover more types when needed
           var semanticTypes = {};
 
@@ -45,11 +41,10 @@ function create(req, res, callback){
           .then(function(response){
             semanticTypes.services = response.services;
             semanticTypes.devices = response.devices;
-            // console.timeEnd("REGISTRATION FIX PART");
 
             // Process new items internally
             sync.forEachAll(objectsArray,
-              function(value, allresult, next, otherParams) { // Process all new items
+              function(value, allresult, next, otherParams) {
                 regisHelper.saveDocuments(value, otherParams, function(value, result) {
                     allresult.push({data: value, result: result});
                     next();
@@ -58,24 +53,16 @@ function create(req, res, callback){
               function(allresult) {
                 // Final part: Return results, update node and notify
                 if(allresult.length === objectsArray.length){ // Only process final step if all the stack of tasks completed
-                  regisHelper.updateItemsList(data.hasItems, allresult)
-                  .then(function(response){
-                    data.hasItems = response;
-                    return data.save();
-                  })
-                  .then(function(response){ return regisHelper.createAuditLogs(cid, allresult, adid, 41); })
+                  regisHelper.createAuditLogs(cid, allresult, adid, 41)
                   .then(function(response){ return regisHelper.deviceActivityNotif(allresult, cid, myNode, 13); })
                   .then(function(response){
                     var finalRes = [];
-                    var someSuccess = false; // true if some registration was successful
                     for(var item in allresult){
                       finalRes.push(allresult[item].data);
-                      if(allresult[item].result === 'Success'){someSuccess = true;}
                     }
                     res.status(200);
                     logger.log(req, res, {type: 'audit', data: allresult});
                     callback(false, finalRes, true);
-                    // console.timeEnd("ALL REGISTRATION EXECUTION");
                   })
                   .catch(function(err){
                     res.status(500);
@@ -84,15 +71,19 @@ function create(req, res, callback){
                   });
                   }
                 },
-                false,
+                // Flag to indicate sync or async loop over registration items
+                // If there is semantic validation (VCNT), do a sequencial registration
+                // Avoids issues with semantic repo
+                !doSemanticValidation,
+                // additional parameters
                 { adid: adid,
                   cid:cid,
                   nodeId: nodeId,
-                  data:data,
-                  types:semanticTypes,
-                  semanticValidation:doSemanticValidation,
+                  nodeName: nodeName,
                   adapterType: adapterType,
-                  nodeName: nodeName } // additional parameters
+                  types:semanticTypes,
+                  semanticValidation:doSemanticValidation
+                } // end additional parameters
               );
             }
           )
@@ -173,7 +164,6 @@ function create(req, res, callback){
                   },
                   false,
                   {
-                    data:data,
                     types:semanticTypes,
                     semanticValidation:doSemanticValidation,
                     adapterType: adapterType,

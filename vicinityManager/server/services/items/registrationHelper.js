@@ -193,6 +193,9 @@ function createInstance(objData, pwd, infra_id, callback){
     return commServerProcess(obj.oid, obj.name, pwd);
   })
   .then(function(response){
+    return nodeOp.update({_id: adid.id}, {$push: {hasItems: oid}});
+  })
+  .then(function(response){
     // deviceActivityNotif({cid: cid, oid: oid, adid: adid}, 13);
     callback({oid: obj.oid, password: pwd, "infrastructure-id": infra_id, "nm-id": obj._id, "name": obj.name, error: false}, "Success");
   })
@@ -201,39 +204,6 @@ function createInstance(objData, pwd, infra_id, callback){
   });
 }
 
-/*
-Adds all new oids to the node hasItems
-If the oid is already in there skip it
-*/
-function updateItemsList(items, allresult){
-  // get oids only if doc saved succesfully
-  return new Promise(function(resolve, reject) {
-    try{
-      // var oidArray = getIds(allresult, 'oid');
-      var i, j;
-      if(items.length > 0){
-        var itemsOid = []; //store a simple array of OIDs to compare
-        for(i = 0; i < items.length; i++){
-            itemsOid.push(items[i].oid);
-        }
-        for(j = 0; j < allresult.length; j++){
-          if(itemsOid.indexOf(allresult[j].data.oid) === -1 && allresult[j].result === "Success"){
-            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid, name: allresult[j].data.name});
-          }
-        }
-      } else {
-        for(j = 0; j < allresult.length; j++){
-          if(allresult[j].result === "Success"){
-            items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid, name: allresult[j].data.name});
-          }
-        }
-      }
-      resolve(items);
-    } catch(err){
-      reject("(collecting new oids for the node) " + err);
-    }
-  });
-}
 
 /*
 Get service and device types from semantic repo or static file
@@ -520,6 +490,49 @@ function commServerProcess(docOid, docName, docPassword){
       );
     }
 
+    // Export Functions
+    module.exports.createAuditLogs = createAuditLogs;
+    module.exports.deviceActivityNotif = deviceActivityNotif;
+    module.exports.getTypes = getTypes;
+    module.exports.saveDocuments = saveDocuments;
+    module.exports.updateDocuments = updateDocuments;
+
+
+    // /*
+    // Adds all new oids to the node hasItems
+    // If the oid is already in there skip it
+    // */
+    // function updateItemsList(items, allresult){
+    //   // get oids only if doc saved succesfully
+    //   return new Promise(function(resolve, reject) {
+    //     try{
+    //       // var oidArray = getIds(allresult, 'oid');
+    //       var i, j;
+    //       if(items.length > 0){
+    //         var itemsOid = []; //store a simple array of OIDs to compare
+    //         for(i = 0; i < items.length; i++){
+    //             itemsOid.push(items[i].oid);
+    //         }
+    //         for(j = 0; j < allresult.length; j++){
+    //           if(itemsOid.indexOf(allresult[j].data.oid) === -1 && allresult[j].result === "Success"){
+    //             items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid, name: allresult[j].data.name});
+    //           }
+    //         }
+    //       } else {
+    //         for(j = 0; j < allresult.length; j++){
+    //           if(allresult[j].result === "Success"){
+    //             items.push({id: allresult[j].data["nm-id"], extid: allresult[j].data.oid, name: allresult[j].data.name});
+    //           }
+    //         }
+    //       }
+    //       resolve(items);
+    //     } catch(err){
+    //       reject("(collecting new oids for the node) " + err);
+    //     }
+    //   });
+    // }
+
+
     /*
     Checks if the oid is in Mongo
     If it is, creates a new one and checks again
@@ -542,18 +555,13 @@ function commServerProcess(docOid, docName, docPassword){
     //   });
     // }
 
-    // Export Functions
+    // Export Functions (old)
 
     // module.exports.commServerProcess = commServerProcess;
     // module.exports.creatingAudit = creatingAudit;
-    module.exports.createAuditLogs = createAuditLogs;
-    module.exports.deviceActivityNotif = deviceActivityNotif;
     // module.exports.findType = findType;
     // module.exports.parseGetTypes = parseGetTypes;
     // module.exports.addInteractions = addInteractions;
     // module.exports.semanticValidation = semanticValidation;
-    module.exports.getTypes = getTypes;
-    module.exports.saveDocuments = saveDocuments;
     // module.exports.createInstance = createInstance;
-    module.exports.updateItemsList = updateItemsList;
-    module.exports.updateDocuments = updateDocuments;
+    // module.exports.updateItemsList = updateItemsList;
