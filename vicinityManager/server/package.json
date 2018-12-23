@@ -7,7 +7,8 @@
     "start": "nodemon ./bin/www",
     "test": "env=test VCNT_MNGR_DB=mongodb://test:test@138.201.156.73:27017/vicinity_neighbourhood_manager_test nyc mocha --exit './test/**/*.spec.js'",
     "complexity": "grunt complexity:modules",
-    "complexity_detail": "grunt complexity:functions"
+    "complexity_detail": "grunt complexity:functions",
+    "code_composition": "grunt slocAll"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,7 @@
     "eslint-config-google": "^0.5.0",
     "grunt": "^1.0.3",
     "grunt-complexity": "^1.1.0",
+    "grunt-sloc": "^0.7.1",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0"
   }
