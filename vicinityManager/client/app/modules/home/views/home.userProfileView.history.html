@@ -62,7 +62,7 @@
                     <!-- Label type -->
                     <span ng-show="[1, 41, 11, 21].lastIndexOf(log.type) !== -1"><i class="fa fa-plus my-green"/></span>
                     <span ng-show="[2, 42, 12, 22].lastIndexOf(log.type) !== -1"><i class="fa fa-minus my-red"/></span>
-                    <span ng-show="log.type===13"><i class="fa fa-user"/></span>
+                    <span ng-show="[13, 14, 15, 16].lastIndexOf(log.type) !== -1"><i class="fa fa-user"/></span>
                     <span ng-show="log.type===23"><i class="fa fa-sitemap"/></span>
                     <span ng-show="[31, 51].lastIndexOf(log.type) !== -1"><i class="fa fa-envelope my-blue"/></span>
                     <span ng-show="[32, 34].lastIndexOf(log.type) !== -1"><i class="fa fa-times my-red"/></span>
@@ -84,6 +84,10 @@
                 <span ng-show="log.type===11">The user {{log.object.item.name}} joined Vicinity</span>
                 <span ng-show="log.type===12">The user {{log.object.item.name}} left Vicinity</span>
                 <span ng-show="log.type===13">The user {{log.object.item.name}} had its roles modified</span>
+                <span ng-show="log.type===14">The user {{log.object.item.name}} had its metadata modified</span>
+                <span ng-show="log.type===15">The user {{log.object.item.name}} had its visibility modified</span>
+                <span ng-show="log.type===16">The user {{log.object.item.name}} had its password modified</span>
+
                 <span ng-show="log.type===21">The node {{log.object.extid}} was created</span>
                 <span ng-show="log.type===22">The node {{log.object.extid}} was removed</span>
                 <span ng-show="log.type===23">The node {{log.object.extid}} was modified</span>
