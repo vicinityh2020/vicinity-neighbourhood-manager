@@ -7,6 +7,7 @@ var jwt = require('../../services/jwtHelper');
 var mailing = require('../../services/mail/mailing');
 var logger = require("../../middlewares/logBuilder");
 var bcrypt = require('bcrypt');
+var audits = require('../../services/audit/audit');
 
 /*
 Check user and password
@@ -120,33 +121,37 @@ function updatePwd(id, pwd, callback) {
   var salt = "";
   var hash = "";
 
-  bcrypt.genSalt(saltRounds)
-  .then(function(response){
-    salt = response.toString('hex');
-    return bcrypt.hash(pwd, salt);
-  })
-  .then(function(response){
-    // Store hash in your password DB.
-    hash = response;
-    var updates = {'authentication.hash': hash}; // Stores salt & hash in the hash field
-    return userOp.update({ "_id": o_id}, {$set: updates});
-  })
-  .then(function(response){
-    return userOp.findOne({ "_id": o_id}, {cid: 1, email:1});
-  })
-  .then(function(response){
-    return audits.create(
-      { kind: 'user', item: response._id , extid: response.email },
-      { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
-      { kind: 'user', item: response._id, extid: response.email },
-      16, null);
-  })
-  .then(function(response){
-    callback(false, response);
-  })
-  .catch(function(err){
-    callback(true, err);
-  });
+  if(pwd === null || pwd.length < 8){
+     callback(true, "Missing or short password");
+  } else {
+    bcrypt.genSalt(saltRounds)
+    .then(function(response){
+      salt = response.toString('hex');
+      return bcrypt.hash(pwd, salt);
+    })
+    .then(function(response){
+      // Store hash in your password DB.
+      hash = response;
+      var updates = {'authentication.hash': hash}; // Stores salt & hash in the hash field
+      return userOp.update({ "_id": o_id}, {$set: updates});
+    })
+    .then(function(response){
+      return userOp.findOne({ "_id": o_id}, {cid: 1, email:1});
+    })
+    .then(function(response){
+      return audits.create(
+        { kind: 'user', item: response._id , extid: response.email },
+        { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
+        { kind: 'user', item: response._id, extid: response.email },
+        16, null);
+    })
+    .then(function(response){
+      callback(false, 'Password updated');
+    })
+    .catch(function(err){
+      callback(true, err);
+    });
+  }
 }
 
 /*
