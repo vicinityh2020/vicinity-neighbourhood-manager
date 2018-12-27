@@ -132,6 +132,16 @@ function updatePwd(id, pwd, callback) {
     return userOp.update({ "_id": o_id}, {$set: updates});
   })
   .then(function(response){
+    return userOp.findOne({ "_id": o_id}, {cid: 1, email:1});
+  })
+  .then(function(response){
+    return audits.create(
+      { kind: 'user', item: response._id , extid: response.email },
+      { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
+      { kind: 'user', item: response._id, extid: response.email },
+      16, null);
+  })
+  .then(function(response){
     callback(false, response);
   })
   .catch(function(err){
