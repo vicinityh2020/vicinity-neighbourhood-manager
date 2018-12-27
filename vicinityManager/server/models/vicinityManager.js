@@ -254,14 +254,12 @@ var auditLog = new Schema({
     name: String
   },
   description: { type: String }, // Additional info like: Privacy lvl, new user role, ...
-  type: { type: Number, enum: [1, 2, 11, 12, 13, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 46, 51, 52, 53, 54, 55, 56], required: true } // Actual situation which triggered the audit
+  type: { type: Number, enum: [1, 2, 11, 12, 13, 14, 15, 16, 21, 22, 23, 31, 32, 33, 34, 35, 41, 42, 43, 44, 45, 46, 51, 52, 53, 54, 55, 56], required: true } // Actual situation which triggered the audit
     /*
     Organisation:
     1 - Created ->
     2 - Deleted ->
     11 - New user ->
-    12 - User deleted ->
-    13 - User modified ->
     21 - New node ->
     22 - Node deleted ->
     23 - Node modified ->
@@ -284,6 +282,11 @@ var auditLog = new Schema({
     55 - Abandon contract <->
     56 - Update contract <->
     User:
+    12 - User deleted ->
+    13 - User role modified ->
+    14 - User metadata modified ->
+    15 - User visibility modified ->
+    16 - User password modified ->
     */
 });
 

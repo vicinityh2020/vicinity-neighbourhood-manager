@@ -25,6 +25,7 @@ describe('Authentication test scenario', function(){
   it('Get wrong password error - 401', loginWrongPassword);
   it('Get wrong username error - 404', loginWrongName);
   it('Get missing fields - 400', loginMissingField);
+  it('Update password', updatePwd);
   it('Generate token successfully - 200', loginSuccess);
 });
 
@@ -97,4 +98,20 @@ function loginMissingField(done){
         res.body.should.be.a('object');
         done();
       });
-}
+    }
+
+  function updatePwd(done){
+     var data = {
+        password: "password",
+      };
+     chai.request(server)
+        .put('/login/recovery/5bd2cee23b93b3ac41598df5')
+        .send(data)
+        .end(function(err, res){
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.message.should.be.a('string');
+          res.body.message.should.equal('Password updated');
+          done();
+    });
+  }

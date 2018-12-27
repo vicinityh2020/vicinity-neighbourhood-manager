@@ -57,6 +57,7 @@ function putVisibility(obj, callback) {
     .then(function(response){
       // Update updates object with the right path and data after whole verification
       obj.updates = data;
+      obj.auditType = 15;
       doUpdate(obj, function(err, response, success){
         if(err){ callback(true, response, success); } else { callback(false, response, success); }
       });
@@ -135,6 +136,7 @@ function putRoles(obj, callback) {
       } else {
         // Update updates object with the right path and data after whole verification
         obj.updates = data;
+        obj.auditType = 13;
         doUpdate(obj, function(err, response, success){
           if(err){ callback(true, response, success);
           } else {
@@ -171,6 +173,7 @@ function putMetadata(obj, callback) {
   if(updCount > 0){
     // Update updates object with the right path and data after whole verification
     obj.updates = data;
+    obj.auditType = 14;
     doUpdate(obj, function(err, response, success){
       if(err){ callback(true, err, success); } else { callback(false, response, success); }
     });
@@ -222,7 +225,7 @@ function doUpdate(obj, callback){
       { kind: 'user', item: obj.userId , extid: obj.userMail },
       { kind: 'userAccount', item: response.cid.id, extid: response.cid.extid },
       { kind: 'user', item: response._id, extid: response.email },
-      13, null);
+      obj.auditType, null);
   })
   .then(function(response){
     logger.log(obj.req, obj.res, {type: 'audit', data: {user: obj.userMail, action: 'updateUser', uid: obj.uid }});
