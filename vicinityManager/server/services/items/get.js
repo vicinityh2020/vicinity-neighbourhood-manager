@@ -53,7 +53,7 @@ function getOrgItems(req, res, api, callback) {
     if(api){
       projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0 };
     } else {
-      projection = { status: 0 };
+      projection = { status: 0, hasAudits: 0 };
     }
 
     itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){

@@ -13,7 +13,7 @@ function getAll(cid, type, offset, limit, api, callback) {
   if(api){
     projection = "name cid";
   } else {
-    projection = "-status";
+    projection = "-status -hasAudits -hasNotifications";
   }
   if(type === 0){
     qry = {status: { $not: /^del.*/} };
