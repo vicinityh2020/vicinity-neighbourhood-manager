@@ -1,3 +1,14 @@
+// Node JS main file
+
+// Add this to the VERY top of the first file loaded in your app
+/* Options configured as env variables
+ELASTIC_APM_USE
+ELASTIC_APM_SERVICE_NAME
+ELASTIC_APM_SECRET_TOKEN
+ELASTIC_APM_SERVER_URL
+*/
+if(process.env.ELASTIC_APM_USE === "true") var apm = require('elastic-apm-node').start();
+
 var express = require('express');
 var cors = require('cors');
 var path = require('path');
