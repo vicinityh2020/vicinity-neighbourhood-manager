@@ -1,6 +1,6 @@
 "use strict";
 angular.module('VicinityManagerApp.controllers')
-.controller('notifications',
+.controller('notifications', 'configuration',
 function ($scope,
           $window,
           $timeout,
@@ -9,6 +9,7 @@ function ($scope,
           userAccountsHelpers,
           commonHelpers,
           registrationsHelpers,
+          configuration,
           Notification) {
 
   $scope.userId = $window.sessionStorage.userAccountId;
@@ -29,7 +30,7 @@ $scope.intervalFunction = function(){
   promise = $timeout(function(){
     init();
     $scope.intervalFunction();
-  }, 10000);
+  }, configuration.notificationTimeout);
 };
 
 $scope.intervalFunction();
