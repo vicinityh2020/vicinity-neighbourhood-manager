@@ -10,51 +10,67 @@ var asyncHandler = require('../../services/asyncHandler/sync');
 /*
 Get notifications
 */
-function getNotifications(u_id, c_id, cid, mail, isDevOps, all, searchDate, callback){
-  var notifs = [];
+function getNotifications(obj, callback){
+  var allNotifs = [];
+  var result = {};
   var query = {};
-  // Set query based on user rights and specifications
-  if(!all){ query = { $or: [{isUnread: true}, {status: 'waiting'}] }; }
-  else{ query._id = { $gt: searchDate }; }
+  result.notifications = [];
+  result.count = 0;
 
-  userAccountOp.findOne({_id: c_id}, {hasNotifications:1})
-  .populate({
-    path: 'hasNotifications',
-    match: query,
-    populate: [
-      { path:'actor.item', select: 'avatar name'},
-      { path:'target.item', select: 'avatar name'},
-      { path:'object.item'}
-    ]
-    // select: '-_id'
+  userAccountOp.findOne({_id: obj.c_id}, {hasNotifications:1}).lean()
+  .then(function(data){
+    allNotifs = allNotifs.concat(data.hasNotifications);
+    return userOp.findOne({_id: obj.u_id}, {hasNotifications:1}).lean();
   })
   .then(function(data){
-    notifs = notifs.concat(data.hasNotifications);
-    return userOp.findOne({_id: u_id}, {hasNotifications:1})
-    .populate({
-      path: 'hasNotifications',
-      match: query,
-      populate: [
-        { path:'actor.item', select: 'avatar name'},
-        { path:'target.item', select: 'avatar name'},
-        { path:'object.item'}
-      ]
-      // select: '-_id'
-    });
+    allNotifs = allNotifs.concat(data.hasNotifications);
+    // Get #limit more recent notifications including #offset
+    // Update them to read
+    // Populate with needed fields
+    // If "all" is false then retrieve unread or waiting notifications only
+    query._id = {$in: allNotifs};
+    if(!obj.all) query.$or = [{isUnread: true}, {status: "waiting"}];
+    return notificationOp.findAndUpdate( query, {$set: {isUnread: false}}, {new: false})
+    .skip(obj.offset)
+    .limit(obj.limit)
+    .populate('actor.item', 'avatar name')
+    .populate('target.item', 'avatar name')
+    .populate('object.item')
+    .lean();
   })
   .then(function(data){
-    notifs = notifs.concat(data.hasNotifications);
-    if(isDevOps){
-      return notificationOp.find({type: 1, status: 'waiting'}).populate('actor.item');
-    } else {
-      return false;
-    }
+    result.notifications = data;
+    return notificationOp.count({"_id": {$in: allNotifs}, isUnread: true});
   })
   .then(function(data){
-    if(data && data.length > 0){
-      notifs = notifs.concat(data);
-    }
-    callback(false, notifs);
+    result.count = data;
+    callback(false, result);
+  })
+  .catch(function(error){
+    callback(true, error);
+  });
+}
+
+/*
+Refresh notifications count
+*/
+function refreshNotifications(obj, callback){
+  var allNotifs = [];
+  var result = {};
+  result.count = 0;
+
+  userAccountOp.findOne({_id: obj.c_id}, {hasNotifications:1}).lean()
+  .then(function(data){
+    allNotifs = allNotifs.concat(data.hasNotifications);
+    return userOp.findOne({_id: obj.u_id}, {hasNotifications:1}).lean();
+  })
+  .then(function(data){
+    allNotifs = allNotifs.concat(data.hasNotifications);
+    return notificationOp.count({"_id": {$in: allNotifs}, isUnread: true});
+  })
+  .then(function(data){
+    result.count = data;
+    callback(false, result);
   })
   .catch(function(error){
     callback(true, error);

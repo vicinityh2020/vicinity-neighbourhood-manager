@@ -4,12 +4,12 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
 
   var notificationsAPI = {};
 
-  notificationsAPI.getNotifications = function(all, searchDate) {
-    if(all){
-      return $http.get(configuration.apiUrl + '/notifications?all=' + all + '&searchDate=' + searchDate);
-    } else {
-      return $http.get(configuration.apiUrl + '/notifications/');
-    }
+  notificationsAPI.getNotifications = function(limit, offset, all) {
+    return $http.get(configuration.apiUrl + '/notifications?limit=' + limit + '&offset=' + offset + '&all=' + all);
+  };
+
+  notificationsAPI.refreshNotifications = function() {
+    return $http.get(configuration.apiUrl + '/notifications/refresh');
   };
 
   notificationsAPI.changeIsUnreadToFalse = function(id, data) {

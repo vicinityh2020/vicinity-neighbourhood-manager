@@ -9,17 +9,27 @@ var notifHelper = require('../../services/notifications/notificationsHelper');
 Get notifications
 */
 function getNotifications(req,res){
-  var u_id = mongoose.Types.ObjectId(req.body.decoded_token.uid);
-  var c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  var cid = req.body.decoded_token.cid;
-  var mail = req.body.decoded_token.sub;
-  var isDevOps = req.body.decoded_token.roles.indexOf('devOps') !== -1;
-  var all = req.query.hasOwnProperty('all') ? true : false;
-  var searchDate = req.query.hasOwnProperty('searchDate') && req.query.searchDate !== 'undefined' ?
-                  notifHelper.objectIdWithTimestamp(req.query.searchDate):
-                  notifHelper.objectIdWithTimestamp(moment().subtract(7, 'days').valueOf());
-  notifHelper.getNotifications(u_id, c_id, cid, mail, isDevOps, all, searchDate, function(err,response){
-    if(err) logger.log(req,res, {data: response, type: "error"});
+  var obj = {};
+  obj.u_id = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  obj.c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  obj.limit = req.query.limit;
+  obj.offset = req.query.offset;
+  obj.all = req.query.all;
+  notifHelper.getNotifications(obj, function(err,response){
+    if(err) logger.log(req, res, {data: response, type: "error"});
+    res.json({error: err, message: response});
+  });
+}
+
+/*
+Refresh notifications count
+*/
+function refreshNotifications(req,res){
+  var obj = {};
+  obj.u_id = mongoose.Types.ObjectId(req.body.decoded_token.uid);
+  obj.c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+  notifHelper.refreshNotifications(obj, function(err,response){
+    if(err) logger.log(req, res, {data: response, type: "error"});
     res.json({error: err, message: response});
   });
 }

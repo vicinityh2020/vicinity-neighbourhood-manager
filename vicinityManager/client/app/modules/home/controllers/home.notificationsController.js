@@ -15,20 +15,17 @@ function ($scope,
   $scope.userId = $window.sessionStorage.userAccountId;
   $scope.orgId = $window.sessionStorage.companyAccountId;
   $scope.notifs = [];
-  $scope.tempNotifs = [];
   $scope.notifCount = 0;
-  $scope.oneNotif = false;
-  $scope.zeroNotif = false;
-  $scope.newNotifs = false;
-  // $scope.numberOfUnread = 0
+  $scope.zeroNotif = true;
+  $scope.loaded = false;
 
-// ====== Look for new notifications every 5s =======
+// ====== Look for new notifications every X seconds =======
 
 var promise = {};
 
 $scope.intervalFunction = function(){
   promise = $timeout(function(){
-    init();
+    refresh();
     $scope.intervalFunction();
   }, configuration.notificationTimeout);
 };
@@ -45,8 +42,10 @@ $scope.$on('$destroy', function(){
   init();
 
   function init(){
+    $scope.loaded = false;
     $scope.tempNotifs = [];
-    notificationsAPIService.getNotifications(null, null)
+    // params (limit, offset, all)
+    notificationsAPIService.getNotifications(8, 0, false)
     .then(getNotifs)
     .catch(function(err){
       // console.log(err);
@@ -56,14 +55,11 @@ $scope.$on('$destroy', function(){
 
   function getNotifs(response){
     try{
-      $scope.tempNotifs = response.data.message;
-      numberOfUnreadNotifs();
-      if($scope.notifCount < $scope.tempNotifs.length){
-        var count = Number($scope.tempNotifs.length) - $scope.notifCount;
-        Notification.success('You have ' + String($scope.tempNotifs.length) + ' new notifications!');
-      }
+      $scope.notifs = response.data.message.notifications;
+      $scope.notifCount = response.data.message.count;
+      $scope.zeroNotif = Number($scope.notifCount) === 0;
       sortNotifs();
-      $scope.notifCount = $scope.notifs.length;
+      $scope.loaded = true;
     } catch(err) {
       console.log(err);
       Notification.warning("Notifications could not be processed");
@@ -71,15 +67,20 @@ $scope.$on('$destroy', function(){
     }
   }
 
+  function refresh(){
+    notificationsAPIService.refreshNotifications()
+    .then(function(response){
+      $scope.notifCount = response.data.message.count;
+      $scope.zeroNotif = Number($scope.notifCount) === 0;
+    })
+    .catch(function(err){
+      console.log(err);
+    });
+  }
+
     // ========= Other Functions ===============
 
-    function numberOfUnreadNotifs(){ // Need to be hoisted
-      $scope.oneNotif = $scope.notifs.length === 1;
-      $scope.zeroNotif = $scope.notifs.length === 0;
-    }
-
-    $scope.changeIsUnreadAndResponded = function(notifID){   // Need to be call external, no need for hoisting
-      $scope.notifCount = $scope.notifCount - 1;
+    $scope.changeIsUnreadAndResponded = function(notifID){
       notificationsAPIService.changeIsUnreadToFalse(notifID)
         .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'))
         .then(init())
@@ -100,24 +101,13 @@ $scope.$on('$destroy', function(){
     };
 
     $scope.seeAll = function(){
-      $scope.notifCount = 0;
-      var allNotifs = [];
-      retrieveAllNotifs($scope.notifs, allNotifs);
-      notificationsAPIService.changeIsUnreadToFalse('0',{ids: allNotifs})
-        .then(function(){
-          init();
-        })
-        .catch(function(err){
-          console.log(err);
-          Notification.error("Server error");
-        });
       $state.go('root.main.myNotifications');
     };
 
-    function retrieveAllNotifs(array, allNotifs){
-      for (var index in array){
-        allNotifs.push(array[index]._id.toString());
-      }
+    function sortNotifs(){
+      $scope.notifs.sort(function(a,b){
+        return b.date - a.date;
+      });
     }
 
   // Accept / Reject requests ======================
@@ -161,25 +151,6 @@ $scope.$on('$destroy', function(){
           Notification.error("Error rejecting registration");
         });
     };
-
-    // ========= Time related functions ===============
-
-    function sortNotifs(){
-      $scope.notifs = [];
-      angular.forEach($scope.tempNotifs,
-        function(n) {
-          if(n._id){
-            var timestamp = n._id.toString().substring(0,8);
-            var date = new Date(parseInt( timestamp, 16 ) * 1000 );
-            n.timestamp = moment(date);
-          }
-          $scope.notifs.push(n);
-         }
-      );
-      $scope.notifs.sort(function(a,b){
-        return b.timestamp - a.timestamp;
-      });
-    }
 
   }
 );
