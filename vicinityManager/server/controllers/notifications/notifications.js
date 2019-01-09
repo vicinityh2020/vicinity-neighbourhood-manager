@@ -12,9 +12,9 @@ function getNotifications(req,res){
   var obj = {};
   obj.u_id = mongoose.Types.ObjectId(req.body.decoded_token.uid);
   obj.c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  obj.limit = req.query.limit;
-  obj.offset = req.query.offset;
-  obj.all = req.query.all;
+  obj.limit = Number(req.query.limit);
+  obj.offset = Number(req.query.offset);
+  obj.all = req.query.all === 'true';
   notifHelper.getNotifications(obj, function(err,response){
     if(err) logger.log(req, res, {data: response, type: "error"});
     res.json({error: err, message: response});
@@ -64,3 +64,4 @@ Export functions
 module.exports.getNotifications = getNotifications;
 module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.changeToResponded = changeToResponded;
+module.exports.refreshNotifications = refreshNotifications;

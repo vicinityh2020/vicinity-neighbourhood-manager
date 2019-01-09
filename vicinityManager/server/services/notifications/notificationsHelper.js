@@ -30,16 +30,34 @@ function getNotifications(obj, callback){
     // If "all" is false then retrieve unread or waiting notifications only
     query._id = {$in: allNotifs};
     if(!obj.all) query.$or = [{isUnread: true}, {status: "waiting"}];
-    return notificationOp.findAndUpdate( query, {$set: {isUnread: false}}, {new: false})
+    return notificationOp.find(query)
     .skip(obj.offset)
     .limit(obj.limit)
     .populate('actor.item', 'avatar name')
     .populate('target.item', 'avatar name')
-    .populate('object.item')
-    .lean();
+    .populate('object.item');
   })
   .then(function(data){
     result.notifications = data;
+    logger.debug(data);
+    // Update to read if notification was new
+    return new Promise( function(resolve,reject){
+      try{
+        data.forEach(
+          function (n) {
+            if(n.isUnread === true){
+              n.isUnread = false;
+              notificationOp.save(n);
+            }
+          }
+        );
+        resolve(true);
+      } catch(err) {
+        reject("Error updating notifications to read");
+      }
+    });
+  })
+  .then(function(data){
     return notificationOp.count({"_id": {$in: allNotifs}, isUnread: true});
   })
   .then(function(data){
@@ -181,9 +199,9 @@ function objectIdWithTimestamp(timestamp) {
 }
 
 // Recursively sets all notifs to read
-function setAsRead(ids, res){
+function setAsRead(ids){
   return new Promise(function(resolve, reject) {
-  if(ids.length > 0){ // Check if there is any item to delete
+  if(ids.length > 0){
     asyncHandler.forEachAll(ids,
       function(value, allresult, next) {
         readOne(value, function(value, result) {
@@ -225,3 +243,4 @@ module.exports.changeToResponded = changeToResponded;
 module.exports.objectIdWithTimestamp = objectIdWithTimestamp;
 module.exports.setAsRead = setAsRead;
 module.exports.changeNotificationStatus = changeNotificationStatus;
+module.exports.refreshNotifications = refreshNotifications;
