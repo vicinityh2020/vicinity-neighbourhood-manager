@@ -120,7 +120,7 @@ $scope.$on('$destroy', function(){
         month = date.getMonth() + 1;
         year = date.getFullYear();
         hours = date.getHours();
-        minutes = date.getMinutes();
+        minutes = date.getMinutes() / 10 < 1 ? "0" + date.getMinutes() : date.getMinutes();
         $scope.notifs[i].date = day + "/" + month + "/" + year + "  " + hours + ":" + minutes;
       }
     }

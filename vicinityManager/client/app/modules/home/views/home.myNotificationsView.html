@@ -2,12 +2,8 @@
     <h1>Organisation notifications</h1>
 </section>
 
-<div class="coll-md-1" ng-hide="loadedPage" style="margin: auto; max-width:700px">
-  <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
-</div>
-
   <!-- /.box-header -->
-<section class="content" ng-show="loadedPage">
+<section class="content">
 
   <div class="box-body">
 
@@ -20,7 +16,6 @@
               <a class="dropdown-toggle" data-toggle="dropdown">Select notification type
                 <span class="caret"></span>
               </a>
-
               <ul class="dropdown-menu dropdown-menu-right" role="menu">
                  <li><a ng-click="notifType(false)">Show all notifications</a></li>
                  <li><a ng-click="notifType(true)">Only pending notifications</a></li>
@@ -30,13 +25,14 @@
         </div>
       </div>
     </div>
+ </div>
 
   <!-- row -->
-  <div class="row" ng-if="dates.length === 0">
-    <h3>There are no notifications...</h3>
+  <div class="centered" ng-show="notifs.length === 0 && loadedPage" style="max-width:700px; margin:auto">
+    <h3 class="well">There are no notifications...</h3>
   </div>
 
-  <div class="row" ng-if="dates.length > 0">
+  <div class="row" ng-hide="notifs.length === 0">
     <div class="col-md-12">
       <!-- The time line -->
       <ul class="timeline">
@@ -149,7 +145,6 @@
                 <br>
 
               </div>
-
         </li>
         <li>
           <i class="fa fa-clock-o bg-gray"></i>
@@ -158,11 +153,15 @@
     </div>
   </div>
 
-  <div class="centered" ng-show="!allItemsLoaded && loadedPage">
+  <div class="centered" ng-hide="loadedPage" style="max-width:700px; margin:auto">
+    <i class="fa fa-refresh fa-spin fa-4x" style="text-align: center; display: block"/>
+  </div>
+
+  <div class="centered" ng-show="!allItemsLoaded && loadedPage" style="max-width:700px; margin:auto">
     <h3 ng-click="loadMore()" class="well" style="cursor: pointer">Load more notifications</h3>
   </div>
 
-  <div class="centered" ng-show="allItemsLoaded">
+  <div class="centered" ng-show="allItemsLoaded && notifs.length > 0" style="max-width:700px; margin:auto">
     <h3 class="well">All notifications loaded!</h3>
   </div>
 

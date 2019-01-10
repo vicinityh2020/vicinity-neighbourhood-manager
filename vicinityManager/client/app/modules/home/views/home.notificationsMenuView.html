@@ -18,7 +18,7 @@
 
           <span class="ciara" ng-class="bckColor"></span>
 
-          <div class="row">
+          <div class="row" ng-class="{'readNot' : notif.isUnread === false}">
 
             <!-- Avatar -->
             <div class="notification-avatar">
@@ -68,7 +68,7 @@
           </div>
 
           <!-- Actions -->
-          <div class="notification-actions">
+          <div class="notification-actions" ng-class="{'readNot' : notif.isUnread === false}">
             <button  ng-show="notif.type === 1" ng-click="acceptRegistration(notif._id, notif.actor.item._id)" type="button" class="btn btn-default btn-xs">Approve</button>
             <button  ng-show="notif.type === 1" ng-click="rejectRegistration(notif._id, notif.actor.item._id)" type="button" class="btn btn-default btn-xs">Reject</button>
 

@@ -51,6 +51,7 @@ angular.module('VicinityManagerApp.controllers').
 
   function getNotifs(response){
     var date;
+    var hours, minutes;
     var dates = [];
     var monthNames = [
       "January", "February", "March",
@@ -64,7 +65,9 @@ angular.module('VicinityManagerApp.controllers').
       date = new Date(newNotifs[i].date);
       newNotifs[i].timestamp = date;
       newNotifs[i].dateCaption = date.getDate() + " " + monthNames[date.getMonth()] + " " + date.getFullYear();
-      newNotifs[i].timeCaption = date.getHours() + ":" + date.getMinutes();
+      hours = date.getHours();
+      minutes = date.getMinutes() / 10 < 1 ? "0" + date.getMinutes() : date.getMinutes();
+      newNotifs[i].timeCaption = hours + ":" + minutes;
       if ($scope.dates.indexOf(newNotifs[i].dateCaption) === -1){
         $scope.dates.push(newNotifs[i].dateCaption);
       }

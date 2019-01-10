@@ -31,6 +31,7 @@ function getNotifications(obj, callback){
     query._id = {$in: allNotifs};
     if(obj.pending) query.$or = [{isUnread: true}, {status: "waiting"}];
     return notificationOp.find(query)
+    .sort({_id:-1})
     .skip(obj.offset)
     .limit(obj.limit)
     .populate('actor.item', 'avatar name')
@@ -43,9 +44,9 @@ function getNotifications(obj, callback){
   // Update to read if notification was new
     var idsToRead = [];
     for(var i = 0, l = data.length; i < l; i++){
-      idsToRead.push(data[i]._id);
+      if(data[i].isUnread === true) idsToRead.push(data[i]._id);
     }
-    if(idsToRead.length === 0){
+    if(idsToRead.length !== 0){
       return notificationOp.update({_id: {$in: idsToRead}}, { $set: { isUnread: false }}, {multi: true});
     } else {
       return false;
