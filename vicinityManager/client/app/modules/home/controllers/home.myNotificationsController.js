@@ -58,15 +58,15 @@ angular.module('VicinityManagerApp.controllers').
       "August", "September", "October",
       "November", "December"
     ];
-    var newNotifs = response.data.message.notifications[i];
+    var newNotifs = response.data.message.notifications;
     // Add timestamp and date strings to the new notifications
     for(var i = 0, l = newNotifs.length; i<l ; i++){
       date = new Date(newNotifs[i].date);
       newNotifs[i].timestamp = date;
       newNotifs[i].dateCaption = date.getDate() + " " + monthNames[date.getMonth()] + " " + date.getFullYear();
       newNotifs[i].timeCaption = date.getHours() + ":" + date.getMinutes();
-      if ($scope.dates.indexOf($scope.notifs[i].dateCaption) === -1){
-        $scope.dates.push($scope.notifs[i].dateCaption);
+      if ($scope.dates.indexOf(newNotifs[i].dateCaption) === -1){
+        $scope.dates.push(newNotifs[i].dateCaption);
       }
       $scope.notifs.push(newNotifs[i]);
     }

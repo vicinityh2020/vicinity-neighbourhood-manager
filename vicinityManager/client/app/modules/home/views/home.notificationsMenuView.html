@@ -14,7 +14,7 @@
 
         <!-- Unread notifications -->
 
-        <li ng-repeat="notif in notifs" ng-show="notif.isUnread">
+        <li ng-repeat="notif in notifs">
 
           <span class="ciara" ng-class="bckColor"></span>
 
@@ -81,28 +81,28 @@
 
   <!-- Read notifications -->
 
-        <li ng-repeat="notif in notifs" ng-show="[1, 21, 31].indexOf(notif.type) !== -1 && (notif.status== 'waiting') && !(notif.isUnread)">
+        <!-- <li ng-repeat="notif in notifs" ng-show="[1, 21, 31].indexOf(notif.type) !== -1 && (notif.status== 'waiting') && !(notif.isUnread)">
 
           <span class="ciara" ng-class="bckColor"></span>
 
-          <div class="row readNot">
+          <div class="row readNot"> -->
           <!-- Avatar -->
-          <div class="notification-avatar" ng-click="changeIsUnread(notif._id)">
+          <!-- <div class="notification-avatar" ng-click="changeIsUnread(notif._id)">
             <a ng-show="notif.type === 1" ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.actor.item._id})">
               <img ng-src="../../../../img/icons/data_request.png" alt="Company Avatar"/>
             </a>
             <a ng-show="notif.type === 31" ui-sref="root.main.companyProfile.devices({companyAccountId: notif.object.item._id})">
               <img ng-src="{{notif.object.item.avatar}}" alt="Company Avatar">
             </a>
-          </div>
+          </div> -->
 
           <!-- Description -->
-            <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 1"> You have received a registration request from: </p><a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.actor.item._id})"><p> {{notif.actor.item.companyName}} </p></a>
+            <!-- <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 1"> You have received a registration request from: </p><a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.actor.item._id})"><p> {{notif.actor.item.companyName}} </p></a>
             <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 31"> You have partnership request from <a  ui-sref="root.main.companyProfile.devices({companyAccountId: notif.object.item._id})">{{notif.object.item.name}}</a>.</p>
-          </div>
+          </div> -->
 
           <!-- Actions -->
-          <div class="notification-actions readNot">
+          <!-- <div class="notification-actions readNot">
 
             <button  ng-show="notif.type === 1" ng-click="acceptRegistration(notif.actor.item._id, notif._id)" type="button" class="btn btn-default btn-xs">Approve</button>
             <button  ng-show="notif.type === 1" ng-click="rejectRegistration(notif.actor.item._id, notif._id)" type="button" class="btn btn-default btn-xs">Reject</button>
@@ -112,7 +112,7 @@
 
           </div>
 
-        </li>
+        </li> -->
         <!-- end notification -->
       </ul>
 
