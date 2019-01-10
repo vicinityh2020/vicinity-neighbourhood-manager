@@ -46,6 +46,10 @@ Common
   /*width: 50%;*/
 }
 
+.text-muted{
+  opacity: 0.5;
+}
+
 /*TODO change these 2 classes and use the classes below for colours*/
 .fontGreen{
   color: green;

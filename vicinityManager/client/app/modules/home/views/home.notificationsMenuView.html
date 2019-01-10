@@ -1,14 +1,13 @@
  <!-- Menu toggle button -->
 
-<a href="" class="dropdown-toggle" data-toggle="dropdown">
+<a href="" ng-click="init()" class="dropdown-toggle" data-toggle="dropdown">
   <i class="fa fa-bell"></i>
   <span ng-show="!zeroNotif" class="label label-warning">{{notifCount}}</span>
 </a>
 
   <ul class="dropdown-menu animated-dropdown-menu outerMenu" ng-class="bckColor">
     <li ng-show="!loaded" class="header">Loading ...</li>
-    <li ng-show="!zeroNotif && loaded" class="header">Most recent notifications</li>
-    <li ng-show="zeroNotif && loaded" class="header">There are no recent notifications</li>
+    <li ng-show="loaded" class="header">Most recent notifications</li>
 
       <!-- Inner Menu: contains the notifications -->
       <ul class="menu">
@@ -45,6 +44,9 @@
                 <img ng-src="{{notif.actor.item.avatar}}" alt="Contract Avatar">
               </a>
             </div>
+
+            <!-- Date -->
+            <p class="text-muted">{{notif.date}}</p>
 
             <!-- Descriptions -->
               <p ng-click="changeIsUnread(notif._id)" ng-show="notif.type === 1">You have received a registration request from:<a ui-sref="root.main.registrationProfile.regAdmin({registrationId: notif.actor.item._id})">{{notif.actor.item.companyName}}</a></p>

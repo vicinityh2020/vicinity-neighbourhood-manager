@@ -4,8 +4,8 @@ factory('notificationsAPIService', ['$http', 'configuration', function($http, co
 
   var notificationsAPI = {};
 
-  notificationsAPI.getNotifications = function(limit, offset, all) {
-    return $http.get(configuration.apiUrl + '/notifications?limit=' + limit + '&offset=' + offset + '&all=' + all);
+  notificationsAPI.getNotifications = function(limit, offset, pending) {
+    return $http.get(configuration.apiUrl + '/notifications?limit=' + limit + '&offset=' + offset + '&pending=' + pending);
   };
 
   notificationsAPI.refreshNotifications = function() {

@@ -18,23 +18,20 @@ angular.module('VicinityManagerApp.controllers').
 
 // ======= Set initial variables ==========
   $scope.loadedPage = false;
-  $scope.rev = true;
-  $scope.myOrderBy = 'date';
   $scope.notifs = [];
-  $scope.notifsWithDate = [];
+  $scope.dates = [];
+  $scope.pendingNotificationsOnly = false;
+  $scope.limit = 12;
+  $scope.offset = 0;
+  $scope.allItemsLoaded = false;
   $scope.userId = $window.sessionStorage.userAccountId;
   $scope.orgId = $window.sessionStorage.companyAccountId;
 
 // ====== Checking if user is devOps =============
-$scope.isDev = false;
-var payload = tokenDecoder.deToken();
-var keyword = new RegExp('devOps');
-$scope.isDev = keyword.test(payload.roles);
-
-// ====== Sets from which date we retrieve notifications at init =====
-
-$scope.dateFrom =  moment().subtract(7, 'days'); // Initialized to one week ago
-$scope.period = 'week';
+// $scope.isDev = false;
+// var payload = tokenDecoder.deToken();
+// var keyword = new RegExp('devOps');
+// $scope.isDev = keyword.test(payload.roles);
 
 // ====== Getting notifications ======
 
@@ -42,9 +39,7 @@ $scope.period = 'week';
 
   function init(){
     $scope.loadedPage = false;
-    $scope.dates = [];
-    $scope.notifsWithDate = [];
-    notificationsAPIService.getNotifications(1, $scope.dateFrom)
+    notificationsAPIService.getNotifications($scope.limit, $scope.offset, $scope.pendingNotificationsOnly)
     .then(getNotifs)
     .catch(function(err){
       console.log(err);
@@ -52,41 +47,66 @@ $scope.period = 'week';
     });
   }
 
+// === Support functions ===========
+
   function getNotifs(response){
-    $scope.notifs = response.data.message;
-    commonHelpers.addTimestamp($scope.notifs, function(array, dates){
-      $scope.dates = dates;
-      $scope.notifsWithDate = array;
-      $scope.loadedPage = true;
+    var date;
+    var dates = [];
+    var monthNames = [
+      "January", "February", "March",
+      "April", "May", "June", "July",
+      "August", "September", "October",
+      "November", "December"
+    ];
+    var newNotifs = response.data.message.notifications[i];
+    // Add timestamp and date strings to the new notifications
+    for(var i = 0, l = newNotifs.length; i<l ; i++){
+      date = new Date(newNotifs[i].date);
+      newNotifs[i].timestamp = date;
+      newNotifs[i].dateCaption = date.getDate() + " " + monthNames[date.getMonth()] + " " + date.getFullYear();
+      newNotifs[i].timeCaption = date.getHours() + ":" + date.getMinutes();
+      if ($scope.dates.indexOf($scope.notifs[i].dateCaption) === -1){
+        $scope.dates.push($scope.notifs[i].dateCaption);
+      }
+      $scope.notifs.push(newNotifs[i]);
+    }
+    // Sort final array of notifications
+    $scope.notifs.sort(function(a,b){
+      return b.timestamp - a.timestamp;
     });
+    // Check if all notifications have been retrieved and enable the view in the DOM
+    $scope.allItemsLoaded = newNotifs.length < 12;
+    $scope.loadedPage = true;
   }
 
-// --------------------------------------------------
+  function reset(){
+    // Reset all arrays and values before change notification type
+    $scope.notifs = [];
+    $scope.loadedPage = false;
+    $scope.offset = 0;
+    $scope.dates = [];
+    // Reload notifications with the new settings
+    init();
+  }
 
-    $scope.notificationsDays = function(period){
-      $scope.period = period;
-      switch(period){
-        case 'today':
-          $scope.dateFrom =  moment().endOf('day').subtract(1, 'days');
-          break;
-        case 'week':
-          $scope.dateFrom =  moment().endOf('day').subtract(7, 'days');
-          break;
-        case 'month':
-          $scope.dateFrom =  moment().endOf('day').subtract(1, 'months');
-          break;
-        case 'year':
-          $scope.dateFrom =  moment().endOf('day').subtract(1, 'years');
-          break;
-      }
-      init();
-    };
+// ==== Functions accessed by DOM =====
+
+$scope.notifType = function(pending){
+  $scope.pendingNotificationsOnly = pending;
+  reset();
+};
+
+$scope.loadMore = function(){
+    $scope.loadedPage = false;
+    $scope.offset += $scope.limit;
+    init();
+};
 
 // ========= Accept / Reject requests ==========
 
   $scope.acceptNeighbourRequest = function (notifId, friendId){
     userAccountsHelpers.acceptNeighbourRequest(friendId)
-    .then(init)
+    .then(reset)
     .catch(function(err){
       console.log(err);
       Notification.error("Error accepting neighbourhood request");
@@ -95,7 +115,7 @@ $scope.period = 'week';
 
   $scope.rejectNeighbourRequest = function(notifId, friendId) {
     userAccountsHelpers.rejectNeighbourRequest(friendId)
-    .then(init)
+    .then(reset)
     .catch(function(err){
       console.log(err);
       Notification.error("Error rejecting neighbourhood request");
@@ -104,7 +124,7 @@ $scope.period = 'week';
 
   $scope.acceptRegistration = function (notifId, reg_id) {
    registrationsHelpers.acceptRegistration(reg_id, notifId)
-    .then(init)
+    .then(reset)
     .catch(function(err){
       console.log(err);
       Notification.error("Error accepting registration");
@@ -113,24 +133,11 @@ $scope.period = 'week';
 
   $scope.rejectRegistration = function (notifId, reg_id) {
     registrationsHelpers.rejectRegistration(reg_id, notifId)
-      .then(init)
+      .then(reset)
       .catch(function(err){
         console.log(err);
         Notification.error("Error rejecting registration");
       });
-  };
-
-  // ==== Sorting ====
-
-  $scope.orderByMe = function(x) {
-    if($scope.myOrderBy === x){
-      $scope.rev=!($scope.rev);
-    }
-      $scope.myOrderBy = x;
-  };
-
-  $scope.onSort = function(order){
-    $scope.rev = order;
   };
 
 });

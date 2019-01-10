@@ -14,48 +14,42 @@ function getNotifications(obj, callback){
   var allNotifs = [];
   var result = {};
   var query = {};
+  var todoAsync = [];
   result.notifications = [];
   result.count = 0;
 
-  userAccountOp.findOne({_id: obj.c_id}, {hasNotifications:1}).lean()
+  todoAsync.push(userAccountOp.findOne({_id: obj.c_id}, {hasNotifications:1}).lean());
+  todoAsync.push(userOp.findOne({_id: obj.u_id}, {hasNotifications:1}).lean());
+
+  Promise.all(todoAsync)
   .then(function(data){
-    allNotifs = allNotifs.concat(data.hasNotifications);
-    return userOp.findOne({_id: obj.u_id}, {hasNotifications:1}).lean();
-  })
-  .then(function(data){
-    allNotifs = allNotifs.concat(data.hasNotifications);
+    allNotifs = data[0].hasNotifications.concat(data[1].hasNotifications);
     // Get #limit more recent notifications including #offset
     // Update them to read
     // Populate with needed fields
     // If "all" is false then retrieve unread or waiting notifications only
     query._id = {$in: allNotifs};
-    if(!obj.all) query.$or = [{isUnread: true}, {status: "waiting"}];
+    if(obj.pending) query.$or = [{isUnread: true}, {status: "waiting"}];
     return notificationOp.find(query)
     .skip(obj.offset)
     .limit(obj.limit)
     .populate('actor.item', 'avatar name')
     .populate('target.item', 'avatar name')
-    .populate('object.item');
+    .populate('object.item')
+    .lean();
   })
   .then(function(data){
     result.notifications = data;
-    logger.debug(data);
-    // Update to read if notification was new
-    return new Promise( function(resolve,reject){
-      try{
-        data.forEach(
-          function (n) {
-            if(n.isUnread === true){
-              n.isUnread = false;
-              notificationOp.save(n);
-            }
-          }
-        );
-        resolve(true);
-      } catch(err) {
-        reject("Error updating notifications to read");
-      }
-    });
+  // Update to read if notification was new
+    var idsToRead = [];
+    for(var i = 0, l = data.length; i < l; i++){
+      idsToRead.push(data[i]._id);
+    }
+    if(idsToRead.length === 0){
+      return notificationOp.update({_id: {$in: idsToRead}}, { $set: { isUnread: false }}, {multi: true});
+    } else {
+      return false;
+    }
   })
   .then(function(data){
     return notificationOp.count({"_id": {$in: allNotifs}, isUnread: true});
@@ -75,15 +69,15 @@ Refresh notifications count
 function refreshNotifications(obj, callback){
   var allNotifs = [];
   var result = {};
+  var todoAsync = [];
   result.count = 0;
 
-  userAccountOp.findOne({_id: obj.c_id}, {hasNotifications:1}).lean()
+  todoAsync.push(userAccountOp.findOne({_id: obj.c_id}, {hasNotifications:1}).lean());
+  todoAsync.push(userOp.findOne({_id: obj.u_id}, {hasNotifications:1}).lean());
+
+  Promise.all(todoAsync)
   .then(function(data){
-    allNotifs = allNotifs.concat(data.hasNotifications);
-    return userOp.findOne({_id: obj.u_id}, {hasNotifications:1}).lean();
-  })
-  .then(function(data){
-    allNotifs = allNotifs.concat(data.hasNotifications);
+    allNotifs = data[0].hasNotifications.concat(data[1].hasNotifications);
     return notificationOp.count({"_id": {$in: allNotifs}, isUnread: true});
   })
   .then(function(data){

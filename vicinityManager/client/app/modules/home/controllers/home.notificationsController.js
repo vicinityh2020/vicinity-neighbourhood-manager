@@ -1,6 +1,6 @@
 "use strict";
 angular.module('VicinityManagerApp.controllers')
-.controller('notifications', 'configuration',
+.controller('notifications',
 function ($scope,
           $window,
           $timeout,
@@ -39,9 +39,9 @@ $scope.$on('$destroy', function(){
 
 // ====== Getting notifications onLoad (read and unread)
 
-  init();
+  refresh();
 
-  function init(){
+  $scope.init = function(){
     $scope.loaded = false;
     $scope.tempNotifs = [];
     // params (limit, offset, all)
@@ -58,6 +58,7 @@ $scope.$on('$destroy', function(){
       $scope.notifs = response.data.message.notifications;
       $scope.notifCount = response.data.message.count;
       $scope.zeroNotif = Number($scope.notifCount) === 0;
+      formatDate();
       sortNotifs();
       $scope.loaded = true;
     } catch(err) {
@@ -104,9 +105,29 @@ $scope.$on('$destroy', function(){
       $state.go('root.main.myNotifications');
     };
 
+    function formatDate(){
+      var date, day, month, year, hours, minutes;
+      // var monthNames = [
+      //   "January", "February", "March",
+      //   "April", "May", "June", "July",
+      //   "August", "September", "October",
+      //   "November", "December"
+      // ];
+      for(var i = 0, l = $scope.notifs.length; i<l ; i++){
+        date = new Date($scope.notifs[i].date);
+        $scope.notifs[i].timestamp = date;
+        day = date.getDate();
+        month = date.getMonth() + 1;
+        year = date.getFullYear();
+        hours = date.getHours();
+        minutes = date.getMinutes();
+        $scope.notifs[i].date = day + "/" + month + "/" + year + "  " + hours + ":" + minutes;
+      }
+    }
+
     function sortNotifs(){
       $scope.notifs.sort(function(a,b){
-        return b.date - a.date;
+        return b.timestamp - a.timestamp;
       });
     }
 

@@ -14,7 +14,7 @@ function getNotifications(req,res){
   obj.c_id = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
   obj.limit = Number(req.query.limit);
   obj.offset = Number(req.query.offset);
-  obj.all = req.query.all === 'true';
+  obj.pending = req.query.pending === 'true';
   notifHelper.getNotifications(obj, function(err,response){
     if(err) logger.log(req, res, {data: response, type: "error"});
     res.json({error: err, message: response});

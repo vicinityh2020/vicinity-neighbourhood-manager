@@ -17,15 +17,13 @@
         <div class="box-header with-border">
           <div class="box-tools">
             <div class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown">Select period
+              <a class="dropdown-toggle" data-toggle="dropdown">Select notification type
                 <span class="caret"></span>
               </a>
 
               <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                 <li><a ng-click="notificationsDays('today')">Today</a></li>
-                 <li><a ng-click="notificationsDays('week')">Whole week</a></li>
-                 <li><a ng-click="notificationsDays('month')">Whole month</a></li>
-                 <li><a ng-click="notificationsDays('year')">Whole year</a></li>
+                 <li><a ng-click="notifType(false)">Show all notifications</a></li>
+                 <li><a ng-click="notifType(true)">Only pending notifications</a></li>
               </ul>
              </div>
           </div>
@@ -35,12 +33,10 @@
 
   <!-- row -->
   <div class="row" ng-if="dates.length === 0">
-    <h3>There are no notifications in the selected period: <b>{{period}}</b></h3>
+    <h3>There are no notifications...</h3>
   </div>
 
   <div class="row" ng-if="dates.length > 0">
-    <h3>Visible period: <b>{{period}}</b></h3>
-    <br>
     <div class="col-md-12">
       <!-- The time line -->
       <ul class="timeline">
@@ -52,7 +48,7 @@
 
               <!-- <i class="fa fa-envelope bg-blue"></i> -->
 
-              <div class="timeline-item" style="max-width:700px; margin-top:10px" ng-repeat="notif in notifsWithDate" ng-if="notif.dateCaption === d">
+              <div class="timeline-item" style="max-width:700px; margin-top:10px" ng-repeat="notif in notifs" ng-if="notif.dateCaption === d">
 
                 <!-- Clock -->
                 <span class="time" > <i class="fa fa-clock-o"></i> {{notif.timeCaption}}</span>
@@ -161,4 +157,13 @@
       </ul>
     </div>
   </div>
+
+  <div class="centered" ng-show="!allItemsLoaded && loadedPage">
+    <h3 ng-click="loadMore()" class="well" style="cursor: pointer">Load more notifications</h3>
+  </div>
+
+  <div class="centered" ng-show="allItemsLoaded">
+    <h3 class="well">All notifications loaded!</h3>
+  </div>
+
 </section>
