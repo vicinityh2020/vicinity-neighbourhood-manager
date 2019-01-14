@@ -21,9 +21,9 @@ Looking for duplicates in user registration
 */
 function findDuplicatesUser(data) {
   var email = data.email;
-  var emailRegex = new RegExp("^" + email.toLowerCase(), "i");
+  var emailLC = email.toLowerCase();
   return new Promise(function(resolve, reject) {
-    userOp.find({email: { $regex: emailRegex }}, {email:1}, function(err, output) {
+    userOp.find({email: {$in: [email, emailLC]}}, {email:1}, function(err, output) {
       if (err) {
         reject(err);
       } else {
@@ -37,14 +37,14 @@ function findDuplicatesUser(data) {
 Looking for duplicates in company registration
 */
 function findDuplicatesCompany(data) {
-  companyName = data.companyName;
-  var companyRegex = new RegExp("^" + companyName.toLowerCase(), "i");
+  var companyName = data.companyName;
+  var companyNameLC = companyName.toLowerCase();
   // bid = data.businessId;
   // var query = {
   //   $or:[ {name: companyName},
   //         {businessId: bid} ] };
   return new Promise(function(resolve, reject) {
-    userAccountOp.find({name: { $regex: companyRegex }}, {cid:1}, function(err, output) {
+    userAccountOp.find({name: { $in: [companyName, companyNameLC] }}, {cid:1}, function(err, output) {
       if (err) {
         reject(err);
       } else {
@@ -59,9 +59,9 @@ Looking for duplicates in active registration mail
 */
 function findDuplicatesRegMail(data) {
   var email = data.email;
-  var emailRegex = new RegExp("^" + email.toLowerCase(), "i");
+  var emailLC = email.toLowerCase();
   return new Promise(function(resolve, reject) {
-    registrationOp.find({email: { $regex: emailRegex }, status: {$in: ["open", "pending"]} }, {email:1}, function(err, output) {
+    registrationOp.find({email: { $in: [email, emailLC] }, status: {$in: ["open", "pending"]} }, {email:1}, function(err, output) {
       if (err) {
         reject(err);
       } else {
