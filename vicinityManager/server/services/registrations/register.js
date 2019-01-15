@@ -86,7 +86,7 @@ function requestReg(req, res, callback) {
     getHash(saltRounds, pwd)
     .then(function(hash){
       db.hash = hash;
-      return registrationPendingApproval(db);
+      return db.save();
     })
     .then(function(){
       var mailInfo = {
@@ -113,7 +113,7 @@ function requestReg(req, res, callback) {
       return registrationAndVerificationMail(db);
     })
     .then(function(response){
-      callback(false, "Registration mail sent!");
+      callback(false, "Registration mail sent to invited user/organisation!");
     })
     .catch(function(err){
       callback(true, err);
@@ -142,7 +142,7 @@ function createReg(id, req, res, callback) {
     if ((raw.type == "newCompany") && (raw.status == "verified")){
       saveOrganisation(dbUser, raw)
       .then(function(response){
-        logger.log(req, res, {type: 'audit', data: "New userAccount was successfuly saved!"});
+        logger.log(req, res, {type: 'audit', data: "New organisation was successfuly saved!"});
         callback(false, "New userAccount was successfuly saved!");
       })
       .catch(function(err){
@@ -152,7 +152,7 @@ function createReg(id, req, res, callback) {
     }else if ((raw.type == "newUser") && (raw.status == "verified")){
       saveUser(dbUser, raw)
       .then(function(response){
-        logger.log(req, res, {type: 'audit', data: "New userAccount was successfuly saved!"});
+        logger.log(req, res, {type: 'audit', data: "New user was successfuly saved!"});
         callback(false, "New userAccount was successfuly saved!");
       })
       .catch(function(err){
@@ -293,18 +293,6 @@ function getHash(saltRounds, pwd){
   });
 }
 
-/* Save registration and notify devOps */
-function registrationPendingApproval(db){
-  return db.save()
-  .then(function(product){
-    return notifHelper.createNotification(
-      { kind: 'registration', item: product._id, extid: "NA" },
-      { kind: 'registration', item: product._id, extid: "NA" },
-      { kind: 'registration', item: product._id, extid: "NA" },
-      'waiting', 1, null);
-  });
-}
-
 /* Save registration and send verification mail */
 function registrationAndVerificationMail(db){
   return db.save()
@@ -370,37 +358,27 @@ function saveOrganisation(dbUser, raw){
       return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
     })
     .then(function(response){
-      return {email: userData.email, uid: userData._id, _id: orgData._id};
+      Promise.resolve({email: userData.email, uid: userData._id, _id: orgData._id});
     });
 }
 
 /* Save user and finish registration */
 function saveUser(dbUser, raw){
   var userData = {};
-  var orgData = {};
-  var userAccountId = "";
+  var userAccountId = mongoose.Types.ObjectId(raw.companyId);
+  var cid = raw.cid;
+  dbUser.cid = {id: userAccountId, extid: cid};
   return dbUser.save()
   .then(function(response){
     userData = response;
-    userAccountId = mongoose.Types.ObjectId(raw.companyId);
-    return audits.create(
-      { kind: 'user', item: userData._id , extid: userData.email },
-      { kind: 'userAccount', item: raw.companyId, extid: raw.cid },
-      {  }, 11, null
-    );
+    return userAccountOp.findOneAndUpdate({"_id": userAccountId}, {$push: {accountOf: {id: userData._id, extid: userData.email}}});
   })
   .then(function(response){
-    return userAccountOp.findById(userAccountId);
-  })
-  .then(function(response){ // add user to organisation list of accounts
-    orgData = response;
-    var user_id = {id: userData._id, extid: userData.email};
-    orgData.accountOf.push(user_id);
-    return orgData.save();
-  })
-  .then(function(response){ // add organisation cid schema to user
-    userData.cid = {id: raw.companyId, extid: orgData.cid};
-    return userData.save();
+    return audits.create(
+      { kind: 'user', item: userData._id , extid: userData.email },
+      { kind: 'userAccount', item: userAccountId, extid: cid },
+      {  }, 11, null
+    );
   });
 }
 

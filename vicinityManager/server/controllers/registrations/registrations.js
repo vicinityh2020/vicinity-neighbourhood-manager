@@ -15,7 +15,6 @@ function getOne(req, res){
   var id = mongoose.Types.ObjectId(req.params.id);
   sGet.getOne(id, function(err, response){
     if(err){
-      logger.log(req,res,response);
       res.json({error: err, message: response.data});
     } else {
       res.json({error: err, message: response.data});
@@ -29,7 +28,6 @@ Get all organisation registrations
 function getAll(req, res, next) {
   sGet.getAll("newCompany", function(err, response){
     if(err){
-      logger.log(req,res,response);
       res.json({error: err, message: response.data});
     } else {
       res.json({error: err, message: response.data});
@@ -62,7 +60,6 @@ function createRegistration(req, res, next) {
       logger.log(id, req, res, {type: 'error', data: response});
       res.json({error: err, message: response});
     } else {
-      logger.log(id, req, res, {type: 'audit', data: response});
       res.json({error: err, message: response});
     }
   });

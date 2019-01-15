@@ -108,6 +108,7 @@ $scope.registerCompany = function () {
   var $pass1 = $("#pw1");
   var $pass2 = $("#pw2");
   if ($scope.password1Reg === $scope.password2Reg){
+    if($scope.password1Reg.length > 7){
     findMeDuplicates()
     .then(function(response){
     return registrationsAPIService.postOne(
@@ -137,6 +138,15 @@ $scope.registerCompany = function () {
           }
         }
       });
+    }else{
+      Notification.warning("The password must have at least 8 characters...");
+       $pass1.addClass("invalid");
+       $pass2.addClass("invalid");
+        setTimeout(function() {
+         $pass1.removeClass("invalid");
+         $pass2.removeClass("invalid");
+        }, 2000);
+      }
   }else{
     Notification.warning("Passwords do not match...");
     $pass1.addClass("invalid");

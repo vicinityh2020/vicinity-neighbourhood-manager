@@ -5,15 +5,15 @@ factory('invitationsAPIService', ['$http', 'configuration', function($http, conf
   var invitationsAPI = {};
 
   invitationsAPI.getOne = function(id){
-    return $http.get(configuration.apiUrl +'/invitations/' + id );
+    return $http.get(configuration.apiUrl + '/invitations/' + id );
   };
 
   invitationsAPI.getAll = function(){
-    return $http.get(configuration.apiUrl +'/invitations/');
+    return $http.get(configuration.apiUrl + '/invitations/');
   };
 
   invitationsAPI.postOne = function(data) {
-    return $http.post(configuration.apiUrl +'/invitations/', data);
+    return $http.post(configuration.apiUrl + '/invitations/', data);
   };
 
   return invitationsAPI;

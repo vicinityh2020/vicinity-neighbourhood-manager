@@ -53,6 +53,8 @@ angular.module('Registration')
     var $pass1 = $("#pw1");
     var $pass2 = $("#pw2");
     if ($scope.password1Reg === $scope.password2Reg){
+      if($scope.password1Reg.length > 7){
+
       findMeDuplicates()
       .then(function(response){
       return registrationsAPIService.postOne(
@@ -71,6 +73,7 @@ angular.module('Registration')
         .then(endRegistration)
         .catch(function(err){
           if(err !== "DUPLICATES"){
+            console.log(err);
             Notification.error("There was an issue in the registration process: " + err);
           } else {
             if($scope.emailReg === "" && $scope.companynameReg === ""){
@@ -82,6 +85,15 @@ angular.module('Registration')
             }
           }
         });
+      }else{
+        Notification.warning("The password must have at least 8 characters...");
+         $pass1.addClass("invalid");
+         $pass2.addClass("invalid");
+          setTimeout(function() {
+           $pass1.removeClass("invalid");
+           $pass2.removeClass("invalid");
+          }, 2000);
+        }
     }else{
       Notification.warning("Passwords do not match...");
       $pass1.addClass("invalid");

@@ -50,6 +50,7 @@ angular.module('Registration')
   var $pass1 = $("#pwUs1");
   var $pass2 = $("#pwUs2");
     if ($scope.password1Us === $scope.password2Us){
+      if($scope.password1Us.length > 7){
       findMeDuplicates()
       .then(function(response){
       return registrationsAPIService.postOne(
@@ -67,17 +68,21 @@ angular.module('Registration')
         .then(endRegistration)
         .catch(function(err){
           if(err !== "DUPLICATES"){
+            console.log(err);
             Notification.error("There was an issue in the registration process: " + err);
           } else {
-            if($scope.emailReg === "" && $scope.companynameReg === ""){
-              Notification.warning('The mail and company name are duplicated!!!');
-            } else if($scope.emailReg === "" && $scope.companynameReg !== "") {
-              Notification.warning('The mail is duplicated!!!');
-            } else {
-              Notification.warning('The company name is duplicated!!!');
-            }
+            Notification.warning('The mail is duplicated!!!');
           }
         });
+      }else{
+       Notification.warning("The password must have at least 8 characters...");
+        $pass1.addClass("invalid");
+        $pass2.addClass("invalid");
+         setTimeout(function() {
+          $pass1.removeClass("invalid");
+          $pass2.removeClass("invalid");
+         }, 2000);
+       }
     }else{
       Notification.warning("Passwords do not match...");
       $pass1.addClass("invalid");
@@ -101,11 +106,6 @@ angular.module('Registration')
         .then( function(response){
           aux = response.data.message;
           if(response.data.message) $scope.emailUs = "";
-          return registrationsAPIService.findDuplicatesCompany({companyName: $scope.companynameReg, businessID: $scope.bidReg});
-        })
-        .then( function(response){
-          if(!aux) aux = response.data.message; // If aux is already true must remain true, there are already duplicates
-          if(response.data.message) $scope.companynameReg = "";
           return registrationsAPIService.findDuplicatesRegMail({email: $scope.emailUs});
         })
         .then( function(response){
