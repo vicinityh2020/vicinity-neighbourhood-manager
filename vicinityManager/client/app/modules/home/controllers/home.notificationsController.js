@@ -81,26 +81,6 @@ $scope.$on('$destroy', function(){
 
     // ========= Other Functions ===============
 
-    $scope.changeIsUnreadAndResponded = function(notifID){
-      notificationsAPIService.changeIsUnreadToFalse(notifID)
-        .then(notificationsAPIService.changeStatusToResponded(notifID,'responded'))
-        .then(init())
-        .catch(function(err){
-          console.log(err);
-          Notification.error("Server error");
-        });
-    };
-
-    $scope.changeIsUnread = function(notifID){
-      $scope.notifCount = $scope.notifCount - 1;
-      notificationsAPIService.changeIsUnreadToFalse(notifID)
-        .then(init())
-        .catch(function(err){
-          console.log(err);
-          Notification.error("Server error");
-        });
-    };
-
     $scope.seeAll = function(){
       $state.go('root.main.myNotifications');
     };
@@ -134,7 +114,6 @@ $scope.$on('$destroy', function(){
   // Accept / Reject requests ======================
 
   $scope.acceptNeighbourRequest = function (notifId, friendId){
-    $scope.notifCount = $scope.notifCount - 1;
     userAccountsHelpers.acceptNeighbourRequest(friendId)
     .then(init)
     .catch(function(err){
@@ -144,7 +123,6 @@ $scope.$on('$destroy', function(){
   };
 
     $scope.rejectNeighbourRequest = function(notifId, friendId){
-      $scope.notifCount = $scope.notifCount - 1;
       userAccountsHelpers.rejectNeighbourRequest(friendId)
       .then(init)
       .catch(function(err){
@@ -154,7 +132,6 @@ $scope.$on('$destroy', function(){
     };
 
     $scope.acceptRegistration = function (notifId, reg_id) {
-      $scope.notifCount = $scope.notifCount - 1;
       registrationsHelpers.acceptRegistration(reg_id, notifId)
         .then(init)
         .catch(function(err){
@@ -164,7 +141,6 @@ $scope.$on('$destroy', function(){
     };
 
     $scope.rejectRegistration = function (notifId, reg_id) {
-      $scope.notifCount = $scope.notifCount - 1;
       registrationsHelpers.rejectRegistration(reg_id, notifId)
         .then(init)
         .catch(function(err){

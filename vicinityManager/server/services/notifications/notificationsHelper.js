@@ -29,7 +29,11 @@ function getNotifications(obj, callback){
     // Populate with needed fields
     // If "all" is false then retrieve unread or waiting notifications only
     query._id = {$in: allNotifs};
-    if(obj.pending) query.$or = [{isUnread: true}, {status: "waiting"}];
+    if(obj.pending){
+      query.$or = [{isUnread: true}, {status: "waiting"}];
+    } else {
+      query.status = {$ne: "responded"};
+    }
     return notificationOp.find(query)
     .sort({_id:-1})
     .skip(obj.offset)
@@ -90,6 +94,10 @@ function refreshNotifications(obj, callback){
   });
 }
 
+/*******************************
+Functions accessed from backend
+*******************************/
+
 /*
 Create a notification
 */
@@ -127,9 +135,21 @@ function changeToResponded(o_id, stat, callback){
   });
 }
 
+/**************************************
+Other functions: To be replaced/removed
+**************************************/
+
+// Converts mongo ID to timestamp
+function objectIdWithTimestamp(timestamp) {
+    // Convert date object to hex seconds since Unix epoch
+    var hexSeconds = Math.floor(timestamp/1000).toString(16);
+    // Create an ObjectId with that hex timestamp
+    var constructedObjectId = mongoose.Types.ObjectId(hexSeconds + "0000000000000000");
+    return constructedObjectId;
+}
+
 // Sets the notification to read
 // Accepts single string or array
-
 function changeIsUnreadToFalse(id, ids, callback){
   var o_id = [];
   if(id && id !== '0'){
@@ -144,53 +164,6 @@ function changeIsUnreadToFalse(id, ids, callback){
   } else {
     callback(true, "Missing id");
   }
-}
-
-/*
-Functions accessed from backend
-*/
-function changeNotificationStatus(targetId, objectId, type, other){
-
-    // Build the query only with the relevant keys
-    var query = { 'type': type, 'status': 'waiting' };
-    other = typeof other !== 'undefined' ? other : {};
-    if(targetId !== ""){ query['target.item'] = targetId; }
-    if(objectId !== ""){ query['object.item'] = objectId; }
-    // if(other.hasOwnProperty('itemId')){ query.itemId = other.itemId; }
-    if(other.hasOwnProperty('sentByReg')){ query['actor.item'] = other.sentByReg; }
-    // Change status of found notifs
-    notificationOp.find(query,
-      function(err, notif){
-        if(err){
-          logger.debug("Error changing status of notification!!");
-        } else if(!(notif)){
-          logger.debug("Notif not found in changing status of notification!!");
-        } else {
-          var toChange = [];
-          for(var n = 0; n < notif.length; n++){
-            notif[n].status = 'responded';
-            notif[n].isUnread = false;
-            toChange.push(notif[n].save());
-          }
-          Promise.all(toChange)
-          .then(function(response){ Promise.resolve('Success'); })
-          .catch(function(err){ Promise.reject('Error'); });
-        }
-      }
-    );
-  }
-
-/*
-Private functions
-*/
-
-// Converts mongo ID to timestamp
-function objectIdWithTimestamp(timestamp) {
-    // Convert date object to hex seconds since Unix epoch
-    var hexSeconds = Math.floor(timestamp/1000).toString(16);
-    // Create an ObjectId with that hex timestamp
-    var constructedObjectId = mongoose.Types.ObjectId(hexSeconds + "0000000000000000");
-    return constructedObjectId;
 }
 
 // Recursively sets all notifs to read
@@ -229,13 +202,46 @@ function readOne(idToRead, callback){
   });
 }
 
+// Modify status
+function changeNotificationStatus(targetId, objectId, type, other){
+
+    // Build the query only with the relevant keys
+    var query = { 'type': type, 'status': 'waiting' };
+    other = typeof other !== 'undefined' ? other : {};
+    if(targetId !== ""){ query['target.item'] = targetId; }
+    if(objectId !== ""){ query['object.item'] = objectId; }
+    // if(other.hasOwnProperty('itemId')){ query.itemId = other.itemId; }
+    if(other.hasOwnProperty('sentByReg')){ query['actor.item'] = other.sentByReg; }
+    // Change status of found notifs
+    notificationOp.find(query,
+      function(err, notif){
+        if(err){
+          logger.debug("Error changing status of notification!!");
+        } else if(!(notif)){
+          logger.debug("Notif not found in changing status of notification!!");
+        } else {
+          var toChange = [];
+          for(var n = 0; n < notif.length; n++){
+            notif[n].status = 'responded';
+            notif[n].isUnread = false;
+            toChange.push(notif[n].save());
+          }
+          Promise.all(toChange)
+          .then(function(response){ Promise.resolve('Success'); })
+          .catch(function(err){ Promise.reject('Error'); });
+        }
+      }
+    );
+  }
+
 
 // Export functions
 module.exports.getNotifications = getNotifications;
+module.exports.refreshNotifications = refreshNotifications;
 module.exports.createNotification = createNotification;
-module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.changeToResponded = changeToResponded;
+// Other
+module.exports.changeIsUnreadToFalse = changeIsUnreadToFalse;
 module.exports.objectIdWithTimestamp = objectIdWithTimestamp;
 module.exports.setAsRead = setAsRead;
 module.exports.changeNotificationStatus = changeNotificationStatus;
-module.exports.refreshNotifications = refreshNotifications;

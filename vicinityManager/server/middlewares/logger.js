@@ -58,17 +58,17 @@ if(process.env.env === 'test'){
           //     colorize: false,
           //     prettyPrint: true,
           // }),
-          new winston.transports.File({
-              level: 'audit',
-              filename: config.technicalLog || "./logs/technical_log.log",
-              handleExceptions: true,
-              // timestamp: true,
-              json: true,
-              maxsize: 5242880, //5MB
-              maxFiles: 5,
-              colorize: false,
-              prettyPrint: true
-          }),
+          // new winston.transports.File({
+          //     level: 'audit',
+          //     filename: config.technicalLog || "./logs/technical_log.log",
+          //     handleExceptions: true,
+          //     // timestamp: true,
+          //     json: true,
+          //     maxsize: 5242880, //5MB
+          //     maxFiles: 5,
+          //     colorize: false,
+          //     prettyPrint: true
+          // }),
           new winston.transports.Console({
               level: 'debug',
               // timestamp: true,

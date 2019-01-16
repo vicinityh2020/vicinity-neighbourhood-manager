@@ -17,38 +17,32 @@ Public Functions
 
 function processFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
   var me, friend;
-  companyAccountOp.findById(my_id)
-  .then( function(response){
-      me = response;
-      return companyAccountOp.findById(friend_id);
-    })
+  var doAsync = [];
+  doAsync.push(companyAccountOp.findById(my_id));
+  doAsync.push(companyAccountOp.findById(friend_id));
+  Promise.all(doAsync)
     .then( function(response){
-      friend = response;
-      return companyAccountOp.update({_id: friend_id}, { $push: { knowsRequestsFrom: {'id': my_id, 'extid': me.cid } } });
-    })
-    .then(function(response){
-      return companyAccountOp.update({_id: my_id}, { $push: { knowsRequestsTo: {'id': friend_id, 'extid': friend.cid } } });
-    })
-    .then(function(response){
-      return notifHelper.createNotification(
+      me = response[0];
+      friend = response[1];
+      doAsync = [];
+      doAsync.push(companyAccountOp.update({_id: friend_id}, { $push: { knowsRequestsFrom: {'id': my_id, 'extid': me.cid } } }));
+      doAsync.push(companyAccountOp.update({_id: my_id}, { $push: { knowsRequestsTo: {'id': friend_id, 'extid': friend.cid } } }));
+      doAsync.push(notifHelper.createNotification(
         { kind: 'user', item: my_uid , extid: my_mail },
         { kind: 'userAccount', item: friend._id, extid: friend.cid },
         { kind: 'userAccount', item: me._id, extid: me.cid },
-        'waiting', 31, null);
-    })
-    .then(function(response){
-      return notifHelper.createNotification(
+        'waiting', 31, null));
+      doAsync.push(notifHelper.createNotification(
         { kind: 'user', item: my_uid , extid: my_mail },
         { kind: 'userAccount', item: me._id, extid: me.cid },
         { kind: 'userAccount', item: friend._id, extid: friend.cid },
-        'info', 35, null);
-    })
-    .then(function(response){
-      return audits.create(
+        'info', 35, null));
+      doAsync.push(audits.create(
         { kind: 'user', item: my_uid , extid: my_mail },
         { kind: 'userAccount', item: me._id, extid: me.cid },
         { kind: 'userAccount', item: friend._id, extid: friend.cid },
-        31, null);
+        31, null));
+      return Promise.all(doAsync);
     })
     .then(function(response){
       callback(false, "Friend request sent");
@@ -60,41 +54,33 @@ function processFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 
 function acceptFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
   var me, friend;
-  companyAccountOp.findById(my_id)
-  .then( function(response){
-      me = response;
-      return companyAccountOp.findById(friend_id);
-  })
-  .then(function(response){
-      friend = response;
-      return companyAccountOp.update({_id: friend_id}, { $push: { knows: {'id': my_id, 'extid': me.cid } } });
-    })
-    .then(function(response){
-      return companyAccountOp.update({_id: my_id}, { $push: { knows: {'id': friend_id, 'extid': friend.cid } } });
-    })
-    .then(function(response){
-      return companyAccountOp.update({_id: friend_id}, { $pull: { knowsRequestsTo: {'id': my_id, 'extid': me.cid } } });
-    })
-    .then(function(response){
-      return companyAccountOp.update({_id: my_id}, { $pull: { knowsRequestsFrom: {'id': friend_id, 'extid': friend.cid } } });
-    })
-    .then(function(response){
-      return notifHelper.createNotification(
+  var doAsync = [];
+  doAsync.push(companyAccountOp.findById(my_id));
+  doAsync.push(companyAccountOp.findById(friend_id));
+  Promise.all(doAsync)
+    .then( function(response){
+      me = response[0];
+      friend = response[1];
+      doAsync = [];
+      doAsync.push(companyAccountOp.update({_id: friend_id}, { $push: { knows: {'id': my_id, 'extid': me.cid } } }));
+      doAsync.push(companyAccountOp.update({_id: my_id}, { $push: { knows: {'id': friend_id, 'extid': friend.cid } } }));
+      doAsync.push(companyAccountOp.update({_id: friend_id}, { $pull: { knowsRequestsTo: {'id': my_id, 'extid': me.cid } } }));
+      doAsync.push(companyAccountOp.update({_id: my_id}, { $pull: { knowsRequestsFrom: {'id': friend_id, 'extid': friend.cid } } }));
+      doAsync.push(notifHelper.createNotification(
         { kind: 'user', item: my_uid , extid: my_mail },
         { kind: 'userAccount', item: friend._id, extid: friend.cid },
         { kind: 'userAccount', item: me._id, extid: me.cid },
-        'accepted', 34, null);
-    })
-    .then(function(response){
-      return audits.create(
+        'accepted', 34, null));
+      doAsync.push(audits.create(
         { kind: 'user', item: my_uid , extid: my_mail },
         { kind: 'userAccount', item: me._id, extid: me.cid },
         { kind: 'userAccount', item: friend._id, extid: friend.cid },
-        33, null);
+        33, null));
+      doAsync.push(notifHelper.changeNotificationStatus(friend_id, my_id, 31)); // responds partnership request from friend
+      doAsync.push(notifHelper.changeNotificationStatus(my_id, friend_id, 31)); // responds partnership request from me
+      return Promise.all(doAsync);
     })
     .then(function(response){
-      notifHelper.changeNotificationStatus(friend_id, my_id, 31); // responds partnership request from friend
-      notifHelper.changeNotificationStatus(my_id, friend_id, 31); // responds partnership request from me
       callback(false, "Friendship accepted");
     })
     .catch(
@@ -106,37 +92,32 @@ function acceptFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 
 function rejectFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
     var me, friend;
-
-    companyAccountOp.findById(my_id)
-    .then(function(response){
-        me = response;
-        return companyAccountOp.findById(friend_id);
-      })
-      .then(function(response){
-        friend = response;
-        return companyAccountOp.update({_id: friend_id}, { $pull: { knowsRequestsTo: {'id': my_id, 'extid': me.cid } } });
-      })
-      .then(function(response){
-        return companyAccountOp.update({_id: my_id}, { $pull: { knowsRequestsFrom: {'id': friend_id, 'extid': friend.cid } } });
-      })
-      .then(function(response){
-        return notifHelper.createNotification(
+    var doAsync = [];
+    doAsync.push(companyAccountOp.findById(my_id));
+    doAsync.push(companyAccountOp.findById(friend_id));
+    Promise.all(doAsync)
+      .then( function(response){
+        me = response[0];
+        friend = response[1];
+        doAsync = [];
+        doAsync.push(companyAccountOp.update({_id: friend_id}, { $pull: { knowsRequestsTo: {'id': my_id, 'extid': me.cid } } }));
+        doAsync.push(companyAccountOp.update({_id: my_id}, { $pull: { knowsRequestsFrom: {'id': friend_id, 'extid': friend.cid } } }));
+        doAsync.push(notifHelper.createNotification(
           { kind: 'user', item: my_uid , extid: my_mail },
           { kind: 'userAccount', item: friend._id, extid: friend.cid },
           { kind: 'userAccount', item: me._id, extid: me.cid },
-          'rejected', 33, null);
-      })
-      .then(function(response){
-        return audits.create(
+          'rejected', 33, null));
+        doAsync.push(audits.create(
           { kind: 'user', item: my_uid , extid: my_mail },
           { kind: 'userAccount', item: me._id, extid: me.cid },
           { kind: 'userAccount', item: friend._id, extid: friend.cid },
-          34, null);
+          34, null));
+        doAsync.push(notifHelper.changeNotificationStatus(friend_id, my_id, 31)); // responds partnership request from friend
+        doAsync.push(notifHelper.changeNotificationStatus(my_id, friend_id, 31)); // responds partnership request from me
+        return Promise.all(doAsync);
       })
-      .then(function(response){
-        notifHelper.changeNotificationStatus(friend_id, my_id, 31); // responds partnership request from friend
-        notifHelper.changeNotificationStatus(my_id, friend_id, 31); // responds partnership request from me
-        callback(false, "Friendship rejected");
+      .then(
+        function(response){callback(false, "Friendship rejected");
       })
       .catch(function(err){
         callback(true, err);
@@ -146,30 +127,24 @@ function rejectFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 
 function cancelFriendRequest(friend_id, my_id, my_mail, my_uid, callback){
   var me, friend;
-  companyAccountOp.findById(my_id)
-  .then(function(response){
-      me = response;
-      return companyAccountOp.findById(friend_id);
-    })
-    .then(function(response){
-      friend = response;
-      return companyAccountOp.update({_id: friend_id}, { $pull: { knowsRequestsFrom: {'id': my_id, 'extid': me.cid } } });
-    })
-    .then(function(response){
-      return companyAccountOp.update({_id: my_id}, { $pull: { knowsRequestsTo: {'id': friend_id, 'extid': friend.cid } } });
-    })
-    .then(function(response){
-      return audits.create(
+  var doAsync = [];
+  doAsync.push(companyAccountOp.findById(my_id));
+  doAsync.push(companyAccountOp.findById(friend_id));
+  Promise.all(doAsync)
+    .then( function(response){
+      me = response[0];
+      friend = response[1];
+      doAsync = [];
+      doAsync.push(companyAccountOp.update({_id: friend_id}, { $pull: { knowsRequestsFrom: {'id': my_id, 'extid': me.cid } } }));
+      doAsync.push(companyAccountOp.update({_id: my_id}, { $pull: { knowsRequestsTo: {'id': friend_id, 'extid': friend.cid } } }));
+      doAsync.push(audits.create(
         { kind: 'user', item: my_uid , extid: my_mail },
         { kind: 'userAccount', item: me._id, extid: me.cid },
         { kind: 'userAccount', item: friend._id, extid: friend.cid },
-        32, null);
-    })
-    .then(function(response){
-      return notifHelper.changeNotificationStatus(friend_id, my_id, 31); // responds partnership request from friend
-    })
-    .then(function(response){
-      return notifHelper.changeNotificationStatus(my_id, friend_id, 31); // responds partnership request from me
+        32, null));
+      doAsync.push(notifHelper.changeNotificationStatus(friend_id, my_id, 31)); // responds partnership request from friend
+      doAsync.push(notifHelper.changeNotificationStatus(my_id, friend_id, 31)); // responds partnership request from me
+      Promise.all(doAsync);
     })
     .then(function(response){
       callback(false, "Friendship request cancelled");
@@ -177,53 +152,38 @@ function cancelFriendRequest(friend_id, my_id, my_mail, my_uid, callback){
     .catch(function(err){
       callback(true, err);
     });
-    // var notification = new notificationOp();
-    //
-    // notification.addressedTo = [friend_id, my_id];
-    // notification.sentBy = my_id;
-    // notification.type = 36;
-    // notification.status = 'info';
-    // notification.isUnread = true;
-    // notification.save();
-}
+  }
 
 
 function cancelFriendship(friend_id, my_id, my_mail, my_uid, callback){
     var me, friend;
-    companyAccountOp.findById(my_id)
-    .then(function(response){
-        me = response;
-        return companyAccountOp.findById(friend_id);
-      })
-      .then(function(response){
-        friend = response;
-        return companyAccountOp.update({_id: friend_id}, { $pull: { knows: {'id': my_id, 'extid': me.cid } } });
-      })
-      .then(function(response){
-        return companyAccountOp.update({_id: my_id}, { $pull: { knows: {'id': friend_id, 'extid': friend.cid } } });
-      })
+    var doAsync = [];
+    doAsync.push(companyAccountOp.findById(my_id));
+    doAsync.push(companyAccountOp.findById(friend_id));
+    Promise.all(doAsync)
       .then( function(response){
-        return sharingRules.removeFriend(my_id, friend_id, my_mail, my_uid);
-      })
-      .then( function(response){
-        return notifHelper.createNotification(
+        me = response[0];
+        friend = response[1];
+        doAsync = [];
+        doAsync.push(companyAccountOp.update({_id: friend_id}, { $pull: { knows: {'id': my_id, 'extid': me.cid } } }));
+        doAsync.push(companyAccountOp.update({_id: my_id}, { $pull: { knows: {'id': friend_id, 'extid': friend.cid } } }));
+        doAsync.push(sharingRules.removeFriend(my_id, friend_id, my_mail, my_uid));
+        doAsync.push(notifHelper.createNotification(
         { kind: 'user', item: my_uid , extid: my_mail },
         { kind: 'userAccount', item: friend._id, extid: friend.cid },
         { kind: 'userAccount', item: me._id, extid: me.cid },
-        'info', 32, null); })
-      .then( function(response){
-        return notifHelper.createNotification(
+        'info', 32, null));
+        doAsync.push(notifHelper.createNotification(
           { kind: 'user', item: my_uid , extid: my_mail },
           { kind: 'userAccount', item: me._id, extid: me.cid },
           { kind: 'userAccount', item: friend._id, extid: friend.cid },
-          'info', 32, null);
-      })
-      .then( function(response){
-        audits.create(
+          'info', 32, null));
+        doAsync.push(audits.create(
           { kind: 'user', item: my_uid , extid: my_mail },
           { kind: 'userAccount', item: me._id, extid: me.cid },
           { kind: 'userAccount', item: friend._id, extid: friend.cid },
-          35, null);
+          35, null));
+        return Promise.all(doAsync);
       })
       .then( function(response){
         callback(false, "Friendship cancelled");
