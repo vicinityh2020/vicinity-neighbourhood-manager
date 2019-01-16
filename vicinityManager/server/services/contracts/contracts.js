@@ -296,7 +296,7 @@ When an item is updated we need to put them in "hold" the contracts
 */
 function pauseContracts(req, res, ctData){
   var oid, ct, uid;
-  if(ctData.ct.length > 0){
+  if(ctData && ctData.ct.length > 0){
       oid = ctData.oid;
       ct = ctData.ct;
       uid = ctData.uid;
