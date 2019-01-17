@@ -579,8 +579,8 @@ function fetchContract(req, res){
   aggregation.push({ $unwind: "$hasContracts" });
   if(Number(filter) !== 0) {
     var filterOptions = [
-      { $match: {"hasContracts.imAdmin": true}},
-      { $match:{"hasContracts.imForeign": true}},
+      { $match: {"hasContracts.imForeign": true}},
+      { $match:{ "hasContracts.imForeign": false}},
       // { $match:{ $or:[{"hasContracts.imAdmin": false}, {"hasContracts.imForeign": false}] }},
       { $match:{ $or:[{"hasContracts.approved": false}, {"hasContracts.inactive": {$gt: 0}}] }}
     ];
@@ -596,8 +596,9 @@ function fetchContract(req, res){
   })
  .then(function(contracts){
     if(contracts.length === 0){
-    logger.log(req, res, {type: 'warn', data: 'No contracts for: ' + id});
-      return Promise.resolve(false);
+      contracts = [];
+      logger.log(req, res, {type: 'warn', data: 'No contracts for: ' + id});
+      return Promise.resolve(contracts);
     } else {
       return Promise.resolve(contracts);
     }

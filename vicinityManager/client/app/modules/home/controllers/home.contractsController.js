@@ -45,7 +45,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     if(response.data.message){
       var newContracts = parseContracts(response.data.message);
       if(newContracts.length !== 0){myContractDetails(newContracts);}
-      $scope.contracts.push(newContracts);
+      $scope.contracts = $scope.contracts.concat(newContracts);
     }
       $scope.allItemsLoaded = response.data.message.length < $scope.limit;
       $scope.noItems = ($scope.contracts.length === 0);
@@ -78,7 +78,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
       function reset(){
         $scope.contractsCaption = "User contracts" + $scope.captionArray[0];
         $scope.loaded = false;
-        $scope.offset += 0;
+        $scope.offset = 0;
         $scope.contracts = [];
         init();
       }
