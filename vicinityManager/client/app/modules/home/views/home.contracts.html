@@ -1,5 +1,5 @@
 <section class="content-header">
-    <h1>User contracts</h1>
+    <h1>{{contractsCaption}}</h1>
 </section>
 
 <div class="coll-md-1" ng-show="!loaded" style="margin: auto; width:60%">
@@ -13,12 +13,32 @@
   </div>
 </div>
 
+<br>
+
+<!-- Filter -->
+<div class="box-header with-border">
+  <div class="box-tools">
+    <div class="dropdown">
+      <a ui-sref="root.main.contracts" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-filter"></i> Filter contracts
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+         <li><a ng-click="changeFilter(0)" ui-sref="root.main.contracts">All contracts</a></li>
+         <li><a ng-click="changeFilter(1)" ui-sref="root.main.contracts">My services</a></li>
+         <li><a ng-click="changeFilter(2)" ui-sref="root.main.contracts">Contracted services</a></li>
+         <li><a ng-click="changeFilter(3)" ui-sref="root.main.contracts">Pending approval</a></li>
+      </ul>
+     </div>
+  </div>
+</div>
+
 <section ng-show="loaded">
   <!-- No items found -->
   <div class="box padded">
     <!-- <div class="box-header bg-gray">
       <p class="pull-right">Filters ...</p>
     </div> -->
+
     <div class="box-body">
       <div class="active tab-pane">
         <div class="centered" ng-show="noItems">
@@ -83,7 +103,17 @@
           </div>
         </div>
       </div>
+
+      <div class="centered" ng-show="!allItemsLoaded && loaded && !detailsShow">
+        <h3 ng-click="loadMore()" class="well" style="cursor: pointer">Load more items</h3>
+      </div>
+
+      <div class="centered" ng-show="allItemsLoaded && !detailsShow">
+        <h3 class="well">All items loaded!</h3>
+      </div>
+
     </div>
+
     <!-- Contract details -->
     <div class="box box-body" ng-show="detailsShow">
       <div class="box-header with-border well">

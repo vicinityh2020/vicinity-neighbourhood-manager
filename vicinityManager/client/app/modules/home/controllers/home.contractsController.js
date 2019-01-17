@@ -20,11 +20,16 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
   $scope.loaded = false;
   $scope.exchange = false;
   $scope.mainTitle = "My Contracts";
+  $scope.offset = 0;
+  $scope.limit = 10;
+  $scope.filter = 0; // all
+  $scope.contractsCaption = "User contracts";
+  $scope.captionArray = ["", ": Only my services", ": Only contracted services", ": Only waiting approval"];
 
   $scope.searchParam = $location.search(); // GET
 
   function init(){
-    itemsAPIService.getContracts($scope.uid)
+    itemsAPIService.getContracts($scope.uid, $scope.offset, $scope.limit, $scope.filter)
       .then(successCallback)
       .catch(function(error){
         console.log(error);
@@ -37,15 +42,46 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
   // Callbacks
 
   function successCallback(response) {
-    $scope.contracts = [];
-    $scope.contracts = parseContracts(response.data.message);
-    $scope.noItems = ($scope.contracts.length === 0);
-    if(!$scope.noItems){myContractDetails();}
-    $scope.loaded = true;
-    if($scope.searchParam.contractId !== undefined){
-      $scope.showDetails($scope.searchParam.contractId, false);
+    if(response.data.message){
+      var newContracts = parseContracts(response.data.message);
+      if(newContracts.length !== 0){myContractDetails(newContracts);}
+      $scope.contracts.push(newContracts);
     }
+      $scope.allItemsLoaded = response.data.message.length < $scope.limit;
+      $scope.noItems = ($scope.contracts.length === 0);
+      $scope.loaded = true;
+      if($scope.searchParam.contractId !== undefined){
+        $scope.showDetails($scope.searchParam.contractId, false);
+      }
   }
+
+  // Lazy loading
+
+    // Get 10 more
+      $scope.loadMore = function(){
+          $scope.loaded = false;
+          $scope.offset += 10;
+          init();
+      };
+
+    // Reset selection and filter results
+    // f = 0 -- all
+    // f = 1 -- only my services
+    // f = 2 -- only contracted services
+    // f = 3 -- only waiting approval
+      $scope.changeFilter = function(f){
+          $scope.filter = f;
+          reset();
+          $scope.contractsCaption = "User contracts" + $scope.captionArray[f];
+      };
+
+      function reset(){
+        $scope.contractsCaption = "User contracts" + $scope.captionArray[0];
+        $scope.loaded = false;
+        $scope.offset += 0;
+        $scope.contracts = [];
+        init();
+      }
 
   // Buttons -- Functions accessed from UI
 
@@ -54,7 +90,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
       .then(function(response){
         $scope.contracts = [];
         Notification.success("The contract was agreed!");
-        init();
+        reset();
       })
       .catch(function(error){
         console.log(error);
@@ -68,7 +104,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
         $scope.contracts = [];
         Notification.success("The contract was cancelled!");
         $scope.closeDetails();
-        init();
+        reset();
       })
       .catch(function(error){
         console.log(error);
@@ -101,7 +137,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
         $scope.moveThings = [];
         $scope.exchange = false;
         Notification.success("The contract owner was changed!");
-        init();
+        reset();
         $scope.closeDetails();
       },
         function(error){
@@ -184,7 +220,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     $scope.wholeContract = {};
     $scope.data = {};
     $scope.mainTitle = "My Contracts";
-    init();
+    reset();
   };
 
 // Disable one device only
@@ -193,7 +229,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     .then(function (response) {
       if(response.error){
         Notification.error('Problem disabling item: ' + response.message);
-      } else { init(); }
+      } else { reset(); }
     })
     .catch(function(err){
       console.log(err);
@@ -209,7 +245,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
         Notification.error('Problem removing item: ' + response.message);
       } else {
         if($scope.alldevices.length === 1) $scope.closeDetails();
-        init();
+        reset();
       }
     })
     .catch(function(err){
@@ -224,7 +260,7 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
     .then(function (response) {
       if(response.error){
         Notification.error('Problem enabling item: ' + response.message);
-      } else { init(); }
+      } else { reset(); }
     })
     .catch(function(err){
       console.log(err);
@@ -242,25 +278,28 @@ function ($scope, $window, commonHelpers, $location, itemsAPIService,  Notificat
   }
 
   // Only if there are contracts to avoid undefined exceptions
-  function myContractDetails(){
-    for(var i = 0; i < $scope.contracts.length; i++){
-      $scope.contracts[i].imServiceProv = $scope.contracts[i].foreignIot.uid[0].id.toString() === $scope.uid.toString();
-      $scope.contracts[i].serviceAgreed = $scope.contracts[i].foreignIot.termsAndConditions;
-      $scope.contracts[i].infrastructureAgreed = $scope.contracts[i].iotOwner.termsAndConditions;
-      $scope.contracts[i].numberOfItems = $scope.contracts[i].iotOwner.items.length;
+  function myContractDetails(array){
+    var cts = [];
+    for(var i = 0, l = array.length; i < l; i++){
+      cts.push(array[i]);
+      cts[i].imServiceProv = cts[i].foreignIot.uid[0].id.toString() === $scope.uid.toString();
+      cts[i].serviceAgreed = cts[i].foreignIot.termsAndConditions;
+      cts[i].infrastructureAgreed = cts[i].iotOwner.termsAndConditions;
+      cts[i].numberOfItems = cts[i].iotOwner.items.length;
     }
+    return cts;
   }
 
   // Add content to the contract array items
   function parseContracts(array){
     var cts = [];
-    for(var i = 0; i < array.length; i++){
-      if(array[i].id.status !== 'deleted'){
-        cts.push(array[i].id);
-        cts[i].imAdmin = array[i].imAdmin;
-        cts[i].imForeign = array[i].imForeign;
-        cts[i].active = array[i].approved;
-        cts[i].inactiveItems = array[i].inactive.length > 0;
+    for(var i = 0, l = array.length; i < l; i++){
+      if(array[i].hasContracts.id.status !== 'deleted'){
+        cts.push(array[i].hasContracts.id);
+        cts[i].imAdmin = array[i].hasContracts.imAdmin;
+        cts[i].imForeign = array[i].hasContracts.imForeign;
+        cts[i].active = array[i].hasContracts.approved;
+        if(array[i].hasContracts.inactive) cts[i].inactiveItems = array[i].hasContracts.inactive.length > 0;
       }
     }
     return cts;

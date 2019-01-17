@@ -56,8 +56,8 @@ factory('itemsAPIService', ['$http', 'configuration', '$window', function($http,
   /*
   Contract management
   */
-  itemsAPI.getContracts = function(id){
-    return $http.get(configuration.apiUrl + '/items/contract/' + id);
+  itemsAPI.getContracts = function(id, offset, limit, filter){
+    return $http.get(configuration.apiUrl + '/items/contract/' + id + '?filter=' + filter + '&offset=' + offset + '&limit=' + limit);
   };
 
   itemsAPI.postContract = function(payload){

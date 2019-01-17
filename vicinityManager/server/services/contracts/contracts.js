@@ -1,5 +1,4 @@
 // Global objects and variables
-
 var mongoose = require('mongoose');
 var logger = require("../../middlewares/logBuilder");
 var audits = require('../../services/audit/audit');
@@ -571,30 +570,41 @@ function resetContract(cts, uid){
 Get user contracts
 */
 function fetchContract(req, res){
-  var id = req.params.id; // User id
-  var result = [];
-  var parsedRes = {};
-  return userOp.findOne({ _id: id}, {hasContracts:1}).populate('hasContracts.id')
+  var id = mongoose.Types.ObjectId(req.params.id); // User id
+  var offset = req.query.offset;
+  var limit = req.query.limit;
+  var filter = req.query.filter;
+  var aggregation = [];
+  aggregation.push({ $match: { "_id": id} });
+  aggregation.push({ $unwind: "$hasContracts" });
+  if(Number(filter) !== 0) {
+    var filterOptions = [
+      { $match: {"hasContracts.imAdmin": true}},
+      { $match:{"hasContracts.imForeign": true}},
+      // { $match:{ $or:[{"hasContracts.imAdmin": false}, {"hasContracts.imForeign": false}] }},
+      { $match:{ $or:[{"hasContracts.approved": false}, {"hasContracts.inactive": {$gt: 0}}] }}
+    ];
+    aggregation.push(filterOptions[Number(filter) - 1]);
+  }
+  aggregation.push({ $sort: { "hasContracts.id": -1}});
+  if(Number(offset) !== 0) aggregation.push({ $skip: Number(offset)});
+  aggregation.push({ $limit: Number(limit) });
+  aggregation.push({ $project: {"_id": 0, "hasContracts": 1}});
+  return userOp.aggregate(aggregation)
   .then(function(response){
-    parsedRes = response.toObject().hasContracts;
-    if(parsedRes.length === 0){
-      logger.log(req, res, {type: 'warn', data: 'No contracts for: ' + id});
-       return Promise.resolve(result);
+    return contractOp.populate(response, {path: "hasContracts.id"});
+  })
+ .then(function(contracts){
+    if(contracts.length === 0){
+    logger.log(req, res, {type: 'warn', data: 'No contracts for: ' + id});
+      return Promise.resolve(false);
     } else {
-        for( var i = 0, l = parsedRes.length; i < l; i++ ){
-          if(parsedRes[i].id){
-            if(parsedRes[i].id.status !== 'deleted'){
-              result.push(parsedRes[i]);
-            }
-          }
-        }
-        return Promise.resolve(result);
-      }
+      return Promise.resolve(contracts);
     }
-  )
-  .catch(function(error){
-    return Promise.reject(error);
-  });
+  })
+ .catch(function(error){
+   return Promise.reject(error);
+ });
 }
 
 
