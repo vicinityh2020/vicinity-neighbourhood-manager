@@ -38,7 +38,7 @@ function getAdditional(data,activeCompany_id,friends){
       }
 
       var accessLevelCaption = giveMeCaption(device.accessLevel);
-      deviceWithAdd = device.toObject();
+      deviceWithAdd = device;
       deviceWithAdd.isOwner = isOwner;
       deviceWithAdd.isPrivate = isPrivate;
       deviceWithAdd.isFriendData = isFriendData;

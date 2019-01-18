@@ -29,10 +29,10 @@ function getOrgItems(req, res, api, callback) {
     var type = (req.query.type !== "device" && req.query.type !== "service") ? "all" : req.query.type;
     var query;
     var projection;
+    var friends = [];
 
     userAccountOp.findOne(cid, {knows: 1}).lean()
     .then(function(response){
-        var friends = [];
         if(response.knows != null){
             getIds(response.knows, friends);
         }
@@ -202,9 +202,11 @@ Receives following parameters:
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
 function getAllItems(cid, type, offset, filterNumber, filterOntology, callback) {
+  var friends = [];
+  if(!type) type = "device";
+  if(!filterNumber) filterNumber = 4;
   userAccountOp.findOne(cid, {knows: 1}).lean()
   .then(function(data){
-    var friends = [];
     var query = {
       typeOfItem: type,
       $or :[ { accessLevel: 2 }, { 'cid.id': cid }]
@@ -221,7 +223,7 @@ function getAllItems(cid, type, offset, filterNumber, filterOntology, callback) 
         };
       }
     // Filters oids based on ontology matches to the user selection
-    if(filterOntology.length > 1){ query["info.type"] = {$in: filterOntology}; }
+    if(filterOntology.length > 1) query["info.type"] = {$in: filterOntology};
     query = updateQueryWithFilterNumber(query, filterNumber, cid);
     return itemOp.find(query, {hasAudits: 0, info: 0})
           .populate('cid.id','name cid')
@@ -239,7 +241,7 @@ function getAllItems(cid, type, offset, filterNumber, filterOntology, callback) 
         }
     })
     .catch(function(err){
-        callback(true, err);
+      callback(true, err);
     });
   }
 
@@ -287,12 +289,10 @@ function getItemWithAdd(oid, cid, callback) {
     var items = [];
     var friends = [];
     var doAsync = [];
+    if(!type) type = 'all';
 
-    doAsync.push(userOp.findOne({_id: reqId, status: {$ne: 'deleted'}}, {hasItems: 1, cid: 1})
-    .populate('hasItems.id','name accessLevel typeOfItem cid info avatar')
-    .lean());
-    doAsync.push(userAccountOp.findOne({_id:reqCid}, {knows:1})
-    .lean());
+    doAsync.push(userOp.findOne({_id: reqId, status: {$ne: 'deleted'}}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid info avatar').lean());
+    doAsync.push(userAccountOp.findOne({_id:reqCid}, {knows:1}).lean());
 
     Promise.all(doAsync)
     .then(function(response){
