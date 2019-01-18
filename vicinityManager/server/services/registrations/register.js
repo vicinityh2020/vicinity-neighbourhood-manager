@@ -215,7 +215,7 @@ function fastRegistration(req, res, callback){
   var saltRounds = 10;
   var dbUser = {};
   var pwd = data.user.password;
-  if(!pwd || pwd.length < 5){
+  if(!pwd || pwd.length < 8){
     logger.log(req, res, {type: 'warn', data: "Missing or short password..."});
     callback(false, "Missing or short password...");
   } else {
@@ -358,7 +358,7 @@ function saveOrganisation(dbUser, raw){
       return commServer.callCommServer(payload, 'groups', 'POST'); // Creates org group in commServer
     })
     .then(function(response){
-      Promise.resolve({email: userData.email, uid: userData._id, _id: orgData._id});
+      return Promise.resolve({email: userData.email, uid: userData._id, _id: orgData._id});
     });
 }
 

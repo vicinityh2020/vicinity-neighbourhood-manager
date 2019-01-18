@@ -186,7 +186,7 @@ function login(data, org, done){
 function createOrganisation(done){
   var data = {
       "user": {
-        "userName": "test",
+        "userName": "test_" + uuid(),
         "contactMail": "test@test.com",
         "occupation": "test",
         "password": "password"

@@ -18,8 +18,8 @@ Public Functions
 function processFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
   var me, friend;
   var doAsync = [];
-  doAsync.push(companyAccountOp.findById(my_id));
-  doAsync.push(companyAccountOp.findById(friend_id));
+  doAsync.push(companyAccountOp.findOne({"_id": my_id}, {cid: 1}));
+  doAsync.push(companyAccountOp.findOne({"_id": friend_id}, {cid: 1}));
   Promise.all(doAsync)
     .then( function(response){
       me = response[0];
@@ -55,8 +55,8 @@ function processFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 function acceptFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
   var me, friend;
   var doAsync = [];
-  doAsync.push(companyAccountOp.findById(my_id));
-  doAsync.push(companyAccountOp.findById(friend_id));
+  doAsync.push(companyAccountOp.findOne({"_id": my_id}, {cid: 1}));
+  doAsync.push(companyAccountOp.findOne({"_id": friend_id}, {cid: 1}));
   Promise.all(doAsync)
     .then( function(response){
       me = response[0];
@@ -93,8 +93,8 @@ function acceptFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 function rejectFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
     var me, friend;
     var doAsync = [];
-    doAsync.push(companyAccountOp.findById(my_id));
-    doAsync.push(companyAccountOp.findById(friend_id));
+    doAsync.push(companyAccountOp.findOne({"_id": my_id}, {cid: 1}));
+    doAsync.push(companyAccountOp.findOne({"_id": friend_id}, {cid: 1}));
     Promise.all(doAsync)
       .then( function(response){
         me = response[0];
@@ -128,8 +128,8 @@ function rejectFriendRequest(friend_id, my_id, my_mail, my_uid, callback) {
 function cancelFriendRequest(friend_id, my_id, my_mail, my_uid, callback){
   var me, friend;
   var doAsync = [];
-  doAsync.push(companyAccountOp.findById(my_id));
-  doAsync.push(companyAccountOp.findById(friend_id));
+  doAsync.push(companyAccountOp.findOne({"_id": my_id}, {cid: 1}));
+  doAsync.push(companyAccountOp.findOne({"_id": friend_id}, {cid: 1}));
   Promise.all(doAsync)
     .then( function(response){
       me = response[0];
@@ -158,8 +158,8 @@ function cancelFriendRequest(friend_id, my_id, my_mail, my_uid, callback){
 function cancelFriendship(friend_id, my_id, my_mail, my_uid, callback){
     var me, friend;
     var doAsync = [];
-    doAsync.push(companyAccountOp.findById(my_id));
-    doAsync.push(companyAccountOp.findById(friend_id));
+    doAsync.push(companyAccountOp.findOne({"_id": my_id}, {cid: 1}));
+    doAsync.push(companyAccountOp.findOne({"_id": friend_id}, {cid: 1}));
     Promise.all(doAsync)
       .then( function(response){
         me = response[0];
@@ -194,9 +194,12 @@ function cancelFriendship(friend_id, my_id, my_mail, my_uid, callback){
 }
 
 function friendshipFeeds(my_id, callback){
-  companyAccountOp.findOne({_id: my_id}, {knowsRequestsTo:1, knowsRequestsFrom:1}).populate('knowsRequestsTo.id', 'name').populate('knowsRequestsFrom.id', 'name')
+  companyAccountOp.findOne({_id: my_id}, {knowsRequestsTo:1, knowsRequestsFrom:1})
+  .populate('knowsRequestsTo.id', 'name')
+  .populate('knowsRequestsFrom.id', 'name')
+  .lean()
   .then(function(response){
-    var myFeeds = response.toObject();
+    var myFeeds = response;
     var feeds = {};
     feeds.requestsReceived = myFeeds.knowsRequestsFrom;
     feeds.sentRequests = myFeeds.knowsRequestsTo;
@@ -214,7 +217,7 @@ function friendshipFeeds(my_id, callback){
 
 function friendshipStatus(my_id, friend_id, callback){
   var finalResponse = {};
-  companyAccountOp.findById(my_id, {knows:1, knowsRequestsTo:1, knowsRequestsFrom:1})
+  companyAccountOp.findOne({"_id": my_id}, {knows:1, knowsRequestsTo:1, knowsRequestsFrom:1}).lean()
   .then(function(response){
     var knows = [];
     var knowsRequestsTo = [];
