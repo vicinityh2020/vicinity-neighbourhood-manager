@@ -265,7 +265,7 @@ function getItemWithAdd(oid, cid, callback) {
     if(parsedData.knows != null){
         getIds(parsedData.knows, friends);
     }
-    var dataWithAdditional = itemProperties.getAdditional(data, cid, friends); // Not necessary to know friends because I process only devices underRequest!
+    var dataWithAdditional = itemProperties.getAdditional(data[1], cid, friends); // Not necessary to know friends because I process only devices underRequest!
     if(dataWithAdditional.error){
       callback(true, dataWithAdditional.message);
     } else {
