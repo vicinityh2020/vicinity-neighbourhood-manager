@@ -21,45 +21,43 @@ Receives following parameters:
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
 function getOrgItems(req, res, api, callback) {
-  var cid = mongoose.Types.ObjectId(req.params.cid);
-  var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
-  var limit = typeof req.query.limit === 'undefined' ? 25 : req.query.limit;
-  limit = limit > 25 ? 25 : limit; // Max limit
-  var offset = typeof req.query.offset === 'undefined' ? 0 : req.query.offset;
-  var type = (req.query.type !== "device" && req.query.type !== "service") ? "all" : req.query.type;
-  var query;
-  var projection;
+    var cid = mongoose.Types.ObjectId(req.params.cid);
+    var mycid = mongoose.Types.ObjectId(req.body.decoded_token.orgid);
+    var limit = typeof req.query.limit === 'undefined' ? 25 : req.query.limit;
+    limit = limit > 25 ? 25 : limit; // Max limit
+    var offset = typeof req.query.offset === 'undefined' ? 0 : req.query.offset;
+    var type = (req.query.type !== "device" && req.query.type !== "service") ? "all" : req.query.type;
+    var query;
+    var projection;
 
-  userAccountOp.findOne(cid, {knows: 1})
-  .then(function(response){
-    var parsedData = response.toObject();
-    var friends = [];
-    if(parsedData.knows != null){
-        getIds(parsedData.knows, friends);
-    }
+    userAccountOp.findOne(cid, {knows: 1}).lean()
+    .then(function(response){
+        var friends = [];
+        if(response.knows != null){
+            getIds(response.knows, friends);
+        }
 
-    if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
-      query = {'cid.id': cid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
-    } else {
-      if(friends.indexOf(mycid.toString()) !== -1) {
-        query = {'cid.id': cid, accessLevel: { $gt:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
-      } else {
-        query = {'cid.id': cid, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
-      }
-    }
+        if(cid.toString() === mycid.toString()){ // Need to compare strings instead of BSON
+          query = {'cid.id': cid, status: {$nin: ['disabled', 'deleted']} }; // I am requesting my organisation devices
+        } else {
+          if(friends.indexOf(mycid.toString()) !== -1) {
+            query = {'cid.id': cid, accessLevel: { $gt:0 }, status: {$nin: ['disabled', 'deleted']} }; // We are friends I can see more
+          } else {
+            query = {'cid.id': cid, accessLevel: { $gt:1 }, status: {$nin: ['disabled', 'deleted']} }; // We are not friends I can see less
+          }
+        }
 
-    if( type !== "all" ){ query.typeOfItem = type; }
+        if( type !== "all" ){ query.typeOfItem = type; }
 
-    if(api){
-      projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0 };
-    } else {
-      projection = { status: 0, hasAudits: 0 };
-    }
+        if(api){
+          projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0, info: 0 };
+        } else {
+          projection = { status: 0, hasAudits: 0 };
+        }
 
-    itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).exec(function(err, data){
-      if (err) {
-        callback(true, data);
-      } else {
+        return itemOp.find(query).select(projection).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(limit).lean();
+    })
+    .then(function(data){
         if(api){
           callback(false, data);
         } else {
@@ -70,11 +68,11 @@ function getOrgItems(req, res, api, callback) {
             callback(false, dataWithAdditional.items);
           }
         }
-      }
+    })
+    .catch(function(err){
+      callback(true, err);
     });
-  })
-  .catch(function(err){callback(true, err);} );
-}
+  }
 
 /*
 Gets all items that I can share with other organisation:
@@ -95,7 +93,7 @@ function getMyContractItems(req, res, api, callback) {
     queryCid = {cid: cid};
   }
 
-  userAccountOp.findOne(queryCid, {knows: 1, cid: 1})
+  userAccountOp.findOne(queryCid, {knows: 1, cid: 1}).lean()
   .then(function(response){
     cid = response._id;
     var friends = [];
@@ -118,20 +116,19 @@ function getMyContractItems(req, res, api, callback) {
     }
 
     if(api){
-      projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0 };
+      projection = { status: 0, avatar: 0, hasContracts: 0, hasAudits: 0};
     } else {
       projection = { status: 0, avatar: 0, hasAudits: 0 };
     }
 
-    itemOp.find(query).select(projection).populate('cid.id', 'name').exec(function(err, data){
-      if (err) {
-        callback(true, err);
-      } else {
-        callback(false, data);
-      }
-    });
+    return itemOp.find(query).select(projection).populate('cid.id', 'name').lean();
   })
-  .catch(function(err){callback(true, err);} );
+  .then(function(data){
+    callback(false, data);
+  })
+  .catch(function(err){
+    callback(true, err);
+  });
 }
 
 /**
@@ -165,7 +162,7 @@ function getItemsContracted(req, res, api, callback) {
       var n = aux.indexOf("@");
       oids.push(aux.substring(0, n));
     }
-    return itemOp.find({oid: {$in: oids}, 'cid.id': {$ne: mycid} }, {info: 1});
+    return itemOp.find({oid: {$in: oids}, 'cid.id': {$ne: mycid} }, {info: 1}).lean();
   })
   .then(function(response){
     if(!response){
@@ -205,20 +202,15 @@ Receives following parameters:
 - Offset: Items are retrieved in groups of XX elements at a time.
 */
 function getAllItems(cid, type, offset, filterNumber, filterOntology, callback) {
-
-  userAccountOp.findOne(cid, {knows: 1}, function(err, data){
-    if (err){
-      callback(true, err);
-    }
-    var parsedData = data.toObject();
-
+  userAccountOp.findOne(cid, {knows: 1}).lean()
+  .then(function(data){
     var friends = [];
     var query = {
       typeOfItem: type,
       $or :[ { accessLevel: 2 }, { 'cid.id': cid }]
     };
-    if(parsedData.knows != null){
-        getIds(parsedData.knows, friends);
+    if(data.knows != null){
+        getIds(data.knows, friends);
         query = {
           typeOfItem: type,
           $or :[
@@ -231,21 +223,25 @@ function getAllItems(cid, type, offset, filterNumber, filterOntology, callback) 
     // Filters oids based on ontology matches to the user selection
     if(filterOntology.length > 1){ query["info.type"] = {$in: filterOntology}; }
     query = updateQueryWithFilterNumber(query, filterNumber, cid);
-
-    itemOp.find(query).populate('cid.id','name cid').sort({name:1}).skip(Number(offset)).limit(12).exec(function(err, data){
-      if (err) {
-        callback(true, err);
-      } else {
+    return itemOp.find(query, {hasAudits: 0, info: 0})
+          .populate('cid.id','name cid')
+          .sort({name:1})
+          .skip(Number(offset))
+          .limit(12)
+          .lean();
+    })
+    .then(function(data){
         var dataWithAdditional = itemProperties.getAdditional(data, cid, friends); // Not necessary to know friends because I process only devices underRequest!
         if(dataWithAdditional.error){
           callback(true, dataWithAdditional.message);
         } else {
           callback(false, dataWithAdditional.items);
         }
-      }
+    })
+    .catch(function(err){
+        callback(true, err);
     });
-  });
-}
+  }
 
 /*
 Gets one item based on the OID
@@ -254,35 +250,30 @@ Receives following parameters:
 - Item oid
 */
 function getItemWithAdd(oid, cid, callback) {
-    userAccountOp.findOne(cid, {knows:1}, function (err, data) {
-      var parsedData = data.toObject();
-      if(err){
-        callback(true, err);
-      } else {
-        var friends = [];
-        if(parsedData.knows != null){
-            getIds(parsedData.knows, friends);
-        }
+  var friends = [];
+  var doAsync = [];
 
-        itemOp.find({_id: oid}).populate('cid.id','name cid')
-            .exec(
-              function(err, data){
-                if (err || data === null) {
-                  callback(true, err);
-                } else {
-                  var dataWithAdditional = itemProperties.getAdditional(data, cid, friends); // Not necessary to know friends because I process only devices underRequest!
-                  if(dataWithAdditional.error){
-                    callback(true, dataWithAdditional.message);
-                  } else {
-                    callback(false, dataWithAdditional.items);
-                  }
-                }
-              }
-            );
-          }
-        }
-      );
+  doAsync.push(userAccountOp.findOne(cid, {knows:1}).lean());
+  doAsync.push(itemOp.find({_id: oid}).populate('cid.id','name cid').lean());
+
+  Promise.all(doAsync)
+  .then(function(data){
+    if(!data[1]) callback(true, err);
+    var parsedData = data[0];
+    if(parsedData.knows != null){
+        getIds(parsedData.knows, friends);
     }
+    var dataWithAdditional = itemProperties.getAdditional(data, cid, friends); // Not necessary to know friends because I process only devices underRequest!
+    if(dataWithAdditional.error){
+      callback(true, dataWithAdditional.message);
+    } else {
+      callback(false, dataWithAdditional.items);
+    }
+  })
+  .catch(function(err){
+    callback(true, err);
+  });
+}
 
   /*
   Gets user items
@@ -295,17 +286,21 @@ function getItemWithAdd(oid, cid, callback) {
     var parsedData = {};
     var items = [];
     var friends = [];
+    var doAsync = [];
 
-    userOp.findOne({_id: reqId, status: {$ne: 'deleted'}}, {hasItems: 1, cid: 1}).populate('hasItems.id','name accessLevel typeOfItem cid info avatar')
+    doAsync.push(userOp.findOne({_id: reqId, status: {$ne: 'deleted'}}, {hasItems: 1, cid: 1})
+    .populate('hasItems.id','name accessLevel typeOfItem cid info avatar')
+    .lean());
+    doAsync.push(userAccountOp.findOne({_id:reqCid}, {knows:1})
+    .lean());
+
+    Promise.all(doAsync)
     .then(function(response){
-      parsedData = response.toObject();
+      parsedData = response[0];
       items = parsedData.hasItems;
       data.cid = parsedData.cid;
       data._id = parsedData._id;
-      return userAccountOp.findOne({_id:reqCid}, {knows:1});
-    })
-    .then(function(response){
-      parsedFriends = response.toObject();
+      parsedFriends = response[1];
       getIds(parsedFriends.knows, friends);
       var relation = myRelationWithOther(ownerCid, reqCid, friends);
 
