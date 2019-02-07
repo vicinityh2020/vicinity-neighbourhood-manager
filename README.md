@@ -13,7 +13,7 @@ The users can set privacy levels to each device and service they have registered
 In order to register device and service user needs to create so called gateway and set-up VICINITY Gateway and VICINITY Adapter to connect his devices and services to VICINITY Platofrm. To set-up VICINITY Gateway and VICINITY Adapter please consult following repositories:
 
 * [VICINITY Agent](https://github.com/vicinityh2020/vicinity-agent);
-* [VICINITY Gateway API](TBD);
+* [VICINITY Gateway API](https://vicinityh2020.github.io/vicinity-gateway-api/);
 * [VICINITY Neighbourhood Manager API](https://vicinityh2020.github.io/vicinity-neighbourhood-manager-api/).
 
 VICINITY Neighbourhood Manager is publicly accessible over the [internet](https://vicinity.bavenir.eu).
