@@ -26,7 +26,7 @@
     "debug": "~2.2.0",
     "elastic-apm-node": "^2.0.6",
     "express": "^4.16.3",
-    "helmet": "^3.13.0",
+    "helmet": "^3.21.1",
     "jwt-simple": "^0.4.1",
     "kerberos": "0.0.18",
     "moment": "^2.22.2",
