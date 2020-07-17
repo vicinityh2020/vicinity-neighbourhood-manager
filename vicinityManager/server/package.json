@@ -35,7 +35,7 @@
     "nan": "2.0.9",
     "nodemailer": "^2.5.0",
     "nodemon": "^1.18.3",
-    "request": "^2.87.0",
+    "request": "^2.88.0",
     "request-debug": "^0.2.0",
     "request-promise": "^4.2.2",
     "serve-favicon": "^2.5.0",
