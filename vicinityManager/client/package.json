@@ -15,7 +15,7 @@
     "karma-jasmine": "^1.1.2",
     "karma-junit-reporter": "^1.2.0",
     "protractor": "^5.4.0",
-    "shelljs": "^0.8.2"
+    "shelljs": "^0.8.5"
   },
   "scripts": {
     "myscript": "gulp",
