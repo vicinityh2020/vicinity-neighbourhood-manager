@@ -34,7 +34,7 @@
     "morgan": "^1.9.0",
     "nan": "2.0.9",
     "nodemailer": "^2.5.0",
-    "nodemon": "^1.18.3",
+    "nodemon": "^2.0.17",
     "request": "^2.87.0",
     "request-debug": "^0.2.0",
     "request-promise": "^4.2.2",
