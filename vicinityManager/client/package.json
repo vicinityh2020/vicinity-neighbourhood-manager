@@ -7,7 +7,7 @@
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.8.4",
-    "http-server": "^0.11.1",
+    "http-server": "^0.11.2",
     "jasmine-core": "^3.1.0",
     "karma": "~2.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -32,7 +32,7 @@
     "update-index-async": "node -e \"require('shelljs/global'); sed('-i', /\\/\\/@@NG_LOADER_START@@[\\s\\S]*\\/\\/@@NG_LOADER_END@@/, '//@@NG_LOADER_START@@\\n' + sed(/sourceMappingURL=angular-loader.min.js.map/,'sourceMappingURL=bower_components/angular-loader/angular-loader.min.js.map','app/bower_components/angular-loader/angular-loader.min.js') + '\\n//@@NG_LOADER_END@@', 'app/index-async.html');\""
   },
   "dependencies": {
-    "express": "^4.13.4",
+    "express": "^4.18.2",
     "nodemon": "^1.9.2",
     "npm": "^6.2.0",
     "winston": "^3.0.0"
