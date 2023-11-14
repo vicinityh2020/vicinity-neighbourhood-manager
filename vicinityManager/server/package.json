@@ -30,7 +30,7 @@
     "jwt-simple": "^0.4.1",
     "kerberos": "0.0.18",
     "moment": "^2.22.2",
-    "mongoose": "^4.13.14",
+    "mongoose": "^5.3.9",
     "morgan": "^1.9.0",
     "nan": "2.0.9",
     "nodemailer": "^2.5.0",
