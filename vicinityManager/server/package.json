@@ -35,9 +35,9 @@
     "nan": "2.0.9",
     "nodemailer": "^2.5.0",
     "nodemon": "^1.18.3",
-    "request": "^2.87.0",
+    "request": "^2.88.2",
     "request-debug": "^0.2.0",
-    "request-promise": "^4.2.2",
+    "request-promise": "^4.2.6",
     "serve-favicon": "^2.5.0",
     "uuid": "^3.3.2",
     "winston": "^2.4.3"
